@@ -1,0 +1,796 @@
+<!doctype html>
+<!-- OPlanFeu — Mart1ver — GNU GPL v3 ou ultérieure — https://www.gnu.org/licenses/gpl-3.0.html -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPlanFeu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #e8eaea; --panel: #fbfcfb; --ink: #15181a; --muted: #687075; --line: #d5dadb; --row: #f3f5f5;
+  --accent: #16917f; --accent-ink: #ffffff; --warn-bg: #fff3c4; --ok: #2f7d4a; --err: #b3261e; --sel: #d9f2ee;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #191c1e; --panel: #222629; --ink: #eceeee; --muted: #9aa2a6; --line: #363c40; --row: #262b2e;
+    --accent: #33b8a5; --accent-ink: #06201c; --warn-bg: #4a3d12; --ok: #6cc28a; --err: #ff8a80; --sel: #1d3a36;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #191c1e; --panel: #222629; --ink: #eceeee; --muted: #9aa2a6; --line: #363c40; --row: #262b2e;
+  --accent: #33b8a5; --accent-ink: #06201c; --warn-bg: #4a3d12; --ok: #6cc28a; --err: #ff8a80; --sel: #1d3a36;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 "IBM Plex Sans", system-ui, sans-serif; }
+.app { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
+aside { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 20px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brandlink { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; color: inherit; text-decoration: none; }
+.brandlink:hover h1 { text-decoration: underline; }
+.brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); flex: none; align-self: flex-start; margin-top: 5px; }
+.brand h1 { font-size: 15px; font-weight: 600; margin: 0; }
+.brand p { margin: 0; font-size: 12px; color: var(--muted); }
+select.lang { flex: none; align-self: flex-start; font: inherit; font-size: 12px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; }
+.drop { border: 1.5px dashed var(--line); border-radius: 12px; background: var(--bg); padding: 20px 14px; text-align: center; cursor: pointer; }
+.drop:hover, .drop.over { border-color: var(--accent); }
+.drop b { display: block; margin-bottom: 4px; }
+.drop span { font-size: 12px; color: var(--muted); }
+.drop.loaded { border-style: solid; text-align: left; padding: 12px 14px; }
+.drop .fname { font-weight: 600; word-break: break-all; }
+fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+legend { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 8px; padding: 0; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
+input[type=text], input[type=number], input[type=date], textarea, select.in { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; min-width: 0; }
+textarea { resize: vertical; min-height: 56px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.btn { font: inherit; font-weight: 600; font-size: 14px; border: 0; border-radius: 10px; padding: 11px 14px; background: var(--accent); color: var(--accent-ink); cursor: pointer; text-align: center; text-decoration: none; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 500; font-size: 13px; padding: 8px 12px; }
+.hint { font-size: 11.5px; color: var(--muted); margin: 0; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat { background: var(--bg); border-radius: 9px; padding: 8px 10px; }
+.stat b { display: block; font-size: 19px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.alert { border-radius: 9px; padding: 8px 10px; background: var(--warn-bg); font-size: 12.5px; }
+#alerts { display: flex; flex-direction: column; gap: 6px; }
+.alert.err { background: transparent; border: 1px solid var(--err); color: var(--err); }
+.spacer { flex: 1; }
+.foot { font-size: 11px; color: var(--muted); }
+
+main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.toolbar { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+.tabs { display: flex; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 3px; }
+.tabs button { font: inherit; font-size: 13px; border: 0; border-radius: 6px; padding: 6px 12px; background: transparent; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.tabs button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-inline-start: auto; }
+.filters input, .filters select { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; }
+.filters input { width: 13em; }
+.count { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.bulk { display: none; align-items: center; gap: 8px; padding: 8px 18px; background: var(--sel); border-bottom: 1px solid var(--line); font-size: 13px; flex-wrap: wrap; }
+.bulk.on { display: flex; }
+.bulk select, .bulk input { font: inherit; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 4px 7px; }
+.bulk button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+.bulk button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.bulk button.danger { color: var(--err); }
+.view { flex: 1; overflow: auto; padding: 0 18px 30px; }
+.empty { height: 100%; display: grid; place-items: center; color: var(--muted); text-align: center; padding: 40px; }
+
+table.grid { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+table.grid th { position: sticky; top: 0; z-index: 1; background: var(--bg); text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; padding: 9px 6px 7px; border-bottom: 1px solid var(--line); white-space: nowrap; cursor: pointer; user-select: none; }
+table.grid th.nosort { cursor: default; }
+table.grid th .ar { color: var(--accent); }
+table.grid td { padding: 1px 3px; border-bottom: 1px solid var(--line); background: var(--panel); white-space: nowrap; vertical-align: middle; }
+table.grid tr:nth-child(even) td { background: var(--row); }
+table.grid tr.sel td { background: var(--sel) !important; }
+table.grid td.ro { padding: 4px 6px; color: var(--muted); }
+table.grid td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.grid td input.c { font: inherit; min-width: 3em; border: 1px solid transparent; background: transparent; color: var(--ink); padding: 3px 4px; border-radius: 5px; }
+table.grid td input.c:hover { border-color: var(--line); }
+table.grid td input.c:focus { outline: none; border-color: var(--accent); background: var(--panel); }
+table.grid td input.bad { color: var(--err); }
+table.grid td.chk { width: 28px; text-align: center; }
+table.grid input[type=checkbox] { accent-color: var(--accent); }
+td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); vertical-align: -1px; margin-inline-end: 4px; }
+.w-fid input { width: 5.5em; } .w-unit input { width: 3.6em; } .w-patch input { width: 5.6em; } .w-sm input { width: 9em; } .w-md input { width: 12.5em; }
+table.grid td input.box { border-color: var(--line); background: var(--bg); }
+table.grid td input.box:focus { background: var(--panel); }
+.view .gridwrap { overflow-x: auto; }
+.xyz { font-size: 11.5px; font-family: "IBM Plex Sans Condensed", sans-serif; }
+.missing { color: var(--err); font-weight: 600; }
+.okv { color: var(--ok); }
+h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margin: 22px 0 8px; color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; padding-top: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.card h3 { margin: 0 0 2px; font-size: 15px; display: flex; justify-content: space-between; gap: 8px; }
+.card h3 small { color: var(--muted); font-weight: 500; font-size: 12px; white-space: nowrap; }
+.card .meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.card table { width: 100%; font-size: 12.5px; border-collapse: collapse; }
+.card td { padding: 2px 0; border-bottom: 1px dotted var(--line); }
+.card td.num { text-align: right; font-variant-numeric: tabular-nums; width: 3em; }
+.card .ids { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+@media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
+
+/* impression : la vue affichée, sans l'interface */
+@media print {
+  @page { size: A4 landscape; margin: 12mm; }
+  html, body { height: auto; background: #fff; color: #000; }
+  .app { display: block; height: auto; }
+  aside, .toolbar, .bulk, td.chk, th.chkh { display: none !important; }
+  .view { overflow: visible; padding: 0; }
+  .ptitle { display: block !important; font: 600 16pt "IBM Plex Sans", sans-serif; margin: 0 0 4mm; }
+  table.grid th { position: static; background: #222; color: #fff; }
+  table.grid td { background: #fff !important; font-size: 9pt; }
+  table.grid td input.c { border: 0; padding: 0; color: #000; }
+  .card { break-inside: avoid; border-color: #999; }
+}
+.ptitle { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <a class="brandlink" href="https://github.com/mart1ver/OPlanFeu" target="_blank" rel="noopener" data-i18n-title="repoLink" title="Le projet sur GitHub">
+        <div class="dot" aria-hidden="true"></div>
+        <div><h1>OPlanFeu</h1><p data-i18n="brandSub">Dossier lumière : patch, positions, inventaire</p></div>
+      </a>
+      <select class="lang" id="lang" aria-label="Langue / Language">
+        <option value="fr">FR · Français</option>
+        <option value="en">EN · English</option>
+      </select>
+    </div>
+
+    <label class="drop" id="drop" tabindex="0">
+      <input type="file" id="file" accept=".mvr,.csv,.txt,.json,.oplanfeu" hidden>
+      <div id="dropText"><b data-i18n="dropTitle">Ouvrir ou importer</b><span data-i18n="dropSub">MVR (WYSIWYG, Capture, grandMA3…), CSV de patch, ou dossier OPlanFeu (.json)</span></div>
+    </label>
+
+    <fieldset id="metaBox" hidden>
+      <legend data-i18n="legDossier">Dossier</legend>
+      <label class="f"><span data-i18n="mTitre">Titre</span><input type="text" id="m_titre"></label>
+      <div class="row2">
+        <label class="f"><span data-i18n="mKind">Type</span><select class="in" id="m_kind"><option value="lieu" data-i18n="kindLieu">Lieu</option><option value="spectacle" data-i18n="kindShow">Spectacle accueilli</option></select></label>
+        <label class="f"><span data-i18n="mDate">Date</span><input type="date" id="m_date"></label>
+      </div>
+      <label class="f"><span data-i18n="mLieu">Lieu / salle</span><input type="text" id="m_lieu"></label>
+      <label class="f"><span data-i18n="mAuteur">Responsable</span><input type="text" id="m_auteur"></label>
+      <label class="f"><span data-i18n="mNotes">Notes</span><textarea id="m_notes"></textarea></label>
+    </fieldset>
+
+    <fieldset id="statBox" hidden>
+      <legend data-i18n="legSummary">En bref</legend>
+      <div class="stats" id="stats"></div>
+      <div id="alerts"></div>
+    </fieldset>
+
+    <fieldset id="outBox" hidden>
+      <legend data-i18n="legOut">Enregistrer et exporter</legend>
+      <button class="btn" id="save" data-i18n="save">Enregistrer le dossier (.json)</button>
+      <button class="btn ghost" id="exportCsv" data-i18n="exportCsv">Exporter le patch pour Give Me The Patch (.csv)</button>
+      <a class="btn ghost" href="https://mart1ver.github.io/GiveMeThePatch/" target="_blank" rel="noopener" data-i18n="openGmtp">Ouvrir Give Me The Patch</a>
+      <button class="btn ghost" id="print" data-i18n="print">Imprimer la vue affichée</button>
+      <p class="hint" data-i18n="saveHint">Le dossier est aussi gardé dans ce navigateur au fil des modifications.</p>
+    </fieldset>
+
+    <div class="spacer"></div>
+    <div class="foot" data-i18n="foot">Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.</div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <div class="tabs" id="tabs">
+        <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
+        <button type="button" data-v="positions" data-i18n="tabPositions">Positions</button>
+        <button type="button" data-v="inventory" data-i18n="tabInventory">Inventaire</button>
+      </div>
+      <div class="filters" id="filters">
+        <input type="search" id="q" data-i18n-ph="searchPh" placeholder="Rechercher…">
+        <select id="fPos"></select>
+        <select id="fType"></select>
+        <span class="count" id="count"></span>
+      </div>
+    </div>
+    <div class="bulk" id="bulk">
+      <b id="selCount"></b>
+      <select id="bField"></select>
+      <input type="text" id="bValue" list="bList">
+      <datalist id="bList"></datalist>
+      <button type="button" class="primary" id="bApply" data-i18n="bApply">Appliquer</button>
+      <button type="button" id="bRenum" data-i18n="bRenum">Numéroter…</button>
+      <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
+      <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
+    </div>
+    <div class="view" id="view">
+      <div class="empty"><div><b data-i18n="emptyTitle">Aucun dossier ouvert</b><br><span data-i18n="emptyMsg">Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.</span></div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('oplanfeu.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('oplanfeu.' + k, JSON.stringify(v)); } catch {} },
+};
+
+// ───────────── textes ─────────────
+const I18N = {
+  fr: {
+    brandSub: 'Dossier lumière : patch, positions, inventaire', repoLink: 'Le projet sur GitHub',
+    dropTitle: 'Ouvrir ou importer', dropSub: 'MVR (WYSIWYG, Capture, grandMA3…), CSV de patch, ou dossier OPlanFeu (.json)',
+    dropLoaded: 'Dossier ouvert', dropChange: 'Cliquer ou déposer un fichier pour en ouvrir un autre',
+    legDossier: 'Dossier', mTitre: 'Titre', mKind: 'Type', kindLieu: 'Lieu', kindShow: 'Spectacle accueilli', mDate: 'Date', mLieu: 'Lieu / salle', mAuteur: 'Responsable', mNotes: 'Notes',
+    legSummary: 'En bref', legOut: 'Enregistrer et exporter',
+    save: 'Enregistrer le dossier (.json)', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
+    saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
+    foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
+    tabFixtures: 'Projecteurs', tabPositions: 'Positions', tabInventory: 'Inventaire', searchPh: 'Rechercher…',
+    allPos: 'Toutes les positions', allTypes: 'Tous les types', noPos: '(sans position)',
+    count: (n, m) => n === m ? `${n} projecteurs` : `${n} / ${m} projecteurs`,
+    selCount: n => `${n} sélectionné${n > 1 ? 's' : ''}`, bApply: 'Appliquer', bRenum: 'Numéroter…', bDelete: 'Supprimer', bNone: 'Désélectionner',
+    bApplyTo: n => `Appliquer à ${n} projecteur${n > 1 ? 's' : ''}`,
+    renumAsk: 'Premier Fix ID (les projecteurs sélectionnés sont numérotés dans l’ordre du tableau) :', delAsk: n => `Supprimer ${n} projecteur${n > 1 ? 's' : ''} du dossier ?`,
+    emptyTitle: 'Aucun dossier ouvert', emptyMsg: 'Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.',
+    cFid: 'Fix ID', cUnit: 'Unit', cName: 'Nom', cType: 'Type', cMode: 'Mode', cNch: 'Can.', cPatch: 'Patch', cLayer: 'Calque', cPosition: 'Position', cGel: 'Gélatine', cAcc: 'Accessoires', cPurpose: 'Fonction / focus', cNotes: 'Notes', cXyz: 'x · y · z (m)',
+    stFix: 'projecteurs', stTypes: 'types', stPos: 'positions', stUniv: 'univers',
+    alDup: n => `${n} Fix ID en double`, alAddr: n => `${n} adresse(s) de départ en double`, alOvl: n => `${n} chevauchement(s) de plage DMX`, alUnp: n => `${n} projecteur(s) sans patch`,
+    posTitle: 'Positions', posFix: n => `${n} proj.`, posWeight: w => `≈ ${w} kg`, posPower: p => `≈ ${p} W`, posUnknown: "Hauteur moyenne des projecteurs de chaque position. Les poids et puissances totaux apparaissent quand ils sont renseignés dans l’inventaire.", partial: '(partiel)',
+    invTitle: 'Inventaire', invType: 'Type', invMaker: 'Fabricant', invModes: 'Modes (canaux)', invQty: 'Dans le dossier', invStock: 'Stock du lieu', invMissing: 'Manque', invWeight: 'Poids unitaire (kg)', invPower: 'Puissance (W)', invTotal: 'Total',
+    invHint: 'Les quantités viennent du dossier. Renseigne le stock du lieu pour voir ce qui manque, et le poids et la puissance pour avoir les totaux par position.',
+    readErr: 'Fichier illisible :', notMvr: 'Ce fichier ne ressemble pas à un MVR.', noFixtures: 'Aucun projecteur trouvé dans ce fichier.', replaceAsk: 'Remplacer le dossier ouvert par ce fichier ?',
+    noCols: 'Colonnes non reconnues : il faut au moins une colonne de patch (ou univers + adresse) ou de numéro de projecteur.',
+    imported: (n, s) => `Importé : ${n} projecteurs depuis ${s}`, untitled: 'Dossier sans titre', printTitle: v => v,
+  },
+  en: {
+    brandSub: 'Lighting dossier: patch, positions, inventory', repoLink: 'The project on GitHub',
+    dropTitle: 'Open or import', dropSub: 'MVR (WYSIWYG, Capture, grandMA3…), patch CSV, or OPlanFeu dossier (.json)',
+    dropLoaded: 'Dossier open', dropChange: 'Click or drop a file to open another one',
+    legDossier: 'Dossier', mTitre: 'Title', mKind: 'Type', kindLieu: 'Venue', kindShow: 'Visiting show', mDate: 'Date', mLieu: 'Venue / room', mAuteur: 'In charge', mNotes: 'Notes',
+    legSummary: 'At a glance', legOut: 'Save and export',
+    save: 'Save the dossier (.json)', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
+    saveHint: 'The dossier is also kept in this browser as you edit.',
+    foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
+    tabFixtures: 'Fixtures', tabPositions: 'Positions', tabInventory: 'Inventory', searchPh: 'Search…',
+    allPos: 'All positions', allTypes: 'All types', noPos: '(no position)',
+    count: (n, m) => n === m ? `${n} fixtures` : `${n} / ${m} fixtures`,
+    selCount: n => `${n} selected`, bApply: 'Apply', bRenum: 'Number…', bDelete: 'Delete', bNone: 'Clear selection',
+    bApplyTo: n => `Apply to ${n} fixture${n > 1 ? 's' : ''}`,
+    renumAsk: 'First Fix ID (selected fixtures are numbered in table order):', delAsk: n => `Delete ${n} fixture${n > 1 ? 's' : ''} from the dossier?`,
+    emptyTitle: 'No dossier open', emptyMsg: 'Import an MVR exported from WYSIWYG (or Capture, Vectorworks, grandMA3), a patch CSV, or open a saved OPlanFeu dossier.',
+    cFid: 'Fix ID', cUnit: 'Unit', cName: 'Name', cType: 'Type', cMode: 'Mode', cNch: 'Ch.', cPatch: 'Patch', cLayer: 'Layer', cPosition: 'Position', cGel: 'Gel', cAcc: 'Accessories', cPurpose: 'Purpose / focus', cNotes: 'Notes', cXyz: 'x · y · z (m)',
+    stFix: 'fixtures', stTypes: 'types', stPos: 'positions', stUniv: 'universes',
+    alDup: n => `${n} duplicate Fix ID(s)`, alAddr: n => `${n} duplicate start address(es)`, alOvl: n => `${n} overlapping DMX range(s)`, alUnp: n => `${n} unpatched fixture(s)`,
+    posTitle: 'Positions', posFix: n => `${n} fix.`, posWeight: w => `≈ ${w} kg`, posPower: p => `≈ ${p} W`, posUnknown: 'Average height of the fixtures on each position. Total weight and power appear once they are filled in the inventory.', partial: '(partial)',
+    invTitle: 'Inventory', invType: 'Type', invMaker: 'Manufacturer', invModes: 'Modes (channels)', invQty: 'In the dossier', invStock: 'Venue stock', invMissing: 'Missing', invWeight: 'Unit weight (kg)', invPower: 'Power (W)', invTotal: 'Total',
+    invHint: 'Quantities come from the dossier. Fill in the venue stock to see what is missing, and weight and power to get totals per position.',
+    readErr: 'Cannot read file:', notMvr: 'This file does not look like an MVR.', noFixtures: 'No fixtures found in this file.', replaceAsk: 'Replace the open dossier with this file?',
+    noCols: 'Columns not recognised: at least a patch column (or universe + address) or a fixture number column is needed.',
+    imported: (n, s) => `Imported: ${n} fixtures from ${s}`, untitled: 'Untitled dossier', printTitle: v => v,
+  },
+};
+let LANG = store.get('lang', (navigator.language || 'fr').slice(0, 2).toLowerCase());
+if (!I18N[LANG]) LANG = 'en';
+const t = (k, ...a) => { const v = I18N[LANG][k] ?? I18N.fr[k]; return typeof v === 'function' ? v(...a) : v; };
+function applyI18n() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  $('#lang').value = LANG;
+}
+
+// ───────────── zip (MVR et GDTF sont des zips) — décompression native du navigateur ─────────────
+async function unzip(buf) {
+  const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error(t('notMvr'));
+  const n = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  const files = new Map(), td = new TextDecoder();
+  for (let k = 0; k < n; k++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), loff = dv.getUint32(p + 42, true);
+    files.set(td.decode(u8.subarray(p + 46, p + 46 + nlen)), { method, csize, loff });
+    p += 46 + nlen + xlen + clen;
+  }
+  return {
+    names: [...files.keys()],
+    async get(name) {
+      const f = files.get(name); if (!f) return null;
+      const start = f.loff + 30 + dv.getUint16(f.loff + 26, true) + dv.getUint16(f.loff + 28, true);
+      const data = u8.subarray(start, start + f.csize);
+      if (f.method === 0) return data;
+      const s = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Uint8Array(await new Response(s).arrayBuffer());
+    },
+  };
+}
+const xmlOf = bytes => new DOMParser().parseFromString(new TextDecoder().decode(bytes), 'application/xml');
+
+// ───────────── MVR ─────────────
+// matrice MVR : {u}{v}{w}{o} — axes et origine, en mm ; on compose avec les parents
+const IDENT = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+function parseMatrix(s) { const n = (String(s || '').match(/-?\d+(?:\.\d+)?(?:e[-+]?\d+)?/gi) || []).map(Number); return n.length >= 12 ? n.slice(0, 12) : null; }
+function compose(P, L) {
+  const ap = (x, y, z) => [P[0] * x + P[3] * y + P[6] * z, P[1] * x + P[4] * y + P[7] * z, P[2] * x + P[5] * y + P[8] * z];
+  const u = ap(L[0], L[1], L[2]), v = ap(L[3], L[4], L[5]), w = ap(L[6], L[7], L[8]), o = ap(L[9], L[10], L[11]);
+  return [...u, ...v, ...w, o[0] + P[9], o[1] + P[10], o[2] + P[11]];
+}
+const childEl = (el, tag) => [...el.children].find(c => c.tagName === tag);
+const childText = (el, tag) => { const c = childEl(el, tag); return c ? c.textContent.trim() : ''; };
+function splitSpec(spec) {
+  const base = spec.replace(/\.gdtf$/i, '');
+  const [maker, rest] = base.includes('@') ? base.split('@') : ['', base];
+  return { maker: maker.trim(), name: rest.replace(/\s*\[.*?\]/g, '').trim() || rest.trim() };
+}
+// CIE xyY → couleur d'écran (pour la pastille de couleur) ; null si blanc
+function cieToHex(s) {
+  const [x, y, Y] = String(s || '').split(',').map(Number);
+  if (!(x > 0 && y > 0) || (Math.abs(x - 0.3127) < 0.004 && Math.abs(y - 0.329) < 0.004)) return null;
+  const Yn = 1, X = x * Yn / y, Z = (1 - x - y) * Yn / y;
+  let r = 3.2406 * X - 1.5372 * Yn - 0.4986 * Z, g = -0.9689 * X + 1.8758 * Yn + 0.0415 * Z, b = 0.0557 * X - 0.204 * Yn + 1.057 * Z;
+  const m = Math.max(r, g, b, 1e-6);
+  return '#' + [r, g, b].map(c => Math.round(255 * Math.max(0, c / m) ** (1 / 2.2)).toString(16).padStart(2, '0')).join('');
+}
+async function readGdtf(zip, spec) {
+  const out = { modes: {}, weight: null, power: null, maker: '', name: '' };
+  try {
+    const bytes = await zip.get(spec); if (!bytes) return out;
+    const g = await unzip(bytes), d = await g.get('description.xml'); if (!d) return out;
+    const doc = xmlOf(d), ft = doc.querySelector('FixtureType');
+    if (ft) { out.maker = ft.getAttribute('Manufacturer') || ''; }
+    for (const m of doc.querySelectorAll('DMXModes > DMXMode')) {
+      let max = 0;
+      for (const c of m.querySelectorAll('DMXChannel')) for (const o of String(c.getAttribute('Offset') || '').split(',')) { const k = parseInt(o, 10); if (k > max) max = k; }
+      const mn = m.getAttribute('Name') || '';
+      out.modes[mn === 'None' ? '' : mn] = max;
+    }
+    const w = doc.querySelector('PhysicalDescriptions Properties Weight'), pw = doc.querySelector('PhysicalDescriptions Properties PowerConsumption');
+    if (w && +w.getAttribute('Value') > 0) out.weight = +w.getAttribute('Value');
+    if (pw && +pw.getAttribute('Value') > 0) out.power = +pw.getAttribute('Value');
+  } catch {}
+  return out;
+}
+async function parseMVR(buf, fileName) {
+  const zip = await unzip(buf);
+  const sceneName = zip.names.find(n => /(^|\/)GeneralSceneDescription\.xml$/i.test(n));
+  if (!sceneName) throw new Error(t('notMvr'));
+  const doc = xmlOf(await zip.get(sceneName));
+  const root = doc.documentElement;
+  const positions = new Map([...root.querySelectorAll('AUXData Position')].map(p => [p.getAttribute('uuid'), p.getAttribute('name') || '']));
+  const focusNames = new Map([...root.querySelectorAll('FocusPoint')].map(p => [p.getAttribute('uuid'), p.getAttribute('name') || '']));
+  const fixtures = [], structures = [], specs = new Set();
+  const OBJ = new Set(['Fixture', 'Truss', 'SceneObject', 'Support', 'VideoScreen', 'Projector', 'GroupObject', 'FocusPoint']);
+  const walk = (el, M, layer) => {
+    for (const c of el.children) {
+      if (c.tagName === 'ChildList') { walk(c, M, layer); continue; }
+      if (!OBJ.has(c.tagName)) continue;
+      const L = parseMatrix(childText(c, 'Matrix'));
+      const W = L ? compose(M, L) : M;
+      const xyz = [W[9], W[10], W[11]].map(v => Math.round(v) / 1000);
+      if (c.tagName === 'Fixture') {
+        const spec = childText(c, 'GDTFSpec'); if (spec) specs.add(spec);
+        const adr = childEl(c, 'Addresses');
+        const a0 = adr ? [...adr.children].find(a => (a.getAttribute('break') || '0') === '0') || adr.children[0] : null;
+        let univ = null, addr = null;
+        if (a0 && a0.textContent.trim()) {
+          const s = a0.textContent.trim(), m = /^(\d+)\.(\d+)$/.exec(s);
+          if (m) { univ = +m[1]; addr = +m[2]; } else if (+s > 0) { univ = Math.floor((+s - 1) / 512) + 1; addr = (+s - 1) % 512 + 1; }
+        }
+        const fid = childText(c, 'FixtureID'), unit = childText(c, 'UnitNumber');
+        fixtures.push({
+          uid: c.getAttribute('uuid') || '', fid: fid && fid !== '0' ? fid : '', unit: unit && unit !== '0' ? unit : '',
+          name: c.getAttribute('name') || '', spec, mode: childText(c, 'GDTFMode').replace(/^None$/, ''),
+          univ, addr, layer, position: positions.get(childText(c, 'Position')) || '',
+          purpose: focusNames.get(childText(c, 'Focus')) || '', gel: '', acc: '', notes: '',
+          color: cieToHex(childText(c, 'Color')), x: xyz[0], y: xyz[1], z: xyz[2], m: W.map(v => +v.toFixed(4)),
+        });
+      } else if (c.tagName !== 'GroupObject') {
+        structures.push({ uid: c.getAttribute('uuid') || '', kind: c.tagName, name: (c.getAttribute('name') || '').trim(), layer, x: xyz[0], y: xyz[1], z: xyz[2], m: W.map(v => +v.toFixed(4)) });
+      }
+      walk(c, W, layer);
+    }
+  };
+  for (const ly of root.querySelectorAll('Scene > Layers > Layer')) {
+    const L = parseMatrix(childText(ly, 'Matrix'));
+    walk(ly, L ? compose(IDENT, L) : IDENT, ly.getAttribute('name') || '');
+  }
+  if (!fixtures.length) throw new Error(t('noFixtures'));
+  // types : un par fichier GDTF
+  const types = {};
+  for (const spec of specs) {
+    const g = await readGdtf(zip, spec), s = splitSpec(spec);
+    types[spec] = { name: s.name, maker: g.maker || s.maker, gdtf: spec, modes: g.modes, weight: g.weight, power: g.power, stock: null };
+  }
+  for (const f of fixtures) {
+    const ty = types[f.spec];
+    f.type = f.spec || f.name;
+    if (!ty && f.type && !types[f.type]) types[f.type] = { name: f.name || f.type, maker: '', gdtf: '', modes: {}, weight: null, power: null, stock: null };
+    const modes = ty ? ty.modes : {}, keys = Object.keys(modes);
+    if (!f.mode && keys.length === 1) f.mode = keys[0];
+    f.nch = modes[f.mode] || (keys.length === 1 ? modes[keys[0]] : 0) || 0;
+    delete f.spec;
+  }
+  return newDossier({ fixtures, structures, types, source: fileName, titre: fileName.replace(/\.mvr$/i, '') });
+}
+
+// ───────────── CSV (WYSIWYG, Capture, grandMA, Give Me The Patch…) ─────────────
+function decode(buf) {
+  const b = new Uint8Array(buf);
+  if (b[0] === 0xFF && b[1] === 0xFE) return new TextDecoder('utf-16le').decode(buf);
+  if (b[0] === 0xFE && b[1] === 0xFF) return new TextDecoder('utf-16be').decode(buf);
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(buf).replace(/^﻿/, ''); }
+  catch { return new TextDecoder('windows-1252').decode(buf); }
+}
+function parseCSVText(text) {
+  const first = text.split(/\r?\n/)[0] || '';
+  const d = [';', ',', '\t'].reduce((a, x) => (first.split(x).length > first.split(a).length ? x : a), ';');
+  const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === d) { row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); f = ''; if (row.some(x => x.trim())) rows.push(row); row = []; }
+    else f += c;
+  }
+  row.push(f); if (row.some(x => x.trim())) rows.push(row);
+  return rows;
+}
+const norm = h => String(h || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+const CSV_ALIASES = {
+  fid: ['fixid', 'fixtureid', 'fid', 'spot', 'p3fixturenumber', 'channel', 'chid'], unit: ['unit', 'unitnumber'],
+  name: ['name', 'nom', 'label'], type: ['fixturetype', 'type', 'fixture', 'modele'], mode: ['dmxmode', 'mode'],
+  patch: ['patch', 'address', 'adresse', 'dmx', 'dmxaddress'], univ: ['dmxuniverse', 'universe', 'univers'], addr: ['dmxchannel', 'startaddress'],
+  nch: ['ofdatachannels', 'datachannels', 'dmxchannels', 'channels', 'footprint'], layer: ['layer', 'calque'],
+  position: ['position', 'location', 'pipe', 'perche'], gel: ['color', 'gel', 'filters', 'filter', 'couleur', 'gelatine'],
+  acc: ['accessories', 'accessoires', 'gobos'], purpose: ['purpose', 'fonction', 'focus'], notes: ['notes', 'note'],
+  weight: ['weight', 'poids'], power: ['wattage', 'power', 'puissance'],
+};
+function parseCSV(text, fileName) {
+  const rows = parseCSVText(text);
+  if (rows.length < 2) throw new Error(t('noFixtures'));
+  const head = rows[0].map(norm), idx = {};
+  for (const [k, names] of Object.entries(CSV_ALIASES)) for (const n of names) { const i = head.indexOf(n); if (i >= 0 && !Object.values(idx).includes(i)) { idx[k] = i; break; } }
+  if (!('patch' in idx) && !('univ' in idx && 'addr' in idx) && !('fid' in idx)) throw new Error(t('noCols'));
+  const types = {}, fixtures = [];
+  for (const r of rows.slice(1)) {
+    const g = k => k in idx ? String(r[idx[k]] ?? '').trim() : '';
+    let univ = null, addr = null;
+    const p = g('patch') || (g('univ') && g('addr') ? g('univ') + '.' + g('addr') : '');
+    const m = /(\d+)\s*\.\s*(\d+)/.exec(p);
+    if (m) { univ = +m[1]; addr = +m[2]; } else if (/^\d+$/.test(p) && +p > 0) { univ = Math.floor((+p - 1) / 512) + 1; addr = (+p - 1) % 512 + 1; }
+    const tname = g('type').replace(/^\s*\d+\s+(.*?)\s*\(\d+\)\s*$/, '$1') || g('name') || '?';
+    if (!types[tname]) types[tname] = { name: tname, maker: '', gdtf: '', modes: {}, weight: parseFloat(g('weight').replace(',', '.')) || null, power: parseFloat(g('power')) || null, stock: null };
+    const nch = parseInt(g('nch'), 10) || 0, mode = g('mode');
+    if (nch && !(mode in types[tname].modes)) types[tname].modes[mode] = nch;
+    fixtures.push({ uid: '', fid: g('fid'), unit: g('unit'), name: g('name'), type: tname, mode, nch, univ, addr, layer: g('layer'), position: g('position'),
+      gel: g('gel'), acc: g('acc'), purpose: g('purpose'), notes: g('notes'), color: null, x: null, y: null, z: null, m: null });
+  }
+  if (!fixtures.length) throw new Error(t('noFixtures'));
+  return newDossier({ fixtures, types, structures: [], source: fileName, titre: fileName.replace(/\.(csv|txt)$/i, '') });
+}
+
+// ───────────── dossier ─────────────
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'u' + Math.random().toString(36).slice(2) + Date.now().toString(36));
+function newDossier({ fixtures, types, structures, source, titre }) {
+  fixtures.forEach(f => { if (!f.uid) f.uid = uid(); });
+  return {
+    format: 'oplanfeu', version: 1,
+    meta: { titre: titre || '', kind: 'lieu', date: new Date().toISOString().slice(0, 10), lieu: '', auteur: '', notes: '', source: source || '', imported: new Date().toISOString() },
+    types, fixtures, structures: structures || [],
+  };
+}
+function checkDossier(d) {
+  if (!d || d.format !== 'oplanfeu' || !Array.isArray(d.fixtures)) throw new Error(t('noFixtures'));
+  d.types = d.types || {}; d.structures = d.structures || []; d.meta = d.meta || {};
+  d.fixtures.forEach(f => { if (!f.uid) f.uid = uid(); });
+  return d;
+}
+
+// ───────────── état ─────────────
+const state = { d: null, fileName: '', tab: store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+let saveTimer = null;
+function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
+
+const typeName = k => (state.d.types[k] && state.d.types[k].name) || k || '';
+const patchText = f => f.univ ? `${f.univ}.${String(f.addr).padStart(3, '0')}` : '';
+const numKey = s => { const n = parseFloat(s); return isNaN(n) || !/^\s*\d/.test(String(s)) ? [1, 0, String(s || '')] : [0, n, '']; };
+const cmpKey = (a, b) => a[0] - b[0] || a[1] - b[1] || a[2].localeCompare(b[2]);
+const fmtNum = v => Number.isFinite(v) ? (Math.round(v * 10) / 10).toLocaleString(LANG) : '';
+
+function analyse() {
+  const fx = state.d.fixtures, ids = new Map(), starts = new Map(), out = { dupId: 0, dupAddr: 0, ovl: 0, unp: 0 };
+  for (const f of fx) {
+    if (f.fid) ids.set(f.fid, (ids.get(f.fid) || 0) + 1);
+    if (!f.univ) { out.unp++; continue; }
+    const k = f.univ + '.' + f.addr; starts.set(k, (starts.get(k) || 0) + 1);
+  }
+  out.dupIdList = [...ids.entries()].filter(([, n]) => n > 1).map(([k]) => k);
+  out.dupId = out.dupIdList.length;
+  out.dupAddrList = [...starts.entries()].filter(([, n]) => n > 1).map(([k]) => {
+    const [u, a] = k.split('.'); return `${u}.${a.padStart(3, '0')} (${fx.filter(f => f.univ + '.' + f.addr === k).map(f => f.fid || '?').join(' / ')})`; });
+  out.dupAddr = out.dupAddrList.length;
+  out.unpList = fx.filter(f => !f.univ).map(f => f.fid || '?');
+  const byU = fx.filter(f => f.univ && f.nch).sort((a, b) => a.univ - b.univ || a.addr - b.addr);
+  for (let i = 0; i < byU.length; i++) for (let j = i + 1; j < byU.length && byU[j].univ === byU[i].univ && byU[j].addr <= byU[i].addr + byU[i].nch - 1; j++) if (byU[j].addr !== byU[i].addr) out.ovl++;
+  out.univs = new Set(fx.filter(f => f.univ).map(f => f.univ)).size;
+  out.positions = new Set(fx.map(f => f.position).filter(Boolean)).size;
+  out.types = new Set(fx.map(f => f.type)).size;
+  return out;
+}
+
+// ───────────── barre latérale ─────────────
+function refreshSide() {
+  if (!state.d) return;
+  const A = analyse();
+  $('#stats').innerHTML = [[state.d.fixtures.length, t('stFix')], [A.types, t('stTypes')], [A.positions, t('stPos')], [A.univs, t('stUniv')]]
+    .map(([v, l]) => `<div class="stat"><b>${v}</b><span>${esc(l)}</span></div>`).join('');
+  const al = [];
+  const cut = l => l.slice(0, 12).join(', ') + (l.length > 12 ? '…' : '');
+  if (A.dupId) al.push([t('alDup', A.dupId), cut(A.dupIdList)]);
+  if (A.dupAddr) al.push([t('alAddr', A.dupAddr), cut(A.dupAddrList)]);
+  if (A.ovl) al.push([t('alOvl', A.ovl), '']);
+  if (A.unp) al.push([t('alUnp', A.unp), cut(A.unpList)]);
+  $('#alerts').innerHTML = al.map(([a, d]) => `<div class="alert"><b>${esc(a)}</b>${d ? '<br>' + esc(d) : ''}</div>`).join('');
+  $('#dropText').innerHTML = `<span>${esc(t('dropLoaded'))}</span><div class="fname">${esc(state.d.meta.titre || t('untitled'))}</div><span>${esc(t('dropChange'))}</span>`;
+}
+const META = ['titre', 'kind', 'date', 'lieu', 'auteur', 'notes'];
+function fillMeta() { META.forEach(k => { $('#m_' + k).value = state.d.meta[k] || (k === 'kind' ? 'lieu' : ''); }); }
+META.forEach(k => $('#m_' + k).addEventListener('input', e => { if (!state.d) return; state.d.meta[k] = e.target.value; touch(); }));
+
+// ───────────── vues ─────────────
+const COLS = [
+  { k: 'fid', label: 'cFid', edit: true, cls: 'w-fid' }, { k: 'unit', label: 'cUnit', edit: true, cls: 'w-unit' },
+  { k: 'type', label: 'cType', ro: f => esc(typeName(f.type)) }, { k: 'mode', label: 'cMode', ro: f => esc(f.mode) },
+  { k: 'nch', label: 'cNch', edit: true, cls: 'w-unit', num: true }, { k: 'patch', label: 'cPatch', edit: true, cls: 'w-patch' },
+  { k: 'position', label: 'cPosition', edit: true, cls: 'w-md', list: 'posList' }, { k: 'layer', label: 'cLayer', edit: true, cls: 'w-sm', list: 'layerList' },
+  { k: 'gel', label: 'cGel', edit: true, cls: 'w-sm' }, { k: 'acc', label: 'cAcc', edit: true, cls: 'w-sm' },
+  { k: 'purpose', label: 'cPurpose', edit: true, cls: 'w-md' }, { k: 'notes', label: 'cNotes', edit: true, cls: 'w-md' },
+  { k: 'xyz', label: 'cXyz', ro: f => f.x === null || f.x === undefined ? '' : `<span class="xyz">${[f.x, f.y, f.z].map(v => v.toFixed(2)).join(' · ')}</span>` },
+];
+const getVal = (f, k) => k === 'patch' ? patchText(f) : k === 'type' ? typeName(f.type) : k === 'xyz' ? (f.z ?? -1e9) : (f[k] ?? '');
+function visible() {
+  const q = state.q.trim().toLowerCase();
+  let list = state.d.fixtures.filter(f =>
+    (!state.fPos || (f.position || '\u0000') === state.fPos) && (!state.fType || f.type === state.fType) &&
+    (!q || [f.fid, f.unit, f.name, typeName(f.type), f.mode, patchText(f), f.layer, f.position, f.gel, f.acc, f.purpose, f.notes].some(v => String(v || '').toLowerCase().includes(q))));
+  const { k, dir } = state.sort;
+  list.sort((a, b) => {
+    const va = getVal(a, k), vb = getVal(b, k);
+    let c;
+    if (k === 'patch') c = (a.univ || 1e9) - (b.univ || 1e9) || (a.addr || 0) - (b.addr || 0);
+    else if (k === 'fid' || k === 'unit' || k === 'nch' || k === 'xyz') c = cmpKey(numKey(va), numKey(vb));
+    else c = String(va).localeCompare(String(vb), LANG, { numeric: true });
+    return dir * c || cmpKey(numKey(a.fid), numKey(b.fid));
+  });
+  return list;
+}
+function refreshFilters() {
+  const pos = [...new Set(state.d.fixtures.map(f => f.position || '\u0000'))].sort((a, b) => a.localeCompare(b, LANG, { numeric: true }));
+  const types = [...new Set(state.d.fixtures.map(f => f.type))].sort((a, b) => typeName(a).localeCompare(typeName(b)));
+  $('#fPos').innerHTML = `<option value="">${esc(t('allPos'))}</option>` + pos.map(p => `<option value="${esc(p)}"${p === state.fPos ? ' selected' : ''}>${esc(p === '\u0000' ? t('noPos') : p)}</option>`).join('');
+  $('#fType').innerHTML = `<option value="">${esc(t('allTypes'))}</option>` + types.map(k => `<option value="${esc(k)}"${k === state.fType ? ' selected' : ''}>${esc(typeName(k))}</option>`).join('');
+}
+function renderFixtures() {
+  const list = visible();
+  $('#count').textContent = t('count', list.length, state.d.fixtures.length);
+  const arrow = k => state.sort.k === k ? ` <span class="ar">${state.sort.dir > 0 ? '▲' : '▼'}</span>` : '';
+  const allSel = list.length && list.every(f => state.sel.has(f.uid));
+  const dl = (id, vals) => `<datalist id="${id}">${[...new Set(vals.filter(Boolean))].sort().map(v => `<option value="${esc(v)}">`).join('')}</datalist>`;
+  const dupIds = new Set(); { const seen = new Set(); state.d.fixtures.forEach(f => { if (f.fid) { if (seen.has(f.fid)) dupIds.add(f.fid); seen.add(f.fid); } }); }
+  const rows = list.map(f => {
+    const cells = COLS.map(c => {
+      if (!c.edit) return `<td class="ro">${c.k === 'type' && f.color ? `<span class="sw" style="background:${f.color}"></span>` : ''}${c.ro(f)}</td>`;
+      const v = c.k === 'patch' ? patchText(f) : (f[c.k] ?? '');
+      const bad = c.k === 'fid' && dupIds.has(f.fid);
+      return `<td class="${c.cls || ''}"><input class="c${bad ? ' bad' : ''}" data-k="${c.k}" value="${esc(v === 0 && c.k === 'nch' ? '' : v)}"${c.list ? ` list="${c.list}"` : ''}${c.num ? ' inputmode="numeric"' : ''}></td>`;
+    }).join('');
+    return `<tr data-u="${esc(f.uid)}" class="${state.sel.has(f.uid) ? 'sel' : ''}"><td class="chk"><input type="checkbox" class="rs"${state.sel.has(f.uid) ? ' checked' : ''}></td>${cells}</tr>`;
+  }).join('');
+  $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabFixtures'))}</h1>` +
+    dl('posList', state.d.fixtures.map(f => f.position)) + dl('layerList', state.d.fixtures.map(f => f.layer)) +
+    `<div class="gridwrap"><table class="grid"><thead><tr><th class="chk chkh nosort"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''}></th>` +
+    COLS.map(c => `<th data-s="${c.k}">${esc(t(c.label))}${arrow(c.k)}</th>`).join('') + `</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function renderPositions() {
+  const byPos = new Map();
+  for (const f of state.d.fixtures) { const p = f.position || t('noPos'); if (!byPos.has(p)) byPos.set(p, []); byPos.get(p).push(f); }
+  const noPos = t('noPos');
+  const cards = [...byPos.entries()].sort((a, b) => (a[0] === noPos) - (b[0] === noPos) || a[0].localeCompare(b[0], LANG, { numeric: true })).map(([p, g]) => {
+    const byType = new Map(); g.forEach(f => byType.set(f.type, (byType.get(f.type) || 0) + 1));
+    let w = 0, pw = 0, wk = true, pk = true;
+    g.forEach(f => { const ty = state.d.types[f.type] || {}; if (ty.weight) w += ty.weight; else wk = false; if (ty.power) pw += ty.power; else pk = false; });
+    const zs = g.map(f => f.z).filter(v => v !== null && v !== undefined);
+    const h = zs.length ? `h ≈ ${fmtNum(zs.reduce((a, b) => a + b, 0) / zs.length)} m` : '';
+    const part = ok => ok ? '' : ' ' + t('partial');
+    const extra = [h, w ? t('posWeight', fmtNum(w)) + part(wk) : '', pw ? t('posPower', fmtNum(pw)) + part(pk) : ''].filter(Boolean).join(' · ');
+    const ids = g.map(f => f.fid).filter(Boolean).sort((a, b) => cmpKey(numKey(a), numKey(b)));
+    return `<div class="card"><h3>${esc(p)}<small>${esc(t('posFix', g.length))}</small></h3><div class="meta">${esc(extra)}</div>
+<table>${[...byType.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => `<tr><td>${esc(typeName(k))}</td><td class="num">${n}</td></tr>`).join('')}</table>
+<div class="ids">${esc(ids.join(', '))}</div></div>`;
+  });
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabPositions'))}</h1><p class="hint" style="margin:14px 0 0">${esc(t('posUnknown'))}</p><div class="cards">${cards.join('')}</div>`;
+}
+function renderInventory() {
+  const qty = new Map(); state.d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
+  const keys = [...new Set([...Object.keys(state.d.types), ...qty.keys()])].filter(k => qty.get(k)).sort((a, b) => typeName(a).localeCompare(typeName(b)));
+  let tq = 0, tm = 0, tw = 0, tp = 0;
+  const rows = keys.map(k => {
+    const ty = state.d.types[k] || (state.d.types[k] = { name: k, maker: '', gdtf: '', modes: {}, weight: null, power: null, stock: null });
+    const n = qty.get(k) || 0, miss = ty.stock === null || ty.stock === '' ? null : Math.max(0, n - ty.stock);
+    tq += n; if (miss) tm += miss; if (ty.weight) tw += ty.weight * n; if (ty.power) tp += ty.power * n;
+    const modes = Object.entries(ty.modes || {}).map(([m, c]) => `${m || '—'} (${c})`).join(', ');
+    const inp = (f, v) => `<input class="c box" data-t="${esc(k)}" data-f="${f}" inputmode="decimal" value="${v === null || v === undefined ? '' : esc(v)}">`;
+    return `<tr><td class="ro" style="color:var(--ink)"><b>${esc(ty.name)}</b></td><td class="ro">${esc(ty.maker)}</td><td class="ro">${esc(modes)}</td>
+<td class="ro num" style="color:var(--ink)"><b>${n}</b></td><td class="w-unit">${inp('stock', ty.stock)}</td>
+<td class="ro num">${miss === null ? '' : miss ? `<span class="missing">${miss}</span>` : '<span class="okv">✓</span>'}</td>
+<td class="w-unit">${inp('weight', ty.weight)}</td><td class="w-unit">${inp('power', ty.power)}</td></tr>`;
+  }).join('');
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabInventory'))}</h1><p class="hint" style="margin:14px 0 6px">${esc(t('invHint'))}</p>
+<table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
+<tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
+<td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td></tr></tbody></table>`;
+}
+function render() {
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === state.tab));
+  $('#filters').style.visibility = state.d ? '' : 'hidden';
+  ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = state.tab === 'fixtures' ? '' : 'none'; });
+  if (!state.d) return;
+  refreshFilters(); refreshBulk();
+  if (state.tab === 'positions') renderPositions();
+  else if (state.tab === 'inventory') renderInventory();
+  else renderFixtures();
+}
+
+// ───────────── sélection et édition groupée ─────────────
+const BULK_FIELDS = ['position', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
+function refreshBulk() {
+  const n = [...state.sel].filter(u => state.d.fixtures.some(f => f.uid === u)).length;
+  $('#bulk').classList.toggle('on', state.tab === 'fixtures' && n > 0);
+  $('#selCount').textContent = t('selCount', n);
+  $('#bApply').textContent = t('bApplyTo', n);
+  if (!$('#bField').options.length || $('#bField').dataset.lang !== LANG) {
+    $('#bField').innerHTML = BULK_FIELDS.map(k => `<option value="${k}">${esc(t(COLS.find(c => c.k === k).label))}</option>`).join('');
+    $('#bField').dataset.lang = LANG;
+  }
+  const k = $('#bField').value;
+  $('#bList').innerHTML = [...new Set(state.d.fixtures.map(f => f[k]).filter(Boolean))].sort().map(v => `<option value="${esc(v)}">`).join('');
+}
+const selected = () => visible().filter(f => state.sel.has(f.uid));
+$('#bField').addEventListener('change', refreshBulk);
+$('#bApply').addEventListener('click', () => { const k = $('#bField').value, v = $('#bValue').value; selected().forEach(f => { f[k] = v; }); touch(); render(); });
+$('#bValue').addEventListener('keydown', e => { if (e.key === 'Enter') $('#bApply').click(); });
+$('#bNone').addEventListener('click', () => { state.sel.clear(); render(); });
+$('#bDelete').addEventListener('click', () => {
+  const s = selected(); if (!s.length || !confirm(t('delAsk', s.length))) return;
+  const del = new Set(s.map(f => f.uid)); state.d.fixtures = state.d.fixtures.filter(f => !del.has(f.uid)); state.sel.clear(); touch(); render();
+});
+$('#bRenum').addEventListener('click', () => {
+  const s = selected(); if (!s.length) return;
+  const v = prompt(t('renumAsk'), s[0].fid || '1'); if (v === null) return;
+  let n = parseInt(v, 10); if (isNaN(n)) return;
+  s.forEach(f => { f.fid = String(n++); }); touch(); render();
+});
+
+// ───────────── événements du tableau ─────────────
+const view = $('#view');
+view.addEventListener('click', e => {
+  const th = e.target.closest('th[data-s]');
+  if (th) { const k = th.dataset.s; state.sort = { k, dir: state.sort.k === k ? -state.sort.dir : 1 }; store.set('sort', state.sort); render(); return; }
+  if (e.target.id === 'selAll') { const list = visible(); if (e.target.checked) list.forEach(f => state.sel.add(f.uid)); else list.forEach(f => state.sel.delete(f.uid)); render(); return; }
+  if (e.target.classList.contains('rs')) {
+    const tr = e.target.closest('tr'), u = tr.dataset.u;
+    if (e.shiftKey && state.lastSel) {      // Maj+clic : plage
+      const list = visible().map(f => f.uid), a = list.indexOf(state.lastSel), b = list.indexOf(u);
+      if (a >= 0 && b >= 0) list.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(x => state.sel.add(x));
+    } else if (e.target.checked) state.sel.add(u); else state.sel.delete(u);
+    state.lastSel = u; render();
+  }
+});
+view.addEventListener('change', e => {
+  const inp = e.target.closest('input.c'); if (!inp || !state.d) return;
+  if (inp.dataset.t) {                     // inventaire : stock, poids, puissance par type
+    const ty = state.d.types[inp.dataset.t], v = inp.value.trim().replace(',', '.');
+    ty[inp.dataset.f] = v === '' ? null : (isNaN(+v) ? ty[inp.dataset.f] : +v);
+    touch(); render(); return;
+  }
+  const f = state.d.fixtures.find(x => x.uid === inp.closest('tr').dataset.u); if (!f) return;
+  const k = inp.dataset.k, v = inp.value.trim();
+  if (k === 'patch') {
+    const m = /^(\d+)\s*[.:/ ]\s*(\d+)$/.exec(v);
+    if (!v) { f.univ = null; f.addr = null; }
+    else if (m && +m[2] >= 1 && +m[2] <= 512) { f.univ = +m[1]; f.addr = +m[2]; }
+    else if (/^\d+$/.test(v) && +v > 0) { f.univ = Math.floor((+v - 1) / 512) + 1; f.addr = (+v - 1) % 512 + 1; }
+    inp.value = patchText(f);
+  } else if (k === 'nch') { f.nch = parseInt(v, 10) || 0; }
+  else f[k] = v;
+  touch();
+  if (k === 'fid') render(); else refreshSide();
+});
+view.addEventListener('keydown', e => {
+  const inp = e.target.closest('input.c'); if (!inp || e.key !== 'Enter') return;
+  e.preventDefault(); inp.blur();
+  // Entrée : même colonne, ligne suivante
+  const tr = inp.closest('tr').nextElementSibling;
+  const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
+  if (next) { next.focus(); next.select(); }
+});
+$('#q').addEventListener('input', e => { state.q = e.target.value; renderFixtures(); });
+$('#fPos').addEventListener('change', e => { state.fPos = e.target.value; render(); });
+$('#fType').addEventListener('change', e => { state.fType = e.target.value; render(); });
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => { state.tab = b.dataset.v; store.set('tab', state.tab); render(); }));
+
+// ───────────── ouvrir / importer ─────────────
+function showError(msg) { $('#alerts').innerHTML = `<div class="alert err">${esc(msg)}</div>`; $('#statBox').hidden = false; }
+async function openFile(file) {
+  try {
+    const buf = await file.arrayBuffer();
+    const u8 = new Uint8Array(buf.slice(0, 4));
+    let d;
+    if (u8[0] === 0x50 && u8[1] === 0x4b) d = await parseMVR(buf, file.name);         // « PK » : zip → MVR
+    else {
+      const text = decode(buf);
+      if (/^\s*\{/.test(text)) d = checkDossier(JSON.parse(text));
+      else d = parseCSV(text, file.name);
+    }
+    if (state.d && state.d.fixtures.length && !confirm(t('replaceAsk'))) return;
+    load(d);
+  } catch (err) { showError(t('readErr') + ' ' + err.message); }
+}
+function load(d) {
+  state.d = d; state.sel.clear(); state.fPos = ''; state.fType = ''; state.q = ''; $('#q').value = '';
+  ['#metaBox', '#statBox', '#outBox'].forEach(s => { $(s).hidden = false; });
+  $('#drop').classList.add('loaded');
+  fillMeta(); store.set('dossier', d); refreshSide(); render();
+}
+const drop = $('#drop');
+$('#file').addEventListener('change', e => { if (e.target.files[0]) openFile(e.target.files[0]); e.target.value = ''; });
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, () => drop.classList.remove('over')));
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) openFile(e.dataTransfer.files[0]); });
+
+// ───────────── enregistrer / exporter ─────────────
+const slug = s => String(s || 'dossier').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '') || 'dossier';
+function download(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+$('#save').addEventListener('click', () => {
+  state.d.meta.saved = new Date().toISOString();
+  download(slug(state.d.meta.titre) + '.oplanfeu.json', JSON.stringify(state.d, null, 1), 'application/json');
+});
+$('#exportCsv').addEventListener('click', () => {
+  // format lu par Give Me The Patch : Layer;Fix ID;Ch ID;Name;FixtureType;Patch;Channels
+  const q = s => '"' + String(s ?? '').replace(/"/g, '""') + '"';
+  const lines = ['Layer;Fix ID;Ch ID;Name;FixtureType;Patch;Channels'];
+  [...state.d.fixtures].sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).forEach(f => {
+    const ty = typeName(f.type) + (f.mode && !/^\d+$/.test(f.mode) ? ' ' + f.mode : '');
+    lines.push([f.position || f.layer, f.fid, '', f.purpose || typeName(f.type), ty, patchText(f), f.nch || ''].map(q).join(';'));
+  });
+  download(slug(state.d.meta.titre) + '_patch.csv', '﻿' + lines.join('\r\n') + '\r\n', 'text/csv');
+});
+$('#print').addEventListener('click', () => window.print());
+
+// ───────────── langue, démarrage ─────────────
+$('#lang').addEventListener('change', e => { LANG = e.target.value; store.set('lang', LANG); applyI18n(); if (state.d) { refreshSide(); render(); } });
+applyI18n();
+render();
+const saved = store.get('dossier', null);
+if (saved) { try { load(checkDossier(saved)); } catch {} }
+</script>
+</body>
+</html>
