@@ -670,7 +670,7 @@ const I18N = {
     plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
     plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
     plHint: "Plan coté à l’échelle, tiré du MVR : chaque projecteur est dessiné d’après sa forme (GDTF ou famille) vue depuis la vue choisie, avec son orientation, et les structures d’après leurs modèles. L’échelle est la plus grande échelle usuelle qui tient sur la page : imprimer en taille réelle, marges Aucune. Survoler un projecteur pour ses détails.",
-    plTitle: v => ({ top: 'Plan feu', front: 'Plan feu — face', side: 'Plan feu — côté' })[v], plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Double-clic sur un projecteur ou une structure pour le masquer.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
+    plTitle: v => ({ top: 'Plan feu', front: 'Plan feu — face', side: 'Plan feu — côté' })[v], plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Double-clic sur un projecteur ou une structure pour le masquer.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
     nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
     addConsole: 'Ajouter une console', newConsole: 'Console', delConsoleAsk: n => `Supprimer la console « ${n} » ?`,
     cnName: 'Nom', cnRole: 'Rôle', rMain: 'Principale', rBackup: 'Secours', rOnpc: 'onPC / préparation', rViz: 'Visualisation', rOther: 'Autre', cnModel: 'Modèle', cnParams: 'Paramètres de la console', cnExt: 'Extension', cnExtN: 'Nombre d’extensions', cnExtP: 'Paramètres par extension',
@@ -791,7 +791,7 @@ const I18N = {
     plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
     plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
     plHint: 'Scaled plot from the MVR: each fixture is drawn from its shape (GDTF or family) seen from the chosen view, with its orientation, and structures from their models. The scale is the largest usual scale that fits the page: print at actual size, margins None. Hover a fixture for its details.',
-    plTitle: v => ({ top: 'Lighting plot', front: 'Lighting plot — front', side: 'Lighting plot — side' })[v], plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Double-click a fixture or a structure to hide it.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
+    plTitle: v => ({ top: 'Lighting plot', front: 'Lighting plot — front', side: 'Lighting plot — side' })[v], plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Double-click a fixture or a structure to hide it.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
     nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
     addConsole: 'Add a console', newConsole: 'Console', delConsoleAsk: n => `Delete the console “${n}”?`,
     cnName: 'Name', cnRole: 'Role', rMain: 'Main', rBackup: 'Backup', rOnpc: 'onPC / programming', rViz: 'Visualiser', rOther: 'Other', cnModel: 'Model', cnParams: 'Console parameters', cnExt: 'Extension', cnExtN: 'Number of extensions', cnExtP: 'Parameters per extension',
@@ -1820,7 +1820,7 @@ function renderPlan(forPrint) {
   const shapeOf = new Map(tOrder.map((k2, i) => [k2, SHAPES[i % SHAPES.length]]));
   const ckey = f => ({ type: f.type, layer: f.layer, position: f.position, univ: f.univ ? 'U' + f.univ : '', circuit: f.circuit, dmx: f.dmxLine })[P.color] || '—';
   const cvals = [...new Set(fx.map(ckey))].sort(natCmp), colOf = new Map(cvals.map((v, i) => [v, pal[(P.color === 'type' ? tOrder.indexOf(v) : i) % pal.length]]));
-  const fs = P.fmt === 'A4' ? 2.1 : 2.5, r = P.fmt === 'A4' ? 1.7 : 2.1;
+  const fs = (P.fmt === 'A4' ? 2.1 : 2.5) * Math.min(4, Math.max(.3, (+P.labSize || 100) / 100)), r = P.fmt === 'A4' ? 1.7 : 2.1;
   let g = '';
   if (P.grid && hasXY) {
     for (let v = Math.ceil(x0); v <= x1; v++) g += `<line x1="${X(v).toFixed(2)}" y1="${Y(y1).toFixed(2)}" x2="${X(v).toFixed(2)}" y2="${Y(y0).toFixed(2)}" stroke="${v === 0 ? '#b5b5b5' : '#ececec'}" stroke-width="${v === 0 ? .25 : .12}"/>`;
@@ -1947,6 +1947,7 @@ function planPanel() {
 <div class="grp">${x(t('v3Fix'))}<button type="button" data-plall="pos">${x(t('v3All'))}</button><button type="button" data-plnone="pos">${x(t('v3None'))}</button></div>${ps}
 <div class="grp"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-plunhide="1">${x(t('unhideAll'))}</button></div>
 <div class="grp">${x(t('plLabs'))}<button type="button" id="plLabReset">${x(t('plLabReset'))}</button></div>
+<label>${x(t('plLabSize'))} <input type="range" data-pl="labSize" min="40" max="300" step="10" value="${+P.labSize || 100}" style="flex:1;min-width:0"> <small id="plLabSizeV">${+P.labSize || 100} %</small></label>
 <div class="plhint">${x(t('plDragHint'))}</div></details>`;
 }
 function renderPlanView() {
@@ -1972,9 +1973,10 @@ document.getElementById('view').addEventListener('change', e => {
   if (h && state.d) { const H = planHide(), key = { layer: 'layers', name: 'names', pos: 'pos' }[h.dataset.plh], k = h.dataset.k; H[key] = h.checked ? H[key].filter(v => v !== k) : [...new Set([...H[key], k])]; touch(); replan(); return; }
   const el = e.target.closest && e.target.closest('[data-pl]'); if (!el || !state.d) return;
   state.plan[el.dataset.pl] = el.type === 'checkbox' ? el.checked : el.value; store.set('plan', state.plan);
-  if (['labels', 'points', 'struct', 'grid'].includes(el.dataset.pl)) replan(); else renderPlanView();
+  if (el.dataset.pl === 'labSize') state.plan.labSize = +el.value;
+  if (['labels', 'points', 'struct', 'grid', 'labSize'].includes(el.dataset.pl)) replan(); else renderPlanView();
 });
-document.getElementById('view').addEventListener('input', e => { if (e.target.id === 'plZoom') { state.plan.zoom = +e.target.value; store.set('plan', state.plan); document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = state.plan.zoom / 100; }); } });
+document.getElementById('view').addEventListener('input', e => { if (e.target.dataset && e.target.dataset.pl === 'labSize') { const v = $('#plLabSizeV'); if (v) v.textContent = e.target.value + ' %'; } if (e.target.id === 'plZoom') { state.plan.zoom = +e.target.value; store.set('plan', state.plan); document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = state.plan.zoom / 100; }); } });
 document.getElementById('view').addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('button'); if (!b || !state.d) return;
   const H = planHide();
@@ -2006,7 +2008,7 @@ document.getElementById('view').addEventListener('pointerdown', e => {
   window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
 });
 // ───────────── vues enregistrées (plan et 3D), à reprendre dans le dossier complet ─────────────
-const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'struct', 'points', 'grid', 'fmt'];
+const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'struct', 'points', 'grid', 'fmt'];
 const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid'];
 const clone = o => JSON.parse(JSON.stringify(o ?? null));
 const views = kind => (state.d.views || []).filter(v => v.kind === kind);
