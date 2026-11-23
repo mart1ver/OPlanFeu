@@ -309,6 +309,17 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .v3info { position: absolute; left: 10px; bottom: 10px; color: #cfcfd4; font-size: 11.5px; background: rgba(20,20,24,.7); padding: 5px 8px; border-radius: 7px; pointer-events: none; }
 .v3leg { position: absolute; right: 10px; top: 10px; max-height: calc(100% - 20px); overflow: auto; color: #e8e8ea; font-size: 11.5px; background: rgba(20,20,24,.75); padding: 7px 9px; border-radius: 9px; }
 .v3leg div { display: flex; gap: 6px; align-items: center; white-space: nowrap; } .v3leg i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.v3panel { position: absolute; left: 10px; top: 10px; max-height: calc(100% - 52px); max-width: 300px; overflow: auto; color: #e8e8ea; font-size: 12px; background: rgba(20,20,24,.82); padding: 6px 10px; border-radius: 9px; }
+.v3panel summary { cursor: pointer; font-weight: 700; padding: 2px 0; }
+.v3panel .grp { margin: 6px 0 2px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: #9a9aa2; display: flex; gap: 8px; align-items: center; }
+.v3panel .grp button { font: inherit; font-size: 10.5px; color: #cfcfd4; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; text-transform: none; letter-spacing: 0; }
+.v3panel label { display: flex; gap: 6px; align-items: center; white-space: nowrap; padding: 1px 0; cursor: pointer; }
+.v3panel label small { color: #9a9aa2; margin-inline-start: auto; padding-inline-start: 8px; }
+.v3panel details.ly > summary { font-weight: 500; list-style: none; display: flex; gap: 6px; align-items: center; }
+.v3panel details.ly > summary::-webkit-details-marker { display: none; }
+.v3panel details.ly > summary .tw { width: 10px; color: #9a9aa2; } .v3panel details.ly[open] > summary .tw { transform: rotate(90deg); }
+.v3panel details.ly > div { padding-inline-start: 22px; }
+.v3panel input { accent-color: #16917f; margin: 0; }
 .v3msg { position: absolute; inset: 0; display: grid; place-items: center; color: #cfcfd4; text-align: center; padding: 30px; }
 #dosPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .dpage { background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); width: 297mm; min-height: 210mm; box-sizing: border-box; padding: 12mm; font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 9pt; flex: none;
@@ -560,7 +571,7 @@ const I18N = {
     gdPowered: 'Powered by GDTF — profils GDTF Share (gdtf-share.com).',
     invShape: 'Forme 3D', shAuto: g => `auto (${g})`, shLen: 'Longueur ou largeur (cm)', sh_gdtf: 'modèle du GDTF', sh_lyre: 'lyre', sh_par: 'PAR', sh_ledpar: 'PAR LED', sh_decoupe: 'découpe', sh_pc: 'PC / Fresnel', sh_barre: 'barre / rampe', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'vidéoprojecteur', sh_fog: 'machine à brouillard', sh_cube: 'boîte',
     tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
-    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
+    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Elems: 'Éléments affichés', v3Fix: 'Projecteurs par position', v3All: 'tout', v3None: 'rien', v3HidObjs: 'Objets masqués', v3DblHint: 'Double-clic sur un objet pour le masquer. Déplier un calque pour choisir objet par objet.', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
     v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s, g) => `${n} projecteurs · ${s} structures${g ? ` · formes : ${g}` : ''}`,
     tabDossier: 'Dossier complet', mvrGeo: n => `${n} structure(s) et décor(s) avec leur modèle 3D.`, exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
     dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
@@ -679,7 +690,7 @@ const I18N = {
     gdPowered: 'Powered by GDTF — GDTF Share profiles (gdtf-share.com).',
     invShape: '3D shape', shAuto: g => `auto (${g})`, shLen: 'Length or width (cm)', sh_gdtf: 'GDTF model', sh_lyre: 'moving head', sh_par: 'PAR', sh_ledpar: 'LED PAR', sh_decoupe: 'profile', sh_pc: 'PC / Fresnel', sh_barre: 'batten', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'video projector', sh_fog: 'haze / fog', sh_cube: 'box',
     tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
-    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
+    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Elems: 'Shown elements', v3Fix: 'Fixtures by position', v3All: 'all', v3None: 'none', v3HidObjs: 'Hidden objects', v3DblHint: 'Double-click an object to hide it. Unfold a layer to choose object by object.', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
     v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s, g) => `${n} fixtures · ${s} structures${g ? ` · shapes: ${g}` : ''}`,
     tabDossier: 'Full dossier', mvrGeo: n => `${n} structure(s) and set piece(s) with their 3D model.`, exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
     dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
@@ -2038,9 +2049,41 @@ async function buildV3(fx) {
   V3.shapes = shapes; V3.meshes = meshes; V3.nShapes = nShapes;
   buildV3Scene(fx);
 }
+// ── affichage des éléments : calques et objets des structures, positions des projecteurs, objets masqués d'un double-clic
+const v3Hide = () => { const d = state.d; d.v3hide = { layers: [], names: [], objs: [], pos: [], ...(d.v3hide || {}) }; return d.v3hide; };
+const stKey = o => (o.layer || '—') + '\u0001' + (o.name || o.kind);
+function applyV3Vis() {
+  const H = v3Hide(), L = new Set(H.layers), N = new Set(H.names), O = new Set(H.objs), P = new Set(H.pos);
+  for (const it of V3.items || []) {
+    let v = true;
+    if (it.st) v = !L.has(it.st.layer || '—') && !N.has(stKey(it.st)) && !O.has('s:' + (it.st.uid || it.st.name));
+    else if (it.f) v = !P.has(it.f.position || '—') && !O.has('f:' + it.f.uid);
+    else if (it.bar) v = !P.has(it.bar);
+    it.o.visible = v; if (it.label) it.label.visible = v;
+  }
+  const info = document.querySelector('#v3 .v3hid'); if (info) { info.hidden = !H.objs.length; info.querySelector('b').textContent = H.objs.length; }
+}
+const isShown = o => { for (let x = o; x; x = x.parent) if (!x.visible) return false; return true; };
+function v3Panel() {
+  const d = state.d, H = v3Hide(), x = esc, cnt = new Map(), byL = new Map();
+  (d.structures || []).forEach(o => { const l = o.layer || '—'; if (!byL.has(l)) byL.set(l, new Map()); const m = byL.get(l); const n = o.name || o.kind; m.set(n, (m.get(n) || 0) + 1); cnt.set(l, (cnt.get(l) || 0) + 1); });
+  const pos = new Map(); d.fixtures.forEach(f => { const k = f.position || '—'; pos.set(k, (pos.get(k) || 0) + 1); });
+  const lays = [...byL.keys()].sort(natCmp).map(l => {
+    const names = [...byL.get(l)].sort((a, b) => natCmp(a[0], b[0]));
+    return `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="layer" data-k="${x(l)}"${H.layers.includes(l) ? '' : ' checked'}> ${x(l)} <small>${cnt.get(l)}</small></summary><div>${names.map(([n, c]) =>
+      `<label><input type="checkbox" data-v3h="name" data-k="${x(l + '\u0001' + n)}"${H.names.includes(l + '\u0001' + n) ? '' : ' checked'}> ${x(n)} <small>${c}</small></label>`).join('')}</div></details>`;
+  }).join('');
+  const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k, c]) => `<label><input type="checkbox" data-v3h="pos" data-k="${x(k)}"${H.pos.includes(k) ? '' : ' checked'}> ${x(k === '—' ? t('noPos') : k)} <small>${c}</small></label>`).join('');
+  return `<details class="v3panel" ${state.v3PanelOpen === false ? '' : 'open'}><summary>${x(t('v3Elems'))}</summary>
+<div class="grp">${x(t('v3Struct'))}<button type="button" data-v3all="layers">${x(t('v3All'))}</button><button type="button" data-v3none="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}
+<div class="grp">${x(t('v3Fix'))}<button type="button" data-v3all="pos">${x(t('v3All'))}</button><button type="button" data-v3none="pos">${x(t('v3None'))}</button></div>${ps}
+<div class="grp v3hid"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-v3unhide="1">${x(t('unhideAll'))}</button></div>
+<div style="color:#9a9aa2;font-size:11px;margin-top:6px;white-space:normal">${x(t('v3DblHint'))}</div></details>`;
+}
 function buildV3Scene(fx) {
+  V3.items = [];
   const T = window.THREE, S = state.v3, d = state.d, wrap = $('#v3');
-  wrap.innerHTML = '<div class="v3tip" hidden></div><div class="v3info"></div><div class="v3leg"></div>';
+  wrap.innerHTML = '<div class="v3tip" hidden></div><div class="v3info"></div><div class="v3leg"></div>' + v3Panel();
   const renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   wrap.prepend(renderer.domElement);
@@ -2085,7 +2128,8 @@ function buildV3Scene(fx) {
     } else { const body = new T.Mesh(box, mat); body.userData.f = f; g.add(body); pick.push(body); }
     if (S.beams && beamAt) { const b = new T.Mesh(cone, beamMat); beamAt.add(b); }
     world.add(g);
-    if (S.labels) { const sp = sprite(f.fid || '?', .22); sp.position.set(f.x, f.y, f.z + .32); world.add(sp); }
+    const it = { o: g, f }; V3.items.push(it);
+    if (S.labels) { const sp = sprite(f.fid || '?', .22); sp.position.set(f.x, f.y, f.z + .32); world.add(sp); it.label = sp; }
   }
   // perches : un tube sur l'étendue des projecteurs de chaque point aligné
   if (S.points) {
@@ -2097,7 +2141,8 @@ function buildV3Scene(fx) {
       if (Math.max(...ys) - Math.min(...ys) > 1.5 || Math.max(...zs) - Math.min(...zs) > 1.2) continue;
       const x0 = Math.min(...g.map(f => f.x)) - .4, x1 = Math.max(...g.map(f => f.x)) + .4, y = ys.reduce((a, b) => a + b, 0) / ys.length, z = Math.max(...zs) + .22;
       const tube = new T.Mesh(new T.CylinderGeometry(.024, .024, x1 - x0, 10), pmat); tube.rotation.z = Math.PI / 2; tube.position.set((x0 + x1) / 2, y, z); world.add(tube);
-      if (S.labels) { const sp = sprite(name, .3, 448); sp.center.set(1, .5); sp.position.set(x0 - .15, y, z); world.add(sp); }
+      const it = { o: tube, bar: name }; V3.items.push(it);
+      if (S.labels) { const sp = sprite(name, .3, 448); sp.center.set(1, .5); sp.position.set(x0 - .15, y, z); world.add(sp); it.label = sp; }
     }
   }
   let nst = 0;
@@ -2114,8 +2159,8 @@ function buildV3Scene(fx) {
           mm.traverse(q => { if (q.isMesh) { q.material = gmat; q.userData.st = o2; pick.push(q); } });
           lg.add(mm); sg2.add(lg);
         }
-        world.add(sg2);
-      } else { const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); }
+        world.add(sg2); V3.items.push({ o: sg2, st: o2 });
+      } else { const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); V3.items.push({ o: m, st: o2 }); }
       nst++;
     });
   }
@@ -2149,22 +2194,36 @@ function buildV3Scene(fx) {
       place(); tip.hidden = true; return;
     }
     const r = el.getBoundingClientRect(); mv.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
-    ray.setFromCamera(mv, cam); const hit = ray.intersectObjects(pick, false)[0];
+    ray.setFromCamera(mv, cam); const hit = ray.intersectObjects(pick, false).find(h => isShown(h.object));
     if (hit) {
       const f = hit.object.userData.f, o2 = hit.object.userData.st;
       tip.textContent = f ? [f.fid, typeName(f.type), f.mode, patchText(f), f.position, f.circuit, f.dmxLine, f.gel].filter(Boolean).join(' · ') : `${o2.name} · ${o2.kind} · ${o2.layer}`;
       tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.hidden = false;
     } else tip.hidden = true;
   });
+  // double-clic : masquer l'objet visé
+  el.addEventListener('dblclick', e => {
+    const r = el.getBoundingClientRect(); mv.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+    ray.setFromCamera(mv, cam); const hit = ray.intersectObjects(pick, false).find(h => isShown(h.object)); if (!hit) return;
+    const f = hit.object.userData.f, o2 = hit.object.userData.st, H = v3Hide();
+    H.objs.push(f ? 'f:' + f.uid : 's:' + (o2.uid || o2.name)); touch(); applyV3Vis(); tip.hidden = true;
+  });
   el.addEventListener('wheel', e => { e.preventDefault(); sph.r = Math.min(400, Math.max(1, sph.r * (e.deltaY > 0 ? 1.1 : .9))); place(); }, { passive: false });
   const size = () => { const w = wrap.clientWidth, h = wrap.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
   V3.ro = new ResizeObserver(size); V3.ro.observe(wrap); size();
   wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst, V3.shapes && V3.shapes.size ? t('v3Src', V3.nShapes, V3.shapes.size - V3.nShapes, V3.meshes ? V3.meshes.size : 0) : '');
-  V3.renderer = renderer; V3.running = true;
+  applyV3Vis();
+  V3.renderer = renderer; V3.cam = cam; V3.running = true;
   const loop = () => { if (!V3.running || !document.body.contains(el)) { V3.running = false; return; } renderer.render(scene, cam); V3.raf = requestAnimationFrame(loop); };
   loop();
 }
 document.getElementById('view').addEventListener('change', e => {
+  const h = e.target.closest && e.target.closest('[data-v3h]');
+  if (h && state.d) {
+    const H = v3Hide(), key = { layer: 'layers', name: 'names', pos: 'pos' }[h.dataset.v3h], k = h.dataset.k;
+    H[key] = h.checked ? H[key].filter(v => v !== k) : [...new Set([...H[key], k])];
+    touch(); applyV3Vis(); return;
+  }
   const el = e.target.closest && e.target.closest('[data-v3]'); if (!el || !state.d) return;
   state.v3[el.dataset.v3] = el.type === 'checkbox' ? el.checked : el.value; store.set('v3', state.v3); renderV3();
 });
@@ -2172,6 +2231,17 @@ document.getElementById('view').addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[data-copy]'); if (a) { try { navigator.clipboard.writeText(a.dataset.copy); } catch {} }
   const b = e.target.closest && e.target.closest('button'); if (!b) return;
   if (b.dataset.cam && V3.setView) V3.setView(b.dataset.cam);
+  if ((b.dataset.v3all || b.dataset.v3none || b.dataset.v3unhide) && state.d) {
+    const H = v3Hide();
+    if (b.dataset.v3unhide) H.objs = [];
+    else {
+      const k = b.dataset.v3all || b.dataset.v3none, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
+      H[k] = b.dataset.v3none ? all : []; if (k === 'layers' && b.dataset.v3all) H.names = [];
+      document.querySelectorAll(`#v3 [data-v3h="${k === 'layers' ? 'layer' : 'pos'}"]`).forEach(c => { c.checked = !!b.dataset.v3all; });
+      if (k === 'layers' && b.dataset.v3all) document.querySelectorAll('#v3 [data-v3h="name"]').forEach(c => { c.checked = true; });
+    }
+    touch(); applyV3Vis();
+  }
   if (b.id === 'v3png' && V3.renderer) { const a = document.createElement('a'); a.href = V3.renderer.domElement.toDataURL('image/png'); a.download = slug(state.d.meta.titre) + '_3D.png'; document.body.appendChild(a); a.click(); a.remove(); }
 });
 function renderRigging() {
