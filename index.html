@@ -290,6 +290,7 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .doctool { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
 .doctool .zoom { display: flex; align-items: center; gap: 6px; } .doctool input[type=range] { accent-color: var(--accent); width: 120px; }
 .subtabs .sep { width: 1px; background: var(--line); margin: 0 4px; }
+dialog#gdtfDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 760px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); } dialog#gdtfDlg::backdrop { background: rgba(0,0,0,.45); } dialog#gdtfDlg h2 { margin: 0 0 6px; font-size: 17px; } #gdtfRows td { padding: 6px; white-space: normal; } #gdtfRows small { color: var(--muted); } #gdtfRows select { font: inherit; font-size: 13px; max-width: 16em; }
 dialog#mapDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 600px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); }
 dialog#mapDlg::backdrop { background: rgba(0,0,0,.45); }
 dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
@@ -423,7 +424,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
     </div>
 
     <label class="drop" id="drop" tabindex="0">
-      <input type="file" id="file" accept=".mvr,.gdtf,.csv,.txt,.json,.oplanfeu,.html,.htm" hidden>
+      <input type="file" id="file" accept=".mvr,.gdtf,.zip,.csv,.txt,.json,.oplanfeu,.html,.htm" hidden>
       <div id="dropText"><b data-i18n="dropTitle">Ouvrir ou importer</b><span data-i18n="dropSub">MVR (WYSIWYG, Capture, grandMA3…), CSV de patch, ou dossier OPlanFeu (.json)</span></div>
     </label>
 
@@ -496,13 +497,21 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
       <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
     </div>
-    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="refFile" accept=".mvr,.csv,.txt,.json,.html,.htm" hidden><div id="measure"></div><input type="file" id="lieuFile" accept=".json" hidden>
+    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="gdtfMulti" accept=".gdtf,.zip" multiple hidden><input type="file" id="refFile" accept=".mvr,.csv,.txt,.json,.html,.htm" hidden><div id="measure"></div><input type="file" id="lieuFile" accept=".json" hidden>
     <div class="view" id="view">
       <div class="empty"><div><b data-i18n="emptyTitle">Aucun dossier ouvert</b><br><span data-i18n="emptyMsg">Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.</span></div></div>
     </div>
   </main>
 </div>
 
+<dialog id="gdtfDlg">
+  <form method="dialog" id="gdtfForm">
+    <h2 data-i18n="gdDlgTitle">Profils GDTF à rattacher</h2>
+    <p class="hint2" data-i18n="gdDlgHint">Chaque profil est rapproché du type qui porte le même nom. Vérifie, change le type, ou ignore le fichier.</p>
+    <div style="max-height:60vh;overflow:auto;margin:10px 0"><table class="grid"><tbody id="gdtfRows"></tbody></table></div>
+    <div class="mapbtns"><button type="button" class="btn ghost" id="gdtfCancel" data-i18n="mapCancel">Annuler</button><button type="submit" class="btn" data-i18n="gdApply">Rattacher</button></div>
+  </form>
+</dialog>
 <dialog id="mapDlg">
   <form method="dialog" id="mapForm">
     <h2 data-i18n="mapTitle">Colonnes du fichier</h2>
@@ -540,6 +549,15 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    iv_inv: 'Inventaire', iv_gdtf: 'GDTF du projet', gdType: 'Type', gdSource: 'Profil', gdFile: 'Fichier GDTF', gd3d: '3D', gdCh: 'Canaux', gdMode: 'Mode utilisé',
+    gsNone: 'aucun', gsGeneric: 'générique (WYSIWYG)', gsFull: 'profil complet', gdReplaced: 'remplace le GDTF d’origine', gdPick: '— mode à choisir —', gdModeBad: 'le mode du patch n’existe pas dans ce profil',
+    gdShare: 'GDTF Share', gdShareTip: 'Ouvre GDTF Share ; le nom du projecteur est copié pour la recherche', gdReplace: 'Remplacer…', gdRevert: 'Revenir à l’origine',
+    gdHint: "Les GDTF venus de WYSIWYG sont des profils génériques (pas de vrais canaux, pas de forme). Remplace-les par le profil du fabricant : « GDTF Share » ouvre le site (le nom est copié pour la recherche), télécharge le .gdtf puis « Remplacer… », ou dépose un ou plusieurs .gdtf (ou un .zip) n’importe où sur la page : ils sont rapprochés des types par leur nom. Le GDTF d’origine est gardé.",
+    gdImport: 'Importer des GDTF…', gdLibApply: 'Appliquer la bibliothèque', gdLibKeep: 'Garder les profils importés dans ce navigateur', gdLibClear: 'Vider la bibliothèque', gdLibClearAsk: 'Vider la bibliothèque GDTF de ce navigateur ?',
+    gdLibCount: n => `Bibliothèque : ${n} profil${n > 1 ? 's' : ''}`, gdLibDone: n => `${n} type(s) mis à jour depuis la bibliothèque.`, gdGenWarn: n => `${n} type(s) n’ont qu’un GDTF générique : remplace-les par le profil du fabricant.`,
+    gdExport: 'Export MVR :', gdExp_current: 'GDTF mis à jour', gdExp_orig: 'GDTF d’origine (retour vers WYSIWYG)',
+    gdDlgTitle: 'Profils GDTF à rattacher', gdDlgHint: 'Chaque profil est rapproché du type qui porte le même nom. Vérifie, change le type, ou ignore le fichier.', gdIgnore: '— ignorer —', gdNew: '+ nouveau type', gdApply: 'Rattacher', gdDone: n => `${n} profil(s) GDTF rattaché(s).`,
+    gdPowered: 'Powered by GDTF — profils GDTF Share (gdtf-share.com).',
     invShape: 'Forme 3D', shAuto: g => `auto (${g})`, shLen: 'Longueur ou largeur (cm)', sh_gdtf: 'modèle du GDTF', sh_lyre: 'lyre', sh_par: 'PAR', sh_ledpar: 'PAR LED', sh_decoupe: 'découpe', sh_pc: 'PC / Fresnel', sh_barre: 'barre / rampe', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'vidéoprojecteur', sh_fog: 'machine à brouillard', sh_cube: 'boîte',
     tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
     v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
@@ -650,6 +668,15 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    iv_inv: 'Inventory', iv_gdtf: 'Project GDTFs', gdType: 'Type', gdSource: 'Profile', gdFile: 'GDTF file', gd3d: '3D', gdCh: 'Channels', gdMode: 'Mode used',
+    gsNone: 'none', gsGeneric: 'generic (WYSIWYG)', gsFull: 'full profile', gdReplaced: 'replaces the original GDTF', gdPick: '— choose a mode —', gdModeBad: 'the patch mode does not exist in this profile',
+    gdShare: 'GDTF Share', gdShareTip: 'Opens GDTF Share; the fixture name is copied for the search', gdReplace: 'Replace…', gdRevert: 'Back to original',
+    gdHint: 'GDTFs coming from WYSIWYG are generic profiles (no real channels, no shape). Replace them with the manufacturer profile: “GDTF Share” opens the site (the name is copied for the search), download the .gdtf then “Replace…”, or drop one or more .gdtf (or a .zip) anywhere on the page: they are matched to the types by name. The original GDTF is kept.',
+    gdImport: 'Import GDTFs…', gdLibApply: 'Apply the library', gdLibKeep: 'Keep imported profiles in this browser', gdLibClear: 'Clear the library', gdLibClearAsk: 'Clear the GDTF library of this browser?',
+    gdLibCount: n => `Library: ${n} profile${n > 1 ? 's' : ''}`, gdLibDone: n => `${n} type(s) updated from the library.`, gdGenWarn: n => `${n} type(s) only have a generic GDTF: replace them with the manufacturer profile.`,
+    gdExport: 'MVR export:', gdExp_current: 'updated GDTFs', gdExp_orig: 'original GDTFs (back to WYSIWYG)',
+    gdDlgTitle: 'GDTF profiles to link', gdDlgHint: 'Each profile is matched to the type with the same name. Check, change the type, or ignore the file.', gdIgnore: '— ignore —', gdNew: '+ new type', gdApply: 'Link', gdDone: n => `${n} GDTF profile(s) linked.`,
+    gdPowered: 'Powered by GDTF — GDTF Share profiles (gdtf-share.com).',
     invShape: '3D shape', shAuto: g => `auto (${g})`, shLen: 'Length or width (cm)', sh_gdtf: 'GDTF model', sh_lyre: 'moving head', sh_par: 'PAR', sh_ledpar: 'LED PAR', sh_decoupe: 'profile', sh_pc: 'PC / Fresnel', sh_barre: 'batten', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'video projector', sh_fog: 'haze / fog', sh_cube: 'box',
     tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
     v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
@@ -834,6 +861,14 @@ async function parseGdtf(bytes) {
     out.b64 = toB64(bytes);
     const doc = xmlOf(d), ft = doc.querySelector('FixtureType');
     if (ft) { out.maker = ft.getAttribute('Manufacturer') || ''; out.name = ft.getAttribute('Name') || ''; }
+    const revs = [...doc.querySelectorAll('Revisions > Revision')], last = revs[revs.length - 1];
+    const has3d = [...doc.querySelectorAll('Models > Model')].some(m => { const f = (m.getAttribute('File') || '').toLowerCase(); return f && g.names.some(n => n.toLowerCase().startsWith('models/') && n.toLowerCase().includes('/' + f + '.')); });
+    out.info = {
+      name: out.name, shortName: ft ? ft.getAttribute('ShortName') || '' : '', longName: ft ? ft.getAttribute('LongName') || '' : '', maker: out.maker,
+      id: ft ? ft.getAttribute('FixtureTypeID') || '' : '', version: doc.documentElement.getAttribute('DataVersion') || '',
+      revision: last ? (last.getAttribute('Text') || '') : '', revDate: last ? (last.getAttribute('Date') || '') : '', nrev: revs.length,
+      generic: isGenericGdtf(doc), has3d, channels: doc.querySelectorAll('DMXChannel').length,
+    };
     for (const m of doc.querySelectorAll('DMXModes > DMXMode')) {
       let max = 0;
       for (const c of m.querySelectorAll('DMXChannel')) for (const o of String(c.getAttribute('Offset') || '').split(',')) { const k = parseInt(o, 10); if (k > max) max = k; }
@@ -1050,7 +1085,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1803,9 +1838,11 @@ const xq = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&
 async function exportMVR() {
   const d = state.d, files = [], gdtfName = {};
   let withG = 0, without = 0;
-  for (const [k, ty] of Object.entries(d.types)) {
+  const useOrig = d.meta.mvrGdtf === 'orig';
+  for (const [k, ty0] of Object.entries(d.types)) {
     if (!d.fixtures.some(f => f.type === k)) continue;
-    const fn = (ty.gdtf && /\.gdtf$/i.test(ty.gdtf) ? ty.gdtf : slug(ty.name) + '.gdtf').replace(/[\\/]/g, '_');
+    const ty = useOrig && ty0.orig ? ty0.orig : ty0;
+    const fn = (ty.gdtf && /\.gdtf$/i.test(ty.gdtf) ? ty.gdtf : slug(ty0.name) + '.gdtf').replace(/[\\/]/g, '_');
     gdtfName[k] = fn;
     if (ty.gdtfData) { files.push([fn, fromB64(ty.gdtfData)]); withG++; } else without++;
   }
@@ -1821,7 +1858,9 @@ async function exportMVR() {
   for (const fn of usedGeo) files.push([fn, await inflateB64(d.meshes[fn])]);
   const stXml = o => `<${o.kind === 'Fixture' ? 'SceneObject' : o.kind} name="${xq(o.name)}" uuid="${isUuid(o.uid) ? o.uid : newUuid()}"><Matrix>${mtx(o)}</Matrix><Geometries>${o.geo.map(g => `<Geometry3D fileName="${xq(g.f)}">${g.m.join(',') === IDENT.join(',') ? '' : `<Matrix>${mtx({ m: g.m })}</Matrix>`}</Geometry3D>`).join('')}</Geometries></${o.kind === 'Fixture' ? 'SceneObject' : o.kind}>`;
   const fxXml = f => {
-    const ty = d.types[f.type] || {}, modes = Object.keys(ty.modes || {}), mode = f.mode || modes[0] || 'Default';
+    const ty0 = d.types[f.type] || {}, ty = useOrig && ty0.orig ? ty0.orig : ty0, modes = Object.keys(ty.modes || {});
+    const m0 = useOrig && ty0.orig && f.modeOrig !== undefined ? f.modeOrig : f.mode, mk = m0 !== undefined && m0 in (ty.modes || {}) ? m0 : modes[0];
+    const mode = mk === '' ? 'None' : (mk || 'Default');
     const abs = f.univ ? (f.univ - 1) * 512 + f.addr : 0, fidN = parseInt(f.fid, 10);
     return `<Fixture name="${xq(f.name || ty.name || f.fid)}" uuid="${isUuid(f.uid) ? f.uid : newUuid()}"><Matrix>${mtx(f)}</Matrix><GDTFSpec>${xq(gdtfName[f.type] || '')}</GDTFSpec><GDTFMode>${xq(mode)}</GDTFMode>` +
       (f.position ? `<Position>${posU.get(f.position)}</Position>` : '') + (f.purpose ? `<Function>${xq(f.purpose)}</Function>` : '') +
@@ -2130,6 +2169,7 @@ document.getElementById('view').addEventListener('change', e => {
   state.v3[el.dataset.v3] = el.type === 'checkbox' ? el.checked : el.value; store.set('v3', state.v3); renderV3();
 });
 document.getElementById('view').addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[data-copy]'); if (a) { try { navigator.clipboard.writeText(a.dataset.copy); } catch {} }
   const b = e.target.closest && e.target.closest('button'); if (!b) return;
   if (b.dataset.cam && V3.setView) V3.setView(b.dataset.cam);
   if (b.id === 'v3png' && V3.renderer) { const a = document.createElement('a'); a.href = V3.renderer.domElement.toDataURL('image/png'); a.download = slug(state.d.meta.titre) + '_3D.png'; document.body.appendChild(a); a.click(); a.remove(); }
@@ -2183,7 +2223,50 @@ function renderRigging() {
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td></td><td></td><td></td>
 <td class="ro num" style="color:var(--ink)"><b>${nAll}</b></td><td></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${fmtNum(totAll)}</b></td><td></td><td></td><td></td><td class="noprint"></td></tr></tbody></table></div>`;
 }
+function renderGdtfView(head) {
+  const d = state.d, qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
+  const keys = Object.keys(d.types).filter(k => qty.get(k)).sort((a, b) => typeName(a).localeCompare(typeName(b)));
+  const pending = keys.filter(k => d.types[k].gdtfData && !d.types[k].gdtfInfo);
+  if (pending.length) { Promise.all(pending.map(k => ensureGdtfInfo(d.types[k]))).then(() => { if (state.tab === 'inventory' && state.invView === 'gdtf') render(); }); }
+  const rows = keys.map(k => {
+    const ty = d.types[k], I = ty.gdtfInfo, modes = Object.entries(ty.modes || {});
+    const used = [...new Set(d.fixtures.filter(f => f.type === k).map(f => f.mode))], bad = used.filter(m => !(m in (ty.modes || {})));
+    const src = !ty.gdtfData ? `<span class="st na">${esc(t('gsNone'))}</span>` : !I ? '…' : I.generic ? `<span class="st warn">${esc(t('gsGeneric'))}</span>` : `<span class="st ok">${esc(t('gsFull'))}</span>`;
+    const q = encodeURIComponent(`${ty.maker || ''} ${ty.name}`.trim());
+    const msel = modes.length > 1 || bad.length ? `<select data-msel="${esc(k)}" style="font:inherit;font-size:12.5px;max-width:13em">${bad.length ? `<option value="">${esc(t('gdPick'))}</option>` : ''}${modes.map(([m, c]) => `<option value="${esc(m)}"${!bad.length && used.length === 1 && used[0] === m ? ' selected' : ''}>${esc(m || '—')} (${c})</option>`).join('')}</select>${bad.length ? `<br><span class="missing" style="font-size:11px">${esc(t('gdModeBad'))}</span>` : ''}` : esc(modes.map(([m, c]) => `${m || '—'} (${c})`).join(''));
+    return `<tr><td class="ro" style="color:var(--ink)"><b>${esc(ty.name)}</b><br><small>${esc(ty.maker || '')} · ${qty.get(k)}</small></td>
+<td class="ro">${src}${ty.orig ? `<br><small>${esc(t('gdReplaced'))}</small>` : ''}</td>
+<td class="ro ids2" style="min-width:18em">${esc(ty.gdtf || '')}${I ? `<br><small>GDTF ${esc(I.version)}${I.revDate ? ' · ' + esc(I.revDate.slice(0, 10)) : ''}${I.revision && !I.generic ? ' · ' + esc(I.revision.slice(0, 60)) : ''}</small>` : ''}</td>
+<td class="ro">${I ? (I.has3d && !I.generic ? '✓' : '—') : ''}</td><td class="ro num">${I ? I.channels : ''}</td>
+<td>${msel}</td>
+<td style="white-space:nowrap"><a class="minibtn noprint" href="https://gdtf-share.com/" target="_blank" rel="noopener" data-copy="${esc(decodeURIComponent(q))}" title="${esc(t('gdShareTip'))}">${esc(t('gdShare'))}</a>
+<button type="button" class="minibtn noprint" data-gdtf-add="${esc(k)}">${esc(t('gdReplace'))}</button>
+${ty.orig ? `<button type="button" class="minibtn noprint" data-gdtf-revert="${esc(k)}">${esc(t('gdRevert'))}</button>` : ''}
+${ty.gdtfData ? `<button type="button" class="minibtn noprint" data-gdtf-get="${esc(k)}">${esc(t('gdtfGet'))}</button>` : ''}</td></tr>`;
+  }).join('');
+  const nGen = keys.filter(k => d.types[k].gdtfInfo && d.types[k].gdtfInfo.generic).length;
+  $('#view').innerHTML = head + `<p class="hint" style="margin:12px 0 0">${esc(t('gdHint'))}</p>
+<div class="settings"><button type="button" class="minibtn primary" id="gdImport">${esc(t('gdImport'))}</button><button type="button" class="minibtn" id="gdLib">${esc(t('gdLibApply'))}</button><span id="gdLibInfo" style="color:var(--muted)"></span>
+<span class="spacer"></span><label><input type="checkbox" id="gdLibKeep"${store.get('gdtfLib', true) ? ' checked' : ''}> ${esc(t('gdLibKeep'))}</label><button type="button" class="minibtn x" id="gdLibClear" title="${esc(t('gdLibClear'))}">${esc(t('gdLibClear'))}</button>
+<label>${esc(t('gdExport'))} <select id="gdExport" style="font:inherit;font-size:13px">${['current', 'orig'].map(v => `<option value="${v}"${(d.meta.mvrGdtf || 'current') === v ? ' selected' : ''}>${esc(t('gdExp_' + v))}</option>`).join('')}</select></label></div>
+${nGen ? `<p class="alert" style="margin:0 0 8px">${esc(t('gdGenWarn', nGen))}</p>` : ''}
+<div class="gridwrap"><table class="grid"><thead><tr>${['gdType', 'gdSource', 'gdFile', 'gd3d', 'gdCh', 'gdMode', ''].map(k => `<th class="nosort">${k ? esc(t(k)) : ''}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
+<p class="hint2" style="margin-top:10px">${esc(t('gdPowered'))}</p>`;
+  libAll().then(L => { const el = $('#gdLibInfo'); if (el) el.textContent = t('gdLibCount', L.length); });
+}
+async function applyLibrary() {
+  const L = await libAll(); let n = 0;
+  for (const e of L) {
+    const g = { info: e.info, b64: e.b64 }, k = matchType(g, e.fileName); if (!k) continue;
+    const ty = state.d.types[k]; await ensureGdtfInfo(ty);
+    if (ty.gdtfInfo && !ty.gdtfInfo.generic) continue;   // déjà un vrai profil
+    await attachGdtf(fromB64(e.b64), e.fileName, k); n++;
+  }
+  alert(t('gdLibDone', n));
+}
 function renderInventory() {
+  const ihead = `<div class="subtabs noprint">${['inv', 'gdtf'].map(k => `<button type="button" data-iv="${k}"${k === (state.invView || 'inv') ? ' class="on"' : ''}>${esc(t('iv_' + k))}</button>`).join('')}</div>`;
+  if (state.invView === 'gdtf') return renderGdtfView(ihead);
   const qty = new Map(); state.d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
   const keys = [...new Set([...Object.keys(state.d.types), ...qty.keys()])].sort((a, b) => typeName(a).localeCompare(typeName(b)));
   let tq = 0, tm = 0, tw = 0, tp = 0;
@@ -2202,7 +2285,7 @@ ${['barre', 'blinder', 'strobe', 'video', 'fog', 'cube'].includes(ty.shape && ty
 <td class="ro">${ty.gdtfData ? `<span class="gdtfok" title="${esc(ty.gdtf || '')}">✓ GDTF</span><button type="button" class="minibtn noprint" data-gdtf-get="${esc(k)}">${esc(t('gdtfGet'))}</button>` : `<button type="button" class="minibtn noprint" data-gdtf-add="${esc(k)}">${esc(t('gdtfAdd'))}</button>`}</td></tr>`;
   }).join('');
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabInventory'))}</h1><p class="hint" style="margin:14px 0 6px">${esc(t('invHint'))}</p>
+  $('#view').innerHTML = ihead + `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabInventory'))}</h1><p class="hint" style="margin:14px 0 6px">${esc(t('invHint'))}</p>
 <div class="gridwrap"><table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower', 'invShape', 'invGdtf'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
 <td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td><td></td></tr></tbody></table></div>`;
@@ -2339,6 +2422,10 @@ view.addEventListener('change', e => {
     else { const n = parseFloat(v.replace(',', '.')); p[k] = v === '' ? (k === 'extra' ? 0 : null) : (isNaN(n) ? p[k] : n); }
     touch(); render(); return;
   }
+  if (e.target.id === 'gdLibKeep') { store.set('gdtfLib', e.target.checked); return; }
+  if (e.target.id === 'gdExport') { state.d.meta.mvrGdtf = e.target.value; touch(); return; }
+  const ms = e.target.closest('select[data-msel]');
+  if (ms) { const ty = state.d.types[ms.dataset.msel]; if (ty && ms.value !== '' && ms.value in ty.modes) { ty.modeSel = ms.value; state.d.fixtures.forEach(f => { if (f.type === ms.dataset.msel) { if (f.modeOrig === undefined && !(f.mode in ty.modes)) f.modeOrig = f.mode; f.mode = ty.modeSel; f.nch = ty.modes[f.mode]; } }); touch(); render(); } return; }
   const tsel = e.target.closest('select[data-t]');
   if (tsel) { const ty = state.d.types[tsel.dataset.t]; if (ty) ty[tsel.dataset.f] = tsel.value === 'auto' ? undefined : tsel.value; touch(); render(); return; }
   const inp = e.target.closest('input.c'); if (!inp) return;
@@ -2456,6 +2543,11 @@ view.addEventListener('click', async e => {
     download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
   } else if (b.id === 'loadLieu') $('#lieuFile').click();
   else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
+  else if (b.dataset.gdtfRevert) revertGdtf(b.dataset.gdtfRevert);
+  else if (b.dataset.iv) { state.invView = b.dataset.iv; store.set('invView', state.invView); render(); }
+  else if (b.id === 'gdImport') $('#gdtfMulti').click();
+  else if (b.id === 'gdLib') applyLibrary();
+  else if (b.id === 'gdLibClear') { if (confirm(t('gdLibClearAsk'))) { await libClear(); render(); } }
   else if (b.dataset.gdtfGet) {
     const ty = state.d.types[b.dataset.gdtfGet]; if (!ty || !ty.gdtfData) return;
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([fromB64(ty.gdtfData)], { type: 'application/zip' }));
@@ -2936,20 +3028,112 @@ $('#lieuFile').addEventListener('change', async e => {
   } catch (err) { alert(t('readErr') + ' ' + err.message); }
 });
 // GDTF ajouté à un type (bouton « Ajouter… » ou fichier déposé)
-async function attachGdtf(bytes, fileName, key) {
+const nrm = x => String(x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+// type du dossier qui correspond le mieux à un GDTF (nom, nom court, nom long, nom de fichier ; fabricant en bonus)
+function matchType(g, fileName) {
+  const I = g.info || {}, cands = [I.name, I.shortName, I.longName, splitSpec(fileName || '').name].map(nrm).filter(x => x.length >= 3);
+  let best = null, bs = 0;
+  for (const [k, ty] of Object.entries(state.d.types)) {
+    const tn = nrm(ty.name); if (!tn) continue;
+    let sc = cands.some(c => c === tn) ? 3 : cands.some(c => (c.length >= 4 && tn.includes(c)) || (tn.length >= 4 && c.includes(tn))) ? 2 : 0;
+    if (sc && nrm(ty.maker) && nrm(ty.maker) === nrm(I.maker)) sc += 1;
+    if (sc > bs) { bs = sc; best = k; }
+  }
+  return bs >= 2 ? best : null;
+}
+async function ensureGdtfInfo(ty) {
+  if (ty.gdtfInfo || !ty.gdtfData) return ty.gdtfInfo || null;
+  try { const g = await parseGdtf(fromB64(ty.gdtfData)); ty.gdtfInfo = g.info || null; } catch {}
+  return ty.gdtfInfo;
+}
+function applyModes(key) {   // projecteurs du type : mode du nouveau profil, nombre de canaux
+  const ty = state.d.types[key], ks = Object.keys(ty.modes || {});
+  state.d.fixtures.forEach(f => {
+    if (f.type !== key) return;
+    if (!(f.mode in ty.modes)) {
+      if (f.modeOrig === undefined) f.modeOrig = f.mode;
+      if (ty.modeSel !== undefined && ty.modeSel in ty.modes) f.mode = ty.modeSel; else if (ks.length === 1) f.mode = ks[0];
+    }
+    if (f.mode in ty.modes) f.nch = ty.modes[f.mode];
+  });
+}
+async function attachGdtf(bytes, fileName, key, newType) {
   const g = await parseGdtf(bytes);
   if (!g.b64) throw new Error(t('gdtfBad'));
-  const s2 = splitSpec(fileName), lc = x => String(x || '').toLowerCase();
-  const names = [s2.name, g.name].filter(Boolean).map(lc);
-  if (!key) key = Object.keys(state.d.types).find(k => names.includes(lc(state.d.types[k].name)) || lc(state.d.types[k].gdtf) === lc(fileName)) || fileName;
+  const s2 = splitSpec(fileName);
+  if (!key && !newType) key = matchType(g, fileName);
+  if (!key) key = fileName;
   const ty = state.d.types[key] || (state.d.types[key] = { name: g.name || s2.name, maker: '', gdtf: '', modes: {}, weight: null, power: null, stock: null });
-  Object.assign(ty, { gdtf: fileName, gdtfData: g.b64, maker: ty.maker || g.maker || s2.maker, modes: { ...g.modes, ...ty.modes } });
+  if (ty.gdtfData && !ty.orig) { await ensureGdtfInfo(ty); ty.orig = { gdtf: ty.gdtf, gdtfData: ty.gdtfData, modes: ty.modes, info: ty.gdtfInfo }; }
+  Object.assign(ty, { gdtf: fileName, gdtfData: g.b64, gdtfInfo: g.info || null, maker: g.maker || ty.maker || s2.maker, modes: Object.keys(g.modes).length ? g.modes : ty.modes });
+  if (ty.modeSel !== undefined && !(ty.modeSel in ty.modes)) delete ty.modeSel;
   if (!(ty.weight > 0) && g.weight) ty.weight = g.weight;
   if (!(ty.power > 0) && g.power) ty.power = g.power;
-  state.d.fixtures.forEach(f => { if (f.type === key && !f.nch) { const ks = Object.keys(ty.modes); f.nch = ty.modes[f.mode] || (ks.length === 1 ? ty.modes[ks[0]] : 0) || 0; } });
+  applyModes(key);
+  libPut(g, fileName);
   touch(); render();
   return ty.name;
 }
+function revertGdtf(key) {
+  const ty = state.d.types[key]; if (!ty || !ty.orig) return;
+  Object.assign(ty, { gdtf: ty.orig.gdtf, gdtfData: ty.orig.gdtfData, modes: ty.orig.modes, gdtfInfo: ty.orig.info || null }); delete ty.orig; delete ty.modeSel;
+  state.d.fixtures.forEach(f => { if (f.type === key && f.modeOrig !== undefined) { f.mode = f.modeOrig; delete f.modeOrig; } if (f.type === key && f.mode in ty.modes) f.nch = ty.modes[f.mode]; });
+  touch(); render();
+}
+// ── bibliothèque GDTF du navigateur (IndexedDB) : les profils importés resservent pour les dossiers suivants
+const LIB = { db: null };
+function libOpen() {
+  if (LIB.db) return Promise.resolve(LIB.db);
+  return new Promise((ok, ko) => { try { const r = indexedDB.open('oplanfeu-gdtf', 1); r.onupgradeneeded = () => r.result.createObjectStore('files', { keyPath: 'key' }); r.onsuccess = () => ok(LIB.db = r.result); r.onerror = () => ko(r.error); } catch (e) { ko(e); } });
+}
+async function libPut(g, fileName) {
+  if (!store.get('gdtfLib', true) || !g.info || g.info.generic) return;
+  try {
+    const db = await libOpen(), key = g.info.id || nrm(g.info.maker + g.info.name);
+    db.transaction('files', 'readwrite').objectStore('files').put({ key, name: g.info.name, maker: g.info.maker, fileName, b64: g.b64, date: new Date().toISOString(), info: g.info });
+  } catch {}
+}
+async function libAll() { try { const db = await libOpen(); return await new Promise(ok => { const r = db.transaction('files').objectStore('files').getAll(); r.onsuccess = () => ok(r.result || []); r.onerror = () => ok([]); }); } catch { return []; } }
+async function libClear() { try { const db = await libOpen(); db.transaction('files', 'readwrite').objectStore('files').clear(); } catch {} }
+// ── import de plusieurs GDTF (fichiers ou .zip) : rapprochement automatique, puis vérification
+async function readGdtfBundle(files) {
+  const out = [];
+  for (const f of files) {
+    const u8 = new Uint8Array(await f.arrayBuffer());
+    if (/\.gdtf$/i.test(f.name)) { out.push({ name: f.name, bytes: u8 }); continue; }
+    try { const z = await unzip(u8); for (const n of z.names.filter(n => /\.gdtf$/i.test(n))) out.push({ name: n.split('/').pop(), bytes: await z.get(n) }); } catch {}
+  }
+  for (const x of out) { x.g = await parseGdtf(x.bytes); x.key = x.g.b64 ? matchType(x.g, x.name) : null; }
+  return out.filter(x => x.g.b64);
+}
+let gdtfBatch = [];
+function openGdtfDlg(list) {
+  gdtfBatch = list;
+  const keys = Object.keys(state.d.types).sort((a, b) => typeName(a).localeCompare(typeName(b)));
+  $('#gdtfRows').innerHTML = list.map((x, i) => {
+    const I = x.g.info || {};
+    return `<tr><td><b>${esc(I.maker)} ${esc(I.name)}</b><br><small>${esc(x.name)} · ${Object.entries(x.g.modes).map(([m, c]) => `${m || '—'} (${c})`).join(', ')}${I.has3d ? ' · 3D' : ''}${I.generic ? ' · ' + esc(t('gsGeneric')) : ''}</small></td>
+<td><select data-gi="${i}"><option value="">${esc(t('gdIgnore'))}</option><option value="+"${!x.key ? ' selected' : ''}>${esc(t('gdNew'))}</option>${keys.map(k => `<option value="${esc(k)}"${k === x.key ? ' selected' : ''}>${esc(typeName(k))}${state.d.types[k].gdtfInfo && !state.d.types[k].gdtfInfo.generic ? ' ✓' : ''}</option>`).join('')}</select></td></tr>`;
+  }).join('');
+  $('#gdtfDlg').showModal();
+}
+async function importGdtfFiles(files) {
+  if (!state.d) throw new Error(t('gdtfBad'));
+  const list = await readGdtfBundle(files);
+  if (!list.length) throw new Error(t('gdtfBad'));
+  openGdtfDlg(list);
+}
+$('#gdtfForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const sel = [...document.querySelectorAll('#gdtfRows select')].map(x => x.value); let n = 0;
+  for (let i = 0; i < gdtfBatch.length; i++) {
+    const v = sel[i], x = gdtfBatch[i]; if (!v) continue;
+    try { await attachGdtf(x.bytes, x.name, v === '+' ? null : v, v === '+'); n++; } catch {}
+  }
+  $('#gdtfDlg').close(); gdtfBatch = []; touch(); render(); alert(t('gdDone', n));
+});
+$('#gdtfCancel').addEventListener('click', () => { $('#gdtfDlg').close(); gdtfBatch = []; });
+$('#gdtfMulti').addEventListener('change', async e => { const fs = [...e.target.files]; e.target.value = ''; try { await importGdtfFiles(fs); } catch (err) { alert(t('readErr') + ' ' + err.message); } });
 $('#gdtfFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
   try { const k = state.gdtfTarget; state.gdtfTarget = null; alert(t("gdtfAttached", await attachGdtf(new Uint8Array(await f.arrayBuffer()), f.name, k))); }
@@ -2967,9 +3151,9 @@ async function openFile(file) {
     const buf = await file.arrayBuffer();
     const u8 = new Uint8Array(buf.slice(0, 4));
     let d;
-    if (u8[0] === 0x50 && u8[1] === 0x4b && /\.gdtf$/i.test(file.name)) {          // un GDTF seul : ajouté au dossier ouvert
-      if (!state.d) throw new Error(t('gdtfBad'));
-      alert(t('gdtfAttached', await attachGdtf(new Uint8Array(buf), file.name, null))); return;
+    if (u8[0] === 0x50 && u8[1] === 0x4b && /\.gdtf$/i.test(file.name)) { await importGdtfFiles([file]); return; }   // GDTF : rapproché d'un type du dossier
+    if (u8[0] === 0x50 && u8[1] === 0x4b && /\.zip$/i.test(file.name) && state.d) {                            // .zip de GDTF
+      const z = await unzip(buf); if (!z.names.some(n => /GeneralSceneDescription\.xml$/i.test(n))) { await importGdtfFiles([file]); return; }
     }
     if (u8[0] === 0x50 && u8[1] === 0x4b) d = await parseMVR(buf, file.name);         // « PK » : zip → MVR
     else {
@@ -3034,7 +3218,12 @@ $('#file').addEventListener('change', e => { if (e.target.files[0]) openFile(e.t
 ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
 ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, () => drop.classList.remove('over')));
 document.addEventListener('dragover', e => e.preventDefault());
-document.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) openFile(e.dataTransfer.files[0]); });
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const fs = [...e.dataTransfer.files]; if (!fs.length) return;
+  if (fs.length > 1 && state.d && fs.every(f => /\.(gdtf|zip)$/i.test(f.name))) { importGdtfFiles(fs).catch(err => alert(t('readErr') + ' ' + err.message)); return; }
+  openFile(fs[0]);
+});
 
 // ───────────── enregistrer / exporter ─────────────
 const slug = s => String(s || 'dossier').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '') || 'dossier';
