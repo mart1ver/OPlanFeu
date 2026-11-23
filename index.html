@@ -386,6 +386,11 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 #planPages .plab { cursor: move; } #planPages .plab:hover rect { stroke: #e8a317; }
 #planPages .pfx, #planPages .pst { cursor: pointer; }
 @media print { .planwrap { display: block; } }
+.vbar { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 3px 8px; border: 1px dashed var(--line); border-radius: 9px; }
+.vbar select { max-width: 14em; }
+.dpage.full { width: 297mm; height: 210mm; padding: 12mm; display: flex; flex-direction: column; }
+.v3page img { flex: 1; min-height: 0; width: 100%; object-fit: contain; background: #15161a; border-radius: 2mm; }
+.v3page .v3cap { font-size: 8pt; color: #666; margin-top: 2mm; }
 .v3msg { position: absolute; inset: 0; display: grid; place-items: center; color: #cfcfd4; text-align: center; padding: 30px; }
 #dosPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .dpage { background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); width: 297mm; min-height: 210mm; box-sizing: border-box; padding: 12mm; font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 9pt; flex: none;
@@ -415,7 +420,8 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
   #dosPages > * { zoom: 1 !important; box-shadow: none !important; }
   #dosPages .dpage { padding: 0 12mm; width: auto; min-height: 0; break-before: page; }
   #dosPages > :first-child { break-before: auto !important; }
-  #dosPages .dpage.cover, #dosPages .sheet, #dosPages .plansheet, #dosPages .phead { break-before: page; break-after: auto; }
+  #dosPages .dpage.cover, #dosPages .dpage.full, #dosPages .sheet, #dosPages .plansheet, #dosPages .phead { break-before: page; break-after: auto; }
+  #dosPages .dpage.full { width: 297mm; height: 210mm; padding: 12mm; overflow: hidden; }
   #dosPages .dpage.cover { width: 297mm; height: 210mm; padding: 18mm 20mm; overflow: hidden; }
   .dwrap .sp { height: 12mm; }
 }
@@ -638,6 +644,7 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
     navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
     iv_inv: 'Inventaire', iv_gdtf: 'GDTF du projet', gdType: 'Type', gdSource: 'Profil', gdFile: 'Fichier GDTF', gd3d: '3D', gdCh: 'Canaux', gdMode: 'Mode utilisé',
     gsNone: 'aucun', gsGeneric: 'générique (WYSIWYG)', gsFull: 'profil complet', gdReplaced: 'remplace le GDTF d’origine', gdPick: '— mode à choisir —', gdModeBad: 'le mode du patch n’existe pas dans ce profil',
@@ -758,6 +765,7 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
     navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
     iv_inv: 'Inventory', iv_gdtf: 'Project GDTFs', gdType: 'Type', gdSource: 'Profile', gdFile: 'GDTF file', gd3d: '3D', gdCh: 'Channels', gdMode: 'Mode used',
     gsNone: 'none', gsGeneric: 'generic (WYSIWYG)', gsFull: 'full profile', gdReplaced: 'replaces the original GDTF', gdPick: '— choose a mode —', gdModeBad: 'the patch mode does not exist in this profile',
@@ -1176,7 +1184,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1860,7 +1868,7 @@ function renderPlan(forPrint) {
   });
   // étiquettes : placement automatique (évite les formes et les autres étiquettes), ou position posée à la main
   const l2 = f => ({ patch: patchText(f), circuit: f.circuit, dmx: f.dmxLine, gel: f.gel, type: typeName(f.type), unit: f.unit })[P.l2] || '';
-  const man = ((d.planLab || {})[planLabKey()]) || {};
+  const man = ((d.planLab2 || {})[planLabKey()]) || {};
   const placed = [], overlap = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
   let labs = '';
   if (P.labels !== false) for (const s2 of [...sym].sort((a, b) => a.x - b.x)) {
@@ -1868,7 +1876,7 @@ function renderPlan(forPrint) {
     const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2, gap = .5;
     let lx, ly;
     const mo = man[s2.f.uid];
-    if (mo) { lx = cx + mo[0]; ly = cy + mo[1]; }
+    if (mo) { lx = cx + mo[0] * k; ly = cy - mo[1] * k; }
     else {
       const cands = [[0, -(rh + gap + lh / 2)], [0, rh + gap + lh / 2], [rw + gap + lw / 2, 0], [-(rw + gap + lw / 2), 0],
         [rw + lw / 2, -(rh + lh / 2)], [-(rw + lw / 2), -(rh + lh / 2)], [rw + lw / 2, rh + lh / 2], [-(rw + lw / 2), rh + lh / 2]];
@@ -1921,7 +1929,7 @@ function renderPlan(forPrint) {
 <text x="${lx0 + 3}" y="${cy0 + 27}" font-size="3" font-weight="700">${esc(hasXY ? t('plScale', scale) : '')}</text><text x="${lx0 + 3}" y="${cy0 + 31.5}" font-size="2.3" fill="#555">${esc(hasXY ? t('plScaleHint', P.fmt) : '')}</text>
 <text x="${lx0 + 3}" y="${cy0 + 37}" font-size="2.6">${fx.length} ${esc(t('plFix'))} · ${esc(d.meta.auteur || '')} · ${esc(today)}</text>`;
   const head = `<text x="${M}" y="${M + 6}" font-size="6" font-weight="700">${esc(t('plTitle', P.view))}${P.point ? ' — ' + esc(P.point) : ''}</text>`;
-  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}" data-pw="${PW}"><rect width="${PW}" height="${PH}" fill="#fff"/>${head}<rect x="${M}" y="${M + 10}" width="${PW - 2 * M - LEG - 4}" height="${PH - 2 * M - 10}" fill="none" stroke="#111" stroke-width=".4"/>${g}${labs}${hasXY ? sb : ''}${leg}</svg></div>` +
+  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}" data-pw="${PW}" data-k="${k}"><rect width="${PW}" height="${PH}" fill="#fff"/>${head}<rect x="${M}" y="${M + 10}" width="${PW - 2 * M - LEG - 4}" height="${PH - 2 * M - 10}" fill="none" stroke="#111" stroke-width=".4"/>${g}${labs}${hasXY ? sb : ''}${leg}</svg></div>` +
     (hasXY || forPrint ? '' : `<p class="hint noprint">${esc(t('plSchem'))}</p>`);
 }
 // panneau d'affichage du plan (mêmes principes que la 3D)
@@ -1952,7 +1960,7 @@ function renderPlanView() {
 <label>${esc(t('plColor'))} <select data-pl="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], P.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
 <label>${esc(t('plLabel2'))} <select data-pl="l2">${o(['none', 'patch', 'circuit', 'dmx', 'gel', 'type', 'unit'], P.l2, v => t('l2' + v))}</select></label>
 <label>${esc(t('doFormat'))} <select data-pl="fmt">${o(['A3', 'A4'], P.fmt, v => v)}</select></label>
-<span class="spacer"></span><span class="plstate">${geoOk ? '' : esc(t('v3Shaping'))}</span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="160" value="${P.zoom}"></label></div>
+${viewBar('plan')}<span class="spacer"></span><span class="plstate">${geoOk ? '' : esc(t('v3Shaping'))}</span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="160" value="${P.zoom}"></label></div>
 <div class="planwrap">${planPanel()}<div id="planPages">${renderPlan()}</div></div>`;
   $('#pagesize').textContent = `@page { size: ${P.fmt} landscape; margin: 0; }`;
   document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = P.zoom / 100; });
@@ -1975,7 +1983,7 @@ document.getElementById('view').addEventListener('click', e => {
     const k = b.dataset.plall || b.dataset.plnone, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
     H[k] = b.dataset.plnone ? all : []; if (k === 'layers' && b.dataset.plall) H.names = [];
     touch(); renderPlanView();
-  } else if (b.id === 'plLabReset') { if (state.d.planLab) delete state.d.planLab[planLabKey()]; touch(); replan(); }
+  } else if (b.id === 'plLabReset') { if (state.d.planLab2) delete state.d.planLab2[planLabKey()]; touch(); replan(); }
 });
 // double-clic : masquer une structure ou un projecteur ; glisser une étiquette pour la placer
 document.getElementById('view').addEventListener('dblclick', e => {
@@ -1992,10 +2000,64 @@ document.getElementById('view').addEventListener('pointerdown', e => {
   const up = () => {
     window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
     if (Math.hypot(nx - x0, ny - y0) < .3) return;
-    const d = state.d; d.planLab = d.planLab || {}; const L2 = d.planLab[planLabKey()] = d.planLab[planLabKey()] || {};
-    L2[lab.dataset.u] = [+(nx - +lab.dataset.cx).toFixed(2), +(ny - +lab.dataset.cy).toFixed(2)]; touch(); replan();
+    const d = state.d, kk = +svg.dataset.k || 1; d.planLab2 = d.planLab2 || {}; const L2 = d.planLab2[planLabKey()] = d.planLab2[planLabKey()] || {};
+    L2[lab.dataset.u] = [+((nx - +lab.dataset.cx) / kk).toFixed(3), +(-(ny - +lab.dataset.cy) / kk).toFixed(3)]; touch(); replan();
   };
   window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+});
+// ───────────── vues enregistrées (plan et 3D), à reprendre dans le dossier complet ─────────────
+const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'struct', 'points', 'grid', 'fmt'];
+const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid'];
+const clone = o => JSON.parse(JSON.stringify(o ?? null));
+const views = kind => (state.d.views || []).filter(v => v.kind === kind);
+function viewBar(kind) {
+  const cur = kind === 'plan' ? state.planViewId : state.v3ViewId, list = views(kind);
+  return `<span class="vbar"><label>${esc(t('vwView'))} <select data-vsel="${kind}"><option value="">${esc(t('vwFree'))}</option>${list.map(v => `<option value="${esc(v.id)}"${v.id === cur ? ' selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>
+<button type="button" class="minibtn" data-vnew="${kind}">${esc(t('vwNew'))}</button>${cur && list.some(v => v.id === cur) ? `<button type="button" class="minibtn" data-vupd="${kind}">${esc(t('vwUpd'))}</button><button type="button" class="minibtn" data-vren="${kind}">${esc(t('vwRen'))}</button><button type="button" class="minibtn x" data-vdel="${kind}" title="${esc(t('vwDel'))}">×</button>` : ''}</span>`;
+}
+function v3Snapshot() {   // image de la vue 3D pour le dossier (JPEG)
+  if (!V3.renderer || !V3.cam) return null;
+  try { V3.renderer.render(V3.scene, V3.cam); return V3.renderer.domElement.toDataURL('image/jpeg', .86); } catch { return null; }
+}
+function viewCapture(kind, v) {
+  const d = state.d;
+  if (kind === 'plan') {
+    v.settings = Object.fromEntries(PLAN_KEYS.map(k => [k, state.plan[k]])); v.hide = clone(planHide());
+    v.labs = clone(((d.planLab2 || {})[planLabKey()]) || {});
+  } else {
+    v.settings = Object.fromEntries(V3_KEYS.map(k => [k, state.v3[k]])); v.hide = clone(v3Hide());
+    v.cam = V3.getCam ? V3.getCam() : null; v.img = v3Snapshot();
+  }
+  v.saved = new Date().toISOString();
+}
+function viewApply(kind, v) {
+  const d = state.d;
+  if (kind === 'plan') {
+    Object.assign(state.plan, clone(v.settings)); store.set('plan', state.plan); d.planHide = clone(v.hide);
+    d.planLab2 = d.planLab2 || {}; d.planLab2[(v.settings.view || 'top') + '|' + (v.settings.point || '')] = clone(v.labs || {});
+  } else { Object.assign(state.v3, clone(v.settings)); store.set('v3', state.v3); d.v3hide = clone(v.hide); V3.pendingCam = v.cam; }
+}
+document.getElementById('view').addEventListener('change', e => {
+  const s2 = e.target.closest && e.target.closest('[data-vsel]'); if (!s2 || !state.d) return;
+  const kind = s2.dataset.vsel, v = views(kind).find(x => x.id === s2.value);
+  if (kind === 'plan') state.planViewId = s2.value || null; else state.v3ViewId = s2.value || null;
+  if (v) { viewApply(kind, v); touch(); }
+  render();
+});
+document.getElementById('view').addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button'); if (!b || !state.d) return;
+  const kind = b.dataset.vnew || b.dataset.vupd || b.dataset.vren || b.dataset.vdel; if (!kind) return;
+  const d = state.d; d.views = d.views || [];
+  const curId = kind === 'plan' ? state.planViewId : state.v3ViewId, cur = d.views.find(x => x.id === curId);
+  if (b.dataset.vnew) {
+    const n = views(kind).length + 1, name = prompt(t('vwName'), `${t(kind === 'plan' ? 'tabPlan' : 'tab3d')} ${n}`); if (!name) return;
+    const v = { id: uid(), kind, name: name.trim(), inDossier: true }; viewCapture(kind, v); d.views.push(v);
+    if (kind === 'plan') state.planViewId = v.id; else state.v3ViewId = v.id;
+  } else if (b.dataset.vupd && cur) viewCapture(kind, cur);
+  else if (b.dataset.vren && cur) { const name = prompt(t('vwName'), cur.name); if (name) cur.name = name.trim(); }
+  else if (b.dataset.vdel && cur) { if (!confirm(t('vwDelAsk', cur.name))) return; d.views = d.views.filter(x => x !== cur); if (kind === 'plan') state.planViewId = null; else state.v3ViewId = null; }
+  touch();
+  if (kind === 'plan') renderPlanView(); else { const bar = document.querySelector('.vbar'); if (bar) bar.outerHTML = viewBar('3d'); }
 });
 // ───────────── dossier complet ─────────────
 const DOS_SECTIONS = ['cover', 'plan', 'patch', 'loads', 'heads', 'elec', 'syno', 'dmx', 'inv'];
@@ -2006,7 +2068,19 @@ function dossierPages() {
   const d = state.d, L = d.lieu, S = state.dos, out = [], toc = [];
   const sec = (k, html) => { if (S[k] && html) { toc.push(t('s' + k[0].toUpperCase() + k.slice(1))); out.push(html); } };
   // plan feu (A4)
-  if (S.plan) sec('plan', withTemp(state.plan, { fmt: 'A4', point: '' }, () => renderPlan()).replace(/<p class="hint[^]*$/, ''));
+  if (S.plan) sec('plan', withTemp(state.plan, { fmt: 'A4', point: '' }, () => renderPlan(true)).replace(/<p class="hint[^]*$/, ''));
+  // vues enregistrées : plans redessinés avec leurs réglages, vues 3D en image
+  for (const v of (d.views || []).filter(x => x.inDossier)) {
+    if (v.kind === 'plan') {
+      const key = (v.settings.view || 'top') + '|' + (v.settings.point || ''), oldH = d.planHide, oldL = d.planLab2;
+      d.planHide = clone(v.hide); d.planLab2 = { [key]: clone(v.labs || {}) };
+      let html; try { html = withTemp(state.plan, { ...v.settings, fmt: 'A4' }, () => renderPlan(true)); } finally { d.planHide = oldH; d.planLab2 = oldL; }
+      html = html.replace(/<p class="hint[^]*$/, '').replace(/(<text x="10" y="16" font-size="6" font-weight="700">)[^<]*/, `$1${esc(v.name)}`);
+      toc.push(v.name); out.push(html);
+    } else if (v.img) {
+      toc.push(v.name); out.push(`<div class="dpage full v3page"><h2>${esc(v.name)}</h2><img src="${v.img}" alt=""><div class="v3cap">${esc(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + esc(state.d.meta.lieu) : ''} · 3D</div></div>`);
+    }
+  }
   // feuille de patch (A4)
   if (S.patch) { const pg = withTemp(DOC, { fmt: 'A4' }, () => sheetPages()); sec('patch', pg ? pg.join('') : ''); }
   // accroches et charges
@@ -2066,17 +2140,27 @@ function renderDossier() {
   const S = state.dos;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dosHint'))}</p>
-<div class="dosopts noprint">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}
+<div class="dosopts noprint">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}</div>
+${(state.d.views || []).length ? `<div class="dosopts noprint"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">${esc(t('vwInDos'))}</b>${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2 noprint" style="margin-top:8px">${esc(t('vwNone'))}</p>`}
+<div class="dosopts noprint">
 <span class="spacer"></span><button type="button" class="minibtn" id="dosMvr">${esc(t('exportMvr'))}</button><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
 <label>${esc(t('zoom'))} <input type="range" id="dosZoom" min="20" max="100" value="${S.zoom || 45}"></label></div>
 <div id="dosPages">${dossierPages().join('')}</div>`;
   $('#pagesize').textContent = '@page { size: A4 landscape; margin: 0; }';
   dosZoom();
-  if (state.dos.plan && !(PLAN_GEO.ready && PLAN_GEO.key === planGeoKey())) ensurePlanGeo().then(ok => { if (ok && state.tab === 'dossier') renderDossier(); });
+  if ((state.dos.plan || (state.d.views || []).some(v => v.kind === 'plan' && v.inDossier)) && !(PLAN_GEO.ready && PLAN_GEO.key === planGeoKey())) ensurePlanGeo().then(ok => { if (ok && state.tab === 'dossier') renderDossier(); });
   if ($('#dosPages .big.lfid')) fitLabels(40, 30);
 }
 function dosZoom() { document.querySelectorAll('#dosPages > *').forEach(x => { x.style.zoom = (state.dos.zoom || 45) / 100; }); }
-document.getElementById('view').addEventListener('change', e => { const el = e.target.closest && e.target.closest('[data-dos]'); if (!el) return; state.dos[el.dataset.dos] = el.checked; store.set('dos', state.dos); renderDossier(); });
+document.getElementById('view').addEventListener('change', e => {
+  const v = e.target.closest && e.target.closest('[data-dosv]');
+  if (v && state.d) { const x = (state.d.views || []).find(y => y.id === v.dataset.dosv); if (x) { x.inDossier = v.checked; touch(); renderDossier(); } return; }
+  const el = e.target.closest && e.target.closest('[data-dos]'); if (!el) return; state.dos[el.dataset.dos] = el.checked; store.set('dos', state.dos); renderDossier();
+});
+document.getElementById('view').addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-vup]'); if (!b || !state.d) return;
+  e.preventDefault(); const V = state.d.views, i = V.findIndex(y => y.id === b.dataset.vup); if (i > 0) { [V[i - 1], V[i]] = [V[i], V[i - 1]]; touch(); renderDossier(); }
+});
 document.getElementById('view').addEventListener('input', e => { if (e.target.id === 'dosZoom') { state.dos.zoom = +e.target.value; store.set('dos', state.dos); dosZoom(); } });
 document.getElementById('view').addEventListener('click', e => { if (e.target.id === 'dosMvr') exportMVR(); });
 
@@ -2166,7 +2250,7 @@ function renderV3() {
   $('#view').innerHTML = `<p class="hint" style="margin:12px 0 0">${esc(t('v3Hint'))}</p>
 <div class="plopts">${['persp', 'top', 'front', 'side'].map(k => `<button type="button" class="minibtn" data-cam="${k}">${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}
 <label>${esc(t('plColor'))} <select data-v3="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], S.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
-${ck('shapes')}${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('grid')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
+${ck('shapes')}${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('grid')}</div><div class="plopts">${viewBar('3d')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
 <div class="v3wrap" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
   const fx = state.d.fixtures.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
   if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
@@ -2435,6 +2519,9 @@ function buildV3Scene(fx) {
   const place = () => { cam.position.set(tgt.x + sph.r * Math.sin(sph.ph) * Math.sin(sph.th), tgt.y + sph.r * Math.cos(sph.ph), tgt.z + sph.r * Math.sin(sph.ph) * Math.cos(sph.th)); cam.lookAt(tgt); };
   const views = { persp: [-.55, 1.05], top: [0, .001], front: [0, Math.PI / 2 - .02], side: [-Math.PI / 2, Math.PI / 2 - .02] };
   V3.setView = k => { [sph.th, sph.ph] = views[k] || views.persp; sph.r = span * 1.25 + 4; tgt.set(cx0, zMax / 2, -cy0); place(); };
+  V3.getCam = () => ({ th: sph.th, ph: sph.ph, r: sph.r, t: [tgt.x, tgt.y, tgt.z] });
+  V3.setCam = c => { if (!c) return; sph.th = c.th; sph.ph = c.ph; sph.r = c.r; if (c.t) tgt.set(...c.t); place(); };
+  if (V3.pendingCam) { V3.setCam(V3.pendingCam); V3.pendingCam = null; }
   place();
   const el = renderer.domElement, tip = wrap.querySelector('.v3tip');
   let drag = null;
@@ -2471,7 +2558,7 @@ function buildV3Scene(fx) {
   V3.ro = new ResizeObserver(size); V3.ro.observe(wrap); size();
   wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst, V3.shapes && V3.shapes.size ? t('v3Src', V3.nShapes, V3.shapes.size - V3.nShapes, V3.meshes ? V3.meshes.size : 0) : '');
   applyV3Vis();
-  V3.renderer = renderer; V3.cam = cam; V3.running = true;
+  V3.renderer = renderer; V3.cam = cam; V3.scene = scene; V3.running = true;
   const loop = () => { if (!V3.running || !document.body.contains(el)) { V3.running = false; return; } renderer.render(scene, cam); V3.raf = requestAnimationFrame(loop); };
   loop();
 }
