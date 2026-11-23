@@ -112,6 +112,22 @@ h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margi
 .card td { padding: 2px 0; border-bottom: 1px dotted var(--line); }
 .card td.num { text-align: right; font-variant-numeric: tabular-nums; width: 3em; }
 .card .ids { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+.gauge { position: relative; height: 10px; border-radius: 5px; background: var(--bg); border: 1px solid var(--line); width: 90px; overflow: hidden; display: inline-block; vertical-align: middle; margin-inline-end: 6px; }
+.gauge i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ok); }
+.gauge.warn i { background: #d9a400; } .gauge.over i { background: var(--err); }
+.st { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.st.ok { color: var(--ok); } .st.warn, .st.part { color: #b07d00; }
+.gauge.part i { background: #d9a400; } .st.over { color: var(--err); } .st.unk, .st.na { color: var(--muted); font-weight: 500; }
+.settings { display: flex; gap: 10px 16px; align-items: center; flex-wrap: wrap; margin: 14px 0 10px; font-size: 13px; }
+.settings label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.settings input { width: 4.5em; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; }
+.minibtn { font: inherit; font-size: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px; padding: 3px 9px; cursor: pointer; white-space: nowrap; }
+.minibtn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.minibtn.x { border: 0; background: transparent; color: var(--muted); padding: 2px 6px; }
+table.grid td select.c { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 3px 4px; }
+table.grid td.ids2 { white-space: normal; }
+.ids2 { font-size: 11.5px; color: var(--muted); white-space: normal; min-width: 10em; max-width: 22em; }
+.gdtfok { color: var(--ok); font-weight: 600; font-size: 12px; margin-inline-end: 6px; }
 @media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
 
 /* impression : la vue affichée, sans l'interface */
@@ -119,7 +135,8 @@ h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margi
   @page { size: A4 landscape; margin: 12mm; }
   html, body { height: auto; background: #fff; color: #000; }
   .app { display: block; height: auto; }
-  aside, .toolbar, .bulk, td.chk, th.chkh { display: none !important; }
+  aside, .toolbar, .bulk, td.chk, th.chkh, .noprint { display: none !important; }
+  table.grid td input.c, table.grid td select.c { border: 0; background: transparent; padding: 0; appearance: none; }
   .view { overflow: visible; padding: 0; }
   .ptitle { display: block !important; font: 600 16pt "IBM Plex Sans", sans-serif; margin: 0 0 4mm; }
   table.grid th { position: static; background: #222; color: #fff; }
@@ -145,7 +162,7 @@ h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margi
     </div>
 
     <label class="drop" id="drop" tabindex="0">
-      <input type="file" id="file" accept=".mvr,.csv,.txt,.json,.oplanfeu" hidden>
+      <input type="file" id="file" accept=".mvr,.gdtf,.csv,.txt,.json,.oplanfeu" hidden>
       <div id="dropText"><b data-i18n="dropTitle">Ouvrir ou importer</b><span data-i18n="dropSub">MVR (WYSIWYG, Capture, grandMA3…), CSV de patch, ou dossier OPlanFeu (.json)</span></div>
     </label>
 
@@ -184,8 +201,8 @@ h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margi
     <div class="toolbar">
       <div class="tabs" id="tabs">
         <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
-        <button type="button" data-v="positions" data-i18n="tabPositions">Positions</button>
-        <button type="button" data-v="inventory" data-i18n="tabInventory">Inventaire</button>
+        <button type="button" data-v="rigging" data-i18n="tabRigging">Accroches et charges</button>
+        <button type="button" data-v="inventory" data-i18n="tabInventory">Types et inventaire</button>
       </div>
       <div class="filters" id="filters">
         <input type="search" id="q" data-i18n-ph="searchPh" placeholder="Rechercher…">
@@ -204,6 +221,7 @@ h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margi
       <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
       <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
     </div>
+    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="lieuFile" accept=".json" hidden>
     <div class="view" id="view">
       <div class="empty"><div><b data-i18n="emptyTitle">Aucun dossier ouvert</b><br><span data-i18n="emptyMsg">Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.</span></div></div>
     </div>
@@ -230,7 +248,18 @@ const I18N = {
     save: 'Enregistrer le dossier (.json)', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
-    tabFixtures: 'Projecteurs', tabPositions: 'Positions', tabInventory: 'Inventaire', searchPh: 'Rechercher…',
+    tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabRigging: 'Accroches et charges', rgPoint: "Point d’accroche", rgKind: 'Type', rgLen: 'Long. (m)', rgH: 'Haut. (m)', rgCmu: 'CMU (kg)', rgCmuM: 'CMU/m (kg)', rgExtra: 'Ajouts (kg)',
+    rgFix: 'Proj.', rgFixKg: 'Projecteurs (kg)', rgAccKg: 'Access. (kg)', rgTotal: 'Total (kg)', rgLoad: 'Charge', rgStatus: 'État', rgIds: 'Fix ID (ordre en x)', rgNotes: 'Notes',
+    kperche: 'Perche', kporteuse: 'Porteuse', kpont: 'Pont', kpasserelle: 'Passerelle', kgril: 'Gril', kmur: 'Mur', kverticale: 'Verticale', ksol: 'Sol', kautre: 'Autre',
+    setAcc: 'Forfait accessoires par projecteur (kg)', setWarn: 'Alerte à partir de (% CMU)',
+    stOk: 'OK', stPart: 'à vérifier (poids manquants)', stWarn: 'proche de la CMU', stOver: 'CMU dépassée', stUnk: 'CMU à renseigner', stNa: '—', stMiss: n => `${n} poids manquant${n > 1 ? 's' : ''}`,
+    rgHint: "Poids d’un point = projecteurs (poids du type) + forfait accessoires × nombre de projecteurs + ajouts (pont, moteur, décor…). Les points sont créés à partir des positions du dossier : renseigne leur CMU. Les poids des types se règlent dans « Types et inventaire ».",
+    addPoint: 'Ajouter un point', newPoint: 'Nouveau point', lieuSave: 'Enregistrer le lieu (.json)', lieuLoad: 'Charger un lieu…', lieuLoaded: n => `Lieu chargé : ${n} point(s) mis à jour ou ajoutés.`, notLieu: "Ce fichier n’est pas un fichier de lieu OPlanFeu.",
+    delPointAsk: n => `Supprimer le point « ${n} » ?`, printLoads: 'Feuille de charges',
+    alOver: n => `${n} point(s) d’accroche au-delà de la CMU`, alWarn: n => `${n} point(s) d’accroche proches de la CMU`, alNoCmu: n => `${n} point(s) d’accroche sans CMU`,
+    invGdtf: 'GDTF', gdtfAdd: 'Ajouter…', gdtfGet: 'Télécharger', gdtfAttached: n => `GDTF ajouté au type « ${n} ».`, gdtfBad: "Ce fichier n’est pas un GDTF lisible.",
+    invHint: "Chaque type garde son fichier GDTF (modes, canaux, poids, puissance) : il vient du MVR, ou s’ajoute avec « Ajouter… » ou en déposant un fichier .gdtf sur la page. Renseigne aussi le stock du lieu, le poids et la puissance quand le GDTF ne les donne pas.",
     allPos: 'Toutes les positions', allTypes: 'Tous les types', noPos: '(sans position)',
     count: (n, m) => n === m ? `${n} projecteurs` : `${n} / ${m} projecteurs`,
     selCount: n => `${n} sélectionné${n > 1 ? 's' : ''}`, bApply: 'Appliquer', bRenum: 'Numéroter…', bDelete: 'Supprimer', bNone: 'Désélectionner',
@@ -242,7 +271,6 @@ const I18N = {
     alDup: n => `${n} Fix ID en double`, alAddr: n => `${n} adresse(s) de départ en double`, alOvl: n => `${n} chevauchement(s) de plage DMX`, alUnp: n => `${n} projecteur(s) sans patch`,
     posTitle: 'Positions', posFix: n => `${n} proj.`, posWeight: w => `≈ ${w} kg`, posPower: p => `≈ ${p} W`, posUnknown: "Hauteur moyenne des projecteurs de chaque position. Les poids et puissances totaux apparaissent quand ils sont renseignés dans l’inventaire.", partial: '(partiel)',
     invTitle: 'Inventaire', invType: 'Type', invMaker: 'Fabricant', invModes: 'Modes (canaux)', invQty: 'Dans le dossier', invStock: 'Stock du lieu', invMissing: 'Manque', invWeight: 'Poids unitaire (kg)', invPower: 'Puissance (W)', invTotal: 'Total',
-    invHint: 'Les quantités viennent du dossier. Renseigne le stock du lieu pour voir ce qui manque, et le poids et la puissance pour avoir les totaux par position.',
     readErr: 'Fichier illisible :', notMvr: 'Ce fichier ne ressemble pas à un MVR.', noFixtures: 'Aucun projecteur trouvé dans ce fichier.', replaceAsk: 'Remplacer le dossier ouvert par ce fichier ?',
     noCols: 'Colonnes non reconnues : il faut au moins une colonne de patch (ou univers + adresse) ou de numéro de projecteur.',
     imported: (n, s) => `Importé : ${n} projecteurs depuis ${s}`, untitled: 'Dossier sans titre', printTitle: v => v,
@@ -256,7 +284,18 @@ const I18N = {
     save: 'Save the dossier (.json)', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
-    tabFixtures: 'Fixtures', tabPositions: 'Positions', tabInventory: 'Inventory', searchPh: 'Search…',
+    tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabRigging: 'Rigging and loads', rgPoint: 'Rigging point', rgKind: 'Type', rgLen: 'Length (m)', rgH: 'Height (m)', rgCmu: 'WLL (kg)', rgCmuM: 'WLL/m (kg)', rgExtra: 'Extra (kg)',
+    rgFix: 'Fix.', rgFixKg: 'Fixtures (kg)', rgAccKg: 'Access. (kg)', rgTotal: 'Total (kg)', rgLoad: 'Load', rgStatus: 'Status', rgIds: 'Fix ID (in x order)', rgNotes: 'Notes',
+    kperche: 'Bar', kporteuse: 'Flown bar', kpont: 'Truss', kpasserelle: 'Catwalk', kgril: 'Grid', kmur: 'Wall', kverticale: 'Boom', ksol: 'Floor', kautre: 'Other',
+    setAcc: 'Accessories allowance per fixture (kg)', setWarn: 'Warn from (% WLL)',
+    stOk: 'OK', stPart: 'to check (missing weights)', stWarn: 'close to WLL', stOver: 'WLL exceeded', stUnk: 'WLL missing', stNa: '—', stMiss: n => `${n} missing weight${n > 1 ? 's' : ''}`,
+    rgHint: 'Load of a point = fixtures (type weight) + accessories allowance × number of fixtures + extra (truss, hoist, set…). Points are created from the positions in the dossier: fill in their working load limit (WLL). Type weights are set in “Types and inventory”.',
+    addPoint: 'Add a point', newPoint: 'New point', lieuSave: 'Save the venue (.json)', lieuLoad: 'Load a venue…', lieuLoaded: n => `Venue loaded: ${n} point(s) updated or added.`, notLieu: 'This file is not an OPlanFeu venue file.',
+    delPointAsk: n => `Delete the point “${n}”?`, printLoads: 'Load sheet',
+    alOver: n => `${n} rigging point(s) over the WLL`, alWarn: n => `${n} rigging point(s) close to the WLL`, alNoCmu: n => `${n} rigging point(s) without WLL`,
+    invGdtf: 'GDTF', gdtfAdd: 'Add…', gdtfGet: 'Download', gdtfAttached: n => `GDTF added to the type “${n}”.`, gdtfBad: 'This file is not a readable GDTF.',
+    invHint: 'Each type keeps its GDTF file (modes, channels, weight, power): it comes from the MVR, or is added with “Add…” or by dropping a .gdtf file on the page. Also fill in the venue stock, and the weight and power when the GDTF does not give them.',
     allPos: 'All positions', allTypes: 'All types', noPos: '(no position)',
     count: (n, m) => n === m ? `${n} fixtures` : `${n} / ${m} fixtures`,
     selCount: n => `${n} selected`, bApply: 'Apply', bRenum: 'Number…', bDelete: 'Delete', bNone: 'Clear selection',
@@ -268,7 +307,6 @@ const I18N = {
     alDup: n => `${n} duplicate Fix ID(s)`, alAddr: n => `${n} duplicate start address(es)`, alOvl: n => `${n} overlapping DMX range(s)`, alUnp: n => `${n} unpatched fixture(s)`,
     posTitle: 'Positions', posFix: n => `${n} fix.`, posWeight: w => `≈ ${w} kg`, posPower: p => `≈ ${p} W`, posUnknown: 'Average height of the fixtures on each position. Total weight and power appear once they are filled in the inventory.', partial: '(partial)',
     invTitle: 'Inventory', invType: 'Type', invMaker: 'Manufacturer', invModes: 'Modes (channels)', invQty: 'In the dossier', invStock: 'Venue stock', invMissing: 'Missing', invWeight: 'Unit weight (kg)', invPower: 'Power (W)', invTotal: 'Total',
-    invHint: 'Quantities come from the dossier. Fill in the venue stock to see what is missing, and weight and power to get totals per position.',
     readErr: 'Cannot read file:', notMvr: 'This file does not look like an MVR.', noFixtures: 'No fixtures found in this file.', replaceAsk: 'Replace the open dossier with this file?',
     noCols: 'Columns not recognised: at least a patch column (or universe + address) or a fixture number column is needed.',
     imported: (n, s) => `Imported: ${n} fixtures from ${s}`, untitled: 'Untitled dossier', printTitle: v => v,
@@ -341,13 +379,20 @@ function cieToHex(s) {
   const m = Math.max(r, g, b, 1e-6);
   return '#' + [r, g, b].map(c => Math.round(255 * Math.max(0, c / m) ** (1 / 2.2)).toString(16).padStart(2, '0')).join('');
 }
+const toB64 = u8 => { let x = ''; for (let i = 0; i < u8.length; i += 0x8000) x += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(x); };
+const fromB64 = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
 async function readGdtf(zip, spec) {
-  const out = { modes: {}, weight: null, power: null, maker: '', name: '' };
+  try { const bytes = await zip.get(spec); return bytes ? await parseGdtf(bytes) : emptyGdtf(); } catch { return emptyGdtf(); }
+}
+const emptyGdtf = () => ({ modes: {}, weight: null, power: null, maker: '', name: '', b64: null });
+// un GDTF : modes et canaux, poids, puissance ; le fichier est gardé tel quel (base64) dans le dossier
+async function parseGdtf(bytes) {
+  const out = emptyGdtf();
   try {
-    const bytes = await zip.get(spec); if (!bytes) return out;
     const g = await unzip(bytes), d = await g.get('description.xml'); if (!d) return out;
+    out.b64 = toB64(bytes);
     const doc = xmlOf(d), ft = doc.querySelector('FixtureType');
-    if (ft) { out.maker = ft.getAttribute('Manufacturer') || ''; }
+    if (ft) { out.maker = ft.getAttribute('Manufacturer') || ''; out.name = ft.getAttribute('Name') || ''; }
     for (const m of doc.querySelectorAll('DMXModes > DMXMode')) {
       let max = 0;
       for (const c of m.querySelectorAll('DMXChannel')) for (const o of String(c.getAttribute('Offset') || '').split(',')) { const k = parseInt(o, 10); if (k > max) max = k; }
@@ -409,7 +454,7 @@ async function parseMVR(buf, fileName) {
   const types = {};
   for (const spec of specs) {
     const g = await readGdtf(zip, spec), s = splitSpec(spec);
-    types[spec] = { name: s.name, maker: g.maker || s.maker, gdtf: spec, modes: g.modes, weight: g.weight, power: g.power, stock: null };
+    types[spec] = { name: s.name, maker: g.maker || s.maker, gdtf: spec, gdtfData: g.b64, modes: g.modes, weight: g.weight, power: g.power, stock: null };
   }
   for (const f of fixtures) {
     const ty = types[f.spec];
@@ -420,7 +465,7 @@ async function parseMVR(buf, fileName) {
     f.nch = modes[f.mode] || (keys.length === 1 ? modes[keys[0]] : 0) || 0;
     delete f.spec;
   }
-  return newDossier({ fixtures, structures, types, source: fileName, titre: fileName.replace(/\.mvr$/i, '') });
+  return ensureLieu(newDossier({ fixtures, structures, types, source: fileName, titre: fileName.replace(/\.mvr$/i, '') }));
 }
 
 // ───────────── CSV (WYSIWYG, Capture, grandMA, Give Me The Patch…) ─────────────
@@ -477,7 +522,7 @@ function parseCSV(text, fileName) {
       gel: g('gel'), acc: g('acc'), purpose: g('purpose'), notes: g('notes'), color: null, x: null, y: null, z: null, m: null });
   }
   if (!fixtures.length) throw new Error(t('noFixtures'));
-  return newDossier({ fixtures, types, structures: [], source: fileName, titre: fileName.replace(/\.(csv|txt)$/i, '') });
+  return ensureLieu(newDossier({ fixtures, types, structures: [], source: fileName, titre: fileName.replace(/\.(csv|txt)$/i, '') }));
 }
 
 // ───────────── dossier ─────────────
@@ -485,20 +530,43 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'u' + Math.random()
 function newDossier({ fixtures, types, structures, source, titre }) {
   fixtures.forEach(f => { if (!f.uid) f.uid = uid(); });
   return {
-    format: 'oplanfeu', version: 1,
+    format: 'oplanfeu', version: 2,
     meta: { titre: titre || '', kind: 'lieu', date: new Date().toISOString().slice(0, 10), lieu: '', auteur: '', notes: '', source: source || '', imported: new Date().toISOString() },
-    types, fixtures, structures: structures || [],
+    types, fixtures, structures: structures || [], lieu: null,
   };
+}
+// lieu : points d'accroche (créés à partir des positions des projecteurs) et réglages
+const KINDS = ['perche', 'porteuse', 'pont', 'passerelle', 'gril', 'mur', 'verticale', 'sol', 'autre'];
+const KIND_GUESS = [[/^p\s*\d|perche/i, 'perche'], [/porteuse/i, 'porteuse'], [/pont|truss/i, 'pont'], [/passerelle|catwalk/i, 'passerelle'], [/gril|grid/i, 'gril'], [/mur|wall/i, 'mur'], [/verticale|boom|tower/i, 'verticale'], [/^sol|floor/i, 'sol']];
+const round1 = v => Math.round(v * 10) / 10;
+function ensureLieu(d) {
+  d.version = 2;
+  d.lieu = d.lieu || {};
+  d.lieu.points = d.lieu.points || [];
+  d.lieu.settings = { accKg: 1.5, warnPct: 80, ...(d.lieu.settings || {}) };
+  const have = new Set(d.lieu.points.map(p => p.name)), byPos = new Map();
+  d.fixtures.forEach(f => { if (f.position) { if (!byPos.has(f.position)) byPos.set(f.position, []); byPos.get(f.position).push(f); } });
+  for (const [name, g] of byPos) {
+    if (have.has(name)) continue;
+    const xs = g.map(f => f.x).filter(Number.isFinite), zs = g.map(f => f.z).filter(Number.isFinite);
+    d.lieu.points.push({
+      id: uid(), name, kind: (KIND_GUESS.find(([re]) => re.test(name)) || [0, 'autre'])[1],
+      length: xs.length > 1 ? round1(Math.max(...xs) - Math.min(...xs) + 1) : null,
+      height: zs.length ? round1(zs.reduce((a, b) => a + b, 0) / zs.length) : null,
+      cmu: null, cmuM: null, extra: 0, notes: '',
+    });
+  }
+  return d;
 }
 function checkDossier(d) {
   if (!d || d.format !== 'oplanfeu' || !Array.isArray(d.fixtures)) throw new Error(t('noFixtures'));
   d.types = d.types || {}; d.structures = d.structures || []; d.meta = d.meta || {};
   d.fixtures.forEach(f => { if (!f.uid) f.uid = uid(); });
-  return d;
+  return ensureLieu(d);
 }
 
 // ───────────── état ─────────────
-const state = { d: null, fileName: '', tab: store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -541,6 +609,12 @@ function refreshSide() {
   if (A.dupAddr) al.push([t('alAddr', A.dupAddr), cut(A.dupAddrList)]);
   if (A.ovl) al.push([t('alOvl', A.ovl), '']);
   if (A.unp) al.push([t('alUnp', A.unp), cut(A.unpList)]);
+  if (state.d.lieu) {
+    const R = state.d.lieu.points.map(p => [p, pointLoad(p)]), by = k => R.filter(([, r]) => r.status === k).map(([p]) => p.name);
+    if (by('over').length) al.push([t('alOver', by('over').length), cut(by('over'))]);
+    if (by('warn').length) al.push([t('alWarn', by('warn').length), cut(by('warn'))]);
+    if (by('unk').length) al.push([t('alNoCmu', by('unk').length), '']);
+  }
   $('#alerts').innerHTML = al.map(([a, d]) => `<div class="alert"><b>${esc(a)}</b>${d ? '<br>' + esc(d) : ''}</div>`).join('');
   $('#dropText').innerHTML = `<span>${esc(t('dropLoaded'))}</span><div class="fname">${esc(state.d.meta.titre || t('untitled'))}</div><span>${esc(t('dropChange'))}</span>`;
 }
@@ -602,29 +676,57 @@ function renderFixtures() {
     `<div class="gridwrap"><table class="grid"><thead><tr><th class="chk chkh nosort"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''}></th>` +
     COLS.map(c => `<th data-s="${c.k}">${esc(t(c.label))}${arrow(c.k)}</th>`).join('') + `</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
-function renderPositions() {
-  const byPos = new Map();
-  for (const f of state.d.fixtures) { const p = f.position || t('noPos'); if (!byPos.has(p)) byPos.set(p, []); byPos.get(p).push(f); }
-  const noPos = t('noPos');
-  const cards = [...byPos.entries()].sort((a, b) => (a[0] === noPos) - (b[0] === noPos) || a[0].localeCompare(b[0], LANG, { numeric: true })).map(([p, g]) => {
-    const byType = new Map(); g.forEach(f => byType.set(f.type, (byType.get(f.type) || 0) + 1));
-    let w = 0, pw = 0, wk = true, pk = true;
-    g.forEach(f => { const ty = state.d.types[f.type] || {}; if (ty.weight) w += ty.weight; else wk = false; if (ty.power) pw += ty.power; else pk = false; });
-    const zs = g.map(f => f.z).filter(v => v !== null && v !== undefined);
-    const h = zs.length ? `h ≈ ${fmtNum(zs.reduce((a, b) => a + b, 0) / zs.length)} m` : '';
-    const part = ok => ok ? '' : ' ' + t('partial');
-    const extra = [h, w ? t('posWeight', fmtNum(w)) + part(wk) : '', pw ? t('posPower', fmtNum(pw)) + part(pk) : ''].filter(Boolean).join(' · ');
-    const ids = g.map(f => f.fid).filter(Boolean).sort((a, b) => cmpKey(numKey(a), numKey(b)));
-    return `<div class="card"><h3>${esc(p)}<small>${esc(t('posFix', g.length))}</small></h3><div class="meta">${esc(extra)}</div>
-<table>${[...byType.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => `<tr><td>${esc(typeName(k))}</td><td class="num">${n}</td></tr>`).join('')}</table>
-<div class="ids">${esc(ids.join(', '))}</div></div>`;
-  });
+function pointLoad(p) {
+  const st = state.d.lieu.settings, g = state.d.fixtures.filter(f => f.position === p.name);
+  let fx = 0, miss = 0;
+  g.forEach(f => { const w = (state.d.types[f.type] || {}).weight; if (w > 0) fx += w; else miss++; });
+  const acc = g.length * (+st.accKg || 0), extra = +p.extra || 0, total = fx + acc + extra;
+  const pct = p.cmu > 0 ? total / p.cmu * 100 : null;
+  const pctM = p.cmuM > 0 && p.length > 0 ? total / p.length / p.cmuM * 100 : null;
+  const worst = Math.max(pct ?? -1, pctM ?? -1);
+  let status = p.kind === 'sol' ? 'na' : worst < 0 ? 'unk' : worst > 100 ? 'over' : worst >= (+st.warnPct || 80) ? 'warn' : 'ok';
+  if (status === 'ok' && miss) status = 'part';   // poids manquants : on ne peut pas dire que c'est bon
+  return { g, fx, miss, acc, extra, total, pct, pctM, worst, status };
+}
+function renderRigging() {
+  ensureLieu(state.d);
+  const L = state.d.lieu, st = L.settings;
+  const num = (id, f, v, w) => `<input class="c box" data-p="${esc(id)}" data-pf="${f}" inputmode="decimal" style="width:${w || 4.6}em" value="${v === null || v === undefined || v === 0 && f === 'extra' ? '' : esc(v)}">`;
+  const pts = [...L.points].sort((x, y) => (x.kind === 'sol') - (y.kind === 'sol') || x.name.localeCompare(y.name, LANG, { numeric: true }));
+  let totAll = 0, nAll = 0;
+  const rows = pts.map(p => {
+    const R = pointLoad(p); totAll += R.total; nAll += R.g.length;
+    const ids = [...R.g].sort((a, b) => (a.x ?? 0) - (b.x ?? 0)).map(f => f.fid || '?');
+    const w = Math.min(100, Math.max(0, R.worst));
+    const gauge = R.worst >= 0 ? `<span class="gauge ${R.status}"><i style="width:${w}%"></i></span>${Math.round(R.worst)} %` : '';
+    const stTxt = { ok: t('stOk'), part: t('stPart'), warn: t('stWarn'), over: t('stOver'), unk: t('stUnk'), na: t('stNa') }[R.status];
+    return `<tr data-pt="${esc(p.id)}"><td class="w-md"><input class="c box" data-p="${esc(p.id)}" data-pf="name" value="${esc(p.name)}"></td>
+<td><select class="c" data-p="${esc(p.id)}" data-pf="kind">${KINDS.map(k => `<option value="${k}"${k === p.kind ? ' selected' : ''}>${esc(t('k' + k))}</option>`).join('')}</select></td>
+<td>${num(p.id, 'length', p.length, 3.6)}</td><td>${num(p.id, 'height', p.height, 3.6)}</td><td>${num(p.id, 'cmu', p.cmu)}</td><td>${num(p.id, 'cmuM', p.cmuM)}</td>
+<td class="ro num" style="color:var(--ink)">${R.g.length}</td>
+<td class="ro num">${R.miss === R.g.length && R.miss ? '?' : fmtNum(R.fx)}${R.miss ? `<br><span class="missing" style="font-size:11px;white-space:nowrap">${esc(t('stMiss', R.miss))}</span>` : ''}</td>
+<td class="ro num">${fmtNum(R.acc)}</td><td>${num(p.id, 'extra', p.extra)}</td>
+<td class="ro num" style="color:var(--ink)"><b>${fmtNum(R.total)}</b></td>
+<td class="ro" style="white-space:nowrap">${gauge}<br><span class="st ${R.status}">${esc(stTxt)}</span></td>
+<td class="ro ids2">${esc(ids.join(', '))}</td>
+<td class="w-md"><input class="c box" data-p="${esc(p.id)}" data-pf="notes" value="${esc(p.notes || '')}"></td>
+<td class="noprint">${R.g.length ? '' : `<button type="button" class="minibtn x" data-delpt="${esc(p.id)}" title="×">×</button>`}</td></tr>`;
+  }).join('');
+  const heads = ['rgPoint', 'rgKind', 'rgLen', 'rgH', 'rgCmu', 'rgCmuM', 'rgFix', 'rgFixKg', 'rgAccKg', 'rgExtra', 'rgTotal', 'rgLoad', 'rgIds', 'rgNotes'];
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabPositions'))}</h1><p class="hint" style="margin:14px 0 0">${esc(t('posUnknown'))}</p><div class="cards">${cards.join('')}</div>`;
+  $('#view').innerHTML = `<h1 class="ptitle">${esc(t('printLoads'))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>
+<p class="hint noprint" style="margin:14px 0 0">${esc(t('rgHint'))}</p>
+<div class="settings"><label>${esc(t('setAcc'))} <input id="setAcc" data-set="accKg" inputmode="decimal" value="${esc(st.accKg)}"></label>
+<label>${esc(t('setWarn'))} <input id="setWarn" data-set="warnPct" inputmode="decimal" value="${esc(st.warnPct)}"></label>
+<span class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="addPoint">${esc(t('addPoint'))}</button>
+<button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
+<div class="gridwrap"><table class="grid"><thead><tr>${heads.map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead>
+<tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td></td><td></td><td></td>
+<td class="ro num" style="color:var(--ink)"><b>${nAll}</b></td><td></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${fmtNum(totAll)}</b></td><td></td><td></td><td></td><td class="noprint"></td></tr></tbody></table></div>`;
 }
 function renderInventory() {
   const qty = new Map(); state.d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
-  const keys = [...new Set([...Object.keys(state.d.types), ...qty.keys()])].filter(k => qty.get(k)).sort((a, b) => typeName(a).localeCompare(typeName(b)));
+  const keys = [...new Set([...Object.keys(state.d.types), ...qty.keys()])].sort((a, b) => typeName(a).localeCompare(typeName(b)));
   let tq = 0, tm = 0, tw = 0, tp = 0;
   const rows = keys.map(k => {
     const ty = state.d.types[k] || (state.d.types[k] = { name: k, maker: '', gdtf: '', modes: {}, weight: null, power: null, stock: null });
@@ -633,15 +735,16 @@ function renderInventory() {
     const modes = Object.entries(ty.modes || {}).map(([m, c]) => `${m || '—'} (${c})`).join(', ');
     const inp = (f, v) => `<input class="c box" data-t="${esc(k)}" data-f="${f}" inputmode="decimal" value="${v === null || v === undefined ? '' : esc(v)}">`;
     return `<tr><td class="ro" style="color:var(--ink)"><b>${esc(ty.name)}</b></td><td class="ro">${esc(ty.maker)}</td><td class="ro">${esc(modes)}</td>
-<td class="ro num" style="color:var(--ink)"><b>${n}</b></td><td class="w-unit">${inp('stock', ty.stock)}</td>
+<td class="ro num" style="color:var(--ink)"><b>${n || ''}</b></td><td class="w-unit">${inp('stock', ty.stock)}</td>
 <td class="ro num">${miss === null ? '' : miss ? `<span class="missing">${miss}</span>` : '<span class="okv">✓</span>'}</td>
-<td class="w-unit">${inp('weight', ty.weight)}</td><td class="w-unit">${inp('power', ty.power)}</td></tr>`;
+<td class="w-unit">${inp('weight', ty.weight)}</td><td class="w-unit">${inp('power', ty.power)}</td>
+<td class="ro">${ty.gdtfData ? `<span class="gdtfok" title="${esc(ty.gdtf || '')}">✓ GDTF</span><button type="button" class="minibtn noprint" data-gdtf-get="${esc(k)}">${esc(t('gdtfGet'))}</button>` : `<button type="button" class="minibtn noprint" data-gdtf-add="${esc(k)}">${esc(t('gdtfAdd'))}</button>`}</td></tr>`;
   }).join('');
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabInventory'))}</h1><p class="hint" style="margin:14px 0 6px">${esc(t('invHint'))}</p>
-<table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
+<div class="gridwrap"><table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower', 'invGdtf'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
-<td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td></tr></tbody></table>`;
+<td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td></tr></tbody></table></div>`;
 }
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === state.tab));
@@ -649,7 +752,7 @@ function render() {
   ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = state.tab === 'fixtures' ? '' : 'none'; });
   if (!state.d) return;
   refreshFilters(); refreshBulk();
-  if (state.tab === 'positions') renderPositions();
+  if (state.tab === 'rigging') renderRigging();
   else if (state.tab === 'inventory') renderInventory();
   else renderFixtures();
 }
@@ -700,7 +803,20 @@ view.addEventListener('click', e => {
   }
 });
 view.addEventListener('change', e => {
-  const inp = e.target.closest('input.c'); if (!inp || !state.d) return;
+  if (!state.d) return;
+  const setI = e.target.closest('[data-set]');
+  if (setI) { const v = parseFloat(setI.value.replace(',', '.')); if (!isNaN(v) && v >= 0) state.d.lieu.settings[setI.dataset.set] = v; touch(); render(); return; }
+  const pf = e.target.closest('[data-p]');
+  if (pf) {
+    const p = state.d.lieu.points.find(x => x.id === pf.dataset.p); if (!p) return;
+    const k = pf.dataset.pf, v = pf.value.trim();
+    if (k === 'name') {                    // renommer un point renomme la position de ses projecteurs
+      if (v && v !== p.name && !state.d.lieu.points.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.position === p.name) f.position = v; }); p.name = v; }
+    } else if (k === 'kind' || k === 'notes') p[k] = v;
+    else { const n = parseFloat(v.replace(',', '.')); p[k] = v === '' ? (k === 'extra' ? 0 : null) : (isNaN(n) ? p[k] : n); }
+    touch(); render(); return;
+  }
+  const inp = e.target.closest('input.c'); if (!inp) return;
   if (inp.dataset.t) {                     // inventaire : stock, poids, puissance par type
     const ty = state.d.types[inp.dataset.t], v = inp.value.trim().replace(',', '.');
     ty[inp.dataset.f] = v === '' ? null : (isNaN(+v) ? ty[inp.dataset.f] : +v);
@@ -727,6 +843,63 @@ view.addEventListener('keydown', e => {
   const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
   if (next) { next.focus(); next.select(); }
 });
+view.addEventListener('click', async e => {
+  if (!state.d) return;
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.id === 'addPoint') {
+    let n = t('newPoint'), i = 2; while (state.d.lieu.points.some(p => p.name === n)) n = `${t('newPoint')} ${i++}`;
+    state.d.lieu.points.push({ id: uid(), name: n, kind: 'perche', length: null, height: null, cmu: null, cmuM: null, extra: 0, notes: '' });
+    touch(); render();
+  } else if (b.dataset.delpt) {
+    const p = state.d.lieu.points.find(x => x.id === b.dataset.delpt);
+    if (p && confirm(t('delPointAsk', p.name))) { state.d.lieu.points = state.d.lieu.points.filter(x => x !== p); touch(); render(); }
+  } else if (b.id === 'saveLieu') {
+    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, settings: state.d.lieu.settings };
+    download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
+  } else if (b.id === 'loadLieu') $('#lieuFile').click();
+  else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
+  else if (b.dataset.gdtfGet) {
+    const ty = state.d.types[b.dataset.gdtfGet]; if (!ty || !ty.gdtfData) return;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([fromB64(ty.gdtfData)], { type: 'application/zip' }));
+    a.download = ty.gdtf || slug(ty.name) + '.gdtf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+});
+// lieu enregistré : les points de même nom sont mis à jour, les autres ajoutés
+$('#lieuFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
+  try {
+    const L = JSON.parse(decode(await f.arrayBuffer()));
+    if (!L || L.format !== 'oplanfeu-lieu' || !Array.isArray(L.points)) throw new Error(t('notLieu'));
+    let n = 0;
+    for (const q of L.points) {
+      const p = state.d.lieu.points.find(x => x.name === q.name);
+      if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu.points.push({ ...q, id: uid() });
+      n++;
+    }
+    if (L.settings) state.d.lieu.settings = { ...state.d.lieu.settings, ...L.settings };
+    touch(); render(); alert(t('lieuLoaded', n));
+  } catch (err) { alert(t('readErr') + ' ' + err.message); }
+});
+// GDTF ajouté à un type (bouton « Ajouter… » ou fichier déposé)
+async function attachGdtf(bytes, fileName, key) {
+  const g = await parseGdtf(bytes);
+  if (!g.b64) throw new Error(t('gdtfBad'));
+  const s2 = splitSpec(fileName), lc = x => String(x || '').toLowerCase();
+  const names = [s2.name, g.name].filter(Boolean).map(lc);
+  if (!key) key = Object.keys(state.d.types).find(k => names.includes(lc(state.d.types[k].name)) || lc(state.d.types[k].gdtf) === lc(fileName)) || fileName;
+  const ty = state.d.types[key] || (state.d.types[key] = { name: g.name || s2.name, maker: '', gdtf: '', modes: {}, weight: null, power: null, stock: null });
+  Object.assign(ty, { gdtf: fileName, gdtfData: g.b64, maker: ty.maker || g.maker || s2.maker, modes: { ...g.modes, ...ty.modes } });
+  if (!(ty.weight > 0) && g.weight) ty.weight = g.weight;
+  if (!(ty.power > 0) && g.power) ty.power = g.power;
+  state.d.fixtures.forEach(f => { if (f.type === key && !f.nch) { const ks = Object.keys(ty.modes); f.nch = ty.modes[f.mode] || (ks.length === 1 ? ty.modes[ks[0]] : 0) || 0; } });
+  touch(); render();
+  return ty.name;
+}
+$('#gdtfFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
+  try { const k = state.gdtfTarget; state.gdtfTarget = null; alert(t("gdtfAttached", await attachGdtf(new Uint8Array(await f.arrayBuffer()), f.name, k))); }
+  catch (err) { alert(t('readErr') + ' ' + err.message); }
+});
 $('#q').addEventListener('input', e => { state.q = e.target.value; renderFixtures(); });
 $('#fPos').addEventListener('change', e => { state.fPos = e.target.value; render(); });
 $('#fType').addEventListener('change', e => { state.fType = e.target.value; render(); });
@@ -739,6 +912,10 @@ async function openFile(file) {
     const buf = await file.arrayBuffer();
     const u8 = new Uint8Array(buf.slice(0, 4));
     let d;
+    if (u8[0] === 0x50 && u8[1] === 0x4b && /\.gdtf$/i.test(file.name)) {          // un GDTF seul : ajouté au dossier ouvert
+      if (!state.d) throw new Error(t('gdtfBad'));
+      alert(t('gdtfAttached', await attachGdtf(new Uint8Array(buf), file.name, null))); return;
+    }
     if (u8[0] === 0x50 && u8[1] === 0x4b) d = await parseMVR(buf, file.name);         // « PK » : zip → MVR
     else {
       const text = decode(buf);
