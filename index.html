@@ -152,6 +152,12 @@ details.series input { width: 4.5em; }
 .lab .l2 { font-size: 8.5pt; font-weight: 600; } .lab .l3 { font-size: 8.5pt; } .lab .l4 { font-size: 7.5pt; color: #333; line-height: 1.2; }
 .lab.board { width: 128mm; } .lab.board .n { font-size: 24pt; }
 h2.bd { font-size: 14px; margin: 18px 0 4px; }
+.chain { font-size: 11.5px; color: var(--muted); white-space: normal; min-width: 12em; max-width: 30em; }
+table.grid td.chain { white-space: normal; }
+.lab.dmx .n { font-size: 15pt; } .lab .end { font-size: 7pt; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; border: 1px solid #000; border-radius: 1mm; padding: 0 1mm; }
+.lab.jar { width: 40mm; height: 15mm; padding: 1mm 2mm; } .lab.jar .n { font-size: 10pt; } .lab.jar .l4 { font-size: 7pt; }
+.checks { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; margin: 10px 0 0; color: var(--muted); } .checks label { display: flex; gap: 5px; align-items: center; }
+input.ipbad { color: var(--err) !important; font-weight: 600; }
 @media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
 
 /* impression : la vue affichée, sans l'interface */
@@ -230,6 +236,7 @@ h2.bd { font-size: 14px; margin: 18px 0 4px; }
         <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
         <button type="button" data-v="rigging" data-i18n="tabRigging">Accroches et charges</button>
         <button type="button" data-v="elec" data-i18n="tabElec">Électricité</button>
+        <button type="button" data-v="net" data-i18n="tabNet">DMX et réseau</button>
         <button type="button" data-v="inventory" data-i18n="tabInventory">Types et inventaire</button>
       </div>
       <div class="filters" id="filters">
@@ -278,6 +285,20 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabNet: 'DMX et réseau', nvUniv: 'Univers', nvDmx: 'Lignes DMX', nvNet: 'Réseau', nvLabels: 'Étiquettes DMX',
+    cDmxLine: 'Ligne DMX', unU: 'Univers', unSacn: 'sACN', unArt: 'Art-Net (net:sub:uni)', unFix: 'Projecteurs', unUsed: 'Canaux utilisés', unMax: 'Dernière adresse', unLines: 'Lignes DMX', unSrc: 'Sources',
+    unHint: "Univers utilisés par le patch du dossier ou par les lignes DMX. Numéro sACN = numéro d’univers ; Art-Net = univers − décalage (1 par défaut : l’univers 1 du patch est l’univers Art-Net 0:0:0).",
+    setProto: 'Protocole', setArtBase: 'Décalage Art-Net', setNet: 'Réseau', setMask: 'Masque', setGw: 'Passerelle',
+    dmxHint: "Une ligne DMX part d’un port de node (ou d’une console, d’un splitter) et porte un univers jusqu’à un point d’accroche. Les projecteurs s’y raccrochent dans l’onglet Projecteurs (colonne « Ligne DMX ») ou avec « Répartir automatiquement » : même univers et même position que la ligne. Le chaînage suit l’ordre en x sur le point.",
+    dlName: 'Ligne', dlSrc: 'Source', dlPort: 'Port', dlU: 'Univers', dlDest: 'Arrivée', dlLen: 'Long. (m)', dlChain: 'Chaînage (ordre en x)', dlN: 'Proj.', dlNotes: 'Notes',
+    addDmx: 'Ajouter une ligne DMX', dmxSeries: 'Créer une série de lignes DMX', srPort: 'premier port', srU: 'premier univers', srUStep: 'univers', srUSame: 'le même', srUInc: '+1 par ligne', srPortInc: 'port +1 par ligne',
+    autoDmx: 'Répartir automatiquement', autoDone: (n, m) => `${n} projecteur(s) raccroché(s) à une ligne DMX, ${m} sans ligne possible.`, delDmxAsk: n => `Supprimer la ligne DMX « ${n} » ?`,
+    netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, ordinateurs, serveurs média… Les adresses en double, hors du réseau, et les ports de switch occupés deux fois sont signalés.",
+    dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
+    kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
+    addDev: 'Ajouter un appareil', newDev: 'Appareil', delDevAsk: n => `Supprimer l’appareil « ${n} » ?`, ipDup: 'adresse en double', ipOut: 'hors du réseau', portDup: 'port déjà pris',
+    labDmxHint: 'Une étiquette à chaque bout de chaque ligne DMX (départ et arrivée), et en option une petite étiquette par projecteur pour les jarretières.', labEnds: 'Départ et arrivée', labJar: 'Jarretières (une par projecteur)', endA: 'départ', endB: 'arrivée',
+    alDmxU: n => `${n} projecteur(s) sur une ligne DMX d’un autre univers`, alDmx32: n => `${n} ligne(s) DMX de plus de 32 projecteurs`, alNoDmx: n => `${n} projecteur(s) sur une ligne DMX inconnue`, alIp: n => `${n} problème(s) d’adressage réseau`,
     tabElec: 'Électricité', evLines: 'Tableaux et lignes', evSyno: 'Synoptique', evLabels: 'Étiquettes',
     cCircuit: 'Ligne élec.', bLines: 'Lignes à la suite…', linesAsk: 'Première ligne (les projecteurs sélectionnés prennent les lignes suivantes, dans l’ordre du tableau des lignes) :', lineUnknown: n => `Ligne « ${n} » introuvable.`,
     setVolts: 'Tension (V)', setElWarn: 'Alerte à partir de (% calibre)',
@@ -327,6 +348,20 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabNet: 'DMX and network', nvUniv: 'Universes', nvDmx: 'DMX lines', nvNet: 'Network', nvLabels: 'DMX labels',
+    cDmxLine: 'DMX line', unU: 'Universe', unSacn: 'sACN', unArt: 'Art-Net (net:sub:uni)', unFix: 'Fixtures', unUsed: 'Channels used', unMax: 'Last address', unLines: 'DMX lines', unSrc: 'Sources',
+    unHint: 'Universes used by the patch of the dossier or by the DMX lines. sACN number = universe number; Art-Net = universe − offset (1 by default: patch universe 1 is Art-Net universe 0:0:0).',
+    setProto: 'Protocol', setArtBase: 'Art-Net offset', setNet: 'Network', setMask: 'Mask', setGw: 'Gateway',
+    dmxHint: 'A DMX line leaves a node port (or a console, a splitter) and carries one universe to a rigging point. Fixtures are attached in the Fixtures tab (“DMX line” column) or with “Auto-assign”: same universe and same position as the line. The daisy chain follows the x order on the point.',
+    dlName: 'Line', dlSrc: 'Source', dlPort: 'Port', dlU: 'Universe', dlDest: 'Lands at', dlLen: 'Length (m)', dlChain: 'Daisy chain (x order)', dlN: 'Fix.', dlNotes: 'Notes',
+    addDmx: 'Add a DMX line', dmxSeries: 'Create a series of DMX lines', srPort: 'first port', srU: 'first universe', srUStep: 'universe', srUSame: 'same', srUInc: '+1 per line', srPortInc: 'port +1 per line',
+    autoDmx: 'Auto-assign', autoDone: (n, m) => `${n} fixture(s) attached to a DMX line, ${m} with no possible line.`, delDmxAsk: n => `Delete the DMX line “${n}”?`,
+    netHint: 'Every device on the lighting network: consoles, nodes, switches, computers, media servers… Duplicate addresses, addresses outside the network and switch ports used twice are flagged.',
+    dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
+    kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
+    addDev: 'Add a device', newDev: 'Device', delDevAsk: n => `Delete the device “${n}”?`, ipDup: 'duplicate address', ipOut: 'outside the network', portDup: 'port already used',
+    labDmxHint: 'One label at each end of each DMX line (source and landing), and optionally a small label per fixture for the jumpers.', labEnds: 'Source and landing', labJar: 'Jumpers (one per fixture)', endA: 'source', endB: 'landing',
+    alDmxU: n => `${n} fixture(s) on a DMX line of another universe`, alDmx32: n => `${n} DMX line(s) with more than 32 fixtures`, alNoDmx: n => `${n} fixture(s) on an unknown DMX line`, alIp: n => `${n} network addressing issue(s)`,
     tabElec: 'Electrics', evLines: 'Boards and lines', evSyno: 'One-line diagram', evLabels: 'Labels',
     cCircuit: 'Power line', bLines: 'Consecutive lines…', linesAsk: 'First line (selected fixtures take the following lines, in the order of the lines table):', lineUnknown: n => `Line “${n}” not found.`,
     setVolts: 'Voltage (V)', setElWarn: 'Warn from (% rating)',
@@ -601,6 +636,9 @@ function ensureLieu(d) {
   d.lieu.settings = { accKg: 1.5, warnPct: 80, volts: 230, elWarnPct: 80, ...(d.lieu.settings || {}) };
   d.lieu.boards = d.lieu.boards || [];
   d.lieu.lines = d.lieu.lines || [];
+  d.lieu.dmxLines = d.lieu.dmxLines || [];
+  d.lieu.devices = d.lieu.devices || [];
+  d.lieu.settings = { proto: 'artnet', artBase: 1, net: '2.0.0.0', mask: '255.0.0.0', gw: '', ...d.lieu.settings };
   const have = new Set(d.lieu.points.map(p => p.name)), byPos = new Map();
   d.fixtures.forEach(f => { if (f.position) { if (!byPos.has(f.position)) byPos.set(f.position, []); byPos.get(f.position).push(f); } });
   for (const [name, g] of byPos) {
@@ -623,7 +661,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -680,6 +718,19 @@ function refreshSide() {
       const bo = state.d.lieu.boards.filter(b => boardLoad(b).over).map(b => b.name);
       if (bo.length) al.push([t('alBoardOver', bo.length), cut(bo)]);
     }
+    const DL = new Map(state.d.lieu.dmxLines.map(x => [x.name, x]));
+    if (DL.size) {
+      const unk = state.d.fixtures.filter(f => f.dmxLine && !DL.has(f.dmxLine));
+      if (unk.length) al.push([t('alNoDmx', unk.length), cut(unk.map(f => `${f.fid || '?'} (${f.dmxLine})`))]);
+      const wu = state.d.fixtures.filter(f => f.dmxLine && DL.has(f.dmxLine) && f.univ && DL.get(f.dmxLine).universe && DL.get(f.dmxLine).universe !== f.univ);
+      if (wu.length) al.push([t('alDmxU', wu.length), cut(wu.map(f => `${f.fid || '?'} (U${f.univ} ≠ ${f.dmxLine})`))]);
+      const big = [...DL.values()].filter(x => dmxChain(x).length > 32).map(x => x.name);
+      if (big.length) al.push([t('alDmx32', big.length), cut(big)]);
+    }
+    if (state.d.lieu.devices.length) {
+      const iss = netIssues();
+      if (iss.size) al.push([t('alIp', iss.size), cut([...iss.keys()].map(id => (state.d.lieu.devices.find(d => d.id === id) || {}).name))]);
+    }
   }
   $('#alerts').innerHTML = al.map(([a, d]) => `<div class="alert"><b>${esc(a)}</b>${d ? '<br>' + esc(d) : ''}</div>`).join('');
   $('#dropText').innerHTML = `<span>${esc(t('dropLoaded'))}</span><div class="fname">${esc(state.d.meta.titre || t('untitled'))}</div><span>${esc(t('dropChange'))}</span>`;
@@ -694,7 +745,7 @@ const COLS = [
   { k: 'type', label: 'cType', ro: f => esc(typeName(f.type)) }, { k: 'mode', label: 'cMode', ro: f => esc(f.mode) },
   { k: 'nch', label: 'cNch', edit: true, cls: 'w-unit', num: true }, { k: 'patch', label: 'cPatch', edit: true, cls: 'w-patch' },
   { k: 'position', label: 'cPosition', edit: true, cls: 'w-md', list: 'posList' }, { k: 'layer', label: 'cLayer', edit: true, cls: 'w-sm', list: 'layerList' },
-  { k: 'circuit', label: 'cCircuit', edit: true, cls: 'w-unit2', list: 'lineList' },
+  { k: 'circuit', label: 'cCircuit', edit: true, cls: 'w-unit2', list: 'lineList' }, { k: 'dmxLine', label: 'cDmxLine', edit: true, cls: 'w-unit2', list: 'dmxList' },
   { k: 'gel', label: 'cGel', edit: true, cls: 'w-sm' }, { k: 'acc', label: 'cAcc', edit: true, cls: 'w-sm' },
   { k: 'purpose', label: 'cPurpose', edit: true, cls: 'w-md' }, { k: 'notes', label: 'cNotes', edit: true, cls: 'w-md' },
   { k: 'xyz', label: 'cXyz', ro: f => f.x === null || f.x === undefined ? '' : `<span class="xyz">${[f.x, f.y, f.z].map(v => v.toFixed(2)).join(' · ')}</span>` },
@@ -704,7 +755,7 @@ function visible() {
   const q = state.q.trim().toLowerCase();
   let list = state.d.fixtures.filter(f =>
     (!state.fPos || (f.position || '\u0000') === state.fPos) && (!state.fType || f.type === state.fType) &&
-    (!q || [f.fid, f.unit, f.name, typeName(f.type), f.mode, patchText(f), f.layer, f.position, f.circuit, f.gel, f.acc, f.purpose, f.notes].some(v => String(v || '').toLowerCase().includes(q))));
+    (!q || [f.fid, f.unit, f.name, typeName(f.type), f.mode, patchText(f), f.layer, f.position, f.circuit, f.dmxLine, f.gel, f.acc, f.purpose, f.notes].some(v => String(v || '').toLowerCase().includes(q))));
   const { k, dir } = state.sort;
   list.sort((a, b) => {
     const va = getVal(a, k), vb = getVal(b, k);
@@ -728,20 +779,21 @@ function renderFixtures() {
   const arrow = k => state.sort.k === k ? ` <span class="ar">${state.sort.dir > 0 ? '▲' : '▼'}</span>` : '';
   const allSel = list.length && list.every(f => state.sel.has(f.uid));
   const dl = (id, vals) => `<datalist id="${id}">${[...new Set(vals.filter(Boolean))].sort().map(v => `<option value="${esc(v)}">`).join('')}</datalist>`;
-  const lineNames = new Set(state.d.lieu.lines.map(l => l.name));
+  const lineNames = new Set(state.d.lieu.lines.map(l => l.name)), dmxByName = new Map(state.d.lieu.dmxLines.map(x => [x.name, x]));
   const dupIds = new Set(); { const seen = new Set(); state.d.fixtures.forEach(f => { if (f.fid) { if (seen.has(f.fid)) dupIds.add(f.fid); seen.add(f.fid); } }); }
   const rows = list.map(f => {
     const cells = COLS.map(c => {
       if (!c.edit) return `<td class="ro">${c.k === 'type' && f.color ? `<span class="sw" style="background:${f.color}"></span>` : ''}${c.ro(f)}</td>`;
       const v = c.k === 'patch' ? patchText(f) : (f[c.k] ?? '');
-      const bad = c.k === 'fid' && dupIds.has(f.fid) || c.k === 'circuit' && f.circuit && !lineNames.has(f.circuit);
+      const bad = c.k === 'fid' && dupIds.has(f.fid) || c.k === 'circuit' && f.circuit && !lineNames.has(f.circuit)
+        || c.k === 'dmxLine' && f.dmxLine && (!dmxByName.has(f.dmxLine) || f.univ && dmxByName.get(f.dmxLine).universe && dmxByName.get(f.dmxLine).universe !== f.univ);
       return `<td class="${c.cls || ''}"><input class="c${bad ? ' bad' : ''}" data-k="${c.k}" value="${esc(v === 0 && c.k === 'nch' ? '' : v)}"${c.list ? ` list="${c.list}"` : ''}${c.num ? ' inputmode="numeric"' : ''}></td>`;
     }).join('');
     return `<tr data-u="${esc(f.uid)}" class="${state.sel.has(f.uid) ? 'sel' : ''}"><td class="chk"><input type="checkbox" class="rs"${state.sel.has(f.uid) ? ' checked' : ''}></td>${cells}</tr>`;
   }).join('');
   $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabFixtures'))}</h1>` +
     dl('posList', [...state.d.fixtures.map(f => f.position), ...state.d.lieu.points.map(p => p.name)]) + dl('layerList', state.d.fixtures.map(f => f.layer)) +
-    dl('lineList', state.d.lieu.lines.map(l => l.name)) +
+    dl('lineList', state.d.lieu.lines.map(l => l.name)) + dl('dmxList', state.d.lieu.dmxLines.map(x => x.name)) +
     `<div class="gridwrap"><table class="grid"><thead><tr><th class="chk chkh nosort"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''}></th>` +
     COLS.map(c => `<th data-s="${c.k}">${esc(t(c.label))}${arrow(c.k)}</th>`).join('') + `</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -810,7 +862,7 @@ function renderElec() {
     return `<tr><td>${inL(l, 'name', l.name, 5.5)}</td>
 <td><select class="c" data-l="${esc(l.id)}" data-lf="board"><option value=""></option>${opt(boardNames, l.board)}</select></td>
 <td><select class="c" data-l="${esc(l.id)}" data-lf="kind">${opt(['grada', 'direct'], l.kind, v => t('k' + v))}</select></td>
-<td><select class="c" data-l="${esc(l.id)}" data-lf="phase">${opt(PHASES, l.phase, v => v === 'tri' ? t('sTri') : v)}</select></td>
+<td><select class="c" data-l="${esc(l.id)}" data-lf="phase">${opt(l.kind === 'grada' ? ['L1', 'L2', 'L3'] : PHASES, l.phase, v => v === 'tri' ? t('sTri') : v)}</select></td>
 <td>${inL(l, 'amps', l.amps, 3, 1)}</td>
 <td><select class="c" data-l="${esc(l.id)}" data-lf="dest"><option value=""></option>${opt(pointNames, l.dest)}</select></td>
 <td>${inL(l, 'dimmer', l.dimmer, 5)}</td><td>${inL(l, 'dmx', l.dmx, 4.5)}</td>
@@ -911,6 +963,123 @@ function renderElecLabels() {
   }
   return out;
 }
+// ───────────── DMX et réseau ─────────────
+const DEV_KINDS = ['console', 'node', 'splitter', 'switch', 'pc', 'media', 'wifi', 'other'];
+const ipInt = s => { const m = /^\s*(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\s*$/.exec(s || ''); return m && m.slice(1).every(x => +x < 256) ? ((+m[1] << 24) >>> 0) + (+m[2] << 16) + (+m[3] << 8) + +m[4] : null; };
+const artAddr = u => { const a = u - (+state.d.lieu.settings.artBase || 0); return a < 0 ? '—' : `${a >> 8}:${(a >> 4) & 15}:${a & 15}`; };
+function dmxChain(x) {   // projecteurs d'une ligne DMX, dans l'ordre du chaînage (x croissant)
+  return state.d.fixtures.filter(f => f.dmxLine && f.dmxLine === x.name).sort((a, b) => (a.x ?? 1e9) - (b.x ?? 1e9) || cmpKey(numKey(a.fid), numKey(b.fid)));
+}
+function netIssues() {   // adresses en double, hors réseau, ports de switch pris deux fois
+  const st = state.d.lieu.settings, D = state.d.lieu.devices, out = new Map(), add = (id, m) => out.set(id, [...(out.get(id) || []), m]);
+  const net = ipInt(st.net), msk = ipInt(st.mask), seen = new Map(), ports = new Map();
+  D.forEach(d => {
+    const ip = ipInt(d.ip);
+    if (d.ip && ip === null) add(d.id, 'ipOut');
+    if (ip !== null) {
+      if (seen.has(ip)) { add(d.id, 'ipDup'); add(seen.get(ip), 'ipDup'); } else seen.set(ip, d.id);
+      const m = ipInt(d.mask) ?? msk;
+      if (net !== null && m !== null && ((ip & m) >>> 0) !== ((net & m) >>> 0)) add(d.id, 'ipOut');
+    }
+    if (d.sw && d.port) { const k = d.sw + '#' + d.port; if (ports.has(k)) { add(d.id, 'portDup'); add(ports.get(k), 'portDup'); } else ports.set(k, d.id); }
+  });
+  for (const [k, v] of out) out.set(k, [...new Set(v)]);
+  return out;
+}
+function universes() {
+  const U = new Map(), get = u => U.get(u) || (U.set(u, { u, fx: [], used: 0, max: 0, lines: [] }), U.get(u));
+  state.d.fixtures.forEach(f => { if (f.univ) { const r = get(f.univ); r.fx.push(f); r.max = Math.max(r.max, f.addr + Math.max(1, f.nch || 1) - 1); } });
+  for (const r of U.values()) { const used = new Set(); r.fx.forEach(f => { for (let a = f.addr; a < f.addr + Math.max(1, f.nch || 1) && a <= 512; a++) used.add(a); }); r.used = used.size; }
+  state.d.lieu.dmxLines.forEach(x => { if (x.universe) get(x.universe).lines.push(x); });
+  return [...U.values()].sort((a, b) => a.u - b.u);
+}
+function renderNet() {
+  ensureLieu(state.d);
+  const L = state.d.lieu, st = L.settings, nv = state.netView || 'univ';
+  const head = `<div class="subtabs">${['univ', 'dmx', 'net', 'labels'].map(k => `<button type="button" data-nv="${k}"${k === nv ? ' class="on"' : ''}>${esc(t('nv' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}</div>`;
+  const title = k => `<h1 class="ptitle">${esc(t(k))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>`;
+  const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
+  const inp = (o, x, f, v, w, num, cls) => `<input class="c box${cls ? ' ' + cls : ''}" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
+  const sel = (o, x, f, inner) => `<select class="c" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}">${inner}</select>`;
+  const pointNames = L.points.map(p => p.name).sort(natCmp), srcNames = L.devices.filter(d => ['console', 'node', 'splitter'].includes(d.kind)).map(d => d.name);
+  const setRow = `<div class="settings"><label>${esc(t('setProto'))} <select data-set="proto" style="font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink)">${opt(['artnet', 'sacn'], st.proto, v => v === 'artnet' ? 'Art-Net' : 'sACN (E1.31)')}</select></label>
+<label>${esc(t('setArtBase'))} <input data-set="artBase" inputmode="numeric" value="${esc(st.artBase)}"></label>
+<label>${esc(t('setNet'))} <input data-sets="net" style="width:8em" value="${esc(st.net)}"></label><label>${esc(t('setMask'))} <input data-sets="mask" style="width:8em" value="${esc(st.mask)}"></label><label>${esc(t('setGw'))} <input data-sets="gw" style="width:8em" value="${esc(st.gw)}"></label>
+<span class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>`;
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  let body = '';
+  if (nv === 'univ') {
+    const rows = universes().map(r => {
+      const pct = r.used / 512 * 100, srcs = [...new Set(r.lines.map(x => x.src).filter(Boolean))];
+      return `<tr><td class="ro num" style="color:var(--ink)"><b>${r.u}</b></td><td class="ro num">${r.u}</td><td class="ro">${esc(artAddr(r.u))}</td><td class="ro num">${r.fx.length}</td>
+<td class="ro" style="white-space:nowrap"><span class="gauge ${r.max > 512 ? 'over' : pct > 90 ? 'warn' : 'ok'}"><i style="width:${Math.min(100, pct)}%"></i></span>${r.used} / 512</td>
+<td class="ro num${r.max > 512 ? ' missing' : ''}">${r.max || ''}</td><td class="ro chain">${esc(r.lines.map(x => x.name).sort(natCmp).join(', '))}</td><td class="ro chain">${esc(srcs.join(', '))}</td></tr>`;
+    }).join('');
+    body = title('nvUniv') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('unHint'))}</p>` + setRow +
+      `<div class="gridwrap"><table class="grid"><thead><tr>${['unU', 'unSacn', 'unArt', 'unFix', 'unUsed', 'unMax', 'unLines', 'unSrc'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  } else if (nv === 'dmx') {
+    const S = state.dmxSeries || (state.dmxSeries = { prefix: 'DMX ', from: 1, to: 8, digits: 0, src: srcNames[0] || '', port: 1, portInc: '1', u: 1, uInc: '1', dest: '' });
+    const rows = [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name)).map(x => {
+      const ch = dmxChain(x), bad = ch.filter(f => f.univ && x.universe && f.univ !== x.universe).map(f => f.fid);
+      const chain = ch.map(f => (bad.includes(f.fid) ? '⚠' : '') + (f.fid || '?')).join(' → ');
+      return `<tr><td>${inp('dmxLines', x, 'name', x.name, 6)}</td><td>${sel('dmxLines', x, 'src', '<option value=""></option>' + opt([...new Set([...srcNames, x.src].filter(Boolean))], x.src))}</td>
+<td>${inp('dmxLines', x, 'port', x.port, 3, 1)}</td><td>${inp('dmxLines', x, 'universe', x.universe, 3.4, 1)}</td>
+<td>${sel('dmxLines', x, 'dest', '<option value=""></option>' + opt(pointNames, x.dest))}</td><td>${inp('dmxLines', x, 'length', x.length, 3.4, 1)}</td>
+<td class="ro num${ch.length > 32 ? ' missing' : ''}" style="color:var(--ink)">${ch.length || ''}</td><td class="ro chain${bad.length ? ' missing' : ''}">${esc(chain)}</td>
+<td>${inp('dmxLines', x, 'notes', x.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-deldmx="${esc(x.id)}">×</button></td></tr>`;
+    }).join('');
+    body = title('nvDmx') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dmxHint'))}</p>` +
+      `<div class="settings noprint"><button type="button" class="minibtn" id="addDmx">${esc(t('addDmx'))}</button><button type="button" class="minibtn primary" id="autoDmx">${esc(t('autoDmx'))}</button>
+<span style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
+<details class="series noprint"${state.dmxSeriesOpen ? ' open' : ''} data-ser="dmx"><summary>${esc(t('dmxSeries'))}</summary><div class="row">
+<label>${esc(t('srPrefix'))} <input id="ds_prefix" value="${esc(S.prefix)}"></label><label>${esc(t('srFrom'))} <input id="ds_from" inputmode="numeric" value="${esc(S.from)}"></label><label>${esc(t('srTo'))} <input id="ds_to" inputmode="numeric" value="${esc(S.to)}"></label>
+<label>${esc(t('srDigits'))} <input id="ds_digits" inputmode="numeric" value="${esc(S.digits || '')}" placeholder="—"></label>
+<label>${esc(t('dlSrc'))} <select id="ds_src"><option value=""></option>${opt(srcNames, S.src)}</select></label>
+<label>${esc(t('srPort'))} <input id="ds_port" inputmode="numeric" value="${esc(S.port)}"></label><label><select id="ds_portInc">${opt(['1', '0'], S.portInc, v => v === '1' ? t('srPortInc') : '—')}</select></label>
+<label>${esc(t('srU'))} <input id="ds_u" inputmode="numeric" value="${esc(S.u)}"></label><label>${esc(t('srUStep'))} <select id="ds_uInc">${opt(['1', '0'], S.uInc, v => v === '1' ? t('srUInc') : t('srUSame'))}</select></label>
+<label>${esc(t('dlDest'))} <select id="ds_dest"><option value=""></option>${opt(pointNames, S.dest)}</select></label>
+<button type="button" class="minibtn primary" id="dsCreate">${esc(t('srCreate'))}</button></div></details>
+<div class="gridwrap"><table class="grid"><thead><tr>${['dlName', 'dlSrc', 'dlPort', 'dlU', 'dlDest', 'dlLen', 'dlN', 'dlChain', 'dlNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  } else if (nv === 'net') {
+    const iss = netIssues(), swNames = L.devices.filter(d => d.kind === 'switch').map(d => d.name);
+    const rows = L.devices.map(d => {
+      const pb = iss.get(d.id) || [], uu = [...new Set(L.dmxLines.filter(x => x.src === d.name).map(x => x.universe).filter(Boolean))].sort((a, b) => a - b);
+      return `<tr><td>${inp('devices', d, 'name', d.name, 9)}</td><td>${sel('devices', d, 'kind', opt(DEV_KINDS, d.kind, v => t('k' + v)))}</td>
+<td>${inp('devices', d, 'ip', d.ip, 8, 0, pb.some(m => m !== 'portDup') ? 'ipbad' : '')}${pb.filter(m => m !== 'portDup').map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join('')}</td>
+<td>${inp('devices', d, 'mask', d.mask, 7)}</td><td>${inp('devices', d, 'vlan', d.vlan, 3, 1)}</td>
+<td>${sel('devices', d, 'sw', '<option value=""></option>' + opt(swNames.filter(n => n !== d.name), d.sw))}</td><td>${inp('devices', d, 'port', d.port, 3, 0, pb.includes('portDup') ? 'ipbad' : '')}</td>
+<td>${inp('devices', d, 'mac', d.mac, 9)}</td><td>${inp('devices', d, 'location', d.location, 9)}</td><td class="ro chain">${esc(uu.join(', '))}</td>
+<td>${inp('devices', d, 'notes', d.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-deldev="${esc(d.id)}">×</button></td></tr>`;
+    }).join('');
+    body = title('nvNet') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('netHint'))}</p>` + setRow +
+      `<h2 class="sec" style="margin-top:6px">${esc(t('nvNet'))} <button type="button" class="minibtn noprint" id="addDev" style="margin-inline-start:8px">${esc(t('addDev'))}</button></h2>
+<div class="gridwrap"><table class="grid"><thead><tr>${['dvName', 'dvKind', 'dvIp', 'dvMask', 'dvVlan', 'dvSwitch', 'dvPort', 'dvMac', 'dvLoc', 'dvU', 'dvNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  } else {
+    const ends = state.labEnds !== false, jar = !!state.labJar;
+    let labs = '';
+    for (const x of [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name))) {
+      const ch = dmxChain(x), src = [x.src, x.port ? 'port ' + x.port : ''].filter(Boolean).join(' · ');
+      const one = end => `<div class="lab dmx"><div class="n">${esc(x.name)}<small><span class="end">${esc(t(end))}</span></small></div>
+<div class="l2">${x.universe ? 'U ' + esc(x.universe) + ' · ' : ''}${esc(src)}</div><div class="l3">→ ${esc(x.dest || '')}${x.length ? ' · ' + esc(x.length) + ' m' : ''}</div><div class="l4">${esc(ch.length > 10 ? `${ch.length} proj. : ${ch[0].fid || '?'} → … → ${ch[ch.length - 1].fid || '?'}` : ch.map(f => f.fid || '?').join(' → '))}</div></div>`;
+      if (ends) labs += one('endA') + one('endB');
+      if (jar) ch.forEach((f, i) => { labs += `<div class="lab jar"><div class="n">${esc(x.name)} · ${i + 1}/${ch.length}</div><div class="l4">${esc(f.fid || '?')} · ${esc(patchText(f))}${ch[i + 1] ? ' → ' + esc(ch[i + 1].fid || '?') : ''}</div></div>`; });
+    }
+    body = title('nvLabels') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('labDmxHint'))}</p>
+<div class="checks noprint"><label><input type="checkbox" id="labEnds"${ends ? ' checked' : ''}> ${esc(t('labEnds'))}</label><label><input type="checkbox" id="labJar"${jar ? ' checked' : ''}> ${esc(t('labJar'))}</label></div>
+${L.dmxLines.length ? `<div class="labs">${labs}</div>` : `<p class="hint" style="margin-top:16px">${esc(t('dmxHint'))}</p>`}`;
+  }
+  $('#view').innerHTML = head + body;
+}
+function autoDmx() {
+  const D = state.d.lieu.dmxLines; let n = 0, m = 0;
+  state.d.fixtures.forEach(f => {
+    if (f.dmxLine || !f.univ) return;
+    let c = D.filter(x => x.universe === f.univ && x.dest && x.dest === f.position);
+    if (!c.length) { const any = D.filter(x => x.universe === f.univ); if (any.length === 1) c = any; }
+    if (c.length === 1) { f.dmxLine = c[0].name; n++; } else m++;
+  });
+  return [n, m];
+}
 function renderRigging() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings;
@@ -977,12 +1146,13 @@ function render() {
   refreshFilters(); refreshBulk();
   if (state.tab === 'rigging') renderRigging();
   else if (state.tab === 'elec') renderElec();
+  else if (state.tab === 'net') renderNet();
   else if (state.tab === 'inventory') renderInventory();
   else renderFixtures();
 }
 
 // ───────────── sélection et édition groupée ─────────────
-const BULK_FIELDS = ['position', 'circuit', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
+const BULK_FIELDS = ['position', 'circuit', 'dmxLine', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
 function refreshBulk() {
   const n = [...state.sel].filter(u => state.d.fixtures.some(f => f.uid === u)).length;
   $('#bulk').classList.toggle('on', state.tab === 'fixtures' && n > 0);
@@ -1035,7 +1205,26 @@ view.addEventListener('click', e => {
 view.addEventListener('change', e => {
   if (!state.d) return;
   const setI = e.target.closest('[data-set]');
-  if (setI) { const v = parseFloat(setI.value.replace(',', '.')); if (!isNaN(v) && v >= 0) state.d.lieu.settings[setI.dataset.set] = v; touch(); render(); return; }
+  if (setI) { if (setI.tagName === 'SELECT') state.d.lieu.settings[setI.dataset.set] = setI.value; else { const v = parseFloat(setI.value.replace(',', '.')); if (!isNaN(v) && v >= 0) state.d.lieu.settings[setI.dataset.set] = v; } touch(); render(); return; }
+  const setS = e.target.closest('[data-sets]');
+  if (setS) { state.d.lieu.settings[setS.dataset.sets] = setS.value.trim(); touch(); render(); return; }
+  if (e.target.id === 'labEnds' || e.target.id === 'labJar') { state[e.target.id] = e.target.checked; render(); return; }
+  if (e.target.id && e.target.id.startsWith('ds_')) { state.dmxSeries[e.target.id.slice(3)] = e.target.value; return; }
+  const go = e.target.closest('[data-o]');
+  if (go) {
+    const col = state.d.lieu[go.dataset.o], x = col && col.find(y => y.id === go.dataset.id); if (!x) return;
+    const k = go.dataset.f, v = go.value.trim();
+    if (k === 'name') {
+      if (v && v !== x.name && !col.some(y => y.name === v)) {
+        if (go.dataset.o === 'dmxLines') state.d.fixtures.forEach(f => { if (f.dmxLine === x.name) f.dmxLine = v; });
+        if (go.dataset.o === 'devices') { state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
+        x.name = v;
+      }
+    } else if (['universe', 'port', 'length', 'vlan'].includes(k) && !(go.dataset.o === 'devices' && k === 'port')) {
+      const n = parseFloat(v.replace(',', '.')); x[k] = v === '' ? null : isNaN(n) ? x[k] : n;
+    } else x[k] = v;
+    touch(); render(); return;
+  }
   const bf = e.target.closest('[data-b]');
   if (bf) {
     const b = state.d.lieu.boards.find(x => x.id === bf.dataset.b); if (!b) return;
@@ -1052,6 +1241,7 @@ view.addEventListener('change', e => {
     if (k === 'name') { if (v && v !== l.name && !state.d.lieu.lines.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.circuit === l.name) f.circuit = v; }); l.name = v; } }
     else if (k === 'amps') { const n = parseFloat(v.replace(',', '.')); l.amps = v === '' ? null : isNaN(n) ? l.amps : n; }
     else l[k] = v;
+    if (l.kind === 'grada' && l.phase === 'tri') l.phase = 'L1';   // une ligne graduée est monophasée
     touch(); render(); return;
   }
   if (e.target.id && e.target.id.startsWith('sr_')) { state.series[e.target.id.slice(3)] = e.target.value; return; }
@@ -1060,7 +1250,7 @@ view.addEventListener('change', e => {
     const p = state.d.lieu.points.find(x => x.id === pf.dataset.p); if (!p) return;
     const k = pf.dataset.pf, v = pf.value.trim();
     if (k === 'name') {                    // renommer un point renomme la position de ses projecteurs
-      if (v && v !== p.name && !state.d.lieu.points.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.position === p.name) f.position = v; }); state.d.lieu.lines.forEach(l => { if (l.dest === p.name) l.dest = v; }); p.name = v; }
+      if (v && v !== p.name && !state.d.lieu.points.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.position === p.name) f.position = v; }); state.d.lieu.lines.forEach(l => { if (l.dest === p.name) l.dest = v; }); state.d.lieu.dmxLines.forEach(l => { if (l.dest === p.name) l.dest = v; }); p.name = v; }
     } else if (k === 'kind' || k === 'notes') p[k] = v;
     else { const n = parseFloat(v.replace(',', '.')); p[k] = v === '' ? (k === 'extra' ? 0 : null) : (isNaN(n) ? p[k] : n); }
     touch(); render(); return;
@@ -1092,11 +1282,42 @@ view.addEventListener('keydown', e => {
   const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
   if (next) { next.focus(); next.select(); }
 });
-view.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('series')) state.seriesOpen = e.target.open; }, true);
+view.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('series')) { if (e.target.dataset.ser === 'dmx') state.dmxSeriesOpen = e.target.open; else state.seriesOpen = e.target.open; } }, true);
 view.addEventListener('click', async e => {
   if (!state.d) return;
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.ev) { state.elecView = b.dataset.ev; store.set('elecView', state.elecView); render(); return; }
+  if (b.dataset.nv) { state.netView = b.dataset.nv; store.set('netView', state.netView); render(); return; }
+  if (b.id === 'addDmx') {
+    let i = state.d.lieu.dmxLines.length + 1, n; do n = 'DMX ' + i++; while (state.d.lieu.dmxLines.some(x => x.name === n));
+    state.d.lieu.dmxLines.push({ id: uid(), name: n, src: '', port: null, universe: null, dest: '', length: null, notes: '' }); touch(); render(); return;
+  }
+  if (b.dataset.deldmx) {
+    const x = state.d.lieu.dmxLines.find(y => y.id === b.dataset.deldmx);
+    if (x && confirm(t('delDmxAsk', x.name))) { state.d.lieu.dmxLines = state.d.lieu.dmxLines.filter(y => y !== x); touch(); render(); }
+    return;
+  }
+  if (b.id === 'autoDmx') { const [n, m] = autoDmx(); touch(); render(); alert(t('autoDone', n, m)); return; }
+  if (b.id === 'dsCreate') {
+    const S = state.dmxSeries; ['prefix', 'from', 'to', 'digits', 'src', 'port', 'portInc', 'u', 'uInc', 'dest'].forEach(k => { const el = $('#ds_' + k); if (el) S[k] = el.value; });
+    const a = parseInt(S.from, 10), z = parseInt(S.to, 10), dg = parseInt(S.digits, 10) || 0; if (isNaN(a) || isNaN(z) || z < a || z - a > 500) return;
+    let made = 0, port = parseInt(S.port, 10) || null, u = parseInt(S.u, 10) || null;
+    for (let i = a; i <= z; i++) {
+      const name = S.prefix + String(i).padStart(dg, '0');
+      if (!state.d.lieu.dmxLines.some(x => x.name === name)) { state.d.lieu.dmxLines.push({ id: uid(), name, src: S.src, port, universe: u, dest: S.dest, length: null, notes: '' }); made++; }
+      if (port && S.portInc === '1') port++; if (u && S.uInc === '1') u++;
+    }
+    state.dmxSeriesOpen = true; touch(); render(); alert(t('srDone', made)); return;
+  }
+  if (b.id === 'addDev') {
+    let i = state.d.lieu.devices.length + 1, n; do n = t('newDev') + ' ' + i++; while (state.d.lieu.devices.some(x => x.name === n));
+    state.d.lieu.devices.push({ id: uid(), name: n, kind: 'node', ip: '', mask: '', vlan: null, sw: '', port: '', mac: '', location: '', notes: '' }); touch(); render(); return;
+  }
+  if (b.dataset.deldev) {
+    const x = state.d.lieu.devices.find(y => y.id === b.dataset.deldev);
+    if (x && confirm(t('delDevAsk', x.name))) { state.d.lieu.devices = state.d.lieu.devices.filter(y => y !== x); touch(); render(); }
+    return;
+  }
   if (b.id === 'addBoard') {
     let n = t('newBoard') + ' 1', i = 2; while (state.d.lieu.boards.some(x => x.name === n)) n = `${t('newBoard')} ${i++}`;
     state.d.lieu.boards.push({ id: uid(), name: n, supply: 'tri', amps: null, location: '', notes: '' }); touch(); render(); return;
@@ -1121,7 +1342,7 @@ view.addEventListener('click', async e => {
     let made = 0, r = 0;
     for (let i = a; i <= z; i++) {
       const name = S.prefix + String(i).padStart(dg, '0'); if (state.d.lieu.lines.some(x => x.name === name)) continue;
-      const phase = S.phase === 'rot' ? ['L1', 'L2', 'L3'][r++ % 3] : S.phase;
+      const phase = S.phase === 'rot' || S.phase === 'tri' && S.kind === 'grada' ? ['L1', 'L2', 'L3'][r++ % 3] : S.phase;
       state.d.lieu.lines.push({ id: uid(), name, board: S.board, kind: S.kind, phase, amps: parseFloat(S.amps) || null, dest: S.dest, dimmer: '', dmx: '', notes: '' }); made++;
     }
     state.seriesOpen = true; touch(); render(); alert(t('srDone', made)); return;
@@ -1134,7 +1355,7 @@ view.addEventListener('click', async e => {
     const p = state.d.lieu.points.find(x => x.id === b.dataset.delpt);
     if (p && confirm(t('delPointAsk', p.name))) { state.d.lieu.points = state.d.lieu.points.filter(x => x !== p); touch(); render(); }
   } else if (b.id === 'saveLieu') {
-    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, settings: state.d.lieu.settings };
+    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, settings: state.d.lieu.settings };
     download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
   } else if (b.id === 'loadLieu') $('#lieuFile').click();
   else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
@@ -1156,7 +1377,7 @@ $('#lieuFile').addEventListener('change', async e => {
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu.points.push({ ...q, id: uid() });
       n++;
     }
-    for (const [key, list] of [['boards', L.boards], ['lines', L.lines]]) for (const q of list || []) {
+    for (const [key, list] of [['boards', L.boards], ['lines', L.lines], ['dmxLines', L.dmxLines], ['devices', L.devices]]) for (const q of list || []) {
       const p = state.d.lieu[key].find(x => x.name === q.name);
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu[key].push({ ...q, id: uid() });
     }
