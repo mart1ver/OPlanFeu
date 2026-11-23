@@ -95,7 +95,7 @@ table.grid td input.bad { color: var(--err); }
 table.grid td.chk { width: 28px; text-align: center; }
 table.grid input[type=checkbox] { accent-color: var(--accent); }
 td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); vertical-align: -1px; margin-inline-end: 4px; }
-.w-fid input { width: 5.5em; } .w-unit input { width: 3.6em; } .w-patch input { width: 5.6em; } .w-sm input { width: 9em; } .w-md input { width: 12.5em; }
+.w-unit2 input { width: 5.5em; } .w-fid input { width: 5.5em; } .w-unit input { width: 3.6em; } .w-patch input { width: 5.6em; } .w-sm input { width: 9em; } .w-md input { width: 12.5em; }
 table.grid td input.box { border-color: var(--line); background: var(--bg); }
 table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; }
@@ -128,6 +128,30 @@ table.grid td select.c { font: inherit; color: var(--ink); background: var(--bg)
 table.grid td.ids2 { white-space: normal; }
 .ids2 { font-size: 11.5px; color: var(--muted); white-space: normal; min-width: 10em; max-width: 22em; }
 .gdtfok { color: var(--ok); font-weight: 600; font-size: 12px; margin-inline-end: 6px; }
+.subtabs { display: flex; gap: 6px; margin: 14px 0 0; flex-wrap: wrap; }
+.subtabs button { font: inherit; font-size: 12.5px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.subtabs button.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+details.series { margin: 6px 0 10px; font-size: 13px; }
+details.series summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+details.series .row { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: center; margin-top: 8px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+details.series label { display: flex; gap: 5px; align-items: center; color: var(--muted); }
+details.series input, details.series select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; }
+details.series input { width: 4.5em; }
+.ph { display: inline-block; min-width: 2.3em; text-align: center; border-radius: 5px; font-size: 11.5px; font-weight: 700; padding: 1px 4px; color: #fff; }
+.ph.L1 { background: #8a5a2b; } .ph.L2 { background: #222; } .ph.L3 { background: #8c8c8c; } .ph.tri { background: linear-gradient(90deg, #8a5a2b 33%, #222 33% 66%, #8c8c8c 66%); }
+.kd { font-size: 11.5px; font-weight: 600; } .kd.grada { color: #b5651d; } .kd.direct { color: var(--accent); }
+.syn { margin: 16px 0 6px; break-inside: avoid; }
+.syn svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.syn text { fill: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+.syn .mut { fill: var(--muted); } .syn .wire { stroke: var(--ink); fill: none; } .syn .box { fill: var(--bg); stroke: var(--ink); }
+.syn .over { fill: var(--err); } .syn .warn { fill: #b07d00; }
+.labs { display: flex; flex-wrap: wrap; gap: 3mm; margin: 8px 0 16px; }
+.lab { width: 62mm; height: 26mm; box-sizing: border-box; border: 1px dashed var(--muted); border-radius: 2mm; padding: 2mm 3mm; background: #fff; color: #000; overflow: hidden; display: flex; flex-direction: column; gap: .6mm; break-inside: avoid; }
+.lab .n { font: 700 17pt/1 "IBM Plex Sans", sans-serif; display: flex; justify-content: space-between; align-items: baseline; gap: 2mm; }
+.lab .n small { font-size: 8pt; font-weight: 600; }
+.lab .l2 { font-size: 8.5pt; font-weight: 600; } .lab .l3 { font-size: 8.5pt; } .lab .l4 { font-size: 7.5pt; color: #333; line-height: 1.2; }
+.lab.board { width: 128mm; } .lab.board .n { font-size: 24pt; }
+h2.bd { font-size: 14px; margin: 18px 0 4px; }
 @media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
 
 /* impression : la vue affichée, sans l'interface */
@@ -143,6 +167,9 @@ table.grid td.ids2 { white-space: normal; }
   table.grid td { background: #fff !important; font-size: 9pt; }
   table.grid td input.c { border: 0; padding: 0; color: #000; }
   .card { break-inside: avoid; border-color: #999; }
+  .syn svg { border-color: #999; max-height: 180mm; } .syn { break-inside: avoid; margin: 0 0 4mm; }
+  .lab { border-color: #999; }
+  .subtabs, details.series, .settings .noprint { display: none !important; }
 }
 .ptitle { display: none; }
 </style>
@@ -202,6 +229,7 @@ table.grid td.ids2 { white-space: normal; }
       <div class="tabs" id="tabs">
         <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
         <button type="button" data-v="rigging" data-i18n="tabRigging">Accroches et charges</button>
+        <button type="button" data-v="elec" data-i18n="tabElec">Électricité</button>
         <button type="button" data-v="inventory" data-i18n="tabInventory">Types et inventaire</button>
       </div>
       <div class="filters" id="filters">
@@ -218,6 +246,7 @@ table.grid td.ids2 { white-space: normal; }
       <datalist id="bList"></datalist>
       <button type="button" class="primary" id="bApply" data-i18n="bApply">Appliquer</button>
       <button type="button" id="bRenum" data-i18n="bRenum">Numéroter…</button>
+      <button type="button" id="bLines" data-i18n="bLines">Lignes à la suite…</button>
       <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
       <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
     </div>
@@ -249,6 +278,19 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabElec: 'Électricité', evLines: 'Tableaux et lignes', evSyno: 'Synoptique', evLabels: 'Étiquettes',
+    cCircuit: 'Ligne élec.', bLines: 'Lignes à la suite…', linesAsk: 'Première ligne (les projecteurs sélectionnés prennent les lignes suivantes, dans l’ordre du tableau des lignes) :', lineUnknown: n => `Ligne « ${n} » introuvable.`,
+    setVolts: 'Tension (V)', setElWarn: 'Alerte à partir de (% calibre)',
+    elHint: "Déclare les tableaux puis leurs lignes (graduées ou directes, phase, calibre, point d’arrivée). Les projecteurs se branchent sur une ligne dans l’onglet Projecteurs (colonne « Ligne élec. », ou « Lignes à la suite… » sur une sélection). Puissance d’une ligne = somme des puissances des types branchés ; la charge est comparée à tension × calibre (× 3 en tri).",
+    boards: 'Tableaux', bdName: 'Tableau', bdSupply: 'Alim.', bdAmps: 'Calibre (A)', bdLoc: 'Emplacement', bdLines: 'Lignes', bdPower: 'Puissance', bdPhases: 'L1 · L2 · L3 (A)', bdImb: 'Déséquilibre', bdNotes: 'Notes',
+    sTri: 'Tri', sMono: 'Mono', addBoard: 'Ajouter un tableau', newBoard: 'Tableau', delBoardAsk: n => `Supprimer le tableau « ${n} » ?`,
+    lines: 'Lignes', lnName: 'Ligne', lnBoard: 'Tableau', lnKind: 'Type', lnPhase: 'Phase', lnAmps: 'Cal. (A)', lnDest: 'Arrivée', lnDimmer: 'Gradateur', lnDmx: 'DMX grada', lnFix: 'Projecteurs', lnPower: 'Puissance (W)', lnLoad: 'Charge', lnNotes: 'Notes',
+    kgrada: 'Graduée', kdirect: 'Directe', kgradaS: 'grad.', kdirectS: 'dir.', addLine: 'Ajouter une ligne', newLine: 'L', delLineAsk: n => `Supprimer la ligne « ${n} » ?`,
+    series: 'Créer une série de lignes', srPrefix: 'Préfixe', srFrom: 'de', srTo: 'à', srDigits: 'chiffres', srPhase: 'Phases', srRot: 'L1 → L2 → L3', srCreate: 'Créer', srDone: n => `${n} ligne(s) créée(s).`,
+    noBoard: '(sans tableau)', stFree: 'libre', stElWarn: 'proche du calibre', stElOver: 'surcharge', stPMiss: n => `${n} puissance${n > 1 ? 's' : ''} manquante${n > 1 ? 's' : ''}`, stA: a => `≈ ${a} A`,
+    alLineOver: n => `${n} ligne(s) électrique(s) en surcharge`, alLineWarn: n => `${n} ligne(s) électrique(s) proches du calibre`, alNoLine: n => `${n} projecteur(s) branché(s) sur une ligne inconnue`, alBoardOver: n => `${n} tableau(x) au-delà de son calibre sur une phase`,
+    synTitle: 'Synoptique électrique', labTitle: 'Étiquettes de tableaux', labHint: 'Une étiquette par tableau et une par ligne, à découper (62 × 26 mm).', synEmpty: 'Aucune ligne déclarée : commence par « Tableaux et lignes ».',
+    synCont: '(suite)', synTotal: 'Total',
     tabRigging: 'Accroches et charges', rgPoint: "Point d’accroche", rgKind: 'Type', rgLen: 'Long. (m)', rgH: 'Haut. (m)', rgCmu: 'CMU (kg)', rgCmuM: 'CMU/m (kg)', rgExtra: 'Ajouts (kg)',
     rgFix: 'Proj.', rgFixKg: 'Projecteurs (kg)', rgAccKg: 'Access. (kg)', rgTotal: 'Total (kg)', rgLoad: 'Charge', rgStatus: 'État', rgIds: 'Fix ID (ordre en x)', rgNotes: 'Notes',
     kperche: 'Perche', kporteuse: 'Porteuse', kpont: 'Pont', kpasserelle: 'Passerelle', kgril: 'Gril', kmur: 'Mur', kverticale: 'Verticale', ksol: 'Sol', kautre: 'Autre',
@@ -285,6 +327,19 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabElec: 'Electrics', evLines: 'Boards and lines', evSyno: 'One-line diagram', evLabels: 'Labels',
+    cCircuit: 'Power line', bLines: 'Consecutive lines…', linesAsk: 'First line (selected fixtures take the following lines, in the order of the lines table):', lineUnknown: n => `Line “${n}” not found.`,
+    setVolts: 'Voltage (V)', setElWarn: 'Warn from (% rating)',
+    elHint: 'Declare the boards, then their lines (dimmed or direct, phase, rating, landing point). Fixtures are plugged into a line in the Fixtures tab (“Power line” column, or “Consecutive lines…” on a selection). Power of a line = sum of the powers of the plugged types; the load is compared with voltage × rating (× 3 for three-phase).',
+    boards: 'Boards', bdName: 'Board', bdSupply: 'Supply', bdAmps: 'Rating (A)', bdLoc: 'Location', bdLines: 'Lines', bdPower: 'Power', bdPhases: 'L1 · L2 · L3 (A)', bdImb: 'Imbalance', bdNotes: 'Notes',
+    sTri: '3-phase', sMono: '1-phase', addBoard: 'Add a board', newBoard: 'Board', delBoardAsk: n => `Delete the board “${n}”?`,
+    lines: 'Lines', lnName: 'Line', lnBoard: 'Board', lnKind: 'Type', lnPhase: 'Phase', lnAmps: 'Rating (A)', lnDest: 'Lands at', lnDimmer: 'Dimmer', lnDmx: 'Dimmer DMX', lnFix: 'Fixtures', lnPower: 'Power (W)', lnLoad: 'Load', lnNotes: 'Notes',
+    kgrada: 'Dimmed', kdirect: 'Direct', kgradaS: 'dim.', kdirectS: 'dir.', addLine: 'Add a line', newLine: 'L', delLineAsk: n => `Delete the line “${n}”?`,
+    series: 'Create a series of lines', srPrefix: 'Prefix', srFrom: 'from', srTo: 'to', srDigits: 'digits', srPhase: 'Phases', srRot: 'L1 → L2 → L3', srCreate: 'Create', srDone: n => `${n} line(s) created.`,
+    noBoard: '(no board)', stFree: 'free', stElWarn: 'close to rating', stElOver: 'overload', stPMiss: n => `${n} missing power${n > 1 ? 's' : ''}`, stA: a => `≈ ${a} A`,
+    alLineOver: n => `${n} overloaded power line(s)`, alLineWarn: n => `${n} power line(s) close to their rating`, alNoLine: n => `${n} fixture(s) plugged into an unknown line`, alBoardOver: n => `${n} board(s) over rating on a phase`,
+    synTitle: 'Electrical one-line diagram', labTitle: 'Board labels', labHint: 'One label per board and one per line, to cut out (62 × 26 mm).', synEmpty: 'No line declared yet: start with “Boards and lines”.',
+    synCont: '(cont.)', synTotal: 'Total',
     tabRigging: 'Rigging and loads', rgPoint: 'Rigging point', rgKind: 'Type', rgLen: 'Length (m)', rgH: 'Height (m)', rgCmu: 'WLL (kg)', rgCmuM: 'WLL/m (kg)', rgExtra: 'Extra (kg)',
     rgFix: 'Fix.', rgFixKg: 'Fixtures (kg)', rgAccKg: 'Access. (kg)', rgTotal: 'Total (kg)', rgLoad: 'Load', rgStatus: 'Status', rgIds: 'Fix ID (in x order)', rgNotes: 'Notes',
     kperche: 'Bar', kporteuse: 'Flown bar', kpont: 'Truss', kpasserelle: 'Catwalk', kgril: 'Grid', kmur: 'Wall', kverticale: 'Boom', ksol: 'Floor', kautre: 'Other',
@@ -543,7 +598,9 @@ function ensureLieu(d) {
   d.version = 2;
   d.lieu = d.lieu || {};
   d.lieu.points = d.lieu.points || [];
-  d.lieu.settings = { accKg: 1.5, warnPct: 80, ...(d.lieu.settings || {}) };
+  d.lieu.settings = { accKg: 1.5, warnPct: 80, volts: 230, elWarnPct: 80, ...(d.lieu.settings || {}) };
+  d.lieu.boards = d.lieu.boards || [];
+  d.lieu.lines = d.lieu.lines || [];
   const have = new Set(d.lieu.points.map(p => p.name)), byPos = new Map();
   d.fixtures.forEach(f => { if (f.position) { if (!byPos.has(f.position)) byPos.set(f.position, []); byPos.get(f.position).push(f); } });
   for (const [name, g] of byPos) {
@@ -566,7 +623,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -614,6 +671,15 @@ function refreshSide() {
     if (by('over').length) al.push([t('alOver', by('over').length), cut(by('over'))]);
     if (by('warn').length) al.push([t('alWarn', by('warn').length), cut(by('warn'))]);
     if (by('unk').length) al.push([t('alNoCmu', by('unk').length), '']);
+    if (state.d.lieu.lines.length) {
+      const LR = state.d.lieu.lines.map(l => [l, lineLoad(l)]), lb = k => LR.filter(([, r]) => r.status === k).map(([l]) => l.name);
+      if (lb('over').length) al.push([t('alLineOver', lb('over').length), cut(lb('over'))]);
+      if (lb('warn').length) al.push([t('alLineWarn', lb('warn').length), cut(lb('warn'))]);
+      const names = new Set(state.d.lieu.lines.map(l => l.name)), bad = state.d.fixtures.filter(f => f.circuit && !names.has(f.circuit));
+      if (bad.length) al.push([t('alNoLine', bad.length), cut(bad.map(f => `${f.fid || '?'} (${f.circuit})`))]);
+      const bo = state.d.lieu.boards.filter(b => boardLoad(b).over).map(b => b.name);
+      if (bo.length) al.push([t('alBoardOver', bo.length), cut(bo)]);
+    }
   }
   $('#alerts').innerHTML = al.map(([a, d]) => `<div class="alert"><b>${esc(a)}</b>${d ? '<br>' + esc(d) : ''}</div>`).join('');
   $('#dropText').innerHTML = `<span>${esc(t('dropLoaded'))}</span><div class="fname">${esc(state.d.meta.titre || t('untitled'))}</div><span>${esc(t('dropChange'))}</span>`;
@@ -628,6 +694,7 @@ const COLS = [
   { k: 'type', label: 'cType', ro: f => esc(typeName(f.type)) }, { k: 'mode', label: 'cMode', ro: f => esc(f.mode) },
   { k: 'nch', label: 'cNch', edit: true, cls: 'w-unit', num: true }, { k: 'patch', label: 'cPatch', edit: true, cls: 'w-patch' },
   { k: 'position', label: 'cPosition', edit: true, cls: 'w-md', list: 'posList' }, { k: 'layer', label: 'cLayer', edit: true, cls: 'w-sm', list: 'layerList' },
+  { k: 'circuit', label: 'cCircuit', edit: true, cls: 'w-unit2', list: 'lineList' },
   { k: 'gel', label: 'cGel', edit: true, cls: 'w-sm' }, { k: 'acc', label: 'cAcc', edit: true, cls: 'w-sm' },
   { k: 'purpose', label: 'cPurpose', edit: true, cls: 'w-md' }, { k: 'notes', label: 'cNotes', edit: true, cls: 'w-md' },
   { k: 'xyz', label: 'cXyz', ro: f => f.x === null || f.x === undefined ? '' : `<span class="xyz">${[f.x, f.y, f.z].map(v => v.toFixed(2)).join(' · ')}</span>` },
@@ -637,7 +704,7 @@ function visible() {
   const q = state.q.trim().toLowerCase();
   let list = state.d.fixtures.filter(f =>
     (!state.fPos || (f.position || '\u0000') === state.fPos) && (!state.fType || f.type === state.fType) &&
-    (!q || [f.fid, f.unit, f.name, typeName(f.type), f.mode, patchText(f), f.layer, f.position, f.gel, f.acc, f.purpose, f.notes].some(v => String(v || '').toLowerCase().includes(q))));
+    (!q || [f.fid, f.unit, f.name, typeName(f.type), f.mode, patchText(f), f.layer, f.position, f.circuit, f.gel, f.acc, f.purpose, f.notes].some(v => String(v || '').toLowerCase().includes(q))));
   const { k, dir } = state.sort;
   list.sort((a, b) => {
     const va = getVal(a, k), vb = getVal(b, k);
@@ -661,18 +728,20 @@ function renderFixtures() {
   const arrow = k => state.sort.k === k ? ` <span class="ar">${state.sort.dir > 0 ? '▲' : '▼'}</span>` : '';
   const allSel = list.length && list.every(f => state.sel.has(f.uid));
   const dl = (id, vals) => `<datalist id="${id}">${[...new Set(vals.filter(Boolean))].sort().map(v => `<option value="${esc(v)}">`).join('')}</datalist>`;
+  const lineNames = new Set(state.d.lieu.lines.map(l => l.name));
   const dupIds = new Set(); { const seen = new Set(); state.d.fixtures.forEach(f => { if (f.fid) { if (seen.has(f.fid)) dupIds.add(f.fid); seen.add(f.fid); } }); }
   const rows = list.map(f => {
     const cells = COLS.map(c => {
       if (!c.edit) return `<td class="ro">${c.k === 'type' && f.color ? `<span class="sw" style="background:${f.color}"></span>` : ''}${c.ro(f)}</td>`;
       const v = c.k === 'patch' ? patchText(f) : (f[c.k] ?? '');
-      const bad = c.k === 'fid' && dupIds.has(f.fid);
+      const bad = c.k === 'fid' && dupIds.has(f.fid) || c.k === 'circuit' && f.circuit && !lineNames.has(f.circuit);
       return `<td class="${c.cls || ''}"><input class="c${bad ? ' bad' : ''}" data-k="${c.k}" value="${esc(v === 0 && c.k === 'nch' ? '' : v)}"${c.list ? ` list="${c.list}"` : ''}${c.num ? ' inputmode="numeric"' : ''}></td>`;
     }).join('');
     return `<tr data-u="${esc(f.uid)}" class="${state.sel.has(f.uid) ? 'sel' : ''}"><td class="chk"><input type="checkbox" class="rs"${state.sel.has(f.uid) ? ' checked' : ''}></td>${cells}</tr>`;
   }).join('');
   $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabFixtures'))}</h1>` +
-    dl('posList', state.d.fixtures.map(f => f.position)) + dl('layerList', state.d.fixtures.map(f => f.layer)) +
+    dl('posList', [...state.d.fixtures.map(f => f.position), ...state.d.lieu.points.map(p => p.name)]) + dl('layerList', state.d.fixtures.map(f => f.layer)) +
+    dl('lineList', state.d.lieu.lines.map(l => l.name)) +
     `<div class="gridwrap"><table class="grid"><thead><tr><th class="chk chkh nosort"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''}></th>` +
     COLS.map(c => `<th data-s="${c.k}">${esc(t(c.label))}${arrow(c.k)}</th>`).join('') + `</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -687,6 +756,160 @@ function pointLoad(p) {
   let status = p.kind === 'sol' ? 'na' : worst < 0 ? 'unk' : worst > 100 ? 'over' : worst >= (+st.warnPct || 80) ? 'warn' : 'ok';
   if (status === 'ok' && miss) status = 'part';   // poids manquants : on ne peut pas dire que c'est bon
   return { g, fx, miss, acc, extra, total, pct, pctM, worst, status };
+}
+// ───────────── électricité ─────────────
+const PHASES = ['L1', 'L2', 'L3', 'tri'];
+const natCmp = (a, b) => String(a).localeCompare(String(b), LANG, { numeric: true });
+function sortedLines() {
+  const order = new Map(state.d.lieu.boards.map((b, i) => [b.name, i]));
+  return [...state.d.lieu.lines].sort((a, b) => (order.get(a.board) ?? 1e9) - (order.get(b.board) ?? 1e9) || natCmp(a.name, b.name));
+}
+function lineLoad(l) {
+  const st = state.d.lieu.settings, V = +st.volts || 230, n = l.phase === 'tri' ? 3 : 1;
+  const g = state.d.fixtures.filter(f => f.circuit && f.circuit === l.name);
+  let w = 0, miss = 0; g.forEach(f => { const pw = (state.d.types[f.type] || {}).power; if (pw > 0) w += pw; else miss++; });
+  const cap = V * (+l.amps || 0) * n, pct = cap > 0 ? w / cap * 100 : null;
+  let status = !g.length ? 'free' : pct === null ? 'unk' : pct > 100 ? 'over' : pct >= (+st.elWarnPct || 80) ? 'warn' : 'ok';
+  if (status === 'ok' && miss) status = 'part';
+  return { g, w, miss, cap, pct, status, amps: w / V / n };
+}
+function boardLoad(b) {
+  const V = +state.d.lieu.settings.volts || 230, ph = { L1: 0, L2: 0, L3: 0 }, ls = state.d.lieu.lines.filter(l => l.board === b.name);
+  let w = 0, miss = 0;
+  ls.forEach(l => { const R = lineLoad(l); w += R.w; miss += R.miss; if (l.phase === 'tri') { ph.L1 += R.w / 3; ph.L2 += R.w / 3; ph.L3 += R.w / 3; } else if (ph[l.phase] !== undefined) ph[l.phase] += R.w; });
+  const A = { L1: ph.L1 / V, L2: ph.L2 / V, L3: ph.L3 / V }, vals = b.supply === 'mono' ? [A.L1 + A.L2 + A.L3] : [A.L1, A.L2, A.L3];
+  const mx = Math.max(...vals), mn = Math.min(...vals);
+  return { ls, w, miss, A, imb: b.supply === 'mono' || !mx ? null : (mx - mn) / mx * 100, over: b.amps > 0 && mx > b.amps };
+}
+const stText = s => ({ ok: t('stOk'), part: t('stPart'), warn: t('stElWarn'), over: t('stElOver'), unk: '', na: t('stNa'), free: t('stFree') }[s] || '');
+function renderElec() {
+  ensureLieu(state.d);
+  const L = state.d.lieu, st = L.settings, ev = state.elecView || 'lines';
+  const head = `<div class="subtabs">${['lines', 'syno', 'labels'].map(k => `<button type="button" data-ev="${k}"${k === ev ? ' class="on"' : ''}>${esc(t('ev' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}</div>`;
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  if (ev === 'syno') { $('#view').innerHTML = head + renderSyno(); return; }
+  if (ev === 'labels') { $('#view').innerHTML = head + renderElecLabels(); return; }
+  const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
+  const inB = (b, f, v, w, num) => `<input class="c box" data-b="${esc(b.id)}" data-bf="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
+  const inL = (l, f, v, w, num) => `<input class="c box" data-l="${esc(l.id)}" data-lf="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
+  const boardNames = L.boards.map(b => b.name), pointNames = L.points.map(p => p.name).sort(natCmp);
+  const fA = v => fmtNum(v);
+  const bRows = L.boards.map(b => {
+    const R = boardLoad(b);
+    const phs = b.supply === 'mono' ? fA(R.A.L1 + R.A.L2 + R.A.L3) : ['L1', 'L2', 'L3'].map(k => fA(R.A[k])).join(' · ');
+    return `<tr><td>${inB(b, 'name', b.name, 9)}</td><td><select class="c" data-b="${esc(b.id)}" data-bf="supply">${opt(['tri', 'mono'], b.supply, v => t(v === 'tri' ? 'sTri' : 'sMono'))}</select></td>
+<td>${inB(b, 'amps', b.amps, 3.6, 1)}</td><td>${inB(b, 'location', b.location, 10)}</td><td class="ro num">${R.ls.length}</td>
+<td class="ro num">${R.w ? fmtNum(R.w) + ' W' : ''}${R.miss ? `<br><span class="missing" style="font-size:11px">${esc(t('stPMiss', R.miss))}</span>` : ''}</td>
+<td class="ro num${R.over ? ' missing' : ''}">${phs}</td><td class="ro num">${R.imb === null ? '' : Math.round(R.imb) + ' %'}</td>
+<td>${inB(b, 'notes', b.notes, 12)}</td><td class="noprint">${R.ls.length ? '' : `<button type="button" class="minibtn x" data-delb="${esc(b.id)}">×</button>`}</td></tr>`;
+  }).join('');
+  const lRows = sortedLines().map(l => {
+    const R = lineLoad(l), w = Math.min(100, Math.max(0, R.pct ?? 0));
+    const ids = [...R.g].sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => f.fid || '?').join(', ');
+    const gauge = R.g.length && R.pct !== null ? `<span class="gauge ${R.status}"><i style="width:${w}%"></i></span>${Math.round(R.pct)} %` : '';
+    return `<tr><td>${inL(l, 'name', l.name, 5.5)}</td>
+<td><select class="c" data-l="${esc(l.id)}" data-lf="board"><option value=""></option>${opt(boardNames, l.board)}</select></td>
+<td><select class="c" data-l="${esc(l.id)}" data-lf="kind">${opt(['grada', 'direct'], l.kind, v => t('k' + v))}</select></td>
+<td><select class="c" data-l="${esc(l.id)}" data-lf="phase">${opt(PHASES, l.phase, v => v === 'tri' ? t('sTri') : v)}</select></td>
+<td>${inL(l, 'amps', l.amps, 3, 1)}</td>
+<td><select class="c" data-l="${esc(l.id)}" data-lf="dest"><option value=""></option>${opt(pointNames, l.dest)}</select></td>
+<td>${inL(l, 'dimmer', l.dimmer, 5)}</td><td>${inL(l, 'dmx', l.dmx, 4.5)}</td>
+<td class="ro ids2">${esc(ids)}</td>
+<td class="ro num">${R.w ? fmtNum(R.w) : ''}${R.miss ? `<br><span class="missing" style="font-size:11px;white-space:nowrap">${esc(t('stPMiss', R.miss))}</span>` : ''}</td>
+<td class="ro" style="white-space:nowrap">${gauge}${R.g.length ? `<br><span class="st ${R.status}">${esc(stText(R.status))}</span> <span class="xyz">${esc(t('stA', fmtNum(R.amps)))}</span>` : `<span class="st na">${esc(t('stFree'))}</span>`}</td>
+<td>${inL(l, 'notes', l.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-dell="${esc(l.id)}">×</button></td></tr>`;
+  }).join('');
+  const S = state.series || (state.series = { prefix: 'G', from: 1, to: 12, digits: 0, board: '', kind: 'grada', phase: 'rot', amps: 16, dest: '' });
+  $('#view').innerHTML = head + `<h1 class="ptitle">${esc(t('tabElec'))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>
+<p class="hint noprint" style="margin:12px 0 0">${esc(t('elHint'))}</p>
+<div class="settings"><label>${esc(t('setVolts'))} <input data-set="volts" inputmode="decimal" value="${esc(st.volts)}"></label>
+<label>${esc(t('setElWarn'))} <input data-set="elWarnPct" inputmode="decimal" value="${esc(st.elWarnPct)}"></label>
+<span class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
+<h2 class="sec">${esc(t('boards'))} <button type="button" class="minibtn noprint" id="addBoard" style="margin-inline-start:8px">${esc(t('addBoard'))}</button></h2>
+<div class="gridwrap"><table class="grid"><thead><tr>${['bdName', 'bdSupply', 'bdAmps', 'bdLoc', 'bdLines', 'bdPower', 'bdPhases', 'bdImb', 'bdNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${bRows}</tbody></table></div>
+<h2 class="sec">${esc(t('lines'))} <button type="button" class="minibtn noprint" id="addLine" style="margin-inline-start:8px">${esc(t('addLine'))}</button></h2>
+<details class="series noprint"${state.seriesOpen ? ' open' : ''}><summary>${esc(t('series'))}</summary><div class="row">
+<label>${esc(t('srPrefix'))} <input id="sr_prefix" value="${esc(S.prefix)}"></label><label>${esc(t('srFrom'))} <input id="sr_from" inputmode="numeric" value="${esc(S.from)}"></label><label>${esc(t('srTo'))} <input id="sr_to" inputmode="numeric" value="${esc(S.to)}"></label>
+<label>${esc(t('srDigits'))} <input id="sr_digits" inputmode="numeric" value="${esc(S.digits || '')}" placeholder="—"></label>
+<label>${esc(t('lnBoard'))} <select id="sr_board"><option value=""></option>${opt(boardNames, S.board)}</select></label>
+<label>${esc(t('lnKind'))} <select id="sr_kind">${opt(['grada', 'direct'], S.kind, v => t('k' + v))}</select></label>
+<label>${esc(t('srPhase'))} <select id="sr_phase">${opt(['rot', ...PHASES], S.phase, v => v === 'rot' ? t('srRot') : v === 'tri' ? t('sTri') : v)}</select></label>
+<label>${esc(t('lnAmps'))} <input id="sr_amps" inputmode="numeric" value="${esc(S.amps)}"></label>
+<label>${esc(t('lnDest'))} <select id="sr_dest"><option value=""></option>${opt(pointNames, S.dest)}</select></label>
+<button type="button" class="minibtn primary" id="srCreate">${esc(t('srCreate'))}</button></div></details>
+<div class="gridwrap"><table class="grid"><thead><tr>${['lnName', 'lnBoard', 'lnKind', 'lnPhase', 'lnAmps', 'lnDest', 'lnDimmer', 'lnDmx', 'lnFix', 'lnPower', 'lnLoad', 'lnNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${lRows}</tbody></table></div>`;
+}
+// synoptique : un schéma unifilaire par tableau, découpé en blocs imprimables
+function renderSyno() {
+  const L = state.d.lieu, V = +L.settings.volts || 230;
+  if (!L.lines.length) return `<p class="hint" style="margin-top:16px">${esc(t('synEmpty'))}</p>`;
+  const groups = L.boards.map(b => [b, L.lines.filter(l => l.board === b.name)]);
+  const orphan = L.lines.filter(l => !L.boards.some(b => b.name === l.board));
+  if (orphan.length) groups.push([{ name: t('noBoard'), supply: '', amps: null, location: '' }, orphan]);
+  const PHC = { L1: '#8a5a2b', L2: '#222', L3: '#8c8c8c' }, CH = 18, RH = 26, W = 1000;
+  const x = s => esc(String(s ?? ''));
+  let out = `<h1 class="ptitle">${esc(t('synTitle'))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>`;
+  for (const [b, ls0] of groups) {
+    if (!ls0.length) continue;
+    const ls = [...ls0].sort((a, c) => natCmp(a.name, c.name)), BL = b.id ? boardLoad(b) : null;
+    for (let c = 0; c * CH < ls.length; c++) {
+      const part = ls.slice(c * CH, c * CH + CH), last = (c + 1) * CH >= ls.length;
+      const H = 92 + part.length * RH + (last && BL ? 46 : 14);
+      const supply = b.supply ? `${t(b.supply === 'tri' ? 'sTri' : 'sMono')} ${b.supply === 'tri' ? Math.round(V * Math.sqrt(3) / 10) * 10 : V} V${b.amps ? ' · ' + b.amps + ' A' : ''}` : '';
+      let g = `<rect class="box" x="16" y="14" width="250" height="56" rx="6" stroke-width="2"/>
+<text x="28" y="38" font-size="17" font-weight="700">${x(b.name)}${c ? ' ' + x(t('synCont')) : ''}</text>
+<text x="28" y="58" font-size="12" class="mut">${x([supply, b.location].filter(Boolean).join(' · '))}</text>
+<line class="wire" x1="60" y1="70" x2="60" y2="${80 + part.length * RH - RH / 2}" stroke-width="4"/>
+<g font-size="10.5" class="mut"><text x="96" y="86">${x(t('lnName'))}</text><text x="196" y="86">${x(t('lnPhase'))}</text><text x="250" y="86">${x(t('lnAmps'))}</text><text x="318" y="86">${x(t('lnKind'))}</text><text x="380" y="86">${x(t('lnDimmer'))} / DMX</text><text x="560" y="86">${x(t('lnDest'))}</text><text x="740" y="86">${x(t('lnFix'))}</text><text x="${W - 20}" y="86" text-anchor="end">W</text></g>`;
+      part.forEach((l, i) => {
+        const y = 80 + i * RH + RH / 2 + 6, R = lineLoad(l), col = l.phase === 'tri' ? '#555' : (PHC[l.phase] || '#555');
+        const ids = R.g.map(f => f.fid || '?').sort((a, b2) => cmpKey(numKey(a), numKey(b2)));
+        const idTxt = ids.length > 10 ? ids.slice(0, 10).join(' ') + ' …+' + (ids.length - 10) : ids.join(' ');
+        g += `<line class="wire" x1="60" y1="${y}" x2="78" y2="${y}" stroke-width="2"/>
+<rect x="78" y="${y - 6}" width="12" height="12" fill="none" stroke="${col}" stroke-width="2"/><line x1="78" y1="${y + 6}" x2="90" y2="${y - 6}" stroke="${col}" stroke-width="1.5"/>
+<line class="wire" x1="90" y1="${y}" x2="96" y2="${y}" stroke-width="2"/>
+<text x="98" y="${y + 4}" font-size="13" font-weight="700">${x(l.name)}</text>
+<rect x="194" y="${y - 8}" width="${l.phase === 'tri' ? 30 : 24}" height="16" rx="3" fill="${col}"/><text x="${l.phase === 'tri' ? 209 : 206}" y="${y + 4}" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#fff">${x(l.phase === 'tri' ? '3P' : l.phase)}</text>
+<text x="250" y="${y + 4}" font-size="12">${x(l.amps ? l.amps + ' A' : '')}</text>
+<text x="318" y="${y + 4}" font-size="12" font-weight="600" style="fill:${l.kind === 'grada' ? '#b5651d' : 'var(--accent)'}">${x(t('k' + (l.kind || 'direct') + 'S'))}</text>
+<text x="380" y="${y + 4}" font-size="12">${x([l.dimmer, l.dmx].filter(Boolean).join(' · '))}</text>
+<line x1="520" y1="${y}" x2="548" y2="${y}" class="wire" stroke-dasharray="3 3"/><path d="M546 ${y - 4} L552 ${y} L546 ${y + 4}" class="wire"/>
+<text x="560" y="${y + 4}" font-size="12.5" font-weight="600">${x(l.dest)}</text>
+<text x="740" y="${y + 4}" font-size="11.5" class="mut">${x(idTxt)}</text>
+<text x="${W - 20}" y="${y + 4}" font-size="12" text-anchor="end" class="${R.status === 'over' ? 'over' : R.status === 'warn' ? 'warn' : ''}">${R.w ? x(fmtNum(R.w)) : ''}</text>
+<line x1="94" y1="${y + RH / 2 - 1}" x2="${W - 16}" y2="${y + RH / 2 - 1}" stroke="currentColor" stroke-opacity=".08"/>`;
+      });
+      if (last && BL) {
+        const yb = 80 + part.length * RH + 28;
+        const ph = b.supply === 'mono' ? `${fmtNum(BL.A.L1 + BL.A.L2 + BL.A.L3)} A` : ['L1', 'L2', 'L3'].map(k => `${k} ${fmtNum(BL.A[k])} A`).join('   ');
+        g += `<text x="98" y="${yb}" font-size="12.5" font-weight="700">${x(t('synTotal'))} : ${x(fmtNum(BL.w))} W   —   ${x(ph)}${BL.imb !== null ? '   —   ' + x(t('bdImb')) + ' ' + Math.round(BL.imb) + ' %' : ''}</text>`;
+      }
+      out += `<div class="syn"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${x(b.name)}">${g}</svg></div>`;
+    }
+  }
+  return out;
+}
+function renderElecLabels() {
+  const L = state.d.lieu, V = +L.settings.volts || 230;
+  if (!L.lines.length) return `<p class="hint" style="margin-top:16px">${esc(t('synEmpty'))}</p>`;
+  const groups = L.boards.map(b => [b, L.lines.filter(l => l.board === b.name)]);
+  const orphan = L.lines.filter(l => !L.boards.some(b => b.name === l.board));
+  if (orphan.length) groups.push([{ name: t('noBoard') }, orphan]);
+  let out = `<h1 class="ptitle">${esc(t('labTitle'))} — ${esc(state.d.meta.titre || '')}</h1><p class="hint noprint" style="margin:12px 0 0">${esc(t('labHint'))}</p>`;
+  for (const [b, ls] of groups) {
+    if (!ls.length && !b.id) continue;
+    const supply = b.supply ? `${t(b.supply === 'tri' ? 'sTri' : 'sMono')} ${b.supply === 'tri' ? Math.round(V * Math.sqrt(3) / 10) * 10 : V} V${b.amps ? ' · ' + b.amps + ' A' : ''}` : '';
+    out += `<h2 class="bd noprint">${esc(b.name)}</h2><div class="labs">`;
+    if (b.id) out += `<div class="lab board"><div class="n">${esc(b.name)}<small>${esc(supply)}</small></div><div class="l3">${esc(b.location || '')}</div><div class="l4">${esc(t('lines'))} : ${esc([...ls].sort((a, c) => natCmp(a.name, c.name)).map(l => l.name).join(' '))}</div></div>`;
+    for (const l of [...ls].sort((a, c) => natCmp(a.name, c.name))) {
+      const R = lineLoad(l), ids = R.g.map(f => f.fid || '?').sort((a, c) => cmpKey(numKey(a), numKey(c)));
+      out += `<div class="lab"><div class="n">${esc(l.name)}<small><span class="ph ${esc(l.phase)}">${esc(l.phase === 'tri' ? '3P' : l.phase || '')}</span> ${esc(l.amps ? l.amps + ' A' : '')}</small></div>
+<div class="l2">${esc(t('k' + (l.kind || 'direct')))}${l.dimmer ? ' · ' + esc(l.dimmer) : ''}${l.dmx ? ' · DMX ' + esc(l.dmx) : ''}</div>
+<div class="l3">→ ${esc(l.dest || '')}</div><div class="l4">${esc(ids.join(' '))}</div></div>`;
+    }
+    out += `</div>`;
+  }
+  return out;
 }
 function renderRigging() {
   ensureLieu(state.d);
@@ -753,12 +976,13 @@ function render() {
   if (!state.d) return;
   refreshFilters(); refreshBulk();
   if (state.tab === 'rigging') renderRigging();
+  else if (state.tab === 'elec') renderElec();
   else if (state.tab === 'inventory') renderInventory();
   else renderFixtures();
 }
 
 // ───────────── sélection et édition groupée ─────────────
-const BULK_FIELDS = ['position', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
+const BULK_FIELDS = ['position', 'circuit', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
 function refreshBulk() {
   const n = [...state.sel].filter(u => state.d.fixtures.some(f => f.uid === u)).length;
   $('#bulk').classList.toggle('on', state.tab === 'fixtures' && n > 0);
@@ -779,6 +1003,12 @@ $('#bNone').addEventListener('click', () => { state.sel.clear(); render(); });
 $('#bDelete').addEventListener('click', () => {
   const s = selected(); if (!s.length || !confirm(t('delAsk', s.length))) return;
   const del = new Set(s.map(f => f.uid)); state.d.fixtures = state.d.fixtures.filter(f => !del.has(f.uid)); state.sel.clear(); touch(); render();
+});
+$('#bLines').addEventListener('click', () => {
+  const s = selected(); if (!s.length) return;
+  const L = sortedLines(), v = prompt(t('linesAsk'), s[0].circuit || (L[0] && L[0].name) || ''); if (v === null) return;
+  let i = L.findIndex(l => l.name === v.trim()); if (i < 0) { alert(t('lineUnknown', v)); return; }
+  s.forEach(f => { f.circuit = L[i] ? L[i].name : ''; i++; }); touch(); render();
 });
 $('#bRenum').addEventListener('click', () => {
   const s = selected(); if (!s.length) return;
@@ -806,12 +1036,31 @@ view.addEventListener('change', e => {
   if (!state.d) return;
   const setI = e.target.closest('[data-set]');
   if (setI) { const v = parseFloat(setI.value.replace(',', '.')); if (!isNaN(v) && v >= 0) state.d.lieu.settings[setI.dataset.set] = v; touch(); render(); return; }
+  const bf = e.target.closest('[data-b]');
+  if (bf) {
+    const b = state.d.lieu.boards.find(x => x.id === bf.dataset.b); if (!b) return;
+    const k = bf.dataset.bf, v = bf.value.trim();
+    if (k === 'name') { if (v && v !== b.name && !state.d.lieu.boards.some(x => x.name === v)) { state.d.lieu.lines.forEach(l => { if (l.board === b.name) l.board = v; }); b.name = v; } }
+    else if (k === 'amps') { const n = parseFloat(v.replace(',', '.')); b.amps = v === '' ? null : isNaN(n) ? b.amps : n; }
+    else b[k] = v;
+    touch(); render(); return;
+  }
+  const lf = e.target.closest('[data-l]');
+  if (lf) {
+    const l = state.d.lieu.lines.find(x => x.id === lf.dataset.l); if (!l) return;
+    const k = lf.dataset.lf, v = lf.value.trim();
+    if (k === 'name') { if (v && v !== l.name && !state.d.lieu.lines.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.circuit === l.name) f.circuit = v; }); l.name = v; } }
+    else if (k === 'amps') { const n = parseFloat(v.replace(',', '.')); l.amps = v === '' ? null : isNaN(n) ? l.amps : n; }
+    else l[k] = v;
+    touch(); render(); return;
+  }
+  if (e.target.id && e.target.id.startsWith('sr_')) { state.series[e.target.id.slice(3)] = e.target.value; return; }
   const pf = e.target.closest('[data-p]');
   if (pf) {
     const p = state.d.lieu.points.find(x => x.id === pf.dataset.p); if (!p) return;
     const k = pf.dataset.pf, v = pf.value.trim();
     if (k === 'name') {                    // renommer un point renomme la position de ses projecteurs
-      if (v && v !== p.name && !state.d.lieu.points.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.position === p.name) f.position = v; }); p.name = v; }
+      if (v && v !== p.name && !state.d.lieu.points.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.position === p.name) f.position = v; }); state.d.lieu.lines.forEach(l => { if (l.dest === p.name) l.dest = v; }); p.name = v; }
     } else if (k === 'kind' || k === 'notes') p[k] = v;
     else { const n = parseFloat(v.replace(',', '.')); p[k] = v === '' ? (k === 'extra' ? 0 : null) : (isNaN(n) ? p[k] : n); }
     touch(); render(); return;
@@ -843,9 +1092,40 @@ view.addEventListener('keydown', e => {
   const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
   if (next) { next.focus(); next.select(); }
 });
+view.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('series')) state.seriesOpen = e.target.open; }, true);
 view.addEventListener('click', async e => {
   if (!state.d) return;
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.ev) { state.elecView = b.dataset.ev; store.set('elecView', state.elecView); render(); return; }
+  if (b.id === 'addBoard') {
+    let n = t('newBoard') + ' 1', i = 2; while (state.d.lieu.boards.some(x => x.name === n)) n = `${t('newBoard')} ${i++}`;
+    state.d.lieu.boards.push({ id: uid(), name: n, supply: 'tri', amps: null, location: '', notes: '' }); touch(); render(); return;
+  }
+  if (b.dataset.delb) {
+    const x = state.d.lieu.boards.find(y => y.id === b.dataset.delb);
+    if (x && confirm(t('delBoardAsk', x.name))) { state.d.lieu.boards = state.d.lieu.boards.filter(y => y !== x); touch(); render(); }
+    return;
+  }
+  if (b.id === 'addLine') {
+    let i = state.d.lieu.lines.length + 1, n; do n = t('newLine') + i++; while (state.d.lieu.lines.some(x => x.name === n));
+    state.d.lieu.lines.push({ id: uid(), name: n, board: (state.d.lieu.boards[0] || {}).name || '', kind: 'direct', phase: 'L1', amps: 16, dest: '', dimmer: '', dmx: '', notes: '' }); touch(); render(); return;
+  }
+  if (b.dataset.dell) {
+    const x = state.d.lieu.lines.find(y => y.id === b.dataset.dell);
+    if (x && confirm(t('delLineAsk', x.name))) { state.d.lieu.lines = state.d.lieu.lines.filter(y => y !== x); touch(); render(); }
+    return;
+  }
+  if (b.id === 'srCreate') {
+    const S = state.series; ['prefix', 'from', 'to', 'digits', 'board', 'kind', 'phase', 'amps', 'dest'].forEach(k => { const el = $('#sr_' + k); if (el) S[k] = el.value; });
+    const a = parseInt(S.from, 10), z = parseInt(S.to, 10), dg = parseInt(S.digits, 10) || 0; if (isNaN(a) || isNaN(z) || z < a || z - a > 500) return;
+    let made = 0, r = 0;
+    for (let i = a; i <= z; i++) {
+      const name = S.prefix + String(i).padStart(dg, '0'); if (state.d.lieu.lines.some(x => x.name === name)) continue;
+      const phase = S.phase === 'rot' ? ['L1', 'L2', 'L3'][r++ % 3] : S.phase;
+      state.d.lieu.lines.push({ id: uid(), name, board: S.board, kind: S.kind, phase, amps: parseFloat(S.amps) || null, dest: S.dest, dimmer: '', dmx: '', notes: '' }); made++;
+    }
+    state.seriesOpen = true; touch(); render(); alert(t('srDone', made)); return;
+  }
   if (b.id === 'addPoint') {
     let n = t('newPoint'), i = 2; while (state.d.lieu.points.some(p => p.name === n)) n = `${t('newPoint')} ${i++}`;
     state.d.lieu.points.push({ id: uid(), name: n, kind: 'perche', length: null, height: null, cmu: null, cmuM: null, extra: 0, notes: '' });
@@ -854,7 +1134,7 @@ view.addEventListener('click', async e => {
     const p = state.d.lieu.points.find(x => x.id === b.dataset.delpt);
     if (p && confirm(t('delPointAsk', p.name))) { state.d.lieu.points = state.d.lieu.points.filter(x => x !== p); touch(); render(); }
   } else if (b.id === 'saveLieu') {
-    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, settings: state.d.lieu.settings };
+    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, settings: state.d.lieu.settings };
     download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
   } else if (b.id === 'loadLieu') $('#lieuFile').click();
   else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
@@ -875,6 +1155,10 @@ $('#lieuFile').addEventListener('change', async e => {
       const p = state.d.lieu.points.find(x => x.name === q.name);
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu.points.push({ ...q, id: uid() });
       n++;
+    }
+    for (const [key, list] of [['boards', L.boards], ['lines', L.lines]]) for (const q of list || []) {
+      const p = state.d.lieu[key].find(x => x.name === q.name);
+      if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu[key].push({ ...q, id: uid() });
     }
     if (L.settings) state.d.lieu.settings = { ...state.d.lieu.settings, ...L.settings };
     touch(); render(); alert(t('lieuLoaded', n));
