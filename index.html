@@ -302,6 +302,38 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .mapprev { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; max-height: 6.5em; overflow: auto; white-space: pre; font-family: "IBM Plex Sans Condensed", monospace; background: var(--bg); border-radius: 7px; padding: 6px 8px; }
 @media (max-width: 600px) { #mapRows { grid-template-columns: 1fr; } }
 [hidden] { display: none !important; }
+#dosPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.dpage { background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); width: 297mm; min-height: 210mm; box-sizing: border-box; padding: 12mm; font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 9pt; flex: none;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.dpage.cover { height: 210mm; display: flex; flex-direction: column; padding: 18mm 20mm; }
+.cover .ck { font-size: 10pt; letter-spacing: 2pt; text-transform: uppercase; color: #666; }
+.cover h1 { font-size: 34pt; margin: 4mm 0 2mm; line-height: 1.05; } .cover .cl { font-size: 15pt; }
+.cover .cmeta { margin-top: 6mm; font-size: 10.5pt; color: #333; line-height: 1.6; }
+.cover .ckpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; margin-top: 10mm; }
+.cover .ckpis div { border: .8pt solid #111; padding: 3mm 4mm; } .cover .ckpis b { display: block; font-size: 20pt; line-height: 1.05; } .cover .ckpis span { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .6pt; color: #444; }
+.cover .ctoc { margin-top: auto; columns: 2; font-size: 10pt; line-height: 1.7; } .cover .ctoc b { display: block; font-size: 8pt; text-transform: uppercase; letter-spacing: 1pt; color: #666; column-span: all; margin-bottom: 1mm; }
+.cover .cnotes { margin-top: 6mm; font-size: 10pt; white-space: pre-wrap; border-left: 2pt solid #111; padding-left: 4mm; }
+.dpage h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1pt; margin: 0 0 4mm; padding-bottom: 1.5mm; border-bottom: 1.6pt solid #111; }
+.dpage h3 { font-size: 10pt; text-transform: uppercase; letter-spacing: .6pt; margin: 5mm 0 2mm; }
+.dtab { width: 100%; border-collapse: collapse; font-size: 8.4pt; margin-bottom: 3mm; }
+.dtab th { text-align: left; font-size: 6.8pt; text-transform: uppercase; letter-spacing: .4pt; color: #fff; background: #222; padding: 1.2mm 1.6mm; font-weight: 600; }
+.dtab td { padding: .9mm 1.6mm; border-bottom: .35pt solid #c4c4c4; vertical-align: top; } .dtab tbody tr:nth-child(even) td { background: #efefef; }
+.dtab td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; } .dtab td.b { font-weight: 700; } .dtab td.w { font-size: 7.4pt; color: #444; }
+.dtab td.bad { color: #b3261e; font-weight: 700; } .dtab td.warn { color: #9a6a00; font-weight: 700; } .dtab td.ok { color: #2f7d4a; }
+.dtab tr { break-inside: avoid; } .dtab thead { display: table-header-group; }
+.dpage .syn svg { border: .5pt solid #999; border-radius: 0; background: #fff; } .dpage .syn text { fill: #111; } .dpage .syn .mut { fill: #555; } .dpage .syn .wire { stroke: #111; } .dpage .syn .box { fill: #f3f3f3; stroke: #111; }
+.dosopts { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 12px 0 0; font-size: 13px; }
+.dosopts label { display: flex; gap: 6px; align-items: center; }
+table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > td { padding: 0; } .dwrap .sp { height: 0; }
+@media print {
+  #dosPages { padding: 0; gap: 0; display: block; }
+  #dosPages > * { zoom: 1 !important; box-shadow: none !important; }
+  #dosPages .dpage { padding: 0 12mm; width: auto; min-height: 0; break-before: page; }
+  #dosPages > :first-child { break-before: auto !important; }
+  #dosPages .dpage.cover, #dosPages .sheet, #dosPages .plansheet, #dosPages .phead { break-before: page; break-after: auto; }
+  #dosPages .dpage.cover { width: 297mm; height: 210mm; padding: 18mm 20mm; overflow: hidden; }
+  .dwrap .sp { height: 12mm; }
+}
 .plansheet { background: #fff; box-shadow: 0 2px 18px rgba(0,0,0,.18); flex: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .plansheet svg { display: block; }
 .plansheet svg text { font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", Arial, sans-serif; }
@@ -409,6 +441,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
     <fieldset id="outBox" hidden>
       <legend data-i18n="legOut">Enregistrer et exporter</legend>
       <button class="btn" id="save" data-i18n="save">Enregistrer le dossier (.json)</button>
+      <button class="btn ghost" id="exportMvr" data-i18n="exportMvr">Exporter en MVR</button>
       <button class="btn ghost" id="exportCsv" data-i18n="exportCsv">Exporter le patch pour Give Me The Patch (.csv)</button>
       <button type="button" class="linkbtn" id="mapBtn" data-i18n="mapBtn" hidden>Colonnes du fichier CSV…</button>
       <a class="btn ghost" href="https://mart1ver.github.io/GiveMeThePatch/" target="_blank" rel="noopener" data-i18n="openGmtp">Ouvrir Give Me The Patch</a>
@@ -435,6 +468,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
         <button type="button" data-v="elec" data-i18n="tabElec">Électricité</button>
         <button type="button" data-v="net" data-i18n="tabNet">DMX, réseau et patch</button>
         <button type="button" data-v="inventory" data-i18n="tabInventory">Types et inventaire</button>
+        <button type="button" data-v="dossier" data-i18n="tabDossier">Dossier complet</button>
       </div>
       <div class="filters" id="filters">
         <input type="search" id="q" data-i18n-ph="searchPh" placeholder="Rechercher…">
@@ -498,6 +532,13 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabDossier: 'Dossier complet', exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
+    dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
+    sCover: 'Couverture et sommaire', sPlan: 'Plan feu', sPatch: 'Feuille de patch', sLoads: 'Accroches et charges', sHeads: 'Étiquettes de tête de perche', sElec: 'Électricité', sSyno: 'Synoptique électrique', sDmx: 'DMX, console et réseau', sInv: 'Types et inventaire',
+    cvKind: v => v === 'spectacle' ? 'Fiche technique lumière — spectacle accueilli' : 'Dossier lumière du lieu', cvDate: 'Date', cvAuthor: 'Responsable', cvSource: 'Source', cvToc: 'Sommaire',
+    kFix: 'projecteurs', kTypes: 'types', kUniv: 'univers DMX', kPoints: 'points d’accroche', kKg: 'kg suspendus', kW: 'W installés', kLines: 'lignes électriques', kDmxL: 'lignes DMX',
+    dRigTitle: 'Accroches et charges', dElecTitle: 'Électricité', dDmxTitle: 'DMX, console et réseau', dInvTitle: 'Types et inventaire', dBoards: 'Tableaux', dLines: 'Lignes', dUnivs: 'Univers', dDmxLines: 'Lignes DMX', dDevices: 'Réseau', dConsoles: 'Consoles',
+    dYes: 'oui', dNo: 'non', dEmpty: '—',
     tabPlan: 'Plan', plView: 'Vue', vTop: 'Plan (vu de dessus)', vFront: 'Face (vu de la salle)', vSide: 'Côté (vu de jardin)', plPoint: 'Points', plAll: 'Tous', plColor: 'Couleur par', cType: 'Type', cLayer: 'Calque', cPos: 'Position', cUniv: 'Univers', cCirc: 'Ligne élec.', cDmx: 'Ligne DMX',
     plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
     plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
@@ -597,6 +638,13 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabDossier: 'Full dossier', exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
+    dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
+    sCover: 'Cover and contents', sPlan: 'Lighting plot', sPatch: 'Patch sheet', sLoads: 'Rigging and loads', sHeads: 'Bar head labels', sElec: 'Electrics', sSyno: 'Electrical one-line diagram', sDmx: 'DMX, console and network', sInv: 'Types and inventory',
+    cvKind: v => v === 'spectacle' ? 'Lighting technical rider — visiting show' : 'Venue lighting dossier', cvDate: 'Date', cvAuthor: 'In charge', cvSource: 'Source', cvToc: 'Contents',
+    kFix: 'fixtures', kTypes: 'types', kUniv: 'DMX universes', kPoints: 'rigging points', kKg: 'kg flown', kW: 'W installed', kLines: 'power lines', kDmxL: 'DMX lines',
+    dRigTitle: 'Rigging and loads', dElecTitle: 'Electrics', dDmxTitle: 'DMX, console and network', dInvTitle: 'Types and inventory', dBoards: 'Boards', dLines: 'Lines', dUnivs: 'Universes', dDmxLines: 'DMX lines', dDevices: 'Network', dConsoles: 'Consoles',
+    dYes: 'yes', dNo: 'no', dEmpty: '—',
     tabPlan: 'Plot', plView: 'View', vTop: 'Plan (top view)', vFront: 'Front (from the house)', vSide: 'Side (from stage left)', plPoint: 'Points', plAll: 'All', plColor: 'Colour by', cType: 'Type', cLayer: 'Layer', cPos: 'Position', cUniv: 'Universe', cCirc: 'Power line', cDmx: 'DMX line',
     plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
     plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
@@ -962,7 +1010,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1606,6 +1654,147 @@ document.getElementById('view').addEventListener('change', e => {
   state.plan[el.dataset.pl] = el.type === 'checkbox' ? el.checked : el.value; store.set('plan', state.plan); renderPlanView();
 });
 document.getElementById('view').addEventListener('input', e => { if (e.target.id === 'plZoom') { state.plan.zoom = +e.target.value; store.set('plan', state.plan); document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = state.plan.zoom / 100; }); } });
+// ───────────── dossier complet ─────────────
+const DOS_SECTIONS = ['cover', 'plan', 'patch', 'loads', 'heads', 'elec', 'syno', 'dmx', 'inv'];
+const dtab = (heads, rows) => `<table class="dtab"><thead><tr>${heads.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
+const td = (v, c) => `<td${c ? ` class="${c}"` : ''}>${v === null || v === undefined || v === '' ? '' : esc(v)}</td>`;
+function withTemp(obj, patch, fn) { const old = {}; for (const k in patch) { old[k] = obj[k]; obj[k] = patch[k]; } try { return fn(); } finally { Object.assign(obj, old); } }
+function dossierPages() {
+  const d = state.d, L = d.lieu, S = state.dos, out = [], toc = [];
+  const sec = (k, html) => { if (S[k] && html) { toc.push(t('s' + k[0].toUpperCase() + k.slice(1))); out.push(html); } };
+  // plan feu (A4)
+  if (S.plan) sec('plan', withTemp(state.plan, { fmt: 'A4', point: '' }, () => renderPlan()).replace(/<p class="hint[^]*$/, ''));
+  // feuille de patch (A4)
+  if (S.patch) { const pg = withTemp(DOC, { fmt: 'A4' }, () => sheetPages()); sec('patch', pg ? pg.join('') : ''); }
+  // accroches et charges
+  if (S.loads) {
+    const rows = [...L.points].sort((a, b) => natCmp(a.name, b.name)).map(p => {
+      const R = pointLoad(p), cap = p.cmu > 0 ? p.cmu : (p.cmuM > 0 && p.length > 0 ? p.cmuM * p.length : null);
+      const stc = { over: 'bad', warn: 'warn', part: 'warn', ok: 'ok' }[R.status] || '';
+      return `<tr>${td(p.name, 'b')}${td(t('k' + p.kind))}${td(p.length ? fmtNum(p.length) : '', 'n')}${td(p.height ? fmtNum(p.height) : '', 'n')}${td(cap ? fmtNum(cap) : '', 'n')}${td(R.g.length, 'n')}${td(R.miss === R.g.length && R.miss ? '?' : fmtNum(R.fx) + (R.miss ? ' (?)' : ''), 'n')}${td(fmtNum(R.acc), 'n')}${td(R.extra ? fmtNum(R.extra) : '', 'n')}${td(fmtNum(R.total), 'n b')}${td(R.worst >= 0 ? Math.round(R.worst) + ' %' : '', 'n ' + stc)}${td({ ok: t('stOk'), part: t('stPart'), warn: t('stWarn'), over: t('stOver'), unk: t('stUnk'), na: t('stNa') }[R.status], stc)}${td(p.notes, 'w')}</tr>`;
+    });
+    sec('loads', `<div class="dpage"><h2>${esc(t('dRigTitle'))}</h2><p style="margin:0 0 3mm">${esc(t('setAcc'))} : ${fmtNum(+L.settings.accKg || 0)} kg</p>${dtab([t('rgPoint'), t('rgKind'), t('rgLen'), t('rgH'), t('rgCmu'), t('rgFix'), t('rgFixKg'), t('rgAccKg'), t('rgExtra'), t('rgTotal'), t('rgLoad'), t('rgStatus'), t('rgNotes')], rows)}</div>`);
+  }
+  if (S.heads) sec('heads', withTemp(state, { headFmt: 'A4' }, () => renderHeads()).html);
+  // électricité
+  if (S.elec && (L.boards.length || L.lines.length)) {
+    const bRows = L.boards.map(b => { const R = boardLoad(b); return `<tr>${td(b.name, 'b')}${td(t(b.supply === 'tri' ? 'sTri' : 'sMono'))}${td(b.amps ? b.amps + ' A' : '', 'n')}${td(b.location)}${td(R.ls.length, 'n')}${td(R.w ? fmtNum(R.w) + ' W' : '', 'n')}${td(b.supply === 'mono' ? fmtNum(R.A.L1 + R.A.L2 + R.A.L3) : ['L1', 'L2', 'L3'].map(k => fmtNum(R.A[k])).join(' · '), 'n' + (R.over ? ' bad' : ''))}${td(R.imb === null ? '' : Math.round(R.imb) + ' %', 'n')}${td(b.notes, 'w')}</tr>`; });
+    const lRows = sortedLines().map(l => { const R = lineLoad(l), stc = { over: 'bad', warn: 'warn', part: 'warn', ok: 'ok' }[R.status] || ''; return `<tr>${td(l.name, 'b')}${td(l.board)}${td(t('k' + (l.kind || 'direct')))}${td(l.phase === 'tri' ? t('sTri') : l.phase)}${td(l.amps ? l.amps + ' A' : '', 'n')}${td(l.dest)}${td(l.dimmer)}${td(l.dmx)}${td(R.g.map(f => f.fid || '?').sort((a, b) => cmpKey(numKey(a), numKey(b))).join(', '), 'w')}${td(R.w ? fmtNum(R.w) : '', 'n')}${td(R.g.length && R.pct !== null ? Math.round(R.pct) + ' %' : '', 'n ' + stc)}</tr>`; });
+    sec('elec', `<div class="dpage"><h2>${esc(t('dElecTitle'))}</h2><h3>${esc(t('dBoards'))}</h3>${dtab([t('bdName'), t('bdSupply'), t('bdAmps'), t('bdLoc'), t('bdLines'), t('bdPower'), t('bdPhases'), t('bdImb'), t('bdNotes')], bRows)}
+<h3>${esc(t('dLines'))}</h3>${dtab([t('lnName'), t('lnBoard'), t('lnKind'), t('lnPhase'), t('lnAmps'), t('lnDest'), t('lnDimmer'), t('lnDmx'), t('lnFix'), t('lnPower'), t('lnLoad')], lRows)}</div>`);
+  }
+  if (S.syno && L.lines.length) sec('syno', `<div class="dpage"><h2>${esc(t('synTitle'))}</h2>${renderSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '')}</div>`);
+  // DMX, console, réseau
+  if (S.dmx) {
+    const cRows = L.consoles.map(c => { const C = consoleCheck(c), m = conModel(c); return `<tr>${td(c.name, 'b')}${td(t('r' + (c.role || 'other')[0].toUpperCase() + (c.role || 'other').slice(1)))}${td(m ? (m[1] || t('mOther')) : '')}${td(C.max ? `≈ ${C.U.ch} / ${C.max}` : '', 'n' + (C.overP ? ' bad' : ''))}${td(`${C.U.univ}${c.universes ? ' / ' + c.universes : ''}`, 'n' + (C.overU ? ' bad' : ''))}${td((c.protocols || []).map(k => (CON_PROTOS.find(q => q[0] === k) || [k, k])[1]).join(', '), C.protoOk ? '' : 'bad')}${td(c.version)}${td(c.device)}${td(c.showfile, 'w')}</tr>`; });
+    const uRows = universes().map(r => `<tr>${td(r.u, 'b n')}${td(artAddr(r.u))}${td(r.fx.length, 'n')}${td(r.used + ' / 512', 'n')}${td(r.max || '', 'n' + (r.max > 512 ? ' bad' : ''))}${td(r.lines.map(x => x.name).sort(natCmp).join(', '), 'w')}</tr>`);
+    const dRows = [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name)).map(x => { const ch = dmxChain(x); return `<tr>${td(x.name, 'b')}${td(x.src)}${td(x.port, 'n')}${td(x.universe, 'n')}${td(x.dest)}${td(x.length ? x.length + ' m' : '', 'n')}${td(ch.length || '', 'n' + (ch.length > 32 ? ' bad' : ''))}${td(ch.map(f => f.fid || '?').join(' → '), 'w')}</tr>`; });
+    const iss = netIssues();
+    const vRows = L.devices.map(v => `<tr>${td(v.name, 'b')}${td(t('k' + v.kind))}${td(v.ip, iss.has(v.id) ? 'bad' : '')}${td(v.mask || L.settings.mask)}${td(v.vlan, 'n')}${td(v.sw)}${td(v.port)}${td(v.mac, 'w')}${td(v.location)}</tr>`);
+    sec('dmx', `<div class="dpage"><h2>${esc(t('dDmxTitle'))}</h2><p style="margin:0 0 3mm">${esc(t('setProto'))} : ${esc(L.settings.proto === 'sacn' ? 'sACN' : 'Art-Net')} · ${esc(t('setNet'))} ${esc(L.settings.net || '')} / ${esc(L.settings.mask || '')}${L.settings.gw ? ' · ' + esc(t('setGw')) + ' ' + esc(L.settings.gw) : ''}</p>
+${cRows.length ? `<h3>${esc(t('dConsoles'))}</h3>${dtab([t('cnName'), t('cnRole'), t('cnModel'), t('csParams'), t('csUniv'), t('cnProtos'), t('cnVersion'), t('cnDevice'), t('cnShow')], cRows)}` : ''}
+<h3>${esc(t('dUnivs'))}</h3>${dtab([t('unU'), t('unArt'), t('unFix'), t('unUsed'), t('unMax'), t('unLines')], uRows)}
+${dRows.length ? `<h3>${esc(t('dDmxLines'))}</h3>${dtab([t('dlName'), t('dlSrc'), t('dlPort'), t('dlU'), t('dlDest'), t('dlLen'), t('dlN'), t('dlChain')], dRows)}` : ''}
+${vRows.length ? `<h3>${esc(t('dDevices'))}</h3>${dtab([t('dvName'), t('dvKind'), t('dvIp'), t('dvMask'), t('dvVlan'), t('dvSwitch'), t('dvPort'), t('dvMac'), t('dvLoc')], vRows)}` : ''}</div>`);
+  }
+  if (S.inv) {
+    const qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
+    const rows = Object.keys(d.types).filter(k => qty.get(k) || d.types[k].stock).sort((a, b) => typeName(a).localeCompare(typeName(b))).map(k => {
+      const ty = d.types[k], n = qty.get(k) || 0, miss = ty.stock === null || ty.stock === '' || ty.stock === undefined ? null : Math.max(0, n - ty.stock);
+      return `<tr>${td(ty.name, 'b')}${td(ty.maker)}${td(Object.entries(ty.modes || {}).map(([m, c]) => `${m || '—'} (${c})`).join(', '), 'w')}${td(n, 'n b')}${td(ty.stock ?? '', 'n')}${td(miss === null ? '' : miss || '✓', 'n' + (miss ? ' bad' : ''))}${td(ty.weight ? fmtNum(ty.weight) : '', 'n')}${td(ty.power ? fmtNum(ty.power) : '', 'n')}${td(ty.gdtfData ? t('dYes') : t('dNo'))}</tr>`;
+    });
+    sec('inv', `<div class="dpage"><h2>${esc(t('dInvTitle'))}</h2>${dtab([t('invType'), t('invMaker'), t('invModes'), t('invQty'), t('invStock'), t('invMissing'), t('invWeight'), t('invPower'), 'GDTF'], rows)}</div>`);
+  }
+  // couverture : en tête, avec le sommaire des parties retenues
+  if (S.cover) {
+    const m = d.meta, kg = L.points.reduce((a, p2) => a + pointLoad(p2).total, 0), W = d.fixtures.reduce((a, f) => a + ((d.types[f.type] || {}).power || 0), 0);
+    const kp = [[d.fixtures.length, 'kFix'], [new Set(d.fixtures.map(f => f.type)).size, 'kTypes'], [new Set(d.fixtures.filter(f => f.univ).map(f => f.univ)).size, 'kUniv'], [L.points.length, 'kPoints'],
+      [fmtNum(kg), 'kKg'], [W ? fmtNum(W) : '—', 'kW'], [L.lines.length, 'kLines'], [L.dmxLines.length, 'kDmxL']];
+    out.unshift(`<div class="dpage cover"><div class="ck">${esc(t('cvKind', m.kind))}</div><h1>${esc(m.titre || t('untitled'))}</h1><div class="cl">${esc(m.lieu || '')}</div>
+<div class="cmeta">${m.date ? `${esc(t('cvDate'))} : ${esc(new Date(m.date).toLocaleDateString(LANG))}<br>` : ''}${m.auteur ? `${esc(t('cvAuthor'))} : ${esc(m.auteur)}<br>` : ''}${m.source ? `${esc(t('cvSource'))} : ${esc(m.source)}` : ''}</div>
+<div class="ckpis">${kp.map(([v, k]) => `<div><b>${v}</b><span>${esc(t(k))}</span></div>`).join('')}</div>${m.notes ? `<div class="cnotes">${esc(m.notes)}</div>` : ''}
+<div class="ctoc"><b>${esc(t('cvToc'))}</b>${toc.map((x, i) => `${i + 1}. ${esc(x)}`).join('<br>')}</div></div>`);
+  }
+  // pages de texte : marges haute et basse répétées sur chaque feuille (en-tête et pied de tableau vides)
+  const sp = '<tr><td><div class="sp"></div></td></tr>';
+  return out.map(h => h.replace(/^<div class="dpage">([\s\S]*)<\/div>$/, (m, inner) => `<div class="dpage"><table class="dwrap"><thead>${sp}</thead><tbody><tr><td>${inner}</td></tr></tbody><tfoot>${sp}</tfoot></table></div>`));
+}
+function renderDossier() {
+  const S = state.dos;
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dosHint'))}</p>
+<div class="dosopts noprint">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}
+<span class="spacer"></span><button type="button" class="minibtn" id="dosMvr">${esc(t('exportMvr'))}</button><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
+<label>${esc(t('zoom'))} <input type="range" id="dosZoom" min="20" max="100" value="${S.zoom || 45}"></label></div>
+<div id="dosPages">${dossierPages().join('')}</div>`;
+  $('#pagesize').textContent = '@page { size: A4 landscape; margin: 0; }';
+  dosZoom();
+  if ($('#dosPages .big.lfid')) fitLabels(40, 30);
+}
+function dosZoom() { document.querySelectorAll('#dosPages > *').forEach(x => { x.style.zoom = (state.dos.zoom || 45) / 100; }); }
+document.getElementById('view').addEventListener('change', e => { const el = e.target.closest && e.target.closest('[data-dos]'); if (!el) return; state.dos[el.dataset.dos] = el.checked; store.set('dos', state.dos); renderDossier(); });
+document.getElementById('view').addEventListener('input', e => { if (e.target.id === 'dosZoom') { state.dos.zoom = +e.target.value; store.set('dos', state.dos); dosZoom(); } });
+document.getElementById('view').addEventListener('click', e => { if (e.target.id === 'dosMvr') exportMVR(); });
+
+// ───────────── export MVR (GeneralSceneDescription + GDTF des types) ─────────────
+const CRC_T = (() => { const T = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; T[n] = c >>> 0; } return T; })();
+const crc32 = u8 => { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zipStore(files) {   // zip sans compression (« stored »), lisible partout
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  const dt = new Date(), dosT = (dt.getHours() << 11) | (dt.getMinutes() << 5) | (dt.getSeconds() >> 1), dosD = ((dt.getFullYear() - 1980) << 9) | ((dt.getMonth() + 1) << 5) | dt.getDate();
+  for (const [name, data] of files) {
+    const nm = enc.encode(name), crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true); h.setUint16(10, dosT, true); h.setUint16(12, dosD, true);
+    h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, nm.length, true); h.setUint16(28, 0, true);
+    parts.push(new Uint8Array(h.buffer), nm, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true); c.setUint16(12, dosT, true); c.setUint16(14, dosD, true);
+    c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    cen.push(new Uint8Array(c.buffer), nm);
+    off += 30 + nm.length + data.length;
+  }
+  const csize = cen.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, csize, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...cen, new Uint8Array(e.buffer)], { type: 'application/zip' });
+}
+const isUuid = v => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v || '');
+const newUuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16))).toUpperCase();
+const xq = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function exportMVR() {
+  const d = state.d, files = [], gdtfName = {};
+  let withG = 0, without = 0;
+  for (const [k, ty] of Object.entries(d.types)) {
+    if (!d.fixtures.some(f => f.type === k)) continue;
+    const fn = (ty.gdtf && /\.gdtf$/i.test(ty.gdtf) ? ty.gdtf : slug(ty.name) + '.gdtf').replace(/[\\/]/g, '_');
+    gdtfName[k] = fn;
+    if (ty.gdtfData) { files.push([fn, fromB64(ty.gdtfData)]); withG++; } else without++;
+  }
+  const posU = new Map(); d.fixtures.forEach(f => { if (f.position && !posU.has(f.position)) posU.set(f.position, newUuid()); });
+  const mtx = f => {
+    const m = Array.isArray(f.m) && f.m.length === 12 ? f.m : [1, 0, 0, 0, 1, 0, 0, 0, 1, (f.x || 0) * 1000, (f.y || 0) * 1000, (f.z || 0) * 1000];
+    const r = v => +(+v).toFixed(4);
+    return `{${r(m[0])},${r(m[1])},${r(m[2])}}{${r(m[3])},${r(m[4])},${r(m[5])}}{${r(m[6])},${r(m[7])},${r(m[8])}}{${r(m[9])},${r(m[10])},${r(m[11])}}`;
+  };
+  const layers = new Map(); d.fixtures.forEach(f => { const l = f.layer || f.position || 'OPlanFeu'; if (!layers.has(l)) layers.set(l, []); layers.get(l).push(f); });
+  const fxXml = f => {
+    const ty = d.types[f.type] || {}, modes = Object.keys(ty.modes || {}), mode = f.mode || modes[0] || 'Default';
+    const abs = f.univ ? (f.univ - 1) * 512 + f.addr : 0, fidN = parseInt(f.fid, 10);
+    return `<Fixture name="${xq(f.name || ty.name || f.fid)}" uuid="${isUuid(f.uid) ? f.uid : newUuid()}"><Matrix>${mtx(f)}</Matrix><GDTFSpec>${xq(gdtfName[f.type] || '')}</GDTFSpec><GDTFMode>${xq(mode)}</GDTFMode>` +
+      (f.position ? `<Position>${posU.get(f.position)}</Position>` : '') + (f.purpose ? `<Function>${xq(f.purpose)}</Function>` : '') +
+      `<FixtureID>${xq(f.fid || '')}</FixtureID>${Number.isFinite(fidN) ? `<FixtureIDNumeric>${fidN}</FixtureIDNumeric>` : ''}<UnitNumber>${parseInt(f.unit, 10) || 0}</UnitNumber>` +
+      `<Addresses>${abs ? `<Address break="0">${abs}</Address>` : ''}</Addresses><CustomCommands/></Fixture>`;
+  };
+  const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<GeneralSceneDescription verMajor="1" verMinor="5" provider="OPlanFeu" providerVersion="1">
+<UserData><Data provider="OPlanFeu" ver="1"/></UserData>
+<Scene><AUXData>${[...posU].map(([n, u]) => `<Position name="${xq(n)}" uuid="${u}"/>`).join('')}</AUXData>
+<Layers>${[...layers].map(([n, fx]) => `<Layer name="${xq(n)}" uuid="${newUuid()}"><ChildList>${fx.map(fxXml).join('')}</ChildList></Layer>`).join('\n')}</Layers></Scene>
+</GeneralSceneDescription>`;
+  files.unshift(['GeneralSceneDescription.xml', new TextEncoder().encode(xml)]);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(zipStore(files)); a.download = slug(d.meta.titre) + '.mvr';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  alert(t('mvrDone', d.fixtures.length, withG, without));
+}
 function renderRigging() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings, rv = state.rigView || 'points';
@@ -1687,6 +1876,7 @@ function render() {
   if (state.tab === 'rigging') renderRigging();
   else if (state.tab === 'elec') renderElec();
   else if (state.tab === 'plan') renderPlanView();
+  else if (state.tab === 'dossier') renderDossier();
   else if (state.tab === 'net') renderNet();
   else if (state.tab === 'inventory') renderInventory();
   else renderFixtures();
@@ -2523,6 +2713,7 @@ $('#exportCsv').addEventListener('click', () => {
   download(slug(state.d.meta.titre) + '_patch.csv', '﻿' + lines.join('\r\n') + '\r\n', 'text/csv');
 });
 $('#print').addEventListener('click', () => window.print());
+$('#exportMvr').addEventListener('click', () => state.d && exportMVR());
 
 // ───────────── langue, démarrage ─────────────
 $('#lang').addEventListener('change', e => { LANG = e.target.value; store.set('lang', LANG); applyI18n(); if (state.d) { refreshSide(); render(); } });
