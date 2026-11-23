@@ -541,9 +541,9 @@ const I18N = {
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
-    v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
-    v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s) => `${n} projecteurs · ${s} structures`,
-    tabDossier: 'Dossier complet', exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
+    v3Shapes: 'Formes réelles (GDTF, MVR)', v3Shaping: 'Chargement des formes…', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
+    v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s, g) => `${n} projecteurs · ${s} structures${g ? ` · formes : ${g}` : ''}`,
+    tabDossier: 'Dossier complet', mvrGeo: n => `${n} structure(s) et décor(s) avec leur modèle 3D.`, exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
     dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
     sCover: 'Couverture et sommaire', sPlan: 'Plan feu', sPatch: 'Feuille de patch', sLoads: 'Accroches et charges', sHeads: 'Étiquettes de tête de perche', sElec: 'Électricité', sSyno: 'Synoptique électrique', sDmx: 'DMX, console et réseau', sInv: 'Types et inventaire',
     cvKind: v => v === 'spectacle' ? 'Fiche technique lumière — spectacle accueilli' : 'Dossier lumière du lieu', cvDate: 'Date', cvAuthor: 'Responsable', cvSource: 'Source', cvToc: 'Sommaire',
@@ -650,9 +650,9 @@ const I18N = {
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
     tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
-    v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
-    v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s) => `${n} fixtures · ${s} structures`,
-    tabDossier: 'Full dossier', exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
+    v3Shapes: 'Real shapes (GDTF, MVR)', v3Shaping: 'Loading the shapes…', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
+    v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s, g) => `${n} fixtures · ${s} structures${g ? ` · shapes: ${g}` : ''}`,
+    tabDossier: 'Full dossier', mvrGeo: n => `${n} structure(s) and set piece(s) with their 3D model.`, exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
     dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
     sCover: 'Cover and contents', sPlan: 'Lighting plot', sPatch: 'Patch sheet', sLoads: 'Rigging and loads', sHeads: 'Bar head labels', sElec: 'Electrics', sSyno: 'Electrical one-line diagram', sDmx: 'DMX, console and network', sInv: 'Types and inventory',
     cvKind: v => v === 'spectacle' ? 'Lighting technical rider — visiting show' : 'Venue lighting dossier', cvDate: 'Date', cvAuthor: 'In charge', cvSource: 'Source', cvToc: 'Contents',
@@ -789,6 +789,8 @@ async function unzip(buf) {
     },
   };
 }
+async function deflateB64(u8) { const st = new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate-raw')); return toB64(new Uint8Array(await new Response(st).arrayBuffer())); }
+async function inflateB64(b64) { const st = new Blob([fromB64(b64)]).stream().pipeThrough(new DecompressionStream('deflate-raw')); return new Uint8Array(await new Response(st).arrayBuffer()); }
 const xmlOf = bytes => new DOMParser().parseFromString(new TextDecoder().decode(bytes), 'application/xml');
 
 // ───────────── MVR ─────────────
@@ -850,7 +852,20 @@ async function parseMVR(buf, fileName) {
   const root = doc.documentElement;
   const positions = new Map([...root.querySelectorAll('AUXData Position')].map(p => [p.getAttribute('uuid'), p.getAttribute('name') || '']));
   const focusNames = new Map([...root.querySelectorAll('FocusPoint')].map(p => [p.getAttribute('uuid'), p.getAttribute('name') || '']));
-  const fixtures = [], structures = [], specs = new Set();
+  const fixtures = [], structures = [], specs = new Set(), geoFiles = new Set();
+  // définitions de symboles : uuid → [{ f: fichier 3d, m: matrice locale (mm) }]
+  const geoOf = el => [...el.children].filter(g => g.tagName === 'Geometry3D').map(g => ({ f: g.getAttribute('fileName') || '', m: parseMatrix(childText(g, 'Matrix')) || IDENT }));
+  const symdefs = new Map([...root.querySelectorAll('AUXData Symdef')].map(sd => { const cl = childEl(sd, 'ChildList'); return [sd.getAttribute('uuid'), cl ? geoOf(cl) : []]; }));
+  const objGeo = c => {
+    const G = childEl(c, 'Geometries'); if (!G) return [];
+    const out = geoOf(G);
+    for (const sy of [...G.children].filter(g => g.tagName === 'Symbol')) {
+      const sm = parseMatrix(childText(sy, 'Matrix')) || IDENT;
+      (symdefs.get(sy.getAttribute('symdef')) || []).forEach(g => out.push({ f: g.f, m: compose(sm, g.m) }));
+    }
+    out.forEach(g => { if (g.f) geoFiles.add(g.f); g.m = g.m.map(v => +(+v).toFixed(4)); });
+    return out.filter(g => g.f);
+  };
   const OBJ = new Set(['Fixture', 'Truss', 'SceneObject', 'Support', 'VideoScreen', 'Projector', 'GroupObject', 'FocusPoint']);
   const walk = (el, M, layer) => {
     for (const c of el.children) {
@@ -877,7 +892,7 @@ async function parseMVR(buf, fileName) {
           color: cieToHex(childText(c, 'Color')), x: xyz[0], y: xyz[1], z: xyz[2], m: W.map(v => +v.toFixed(4)),
         });
       } else if (c.tagName !== 'GroupObject') {
-        structures.push({ uid: c.getAttribute('uuid') || '', kind: c.tagName, name: (c.getAttribute('name') || '').trim(), layer, x: xyz[0], y: xyz[1], z: xyz[2], m: W.map(v => +v.toFixed(4)) });
+        structures.push({ uid: c.getAttribute('uuid') || '', kind: c.tagName, name: (c.getAttribute('name') || '').trim(), layer, x: xyz[0], y: xyz[1], z: xyz[2], m: W.map(v => +v.toFixed(4)), geo: objGeo(c) });
       }
       walk(c, W, layer);
     }
@@ -902,7 +917,16 @@ async function parseMVR(buf, fileName) {
     f.nch = modes[f.mode] || (keys.length === 1 ? modes[keys[0]] : 0) || 0;
     delete f.spec;
   }
-  return ensureLieu(newDossier({ fixtures, structures, types, source: fileName, titre: fileName.replace(/\.mvr$/i, '') }));
+  // modèles 3D des structures (3ds) : gardés dans le dossier, compressés
+  const meshes = {};
+  for (const fn of geoFiles) {
+    const zn = zip.names.find(n => n.toLowerCase() === fn.toLowerCase() || n.toLowerCase().endsWith('/' + fn.toLowerCase()));
+    if (!zn || !/\.3ds$/i.test(fn)) continue;
+    try { meshes[fn] = await deflateB64(await zip.get(zn)); } catch {}
+  }
+  const dd = ensureLieu(newDossier({ fixtures, structures, types, source: fileName, titre: fileName.replace(/\.mvr$/i, '') }));
+  dd.meshes = meshes;
+  return dd;
 }
 
 // ───────────── CSV (WYSIWYG, Capture, grandMA, Give Me The Patch…) ─────────────
@@ -1018,13 +1042,13 @@ function ensureLieu(d) {
 }
 function checkDossier(d) {
   if (!d || d.format !== 'oplanfeu' || !Array.isArray(d.fixtures)) throw new Error(t('noFixtures'));
-  d.types = d.types || {}; d.structures = d.structures || []; d.meta = d.meta || {};
+  d.types = d.types || {}; d.structures = d.structures || []; d.meta = d.meta || {}; d.meshes = d.meshes || {};
   d.fixtures.forEach(f => { if (!f.uid) f.uid = uid(); });
   return ensureLieu(d);
 }
 
 // ───────────── état ─────────────
-const state = { v3: { color: 'type', labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1774,7 +1798,7 @@ function zipStore(files) {   // zip sans compression (« stored »), lisible par
 const isUuid = v => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v || '');
 const newUuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16))).toUpperCase();
 const xq = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function exportMVR() {
+async function exportMVR() {
   const d = state.d, files = [], gdtfName = {};
   let withG = 0, without = 0;
   for (const [k, ty] of Object.entries(d.types)) {
@@ -1790,6 +1814,10 @@ function exportMVR() {
     return `{${r(m[0])},${r(m[1])},${r(m[2])}}{${r(m[3])},${r(m[4])},${r(m[5])}}{${r(m[6])},${r(m[7])},${r(m[8])}}{${r(m[9])},${r(m[10])},${r(m[11])}}`;
   };
   const layers = new Map(); d.fixtures.forEach(f => { const l = f.layer || f.position || 'OPlanFeu'; if (!layers.has(l)) layers.set(l, []); layers.get(l).push(f); });
+  const usedGeo = new Set();
+  (d.structures || []).forEach(o => { if ((o.geo || []).length && o.geo.every(g => d.meshes && d.meshes[g.f])) { const l = o.layer || 'Structures'; if (!layers.has(l)) layers.set(l, []); layers.get(l).push(o); o.geo.forEach(g => usedGeo.add(g.f)); } });
+  for (const fn of usedGeo) files.push([fn, await inflateB64(d.meshes[fn])]);
+  const stXml = o => `<${o.kind === 'Fixture' ? 'SceneObject' : o.kind} name="${xq(o.name)}" uuid="${isUuid(o.uid) ? o.uid : newUuid()}"><Matrix>${mtx(o)}</Matrix><Geometries>${o.geo.map(g => `<Geometry3D fileName="${xq(g.f)}">${g.m.join(',') === IDENT.join(',') ? '' : `<Matrix>${mtx({ m: g.m })}</Matrix>`}</Geometry3D>`).join('')}</Geometries></${o.kind === 'Fixture' ? 'SceneObject' : o.kind}>`;
   const fxXml = f => {
     const ty = d.types[f.type] || {}, modes = Object.keys(ty.modes || {}), mode = f.mode || modes[0] || 'Default';
     const abs = f.univ ? (f.univ - 1) * 512 + f.addr : 0, fidN = parseInt(f.fid, 10);
@@ -1802,21 +1830,23 @@ function exportMVR() {
 <GeneralSceneDescription verMajor="1" verMinor="5" provider="OPlanFeu" providerVersion="1">
 <UserData><Data provider="OPlanFeu" ver="1"/></UserData>
 <Scene><AUXData>${[...posU].map(([n, u]) => `<Position name="${xq(n)}" uuid="${u}"/>`).join('')}</AUXData>
-<Layers>${[...layers].map(([n, fx]) => `<Layer name="${xq(n)}" uuid="${newUuid()}"><ChildList>${fx.map(fxXml).join('')}</ChildList></Layer>`).join('\n')}</Layers></Scene>
+<Layers>${[...layers].map(([n, fx]) => `<Layer name="${xq(n)}" uuid="${newUuid()}"><ChildList>${fx.map(o => o.geo ? stXml(o) : fxXml(o)).join('')}</ChildList></Layer>`).join('\n')}</Layers></Scene>
 </GeneralSceneDescription>`;
   files.unshift(['GeneralSceneDescription.xml', new TextEncoder().encode(xml)]);
   const a = document.createElement('a'); a.href = URL.createObjectURL(zipStore(files)); a.download = slug(d.meta.titre) + '.mvr';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-  alert(t('mvrDone', d.fixtures.length, withG, without));
+  alert(t('mvrDone', d.fixtures.length, withG, without) + (usedGeo.size ? ' ' + t('mvrGeo', [...layers.values()].flat().filter(o => o.geo).length) : ''));
 }
 // ───────────── vue 3D (three.js, chargé à la demande) ─────────────
 const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const V3 = { running: false, raf: 0 };
 let threeP = null;
-const loadThree = () => threeP || (threeP = new Promise((ok, ko) => {
-  if (window.THREE) return ok();
-  const sc = document.createElement('script'); sc.src = THREE_URL; sc.onload = () => ok(); sc.onerror = () => { threeP = null; ko(new Error('three')); }; document.head.appendChild(sc);
-}));
+const TDS_URL = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/TDSLoader.js';
+const GLTF_URL = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+const addScript = src => new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = src; sc.onload = () => ok(); sc.onerror = () => ko(new Error(src)); document.head.appendChild(sc); });
+const loadThree = () => threeP || (threeP = (window.THREE ? Promise.resolve() : addScript(THREE_URL))
+  .then(() => Promise.all([window.THREE.TDSLoader ? null : addScript(TDS_URL).catch(() => null), window.THREE.GLTFLoader ? null : addScript(GLTF_URL).catch(() => null)]))   // sans chargeurs : formes simples
+  .catch(e => { threeP = null; throw e; }));
 function v3Stop() { V3.running = false; cancelAnimationFrame(V3.raf); if (V3.ro) V3.ro.disconnect(); if (V3.renderer) { V3.renderer.dispose(); V3.renderer.forceContextLoss && V3.renderer.forceContextLoss(); } V3.renderer = null; }
 function renderV3() {
   const S = state.v3, o = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab(v))}</option>`).join('');
@@ -1826,13 +1856,97 @@ function renderV3() {
   $('#view').innerHTML = `<p class="hint" style="margin:12px 0 0">${esc(t('v3Hint'))}</p>
 <div class="plopts">${['persp', 'top', 'front', 'side'].map(k => `<button type="button" class="minibtn" data-cam="${k}">${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}
 <label>${esc(t('plColor'))} <select data-v3="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], S.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
-${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('grid')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
+${ck('shapes')}${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('grid')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
 <div class="v3wrap" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
   const fx = state.d.fixtures.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
   if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
-  loadThree().then(() => { if (state.tab === 'v3d' && $('#v3')) buildV3(fx); }).catch(() => { const el = $('#v3'); if (el) el.innerHTML = `<div class="v3msg">${esc(t('v3Fail'))}</div>`; });
+  loadThree().then(() => { if (state.tab === 'v3d' && $('#v3')) return buildV3(fx); }).catch(() => { const el = $('#v3'); if (el) el.innerHTML = `<div class="v3msg">${esc(t('v3Fail'))}</div>`; });
 }
-function buildV3(fx) {
+// formes des projecteurs : arbre de géométries du GDTF (modèles 3ds mis aux dimensions du modèle, ou primitives)
+const GEO_TAGS = new Set(['Geometry', 'Axis', 'FilterBeam', 'FilterColor', 'FilterGobo', 'FilterShaper', 'Beam', 'MediaServerLayer', 'MediaServerCamera', 'MediaServerMaster', 'Display', 'GeometryReference', 'Laser', 'WiringObject', 'Inventory', 'Structure', 'Support', 'Magnet']);
+const SHAPE_CACHE = new Map();
+const ab = u8 => u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+function primitiveMesh(T, prim, L, W, H) {
+  L = L || .1; W = W || .1; H = H || .1;
+  let g;
+  if (/cylinder|conventional|pigtail/i.test(prim)) { g = new T.CylinderGeometry(Math.min(L, W) / 2, Math.min(L, W) / 2, H, 18); g.rotateX(Math.PI / 2); }
+  else if (/sphere/i.test(prim)) { g = new T.SphereGeometry(Math.min(L, W, H) / 2, 16, 12); }
+  else g = new T.BoxGeometry(L, W, H);
+  return new T.Mesh(g);
+}
+function fitTo(T, obj, L, W, H) {   // le modèle 3ds remplit les dimensions du modèle GDTF
+  const b = new T.Box3().setFromObject(obj); if (b.isEmpty()) return false;
+  const sz = b.getSize(new T.Vector3());
+  obj.scale.set(sz.x > 1e-6 && L ? L / sz.x : 1, sz.y > 1e-6 && W ? W / sz.y : 1, sz.z > 1e-6 && H ? H / sz.z : 1);
+  return true;
+}
+async function gdtfShape(T, key, ty) {
+  if (SHAPE_CACHE.has(key)) return SHAPE_CACHE.get(key);
+  const pr = (async () => {
+    const g = await unzip(fromB64(ty.gdtfData)), doc = xmlOf(await g.get('description.xml'));
+    const models = new Map([...doc.querySelectorAll('Models > Model')].map(m => [m.getAttribute('Name'), m]));
+    const tops = [...(doc.querySelector('Geometries') || { children: [] }).children].filter(c => GEO_TAGS.has(c.tagName));
+    const files = new Map();
+    const modelObj = async name => {
+      const M = models.get(name); if (!M) return null;
+      const L = +M.getAttribute('Length') || 0, W = +M.getAttribute('Width') || 0, H = +M.getAttribute('Height') || 0, file = M.getAttribute('File') || '', prim = M.getAttribute('PrimitiveType') || '';
+      const lc = n => n.toLowerCase();
+      const glb = file && T.GLTFLoader && g.names.find(n => lc(n) === lc('models/gltf/' + file + '.glb'));
+      const tds = file && T.TDSLoader && g.names.find(n => lc(n) === lc('models/3ds/' + file + '.3ds'));
+      for (const zn of [glb, tds].filter(Boolean)) {
+        try {
+          if (!files.has(zn)) files.set(zn, zn === glb
+            ? await (async () => { const buf = ab(await g.get(zn)); return new Promise((ok, ko) => new T.GLTFLoader().parse(buf, '', r => { const sc = r.scene; sc.rotation.x = Math.PI / 2; const w2 = new T.Group(); w2.add(sc); ok(w2); }, ko)); })().catch(() => null)
+            : new T.TDSLoader().parse(ab(await g.get(zn)), ''));
+          if (!files.get(zn)) continue;
+          const o = files.get(zn).clone(true), w = new T.Group(); w.add(o);
+          if (fitTo(T, o, L, W, H)) return w;
+        } catch {}
+      }
+      return (L || W || H) ? primitiveMesh(T, prim, L, W, H) : null;
+    };
+    const build = async (el, parent) => {
+      const node = new T.Group(), n = (String(el.getAttribute('Position') || '').match(/-?\d+(?:\.\d+)?(?:e[-+]?\d+)?/gi) || []).map(Number);
+      if (n.length >= 16) { node.matrixAutoUpdate = false; node.matrix.set(...n.slice(0, 16)); }
+      if (el.tagName === 'Beam') node.name = '__beam';
+      if (el.tagName === 'GeometryReference') { const ref = tops.find(x => x.getAttribute('Name') === el.getAttribute('Geometry')); if (ref) await build(ref, node); }
+      else { const o = await modelObj(el.getAttribute('Model')); if (o) node.add(o); }
+      parent.add(node);
+      for (const c of el.children) if (GEO_TAGS.has(c.tagName)) await build(c, node);
+    };
+    const root = new T.Group();
+    if (tops[0]) await build(tops[0], root);
+    let n = 0; root.traverse(o => { if (o.isMesh) n++; });
+    return n ? root : null;
+  })().catch(() => null);
+  SHAPE_CACHE.set(key, pr);
+  return pr;
+}
+async function meshFiles(T) {   // modèles 3ds des structures du MVR (millimètres)
+  const key = state.d.meta.imported + '|' + Object.keys(state.d.meshes || {}).length;
+  if (SHAPE_CACHE.has(key)) return SHAPE_CACHE.get(key);
+  const pr = (async () => {
+    const out = new Map(); if (!T.TDSLoader) return out;
+    for (const [fn, b64] of Object.entries(state.d.meshes || {})) {
+      try { const o = new T.TDSLoader().parse(ab(await inflateB64(b64)), ''); if (!new T.Box3().setFromObject(o).isEmpty()) out.set(fn, o); } catch {}
+    }
+    return out;
+  })();
+  SHAPE_CACHE.set(key, pr);
+  return pr;
+}
+async function buildV3(fx) {
+  const T0 = window.THREE, shapes = new Map(); let meshes = new Map(), nShapes = 0;
+  if (state.v3.shapes) {
+    const wrap0 = $('#v3'); if (wrap0) wrap0.innerHTML = `<div class="v3msg">${esc(t('v3Shaping'))}</div>`;
+    for (const k of new Set(fx.map(f => f.type))) { const ty = state.d.types[k]; if (ty && ty.gdtfData) { const sh = await gdtfShape(T0, ty.gdtf || k, ty); if (sh) { shapes.set(k, sh); nShapes++; } } }
+    if (state.v3.struct) meshes = await meshFiles(T0);
+    if (state.tab !== 'v3d' || !$('#v3')) return;
+  }
+  V3.shapes = shapes; V3.meshes = meshes; V3.nShapes = nShapes;
+  buildV3Scene(fx);
+}
+function buildV3Scene(fx) {
   const T = window.THREE, S = state.v3, d = state.d, wrap = $('#v3');
   wrap.innerHTML = '<div class="v3tip" hidden></div><div class="v3info"></div><div class="v3leg"></div>';
   const renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
@@ -1870,8 +1984,13 @@ function buildV3(fx) {
   };
   for (const f of fx) {
     const g = new T.Group(); g.matrixAutoUpdate = false; g.matrix.copy(toM4(f.m, f.x, f.y, f.z));
-    const body = new T.Mesh(box, matOf(colOf.get(ckey(f)) || '#999')); body.userData.f = f; g.add(body); pick.push(body);
-    if (S.beams) { const b = new T.Mesh(cone, beamMat); g.add(b); }
+    const mat = matOf(colOf.get(ckey(f)) || '#999'), sh = V3.shapes && V3.shapes.get(f.type);
+    let beamAt = g;
+    if (sh) {
+      const c = sh.clone(true); c.traverse(o => { if (o.isMesh) { o.material = mat; o.userData.f = f; pick.push(o); } });
+      g.add(c); beamAt = c.getObjectByName('__beam') || c;
+    } else { const body = new T.Mesh(box, mat); body.userData.f = f; g.add(body); pick.push(body); }
+    if (S.beams) { const b = new T.Mesh(cone, beamMat); beamAt.add(b); }
     world.add(g);
     if (S.labels) { const sp = sprite(f.fid || '?', .22); sp.position.set(f.x, f.y, f.z + .32); world.add(sp); }
   }
@@ -1891,7 +2010,21 @@ function buildV3(fx) {
   let nst = 0;
   if (S.struct) {
     const smat = new T.MeshStandardMaterial({ color: 0x5a5d66, roughness: .8, transparent: true, opacity: .8 }), sg = new T.BoxGeometry(.18, .18, .18);
-    d.structures.filter(o2 => [o2.x, o2.y, o2.z].every(Number.isFinite)).forEach(o2 => { const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); nst++; });
+    const gmat = new T.MeshStandardMaterial({ color: 0x8d9099, roughness: .5, metalness: .5, side: T.DoubleSide });
+    d.structures.filter(o2 => [o2.x, o2.y, o2.z].every(Number.isFinite)).forEach(o2 => {
+      const parts = (o2.geo || []).filter(gg => V3.meshes && V3.meshes.has(gg.f));
+      if (parts.length) {
+        const sg2 = new T.Group(); sg2.matrixAutoUpdate = false; sg2.matrix.copy(toM4(o2.m, o2.x, o2.y, o2.z));
+        for (const gg of parts) {
+          const lg = new T.Group(); lg.matrixAutoUpdate = false; lg.matrix.copy(toM4(gg.m, 0, 0, 0));
+          const mm = V3.meshes.get(gg.f).clone(true); mm.scale.setScalar(.001);   // 3ds du MVR en millimètres
+          mm.traverse(q => { if (q.isMesh) { q.material = gmat; q.userData.st = o2; pick.push(q); } });
+          lg.add(mm); sg2.add(lg);
+        }
+        world.add(sg2);
+      } else { const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); }
+      nst++;
+    });
   }
   // sol, grille de 1 m et 0 plateau
   const all = [...fx.map(f => [f.x, f.y, f.z])], xs = all.map(a => a[0]), ys = all.map(a => a[1]), zs = all.map(a => a[2]);
@@ -1933,7 +2066,7 @@ function buildV3(fx) {
   el.addEventListener('wheel', e => { e.preventDefault(); sph.r = Math.min(400, Math.max(1, sph.r * (e.deltaY > 0 ? 1.1 : .9))); place(); }, { passive: false });
   const size = () => { const w = wrap.clientWidth, h = wrap.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
   V3.ro = new ResizeObserver(size); V3.ro.observe(wrap); size();
-  wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst);
+  wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst, V3.nShapes ? `${V3.nShapes} GDTF, ${V3.meshes ? V3.meshes.size : 0} 3ds` : '');
   V3.renderer = renderer; V3.running = true;
   const loop = () => { if (!V3.running || !document.body.contains(el)) { V3.running = false; return; } renderer.render(scene, cam); V3.raf = requestAnimationFrame(loop); };
   loop();
