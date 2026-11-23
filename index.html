@@ -302,6 +302,15 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .mapprev { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; max-height: 6.5em; overflow: auto; white-space: pre; font-family: "IBM Plex Sans Condensed", monospace; background: var(--bg); border-radius: 7px; padding: 6px 8px; }
 @media (max-width: 600px) { #mapRows { grid-template-columns: 1fr; } }
 [hidden] { display: none !important; }
+.plansheet { background: #fff; box-shadow: 0 2px 18px rgba(0,0,0,.18); flex: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.plansheet svg { display: block; }
+.plansheet svg text { font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", Arial, sans-serif; }
+.plansheet .fx:hover { opacity: .6; cursor: help; }
+#planPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.plopts { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 12px 0 0; font-size: 13px; }
+.plopts label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.plopts select { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; }
+@media print { #planPages { padding: 0; gap: 0; display: block; } .plansheet { box-shadow: none; zoom: 1 !important; } }
 .ccard { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
 .ccard .cgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 16px; }
 .ccard label.cf { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--muted); }
@@ -421,6 +430,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
     <div class="toolbar">
       <div class="tabs" id="tabs">
         <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
+        <button type="button" data-v="plan" data-i18n="tabPlan">Plan</button>
         <button type="button" data-v="rigging" data-i18n="tabRigging">Accroches et charges</button>
         <button type="button" data-v="elec" data-i18n="tabElec">Électricité</button>
         <button type="button" data-v="net" data-i18n="tabNet">DMX, réseau et patch</button>
@@ -488,6 +498,11 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabPlan: 'Plan', plView: 'Vue', vTop: 'Plan (vu de dessus)', vFront: 'Face (vu de la salle)', vSide: 'Côté (vu de jardin)', plPoint: 'Points', plAll: 'Tous', plColor: 'Couleur par', cType: 'Type', cLayer: 'Calque', cPos: 'Position', cUniv: 'Univers', cCirc: 'Ligne élec.', cDmx: 'Ligne DMX',
+    plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
+    plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
+    plHint: "Plan coté à l’échelle, tiré des coordonnées du MVR. L’échelle est la plus grande échelle usuelle qui tient sur la page : imprimer en taille réelle, marges Aucune. Survoler un projecteur pour ses détails.",
+    plTitle: v => ({ top: 'Plan feu', front: 'Plan feu — face', side: 'Plan feu — côté' })[v], plNone: 'Aucun projecteur à dessiner.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
     nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
     addConsole: 'Ajouter une console', newConsole: 'Console', delConsoleAsk: n => `Supprimer la console « ${n} » ?`,
     cnName: 'Nom', cnRole: 'Rôle', rMain: 'Principale', rBackup: 'Secours', rOnpc: 'onPC / préparation', rViz: 'Visualisation', rOther: 'Autre', cnModel: 'Modèle', cnParams: 'Paramètres de la console', cnExt: 'Extension', cnExtN: 'Nombre d’extensions', cnExtP: 'Paramètres par extension',
@@ -582,6 +597,11 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabPlan: 'Plot', plView: 'View', vTop: 'Plan (top view)', vFront: 'Front (from the house)', vSide: 'Side (from stage left)', plPoint: 'Points', plAll: 'All', plColor: 'Colour by', cType: 'Type', cLayer: 'Layer', cPos: 'Position', cUniv: 'Universe', cCirc: 'Power line', cDmx: 'DMX line',
+    plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
+    plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
+    plHint: 'Scaled plot from the MVR coordinates. The scale is the largest usual scale that fits the page: print at actual size, margins None. Hover a fixture for its details.',
+    plTitle: v => ({ top: 'Lighting plot', front: 'Lighting plot — front', side: 'Lighting plot — side' })[v], plNone: 'No fixture to draw.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
     nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
     addConsole: 'Add a console', newConsole: 'Console', delConsoleAsk: n => `Delete the console “${n}”?`,
     cnName: 'Name', cnRole: 'Role', rMain: 'Main', rBackup: 'Backup', rOnpc: 'onPC / programming', rViz: 'Visualiser', rOther: 'Other', cnModel: 'Model', cnParams: 'Console parameters', cnExt: 'Extension', cnExtN: 'Number of extensions', cnExtP: 'Parameters per extension',
@@ -942,7 +962,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1458,6 +1478,134 @@ ${p.notes ? `<div class="pnote" style="margin-top:.8em">${esc(p.notes)}</div>` :
   };
   return { size: `${W}mm ${H}mm`, html: pts.length ? pts.map(page).join('') : `<div class="empty"><div>${esc(t('noHeads'))}</div></div>` };
 }
+// ───────────── plan feu 2D ─────────────
+const SCALES = [20, 25, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500];
+const SHAPES = ['circle', 'square', 'triangle', 'diamond', 'hex', 'tridown', 'pent', 'bar'];
+function symbol(shape, x, y, r, fill, stroke) {
+  const P = pts => `<polygon points="${pts.map(([a, b]) => `${(x + a * r).toFixed(2)},${(y + b * r).toFixed(2)}`).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width=".25"/>`;
+  const poly = (n, rot) => P([...Array(n).keys()].map(i => { const a = rot + i * 2 * Math.PI / n; return [Math.cos(a), Math.sin(a)]; }));
+  switch (shape) {
+    case 'square': return `<rect x="${(x - r * .85).toFixed(2)}" y="${(y - r * .85).toFixed(2)}" width="${(r * 1.7).toFixed(2)}" height="${(r * 1.7).toFixed(2)}" fill="${fill}" stroke="${stroke}" stroke-width=".25"/>`;
+    case 'triangle': return poly(3, -Math.PI / 2);
+    case 'tridown': return poly(3, Math.PI / 2);
+    case 'diamond': return poly(4, 0);
+    case 'hex': return poly(6, 0);
+    case 'pent': return poly(5, -Math.PI / 2);
+    case 'bar': return `<rect x="${(x - r * 1.2).toFixed(2)}" y="${(y - r * .5).toFixed(2)}" width="${(r * 2.4).toFixed(2)}" height="${(r).toFixed(2)}" rx=".3" fill="${fill}" stroke="${stroke}" stroke-width=".25"/>`;
+    default: return `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="${fill}" stroke="${stroke}" stroke-width=".25"/>`;
+  }
+}
+function renderPlan() {
+  const P = state.plan, d = state.d, L = d.lieu;
+  const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
+  const ax = { top: ['x', 'y'], front: ['x', 'z'], side: ['y', 'z'] }[P.view] || ['x', 'y'];
+  let fx = d.fixtures.filter(f => !P.point || f.position === P.point);
+  const hasXY = fx.filter(f => Number.isFinite(f[ax[0]]) && Number.isFinite(f[ax[1]])).length >= fx.length / 2 && fx.length;
+  // sans coordonnées : un rang par position, un projecteur tous les mètres
+  let pos = new Map();
+  if (!hasXY) {
+    const rows = [...new Set(fx.map(f => f.position || '—'))].sort(natCmp);
+    rows.forEach((r, i) => fx.filter(f => (f.position || '—') === r).sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).forEach((f, j) => pos.set(f.uid, [j, -i * 2])));
+  } else fx = fx.filter(f => Number.isFinite(f[ax[0]]) && Number.isFinite(f[ax[1]]));
+  const at = f => hasXY ? [f[ax[0]], f[ax[1]]] : pos.get(f.uid);
+  const st = P.struct && hasXY && !P.point ? d.structures.filter(o => Number.isFinite(o[ax[0]]) && Number.isFinite(o[ax[1]])) : [];
+  const [PW, PH] = P.fmt === 'A4' ? [297, 210] : [420, 297], M = 10, LEG = 64;
+  const AW = PW - 2 * M - LEG - 6, AH = PH - 2 * M - 12;
+  if (!fx.length) return `<div class="empty"><div>${esc(t('plNone'))}</div></div>`;
+  const pts = [...fx.map(at), ...st.map(o => [o[ax[0]], o[ax[1]]])];
+  let x0 = Math.min(...pts.map(q => q[0])) - .8, x1 = Math.max(...pts.map(q => q[0])) + .8, y0 = Math.min(...pts.map(q => q[1])) - .8, y1 = Math.max(...pts.map(q => q[1])) + .8;
+  const need = Math.max((x1 - x0) * 1000 / AW, (y1 - y0) * 1000 / AH), scale = SCALES.find(v => v >= need) || Math.ceil(need / 100) * 100, k = 1000 / scale;
+  const ox = M + (AW - (x1 - x0) * k) / 2, oy = M + 12 + (AH - (y1 - y0) * k) / 2;
+  const X = v => ox + (v - x0) * k, Y = v => oy + (y1 - v) * k;
+  // types : forme et couleur, du plus nombreux au moins nombreux
+  const cnt = new Map(); fx.forEach(f => cnt.set(f.type, (cnt.get(f.type) || 0) + 1));
+  const tOrder = [...cnt.keys()].sort((a, b) => cnt.get(b) - cnt.get(a) || typeName(a).localeCompare(typeName(b)));
+  const shapeOf = new Map(tOrder.map((k2, i) => [k2, SHAPES[i % SHAPES.length]]));
+  const ckey = f => ({ type: f.type, layer: f.layer, position: f.position, univ: f.univ ? 'U' + f.univ : '', circuit: f.circuit, dmx: f.dmxLine })[P.color] || '—';
+  const cvals = [...new Set(fx.map(ckey))].sort(natCmp), colOf = new Map(cvals.map((v, i) => [v, pal[(P.color === 'type' ? tOrder.indexOf(v) : i) % pal.length]]));
+  const r = P.fmt === 'A4' ? 1.9 : 2.4, fs = P.fmt === 'A4' ? 2.1 : 2.6;
+  let g = '';
+  // grille 1 m et origine
+  if (P.grid && hasXY) {
+    for (let v = Math.ceil(x0); v <= x1; v++) g += `<line x1="${X(v).toFixed(2)}" y1="${Y(y1).toFixed(2)}" x2="${X(v).toFixed(2)}" y2="${Y(y0).toFixed(2)}" stroke="${v === 0 ? '#999' : '#e4e4e4'}" stroke-width="${v === 0 ? .3 : .15}"/>`;
+    for (let v = Math.ceil(y0); v <= y1; v++) g += `<line x1="${X(x0).toFixed(2)}" y1="${Y(v).toFixed(2)}" x2="${X(x1).toFixed(2)}" y2="${Y(v).toFixed(2)}" stroke="${v === 0 ? '#999' : '#e4e4e4'}" stroke-width="${v === 0 ? .3 : .15}"/>`;
+    if (x0 < 0 && x1 > 0 && y0 < 0 && y1 > 0) g += `<text x="${(X(0) + 1).toFixed(2)}" y="${(Y(0) - 1).toFixed(2)}" font-size="2" fill="#888">${esc(t('plOrigin'))}</text>`;
+  }
+  // orientation : lointain en haut, salle en bas (plan) ; sol (face, côté)
+  const midX = (X(x0) + X(x1)) / 2;
+  if (hasXY && P.view === 'top') g += `<text x="${midX.toFixed(2)}" y="${(Y(y1) + 4).toFixed(2)}" font-size="3" fill="#888" text-anchor="middle" letter-spacing=".8">${esc(t('plUp'))}</text><text x="${midX.toFixed(2)}" y="${(Y(y0) - 2).toFixed(2)}" font-size="3" fill="#888" text-anchor="middle" letter-spacing=".8">${esc(t('plDown'))}</text>`;
+  if (hasXY && P.view !== 'top' && y0 < 0) g += `<line x1="${X(x0).toFixed(2)}" y1="${Y(0).toFixed(2)}" x2="${X(x1).toFixed(2)}" y2="${Y(0).toFixed(2)}" stroke="#111" stroke-width=".6"/><text x="${(X(x0) + 1).toFixed(2)}" y="${(Y(0) + 3.5).toFixed(2)}" font-size="2.6" fill="#555">${esc(t('plFloor'))}</text>`;
+  // structures et décors : repères gris
+  st.forEach(o => { g += `<rect x="${(X(o[ax[0]]) - .7).toFixed(2)}" y="${(Y(o[ax[1]]) - .7).toFixed(2)}" width="1.4" height="1.4" fill="#cfcfcf" stroke="#9a9a9a" stroke-width=".15"><title>${esc(o.name + ' · ' + o.layer)}</title></rect>`; });
+  // points d'accroche : un trait sur l'étendue des projecteurs, nom à gauche
+  if (P.points) {
+    const byP = new Map(); fx.forEach(f => { if (f.position) { if (!byP.has(f.position)) byP.set(f.position, []); byP.get(f.position).push(f); } });
+    for (const [name, gg] of byP) {
+      const q = gg.map(at), pt = L.points.find(p2 => p2.name === name);
+      if (pt && pt.kind === 'sol') continue;
+      const a0 = Math.min(...q.map(z => z[0])), a1 = Math.max(...q.map(z => z[0])), b = q.reduce((s2, z) => s2 + z[1], 0) / q.length;
+      const spread = Math.max(...q.map(z => z[1])) - Math.min(...q.map(z => z[1]));
+      if (spread > 1.5 && hasXY) continue;      // points non alignés (murs, verticales vus de dessus) : pas de trait
+      g += `<line x1="${(X(a0) - 3).toFixed(2)}" y1="${Y(b).toFixed(2)}" x2="${(X(a1) + 3).toFixed(2)}" y2="${Y(b).toFixed(2)}" stroke="#555" stroke-width=".9" stroke-linecap="round"/>`;
+      g += `<text x="${(X(a0) - 4.5).toFixed(2)}" y="${(Y(b) + 1).toFixed(2)}" font-size="${(fs * 1.05).toFixed(2)}" font-weight="700" text-anchor="end" fill="#333">${esc(name)}</text>`;
+    }
+  }
+  // projecteurs
+  const l2 = f => ({ patch: patchText(f), circuit: f.circuit, dmx: f.dmxLine, gel: f.gel, type: typeName(f.type), unit: f.unit })[P.l2] || '';
+  [...fx].sort((a, b) => (at(a)[1] - at(b)[1])).forEach(f => {
+    const [a, b] = at(f), x = X(a), y = Y(b), c = colOf.get(ckey(f)) || '#999';
+    const tip = [f.fid, typeName(f.type), f.mode, patchText(f), f.position, f.layer, f.circuit, f.dmxLine, f.gel].filter(Boolean).join(' · ');
+    g += `<g class="fx">${symbol(shapeOf.get(f.type), x, y, r, c, '#111')}<title>${esc(tip)}</title>
+<text x="${x.toFixed(2)}" y="${(y - r - .6).toFixed(2)}" font-size="${fs}" font-weight="700" text-anchor="middle">${esc(f.fid || '?')}</text>${l2(f) ? `<text x="${x.toFixed(2)}" y="${(y + r + fs * .85).toFixed(2)}" font-size="${(fs * .78).toFixed(2)}" text-anchor="middle" fill="#333">${esc(l2(f))}</text>` : ''}</g>`;
+  });
+  // échelle graphique
+  const sbm = scale <= 50 ? 2 : scale <= 100 ? 5 : 10, sx = M + 2, sy = PH - M - 3;
+  let sb = ''; for (let i = 0; i < sbm; i++) sb += `<rect x="${(sx + i * k).toFixed(2)}" y="${sy - 1.4}" width="${k.toFixed(2)}" height="1.4" fill="${i % 2 ? '#fff' : '#111'}" stroke="#111" stroke-width=".2"/>`;
+  sb += `<text x="${sx}" y="${sy - 2.4}" font-size="2.2">0</text><text x="${(sx + sbm * k).toFixed(2)}" y="${sy - 2.4}" font-size="2.2" text-anchor="middle">${sbm} m</text>`;
+  // légende et cartouche
+  const lx = PW - M - LEG; let ly = M + 4, leg = `<text x="${lx}" y="${ly}" font-size="3.6" font-weight="700">${esc(t('plLegend'))}</text>`; ly += 5;
+  tOrder.forEach(k2 => {
+    if (ly > PH - M - 46) return;
+    const c = P.color === 'type' ? colOf.get(k2) : '#fff';
+    leg += symbol(shapeOf.get(k2), lx + 2.5, ly - 1, 2, c, '#111') + `<text x="${lx + 6.5}" y="${ly}" font-size="2.6">${esc(typeName(k2))}</text><text x="${PW - M}" y="${ly}" font-size="2.6" text-anchor="end" font-weight="700">${cnt.get(k2)}</text>`;
+    ly += 5;
+  });
+  if (P.color !== 'type') {
+    ly += 2; leg += `<text x="${lx}" y="${ly}" font-size="2.6" font-weight="700">${esc(t({ layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[P.color]))}</text>`; ly += 4.5;
+    cvals.forEach(v => { if (ly > PH - M - 46) return; leg += `<rect x="${lx + .5}" y="${ly - 3}" width="4" height="3.2" fill="${colOf.get(v)}" stroke="#111" stroke-width=".2"/><text x="${lx + 6.5}" y="${ly}" font-size="2.5">${esc(v)}</text>`; ly += 4.4; });
+  }
+  const cy0 = PH - M - 40, today = new Date().toLocaleDateString(LANG);
+  leg += `<rect x="${lx}" y="${cy0}" width="${LEG}" height="40" fill="#fff" stroke="#111" stroke-width=".5"/>
+<text x="${lx + 3}" y="${cy0 + 8}" font-size="5" font-weight="700">${esc(d.meta.titre || '')}</text>
+<text x="${lx + 3}" y="${cy0 + 14}" font-size="3.2">${esc(d.meta.lieu || '')}</text>
+<text x="${lx + 3}" y="${cy0 + 21}" font-size="3">${esc(t('plTitle', P.view))}${P.point ? ' — ' + esc(P.point) : ''}</text>
+<text x="${lx + 3}" y="${cy0 + 27}" font-size="3" font-weight="700">${esc(hasXY ? t('plScale', scale) : '')}</text><text x="${lx + 3}" y="${cy0 + 31.5}" font-size="2.3" fill="#555">${esc(hasXY ? t('plScaleHint', P.fmt) : '')}</text>
+<text x="${lx + 3}" y="${cy0 + 37}" font-size="2.6">${fx.length} ${esc(t('plFix'))} · ${esc(d.meta.auteur || '')} · ${esc(today)}</text>`;
+  const head = `<text x="${M}" y="${M + 6}" font-size="6" font-weight="700">${esc(t('plTitle', P.view))}${P.point ? ' — ' + esc(P.point) : ''}</text>`;
+  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}">${head}<rect x="${M}" y="${M + 10}" width="${PW - 2 * M - LEG - 4}" height="${PH - 2 * M - 10}" fill="none" stroke="#111" stroke-width=".4"/>${g}${hasXY ? sb : ''}${leg}</svg></div>` +
+    (hasXY ? '' : `<p class="hint noprint">${esc(t('plSchem'))}</p>`);
+}
+function renderPlanView() {
+  const P = state.plan, o = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab(v))}</option>`).join('');
+  const pts = [...new Set(state.d.fixtures.map(f => f.position).filter(Boolean))].sort(natCmp);
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('plHint'))}</p>
+<div class="plopts noprint"><label>${esc(t('plView'))} <select data-pl="view">${o(['top', 'front', 'side'], P.view, v => t({ top: 'vTop', front: 'vFront', side: 'vSide' }[v]))}</select></label>
+<label>${esc(t('plPoint'))} <select data-pl="point"><option value="">${esc(t('plAll'))}</option>${o(pts, P.point, v => v)}</select></label>
+<label>${esc(t('plColor'))} <select data-pl="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], P.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
+<label>${esc(t('plLabel2'))} <select data-pl="l2">${o(['none', 'patch', 'circuit', 'dmx', 'gel', 'type', 'unit'], P.l2, v => t('l2' + v))}</select></label>
+<label>${esc(t('doFormat'))} <select data-pl="fmt">${o(['A3', 'A4'], P.fmt, v => v)}</select></label>
+<label><input type="checkbox" data-pl="points"${P.points ? ' checked' : ''}> ${esc(t('plPoints'))}</label><label><input type="checkbox" data-pl="struct"${P.struct ? ' checked' : ''}> ${esc(t('plStruct'))}</label><label><input type="checkbox" data-pl="grid"${P.grid ? ' checked' : ''}> ${esc(t('plGrid'))}</label>
+<span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="100" value="${P.zoom}"></label></div>
+<div id="planPages">${renderPlan()}</div>`;
+  $('#pagesize').textContent = `@page { size: ${P.fmt} landscape; margin: 0; }`;
+  document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = P.zoom / 100; });
+}
+document.getElementById('view').addEventListener('change', e => {
+  const el = e.target.closest && e.target.closest('[data-pl]'); if (!el || !state.d) return;
+  state.plan[el.dataset.pl] = el.type === 'checkbox' ? el.checked : el.value; store.set('plan', state.plan); renderPlanView();
+});
+document.getElementById('view').addEventListener('input', e => { if (e.target.id === 'plZoom') { state.plan.zoom = +e.target.value; store.set('plan', state.plan); document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = state.plan.zoom / 100; }); } });
 function renderRigging() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings, rv = state.rigView || 'points';
@@ -1538,6 +1686,7 @@ function render() {
   refreshFilters(); refreshBulk();
   if (state.tab === 'rigging') renderRigging();
   else if (state.tab === 'elec') renderElec();
+  else if (state.tab === 'plan') renderPlanView();
   else if (state.tab === 'net') renderNet();
   else if (state.tab === 'inventory') renderInventory();
   else renderFixtures();
