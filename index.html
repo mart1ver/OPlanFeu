@@ -302,6 +302,13 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .mapprev { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; max-height: 6.5em; overflow: auto; white-space: pre; font-family: "IBM Plex Sans Condensed", monospace; background: var(--bg); border-radius: 7px; padding: 6px 8px; }
 @media (max-width: 600px) { #mapRows { grid-template-columns: 1fr; } }
 [hidden] { display: none !important; }
+.v3wrap { position: relative; margin-top: 10px; height: calc(100vh - 175px); min-height: 380px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #15161a; }
+.v3wrap canvas { display: block; width: 100%; height: 100%; cursor: grab; } .v3wrap canvas:active { cursor: grabbing; }
+.v3tip { position: absolute; pointer-events: none; background: rgba(20,20,24,.92); color: #fff; font-size: 12px; padding: 5px 8px; border-radius: 7px; white-space: nowrap; transform: translate(12px, 12px); }
+.v3info { position: absolute; left: 10px; bottom: 10px; color: #cfcfd4; font-size: 11.5px; background: rgba(20,20,24,.7); padding: 5px 8px; border-radius: 7px; pointer-events: none; }
+.v3leg { position: absolute; right: 10px; top: 10px; max-height: calc(100% - 20px); overflow: auto; color: #e8e8ea; font-size: 11.5px; background: rgba(20,20,24,.75); padding: 7px 9px; border-radius: 9px; }
+.v3leg div { display: flex; gap: 6px; align-items: center; white-space: nowrap; } .v3leg i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.v3msg { position: absolute; inset: 0; display: grid; place-items: center; color: #cfcfd4; text-align: center; padding: 30px; }
 #dosPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .dpage { background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); width: 297mm; min-height: 210mm; box-sizing: border-box; padding: 12mm; font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 9pt; flex: none;
   -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -464,6 +471,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <div class="tabs" id="tabs">
         <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
         <button type="button" data-v="plan" data-i18n="tabPlan">Plan</button>
+        <button type="button" data-v="v3d" data-i18n="tab3d">3D</button>
         <button type="button" data-v="rigging" data-i18n="tabRigging">Accroches et charges</button>
         <button type="button" data-v="elec" data-i18n="tabElec">Électricité</button>
         <button type="button" data-v="net" data-i18n="tabNet">DMX, réseau et patch</button>
@@ -532,6 +540,9 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
+    v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
+    v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s) => `${n} projecteurs · ${s} structures`,
     tabDossier: 'Dossier complet', exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
     dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
     sCover: 'Couverture et sommaire', sPlan: 'Plan feu', sPatch: 'Feuille de patch', sLoads: 'Accroches et charges', sHeads: 'Étiquettes de tête de perche', sElec: 'Électricité', sSyno: 'Synoptique électrique', sDmx: 'DMX, console et réseau', sInv: 'Types et inventaire',
@@ -638,6 +649,9 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
+    v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
+    v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s) => `${n} fixtures · ${s} structures`,
     tabDossier: 'Full dossier', exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
     dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
     sCover: 'Cover and contents', sPlan: 'Lighting plot', sPatch: 'Patch sheet', sLoads: 'Rigging and loads', sHeads: 'Bar head labels', sElec: 'Electrics', sSyno: 'Electrical one-line diagram', sDmx: 'DMX, console and network', sInv: 'Types and inventory',
@@ -1010,7 +1024,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { v3: { color: 'type', labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1795,6 +1809,144 @@ function exportMVR() {
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   alert(t('mvrDone', d.fixtures.length, withG, without));
 }
+// ───────────── vue 3D (three.js, chargé à la demande) ─────────────
+const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+const V3 = { running: false, raf: 0 };
+let threeP = null;
+const loadThree = () => threeP || (threeP = new Promise((ok, ko) => {
+  if (window.THREE) return ok();
+  const sc = document.createElement('script'); sc.src = THREE_URL; sc.onload = () => ok(); sc.onerror = () => { threeP = null; ko(new Error('three')); }; document.head.appendChild(sc);
+}));
+function v3Stop() { V3.running = false; cancelAnimationFrame(V3.raf); if (V3.ro) V3.ro.disconnect(); if (V3.renderer) { V3.renderer.dispose(); V3.renderer.forceContextLoss && V3.renderer.forceContextLoss(); } V3.renderer = null; }
+function renderV3() {
+  const S = state.v3, o = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab(v))}</option>`).join('');
+  const ck = k => `<label><input type="checkbox" data-v3="${k}"${S[k] ? ' checked' : ''}> ${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</label>`;
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  v3Stop();
+  $('#view').innerHTML = `<p class="hint" style="margin:12px 0 0">${esc(t('v3Hint'))}</p>
+<div class="plopts">${['persp', 'top', 'front', 'side'].map(k => `<button type="button" class="minibtn" data-cam="${k}">${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}
+<label>${esc(t('plColor'))} <select data-v3="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], S.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
+${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('grid')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
+<div class="v3wrap" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
+  const fx = state.d.fixtures.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
+  if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
+  loadThree().then(() => { if (state.tab === 'v3d' && $('#v3')) buildV3(fx); }).catch(() => { const el = $('#v3'); if (el) el.innerHTML = `<div class="v3msg">${esc(t('v3Fail'))}</div>`; });
+}
+function buildV3(fx) {
+  const T = window.THREE, S = state.v3, d = state.d, wrap = $('#v3');
+  wrap.innerHTML = '<div class="v3tip" hidden></div><div class="v3info"></div><div class="v3leg"></div>';
+  const renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  wrap.prepend(renderer.domElement);
+  const scene = new T.Scene(); scene.background = new T.Color(0x15161a);
+  const cam = new T.PerspectiveCamera(45, 1, .05, 500);
+  scene.add(new T.HemisphereLight(0xffffff, 0x404050, 1.0));
+  const dl = new T.DirectionalLight(0xffffff, .6); dl.position.set(5, 12, 8); scene.add(dl);
+  // repère MVR (z vers le haut, mètres) → three.js (y vers le haut)
+  const world = new T.Group(); world.rotation.x = -Math.PI / 2; scene.add(world);
+  const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231'];
+  const cnt = new Map(); fx.forEach(f => cnt.set(f.type, (cnt.get(f.type) || 0) + 1));
+  const tOrder = [...cnt.keys()].sort((a, b) => cnt.get(b) - cnt.get(a));
+  const ckey = f => ({ type: f.type, layer: f.layer, position: f.position, univ: f.univ ? 'U' + f.univ : '', circuit: f.circuit, dmx: f.dmxLine })[S.color] || '—';
+  const cvals = [...new Set(fx.map(ckey))].sort(natCmp), colOf = new Map(cvals.map((v, i) => [v, pal[(S.color === 'type' ? tOrder.indexOf(v) : i) % pal.length]]));
+  const lab = v => S.color === 'type' ? typeName(v) : v;
+  wrap.querySelector('.v3leg').innerHTML = cvals.map(v => `<div><i style="background:${colOf.get(v)}"></i>${esc(lab(v))}${S.color === 'type' ? ` <b>${cnt.get(v)}</b>` : ''}</div>`).join('');
+  const box = new T.BoxGeometry(.26, .26, .34), cone = new T.ConeGeometry(.55, 2.4, 20, 1, true);
+  cone.translate(0, -1.2, 0); cone.rotateX(Math.PI / 2);   // faisceau le long de -z du projecteur
+  const beamMat = new T.MeshBasicMaterial({ color: 0xfff3c0, transparent: true, opacity: .1, depthWrite: false, side: T.DoubleSide });
+  const mats = new Map(), pick = [];
+  const matOf = c => mats.get(c) || (mats.set(c, new T.MeshStandardMaterial({ color: c, roughness: .55, metalness: .1 })), mats.get(c));
+  const sprite = (text, scale, cw = 128) => {
+    const cv = document.createElement('canvas'), cx = cv.getContext('2d'); cv.width = cw; cv.height = 48;
+    cx.font = '700 30px "IBM Plex Sans Condensed", Arial'; cx.fillStyle = 'rgba(0,0,0,.55)'; const w = Math.min(cw - 4, cx.measureText(text).width + 14);
+    cx.fillRect((cw - w) / 2, 6, w, 36); cx.fillStyle = '#fff'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(text, cw / 2, 25);
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: new T.CanvasTexture(cv), depthTest: false, transparent: true })); sp.scale.set(scale * cw / 48, scale, 1); sp.renderOrder = 10; return sp;
+  };
+  const toM4 = (m, x, y, z) => {
+    const M = new T.Matrix4();
+    if (Array.isArray(m) && m.length === 12) M.set(m[0], m[3], m[6], m[9] / 1000, m[1], m[4], m[7], m[10] / 1000, m[2], m[5], m[8], m[11] / 1000, 0, 0, 0, 1);
+    else M.makeTranslation(x, y, z);
+    return M;
+  };
+  for (const f of fx) {
+    const g = new T.Group(); g.matrixAutoUpdate = false; g.matrix.copy(toM4(f.m, f.x, f.y, f.z));
+    const body = new T.Mesh(box, matOf(colOf.get(ckey(f)) || '#999')); body.userData.f = f; g.add(body); pick.push(body);
+    if (S.beams) { const b = new T.Mesh(cone, beamMat); g.add(b); }
+    world.add(g);
+    if (S.labels) { const sp = sprite(f.fid || '?', .22); sp.position.set(f.x, f.y, f.z + .32); world.add(sp); }
+  }
+  // perches : un tube sur l'étendue des projecteurs de chaque point aligné
+  if (S.points) {
+    const byP = new Map(); fx.forEach(f => { if (f.position) { if (!byP.has(f.position)) byP.set(f.position, []); byP.get(f.position).push(f); } });
+    const pmat = new T.MeshStandardMaterial({ color: 0x9a9aa2, roughness: .4, metalness: .6 });
+    for (const [name, g] of byP) {
+      const pt = d.lieu.points.find(q => q.name === name); if (pt && pt.kind === 'sol') continue;
+      const ys = g.map(f => f.y), zs = g.map(f => f.z);
+      if (Math.max(...ys) - Math.min(...ys) > 1.5 || Math.max(...zs) - Math.min(...zs) > 1.2) continue;
+      const x0 = Math.min(...g.map(f => f.x)) - .4, x1 = Math.max(...g.map(f => f.x)) + .4, y = ys.reduce((a, b) => a + b, 0) / ys.length, z = Math.max(...zs) + .22;
+      const tube = new T.Mesh(new T.CylinderGeometry(.024, .024, x1 - x0, 10), pmat); tube.rotation.z = Math.PI / 2; tube.position.set((x0 + x1) / 2, y, z); world.add(tube);
+      if (S.labels) { const sp = sprite(name, .3, 448); sp.center.set(1, .5); sp.position.set(x0 - .15, y, z); world.add(sp); }
+    }
+  }
+  let nst = 0;
+  if (S.struct) {
+    const smat = new T.MeshStandardMaterial({ color: 0x5a5d66, roughness: .8, transparent: true, opacity: .8 }), sg = new T.BoxGeometry(.18, .18, .18);
+    d.structures.filter(o2 => [o2.x, o2.y, o2.z].every(Number.isFinite)).forEach(o2 => { const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); nst++; });
+  }
+  // sol, grille de 1 m et 0 plateau
+  const all = [...fx.map(f => [f.x, f.y, f.z])], xs = all.map(a => a[0]), ys = all.map(a => a[1]), zs = all.map(a => a[2]);
+  const cx0 = (Math.min(...xs) + Math.max(...xs)) / 2, cy0 = (Math.min(...ys) + Math.max(...ys)) / 2, span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys), 6), zMax = Math.max(...zs);
+  if (S.grid) {
+    const n = Math.ceil(span + 6), grid = new T.GridHelper(n, n, 0x6a6a72, 0x34353c); grid.rotation.x = Math.PI / 2; grid.position.set(Math.round(cx0), Math.round(cy0), 0); world.add(grid);
+    const ax = new T.AxesHelper(1); world.add(ax);
+  }
+  // caméra et contrôles (orbite maison : rotation, zoom, déplacement)
+  const tgt = new T.Vector3(cx0, zMax / 2, -cy0);
+  const sph = { r: span * 1.25 + 4, th: -.55, ph: 1.05 };
+  const place = () => { cam.position.set(tgt.x + sph.r * Math.sin(sph.ph) * Math.sin(sph.th), tgt.y + sph.r * Math.cos(sph.ph), tgt.z + sph.r * Math.sin(sph.ph) * Math.cos(sph.th)); cam.lookAt(tgt); };
+  const views = { persp: [-.55, 1.05], top: [0, .001], front: [0, Math.PI / 2 - .02], side: [-Math.PI / 2, Math.PI / 2 - .02] };
+  V3.setView = k => { [sph.th, sph.ph] = views[k] || views.persp; sph.r = span * 1.25 + 4; tgt.set(cx0, zMax / 2, -cy0); place(); };
+  place();
+  const el = renderer.domElement, tip = wrap.querySelector('.v3tip');
+  let drag = null;
+  el.addEventListener('contextmenu', e => e.preventDefault());
+  el.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey }; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointerup', e => { drag = null; el.releasePointerCapture(e.pointerId); });
+  const ray = new T.Raycaster(), mv = new T.Vector2();
+  el.addEventListener('pointermove', e => {
+    if (drag) {
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+      if (drag.pan) {
+        const k = sph.r / el.clientHeight, right = new T.Vector3().subVectors(cam.position, tgt).cross(cam.up).normalize(), up = cam.up.clone();
+        tgt.addScaledVector(right, dx * k).addScaledVector(up, dy * k);
+      } else { sph.th -= dx * .008; sph.ph = Math.min(Math.PI - .01, Math.max(.001, sph.ph - dy * .008)); }
+      place(); tip.hidden = true; return;
+    }
+    const r = el.getBoundingClientRect(); mv.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+    ray.setFromCamera(mv, cam); const hit = ray.intersectObjects(pick, false)[0];
+    if (hit) {
+      const f = hit.object.userData.f, o2 = hit.object.userData.st;
+      tip.textContent = f ? [f.fid, typeName(f.type), f.mode, patchText(f), f.position, f.circuit, f.dmxLine, f.gel].filter(Boolean).join(' · ') : `${o2.name} · ${o2.kind} · ${o2.layer}`;
+      tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.hidden = false;
+    } else tip.hidden = true;
+  });
+  el.addEventListener('wheel', e => { e.preventDefault(); sph.r = Math.min(400, Math.max(1, sph.r * (e.deltaY > 0 ? 1.1 : .9))); place(); }, { passive: false });
+  const size = () => { const w = wrap.clientWidth, h = wrap.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+  V3.ro = new ResizeObserver(size); V3.ro.observe(wrap); size();
+  wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst);
+  V3.renderer = renderer; V3.running = true;
+  const loop = () => { if (!V3.running || !document.body.contains(el)) { V3.running = false; return; } renderer.render(scene, cam); V3.raf = requestAnimationFrame(loop); };
+  loop();
+}
+document.getElementById('view').addEventListener('change', e => {
+  const el = e.target.closest && e.target.closest('[data-v3]'); if (!el || !state.d) return;
+  state.v3[el.dataset.v3] = el.type === 'checkbox' ? el.checked : el.value; store.set('v3', state.v3); renderV3();
+});
+document.getElementById('view').addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button'); if (!b) return;
+  if (b.dataset.cam && V3.setView) V3.setView(b.dataset.cam);
+  if (b.id === 'v3png' && V3.renderer) { const a = document.createElement('a'); a.href = V3.renderer.domElement.toDataURL('image/png'); a.download = slug(state.d.meta.titre) + '_3D.png'; document.body.appendChild(a); a.click(); a.remove(); }
+});
 function renderRigging() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings, rv = state.rigView || 'points';
@@ -1868,6 +2020,7 @@ function renderInventory() {
 }
 function render() {
   $('#pagesize').textContent = '';
+  if (V3.running && state.tab !== 'v3d') v3Stop();
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === state.tab));
   $('#filters').style.visibility = state.d ? '' : 'hidden';
   ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = state.tab === 'fixtures' ? '' : 'none'; });
@@ -1876,6 +2029,7 @@ function render() {
   if (state.tab === 'rigging') renderRigging();
   else if (state.tab === 'elec') renderElec();
   else if (state.tab === 'plan') renderPlanView();
+  else if (state.tab === 'v3d') renderV3();
   else if (state.tab === 'dossier') renderDossier();
   else if (state.tab === 'net') renderNet();
   else if (state.tab === 'inventory') renderInventory();
