@@ -290,6 +290,18 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .doctool { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
 .doctool .zoom { display: flex; align-items: center; gap: 6px; } .doctool input[type=range] { accent-color: var(--accent); width: 120px; }
 .subtabs .sep { width: 1px; background: var(--line); margin: 0 4px; }
+dialog#mapDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 600px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); }
+dialog#mapDlg::backdrop { background: rgba(0,0,0,.45); }
+dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
+#mapRows { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; margin: 10px 0; max-height: 60vh; overflow: auto; }
+.maprow { display: grid; grid-template-columns: 9.5em 1fr; gap: 8px; align-items: center; margin: 3px 0; font-size: 13px; }
+.maprow select { font: inherit; font-size: 12.5px; padding: 4px 6px; min-width: 0; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; }
+.maprow.req span { font-weight: 600; }
+.mapbtns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+.mapbtns .linkbtn { margin-right: auto; }
+.mapprev { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; max-height: 6.5em; overflow: auto; white-space: pre; font-family: "IBM Plex Sans Condensed", monospace; background: var(--bg); border-radius: 7px; padding: 6px 8px; }
+@media (max-width: 600px) { #mapRows { grid-template-columns: 1fr; } }
+[hidden] { display: none !important; }
 @media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
 
 /* impression : la vue affichée, sans l'interface */
@@ -357,6 +369,7 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
       <legend data-i18n="legOut">Enregistrer et exporter</legend>
       <button class="btn" id="save" data-i18n="save">Enregistrer le dossier (.json)</button>
       <button class="btn ghost" id="exportCsv" data-i18n="exportCsv">Exporter le patch pour Give Me The Patch (.csv)</button>
+      <button type="button" class="linkbtn" id="mapBtn" data-i18n="mapBtn" hidden>Colonnes du fichier CSV…</button>
       <a class="btn ghost" href="https://mart1ver.github.io/GiveMeThePatch/" target="_blank" rel="noopener" data-i18n="openGmtp">Ouvrir Give Me The Patch</a>
       <button class="btn ghost" id="print" data-i18n="print">Imprimer la vue affichée</button>
       <p class="hint" data-i18n="saveHint">Le dossier est aussi gardé dans ce navigateur au fil des modifications.</p>
@@ -406,6 +419,22 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
   </main>
 </div>
 
+<dialog id="mapDlg">
+  <form method="dialog" id="mapForm">
+    <h2 data-i18n="mapTitle">Colonnes du fichier</h2>
+    <p class="hint2" id="mapHint"></p>
+    <div class="mapprev" id="mapPrev"></div>
+    <div id="mapRows"></div>
+    <label class="dchk"><input type="checkbox" id="mapAuto"> <span data-i18n="mapAuto">Numéroter les projecteurs sans numéro (dans l'ordre des adresses)</span></label>
+    <p class="hint2" id="mapErr" style="color:var(--err)" hidden></p>
+    <div class="mapbtns">
+      <button type="button" class="linkbtn" id="mapReset" data-i18n="mapReset">Détection automatique</button>
+      <button type="button" class="btn ghost" id="mapCancel" data-i18n="mapCancel">Annuler</button>
+      <button type="submit" class="btn" id="mapOk" data-i18n="mapApply">Appliquer</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
@@ -427,6 +456,11 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    mapBtn: 'Colonnes du fichier CSV…', mapTitle: 'Colonnes du fichier', mapHint: n => `${n} — indique quelle colonne contient quoi. Il faut au moins le patch, ou l’univers et l’adresse, ou le numéro de projecteur. Le choix est mémorisé pour les fichiers qui ont le même en-tête.`,
+    mapAuto: "Numéroter les projecteurs sans numéro (dans l'ordre des adresses)", mapReset: 'Détection automatique', mapCancel: 'Annuler', mapApply: 'Appliquer', mapNeed: 'Choisis au moins la colonne Patch, ou Univers + Adresse, ou Fix ID.', mapNone: '— aucune —',
+    mf_fid: 'Fix ID', mf_chid: 'Ch ID', mf_unit: 'Unit', mf_name: 'Nom', mf_type: 'Type de projecteur', mf_mode: 'Mode', mf_patch: 'Patch (univ.adresse)', mf_univ: 'Univers (colonne à part)', mf_addr: 'Adresse (colonne à part)', mf_nch: 'Nombre de canaux',
+    mf_layer: 'Calque', mf_position: 'Position', mf_gel: 'Gélatine', mf_acc: 'Accessoires', mf_purpose: 'Fonction / focus', mf_notes: 'Notes', mf_weight: 'Poids (kg)', mf_power: 'Puissance (W)',
+    mapReplace: 'Réimporter ce fichier avec ces colonnes ? Les modifications faites depuis l’import seront perdues.',
     nvSheet: 'Feuille de patch', nvFxlabels: 'Étiquettes projecteurs', nvDiff: 'Changements',
     hideRow: 'Cliquer pour masquer ce projecteur sur les documents', annPh: 'annotation…', doOptions: 'Réglages des documents', doPlang: 'Langue des documents imprimés', doGroup: 'Regrouper par', gLayer: 'Calque', gPosition: 'Position', gwLayer: 'calque', gwPos: 'position',
     doFormat: 'Format papier (paysage)', fmtA3: 'A3 · 3 colonnes', fmtA4: 'A4 · 2 colonnes', doNote: 'Cartouche (texte libre)', line: n => `Ligne ${n}`, doHeadHint: 'Titre et sous-titre : ceux du dossier (Titre, Lieu / salle).',
@@ -504,6 +538,11 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    mapBtn: 'CSV file columns…', mapTitle: 'File columns', mapHint: n => `${n} — say which column holds what. At least the patch, or universe and address, or the fixture number is needed. The choice is remembered for files with the same header.`,
+    mapAuto: 'Number fixtures without a number (in address order)', mapReset: 'Automatic detection', mapCancel: 'Cancel', mapApply: 'Apply', mapNeed: 'Choose at least the Patch column, or Universe + Address, or Fix ID.', mapNone: '— none —',
+    mf_fid: 'Fix ID', mf_chid: 'Ch ID', mf_unit: 'Unit', mf_name: 'Name', mf_type: 'Fixture type', mf_mode: 'Mode', mf_patch: 'Patch (univ.address)', mf_univ: 'Universe (separate column)', mf_addr: 'Address (separate column)', mf_nch: 'Number of channels',
+    mf_layer: 'Layer', mf_position: 'Position', mf_gel: 'Gel', mf_acc: 'Accessories', mf_purpose: 'Purpose / focus', mf_notes: 'Notes', mf_weight: 'Weight (kg)', mf_power: 'Power (W)',
+    mapReplace: 'Re-import this file with these columns? Changes made since the import will be lost.',
     nvSheet: 'Patch sheet', nvFxlabels: 'Fixture labels', nvDiff: 'Changes',
     hideRow: 'Click to hide this fixture on the documents', annPh: 'note…', doOptions: 'Document settings', doPlang: 'Language of printed documents', doGroup: 'Group by', gLayer: 'Layer', gPosition: 'Position', gwLayer: 'layer', gwPos: 'position',
     doFormat: 'Paper size (landscape)', fmtA3: 'A3 · 3 columns', fmtA4: 'A4 · 2 columns', doNote: 'Title block (free text)', line: n => `Line ${n}`, doHeadHint: 'Title and subtitle: those of the dossier (Title, Venue / room).',
@@ -753,20 +792,30 @@ function parseCSVText(text) {
 }
 const norm = h => String(h || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
 const CSV_ALIASES = {
-  fid: ['fixid', 'fixtureid', 'fid', 'spot', 'p3fixturenumber', 'channel'], chid: ['chid', 'channelid'], unit: ['unit', 'unitnumber'],
+  fid: ['fixid', 'fixtureid', 'fid', 'spot', 'p3fixturenumber', 'channel', 'projo', 'projecteur', 'numero', 'num'], chid: ['chid', 'channelid'], unit: ['unit', 'unitnumber'],
   name: ['name', 'nom', 'label'], type: ['fixturetype', 'type', 'fixture', 'modele'], mode: ['dmxmode', 'mode'],
-  patch: ['patch', 'address', 'adresse', 'dmx', 'dmxaddress'], univ: ['dmxuniverse', 'universe', 'univers'], addr: ['dmxchannel', 'startaddress'],
+  patch: ['patch', 'address', 'adresse', 'dmx', 'dmxaddress'], univ: ['dmxuniverse', 'universe', 'univers', 'univ'], addr: ['dmxchannel', 'startaddress', 'canal', 'adr', 'adressedmx'],
   nch: ['ofdatachannels', 'datachannels', 'dmxchannels', 'channels', 'footprint'], layer: ['layer', 'calque'],
-  position: ['position', 'location', 'pipe', 'perche'], gel: ['color', 'gel', 'filters', 'filter', 'couleur', 'gelatine'],
+  position: ['position', 'location', 'pipe', 'perche', 'emplacement'], gel: ['color', 'gel', 'filters', 'filter', 'couleur', 'gelatine'],
   acc: ['accessories', 'accessoires', 'gobos'], purpose: ['purpose', 'fonction', 'focus'], notes: ['notes', 'note'],
   weight: ['weight', 'poids'], power: ['wattage', 'power', 'puissance'],
 };
-function parseCSV(text, fileName) {
+let lastCsv = null;
+// correspondance des colonnes : { idx: { champ: n° de colonne }, autonum } ; mémorisée par en-tête
+const csvSig = head => 'csvmap:' + head.map(norm).join('|');
+function autoCsvMap(head) {
+  const h = head.map(norm), idx = {};
+  for (const [k, names] of Object.entries(CSV_ALIASES)) for (const n of names) { const i = h.indexOf(n); if (i >= 0 && !Object.values(idx).includes(i)) { idx[k] = i; break; } }
+  return { idx, autonum: false };
+}
+const csvMapUsable = m => !!(m && m.idx && ('patch' in m.idx || ('univ' in m.idx && 'addr' in m.idx) || 'fid' in m.idx || 'chid' in m.idx));
+const csvMapFor = head => { const m = store.get(csvSig(head), null); return csvMapUsable(m) ? m : autoCsvMap(head); };
+function parseCSV(text, fileName, map) {
   const rows = parseCSVText(text);
   if (rows.length < 2) throw new Error(t('noFixtures'));
-  const head = rows[0].map(norm), idx = {};
-  for (const [k, names] of Object.entries(CSV_ALIASES)) for (const n of names) { const i = head.indexOf(n); if (i >= 0 && !Object.values(idx).includes(i)) { idx[k] = i; break; } }
-  if (!('patch' in idx) && !('univ' in idx && 'addr' in idx) && !('fid' in idx)) throw new Error(t('noCols'));
+  map = map || csvMapFor(rows[0]);
+  if (!csvMapUsable(map)) { const e = new Error(t('noCols')); e.needMap = { rows, text, fileName, map }; throw e; }
+  const idx = map.idx;
   const types = {}, fixtures = [];
   for (const r of rows.slice(1)) {
     const g = k => k in idx ? String(r[idx[k]] ?? '').trim() : '';
@@ -782,6 +831,11 @@ function parseCSV(text, fileName) {
       gel: g('gel'), acc: g('acc'), purpose: g('purpose'), notes: g('notes'), color: null, x: null, y: null, z: null, m: null });
   }
   if (!fixtures.length) throw new Error(t('noFixtures'));
+  if (map.autonum) {   // numéros à la suite du plus grand, dans l'ordre des adresses
+    let n = Math.floor(Math.max(0, ...fixtures.map(f => parseFloat(f.fid) || 0)));
+    fixtures.filter(f => !f.fid).sort((a, b) => (a.univ || 1e9) - (b.univ || 1e9) || (a.addr || 0) - (b.addr || 0)).forEach(f => { f.fid = String(++n); });
+  }
+  lastCsv = { text, fileName, rows };
   return ensureLieu(newDossier({ fixtures, types, structures: [], source: fileName, titre: fileName.replace(/\.(csv|txt)$/i, '') }));
 }
 
@@ -2052,16 +2106,53 @@ async function openFile(file) {
       if (/^\s*\{/.test(text)) d = checkDossier(JSON.parse(text));
       else {                                                                       // CSV, ou feuille .html des plugins grandMA
         const u = unwrapGmtp(text);
-        d = parseCSV(u.csv, (u.meta && u.meta.source) || file.name);
+        try { d = parseCSV(u.csv, (u.meta && u.meta.source) || file.name); }
+        catch (e) { if (e.needMap && u.meta) e.needMap.meta = { titre: u.meta.titre || '', lieu: u.meta.lieu || '', exported: u.meta.exporte || null }; throw e; }
         if (u.meta) { if (u.meta.titre) d.meta.titre = u.meta.titre; if (u.meta.lieu) d.meta.lieu = u.meta.lieu; if (u.meta.exporte) d.meta.exported = u.meta.exporte; }
       }
     }
     if (!d.meta.exported && !/^\s*\{/.test(decode(buf.slice(0, 8))) && file.lastModified) d.meta.exported = new Date(file.lastModified).toISOString();
     if (state.d && state.d.fixtures.length && !confirm(t('replaceAsk'))) return;
     load(d);
-  } catch (err) { showError(t('readErr') + ' ' + err.message); }
+  } catch (err) {
+    if (err.needMap) { const m = err.needMap; m.meta = { exported: file.lastModified ? new Date(file.lastModified).toISOString() : null, ...(m.meta || {}) }; openMap(m); return; }
+    showError(t('readErr') + ' ' + err.message);
+  }
 }
+// ───────────── colonnes du fichier CSV (choix manuel) ─────────────
+const MAP_FIELDS = ['fid', 'chid', 'unit', 'name', 'type', 'mode', 'patch', 'univ', 'addr', 'nch', 'layer', 'position', 'gel', 'acc', 'purpose', 'notes', 'weight', 'power'];
+let mapCtx = null;   // { rows, text, fileName, meta }
+function openMap(ctx, map) {
+  mapCtx = ctx; map = map || ctx.map || csvMapFor(ctx.rows[0]);
+  const head = ctx.rows[0], ex = ctx.rows[1] || [];
+  const opts = sel => `<option value="">${esc(t('mapNone'))}</option>` + head.map((h, i) => `<option value="${i}"${sel === i ? ' selected' : ''}>${esc(h || '#' + (i + 1))}${ex[i] ? ' — ' + esc(String(ex[i]).slice(0, 22)) : ''}</option>`).join('');
+  $('#mapRows').innerHTML = MAP_FIELDS.map(k => `<label class="maprow${['fid', 'patch', 'univ', 'addr'].includes(k) ? ' req' : ''}"><span>${esc(t('mf_' + k))}</span><select data-mk="${k}">${opts(map.idx[k])}</select></label>`).join('');
+  $('#mapHint').textContent = t('mapHint', ctx.fileName);
+  $('#mapPrev').textContent = ctx.rows.slice(0, 4).map(r => r.join(' ; ')).join('\n');
+  $('#mapAuto').checked = !!map.autonum; $('#mapErr').hidden = true;
+  if (!$('#mapDlg').open) $('#mapDlg').showModal();
+}
+$('#mapForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const idx = {}; document.querySelectorAll('#mapRows select').forEach(sel => { if (sel.value !== '') idx[sel.dataset.mk] = +sel.value; });
+  const m = { idx, autonum: $('#mapAuto').checked };
+  if (!csvMapUsable(m)) { $('#mapErr').textContent = t('mapNeed'); $('#mapErr').hidden = false; return; }
+  store.set(csvSig(mapCtx.rows[0]), m);
+  try {
+    if (mapCtx.reimport && state.d && !confirm(t('mapReplace'))) return;
+    const d = parseCSV(mapCtx.text, mapCtx.fileName, m);
+    Object.entries(mapCtx.meta || {}).forEach(([k, v]) => { if (v) d.meta[k] = v; });
+    $('#mapDlg').close();
+    if (!mapCtx.reimport && state.d && state.d.fixtures.length && !confirm(t('replaceAsk'))) return;
+    load(d);
+  } catch (err) { $('#mapErr').textContent = err.message; $('#mapErr').hidden = false; }
+});
+$('#mapCancel').addEventListener('click', () => $('#mapDlg').close());
+$('#mapReset').addEventListener('click', () => { store.set(csvSig(mapCtx.rows[0]), null); openMap(mapCtx, autoCsvMap(mapCtx.rows[0])); });
+$('#mapBtn').addEventListener('click', () => { const c = state.csvSrc; if (c) openMap({ ...c, meta: { exported: state.d && state.d.meta.exported, titre: state.d && state.d.meta.titre, lieu: state.d && state.d.meta.lieu }, reimport: true }); });
 function load(d) {
+  state.csvSrc = lastCsv && lastCsv.fileName === d.meta.source ? lastCsv : null;
+  $('#mapBtn').hidden = !state.csvSrc;
   state.d = d; state.sel.clear(); state.fPos = ''; state.fType = ''; state.q = ''; $('#q').value = '';
   ['#metaBox', '#statBox', '#outBox'].forEach(s => { $(s).hidden = false; });
   $('#drop').classList.add('loaded');
