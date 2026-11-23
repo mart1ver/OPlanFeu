@@ -540,8 +540,9 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    invShape: 'Forme 3D', shAuto: g => `auto (${g})`, shLen: 'Longueur ou largeur (cm)', sh_gdtf: 'modèle du GDTF', sh_lyre: 'lyre', sh_par: 'PAR', sh_ledpar: 'PAR LED', sh_decoupe: 'découpe', sh_pc: 'PC / Fresnel', sh_barre: 'barre / rampe', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'vidéoprojecteur', sh_fog: 'machine à brouillard', sh_cube: 'boîte',
     tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
-    v3Shapes: 'Formes réelles (GDTF, MVR)', v3Shaping: 'Chargement des formes…', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
+    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
     v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s, g) => `${n} projecteurs · ${s} structures${g ? ` · formes : ${g}` : ''}`,
     tabDossier: 'Dossier complet', mvrGeo: n => `${n} structure(s) et décor(s) avec leur modèle 3D.`, exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
     dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
@@ -623,7 +624,7 @@ const I18N = {
     delPointAsk: n => `Supprimer le point « ${n} » ?`, printLoads: 'Feuille de charges',
     alOver: n => `${n} point(s) d’accroche au-delà de la CMU`, alWarn: n => `${n} point(s) d’accroche proches de la CMU`, alNoCmu: n => `${n} point(s) d’accroche sans CMU`,
     invGdtf: 'GDTF', gdtfAdd: 'Ajouter…', gdtfGet: 'Télécharger', gdtfAttached: n => `GDTF ajouté au type « ${n} ».`, gdtfBad: "Ce fichier n’est pas un GDTF lisible.",
-    invHint: "Chaque type garde son fichier GDTF (modes, canaux, poids, puissance) : il vient du MVR, ou s’ajoute avec « Ajouter… » ou en déposant un fichier .gdtf sur la page. Renseigne aussi le stock du lieu, le poids et la puissance quand le GDTF ne les donne pas.",
+    invHint: "La forme 3D se devine d’après le nom du type ; les GDTF de WYSIWYG ne contiennent qu’un modèle générique, un GDTF de fabricant (GDTF Share) donne la vraie forme. Chaque type garde son fichier GDTF (modes, canaux, poids, puissance) : il vient du MVR, ou s’ajoute avec « Ajouter… » ou en déposant un fichier .gdtf sur la page. Renseigne aussi le stock du lieu, le poids et la puissance quand le GDTF ne les donne pas.",
     allPos: 'Toutes les positions', allTypes: 'Tous les types', noPos: '(sans position)',
     count: (n, m) => n === m ? `${n} projecteurs` : `${n} / ${m} projecteurs`,
     selCount: n => `${n} sélectionné${n > 1 ? 's' : ''}`, bApply: 'Appliquer', bRenum: 'Numéroter…', bDelete: 'Supprimer', bNone: 'Désélectionner',
@@ -649,8 +650,9 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    invShape: '3D shape', shAuto: g => `auto (${g})`, shLen: 'Length or width (cm)', sh_gdtf: 'GDTF model', sh_lyre: 'moving head', sh_par: 'PAR', sh_ledpar: 'LED PAR', sh_decoupe: 'profile', sh_pc: 'PC / Fresnel', sh_barre: 'batten', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'video projector', sh_fog: 'haze / fog', sh_cube: 'box',
     tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
-    v3Shapes: 'Real shapes (GDTF, MVR)', v3Shaping: 'Loading the shapes…', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
+    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
     v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s, g) => `${n} fixtures · ${s} structures${g ? ` · shapes: ${g}` : ''}`,
     tabDossier: 'Full dossier', mvrGeo: n => `${n} structure(s) and set piece(s) with their 3D model.`, exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
     dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
@@ -732,7 +734,7 @@ const I18N = {
     delPointAsk: n => `Delete the point “${n}”?`, printLoads: 'Load sheet',
     alOver: n => `${n} rigging point(s) over the WLL`, alWarn: n => `${n} rigging point(s) close to the WLL`, alNoCmu: n => `${n} rigging point(s) without WLL`,
     invGdtf: 'GDTF', gdtfAdd: 'Add…', gdtfGet: 'Download', gdtfAttached: n => `GDTF added to the type “${n}”.`, gdtfBad: 'This file is not a readable GDTF.',
-    invHint: 'Each type keeps its GDTF file (modes, channels, weight, power): it comes from the MVR, or is added with “Add…” or by dropping a .gdtf file on the page. Also fill in the venue stock, and the weight and power when the GDTF does not give them.',
+    invHint: 'The 3D shape is guessed from the type name; WYSIWYG GDTFs only hold a generic model, a manufacturer GDTF (GDTF Share) gives the real shape. Each type keeps its GDTF file (modes, channels, weight, power): it comes from the MVR, or is added with “Add…” or by dropping a .gdtf file on the page. Also fill in the venue stock, and the weight and power when the GDTF does not give them.',
     allPos: 'All positions', allTypes: 'All types', noPos: '(no position)',
     count: (n, m) => n === m ? `${n} fixtures` : `${n} / ${m} fixtures`,
     selCount: n => `${n} selected`, bApply: 'Apply', bRenum: 'Number…', bDelete: 'Delete', bNone: 'Clear selection',
@@ -1862,6 +1864,55 @@ ${ck('shapes')}${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('
   if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
   loadThree().then(() => { if (state.tab === 'v3d' && $('#v3')) return buildV3(fx); }).catch(() => { const el = $('#v3'); if (el) el.innerHTML = `<div class="v3msg">${esc(t('v3Fail'))}</div>`; });
 }
+// formes par famille, dessinées en primitives : origine = point d'accroche, corps vers -z, faisceau vers -z
+const SHAPE_KINDS = ['lyre', 'par', 'ledpar', 'decoupe', 'pc', 'barre', 'blinder', 'strobe', 'video', 'fog', 'cube'];
+const SHAPE_GUESS = [
+  [/spiider|esprite|robin|painte|pointe|bmfl|mac\b|mac |megapointe|spot|beam|wash|lyre|moving|sharpy|vl\d|t1|forte|ayrton|k10|k20/i, 'lyre'],
+  [/led.?par|rush par|par.?2|zoom|par.*rgb|rgbw/i, 'ledpar'],
+  [/par ?\d|\bpar\b|parcan/i, 'par'],
+  [/d[ée]coupe|profile|source.?four|ellipso|leko|61[34]|71[34]|juliat|thp|dsx|dw\d/i, 'decoupe'],
+  [/fresnel|\bpc\b|f101|pc ?\d|ac ?100|plano/i, 'pc'],
+  [/light.?bar|sunstrip|pixy|batten|svoboda|cyc|strip|rampe|bar\b|asc/i, 'barre'],
+  [/molefay|blinder|two light|2.?lite|4.?lite|dwe/i, 'blinder'],
+  [/atomic|strobe|jdc|x4 ?bar/i, 'strobe'],
+  [/\beb-|epson|projector|vid[ée]o|barco|panasonic|christie/i, 'video'],
+  [/atmosph|hazer|haze|fog|brouill|fum[ée]e|smoke|mdg|look solution|unique/i, 'fog'],
+];
+const shapeGuess = name => (SHAPE_GUESS.find(([re]) => re.test(name || '')) || [0, 'cube'])[1];
+const SHAPE_LEN = { barre: 100, blinder: 50, strobe: 45, video: 50, fog: 45, cube: 30 };
+function catShape(T, kind, lenCm) {
+  const g = new T.Group(), L = (lenCm > 0 ? lenCm : SHAPE_LEN[kind] || 30) / 100;
+  const add = (geo, part, x, y, z) => { const m = new T.Mesh(geo); m.position.set(x, y, z); m.userData.part = part; g.add(m); return m; };
+  const box = (w, d, h, x, y, z, part = 'body') => add(new T.BoxGeometry(w, d, h), part, x, y, z);
+  const cyl = (r, h, x, y, z, part = 'body', r2) => { const c = new T.CylinderGeometry(r, r2 ?? r, h, 22); c.rotateX(Math.PI / 2); return add(c, part, x, y, z); };
+  const clamp = () => box(.05, .05, .06, 0, 0, -.03, 'metal');
+  const yoke = (w, h) => { box(w + .04, .03, .02, 0, 0, -.07, 'metal'); box(.015, .03, h, -(w / 2 + .01), 0, -.07 - h / 2, 'metal'); box(.015, .03, h, w / 2 + .01, 0, -.07 - h / 2, 'metal'); };
+  const beam = z => { const b = new T.Group(); b.position.set(0, 0, z); b.name = '__beam'; g.add(b); };
+  switch (kind) {
+    case 'lyre': box(.36, .3, .13, 0, 0, -.065, 'metal'); box(.32, .08, .03, 0, 0, -.145, 'metal'); box(.03, .08, .3, -.15, 0, -.29, 'metal'); box(.03, .08, .3, .15, 0, -.29, 'metal'); cyl(.13, .36, 0, 0, -.42); cyl(.115, .02, 0, 0, -.61, 'lens'); beam(-.62); break;
+    case 'par': clamp(); yoke(.24, .2); cyl(.105, .36, 0, 0, -.2); cyl(.1, .01, 0, 0, -.385, 'lens'); beam(-.39); break;
+    case 'ledpar': clamp(); yoke(.3, .14); cyl(.14, .13, 0, 0, -.16); cyl(.13, .01, 0, 0, -.23, 'lens'); beam(-.235); break;
+    case 'decoupe': clamp(); yoke(.26, .18); box(.22, .22, .24, 0, 0, -.16); cyl(.09, .42, 0, 0, -.49); cyl(.085, .01, 0, 0, -.705, 'lens'); beam(-.71); break;
+    case 'pc': clamp(); yoke(.3, .2); box(.26, .26, .28, 0, 0, -.2); cyl(.11, .03, 0, 0, -.355, 'lens'); beam(-.37); break;
+    case 'barre': clamp(); box(L, .1, .09, 0, 0, -.105); box(L * .96, .07, .01, 0, 0, -.152, 'lens'); beam(-.16); break;
+    case 'blinder': clamp(); yoke(L * .9, .1); box(L * .9, .2, .14, 0, 0, -.17); cyl(.08, .01, -L * .22, 0, -.245, 'lens'); cyl(.08, .01, L * .22, 0, -.245, 'lens'); beam(-.25); break;
+    case 'strobe': clamp(); yoke(L, .08); box(L, .14, .13, 0, 0, -.135); box(L * .9, .1, .01, 0, 0, -.205, 'lens'); beam(-.21); break;
+    case 'video': box(L, .2, L * 1.1, 0, 0, -L * .55); cyl(.06, .08, L * .25, 0, -L * 1.1 - .04, 'lens'); g.children[g.children.length - 1].userData.part = 'lens'; { const b = new T.Group(); b.position.set(L * .25, 0, -L * 1.1 - .08); b.name = '__beam'; g.add(b); } break;
+    case 'fog': box(L * .7, L, L * .6, 0, 0, -L * .3); cyl(.03, .08, 0, L / 2, -L * .3, 'metal').rotation.x = Math.PI / 2; g.userData.noBeam = true; break;
+    default: box(L, L, L, 0, 0, -L / 2); beam(-L);
+  }
+  return g;
+}
+// GDTF généré par WYSIWYG (ou autre logiciel) : modèles génériques, pas la vraie forme
+const isGenericGdtf = doc => /from WYSIWYG/i.test([...doc.querySelectorAll('Revision')].map(r => r.getAttribute('Text') || '').join(' '))
+  || [...doc.querySelectorAll('Models > Model')].every(m => /^(primitivetype_|cylinder|cube|sphere)/i.test(m.getAttribute('File') || '') || !m.getAttribute('File'));
+// forme d'un type : GDTF du fabricant si présent (ou si demandé), sinon forme de la famille
+async function typeShape(T, key, ty) {
+  const mode = ty.shape || 'auto';
+  if (ty.gdtfData && (mode === 'gdtf' || mode === 'auto')) { const sh = await gdtfShape(T, ty.gdtf || key, ty, mode === 'gdtf'); if (sh) return { obj: sh, src: 'gdtf' }; }
+  const kind = mode === 'auto' || mode === 'gdtf' ? shapeGuess(ty.name) : mode;
+  return { obj: catShape(T, kind, ty.shapeLen), src: 'cat' };
+}
 // formes des projecteurs : arbre de géométries du GDTF (modèles 3ds mis aux dimensions du modèle, ou primitives)
 const GEO_TAGS = new Set(['Geometry', 'Axis', 'FilterBeam', 'FilterColor', 'FilterGobo', 'FilterShaper', 'Beam', 'MediaServerLayer', 'MediaServerCamera', 'MediaServerMaster', 'Display', 'GeometryReference', 'Laser', 'WiringObject', 'Inventory', 'Structure', 'Support', 'Magnet']);
 const SHAPE_CACHE = new Map();
@@ -1880,10 +1931,12 @@ function fitTo(T, obj, L, W, H) {   // le modèle 3ds remplit les dimensions du 
   obj.scale.set(sz.x > 1e-6 && L ? L / sz.x : 1, sz.y > 1e-6 && W ? W / sz.y : 1, sz.z > 1e-6 && H ? H / sz.z : 1);
   return true;
 }
-async function gdtfShape(T, key, ty) {
+async function gdtfShape(T, key, ty, allowGeneric) {
+  key = key + (allowGeneric ? '|g' : '');
   if (SHAPE_CACHE.has(key)) return SHAPE_CACHE.get(key);
   const pr = (async () => {
     const g = await unzip(fromB64(ty.gdtfData)), doc = xmlOf(await g.get('description.xml'));
+    if (!allowGeneric && isGenericGdtf(doc)) return null;
     const models = new Map([...doc.querySelectorAll('Models > Model')].map(m => [m.getAttribute('Name'), m]));
     const tops = [...(doc.querySelector('Geometries') || { children: [] }).children].filter(c => GEO_TAGS.has(c.tagName));
     const files = new Map();
@@ -1939,7 +1992,7 @@ async function buildV3(fx) {
   const T0 = window.THREE, shapes = new Map(); let meshes = new Map(), nShapes = 0;
   if (state.v3.shapes) {
     const wrap0 = $('#v3'); if (wrap0) wrap0.innerHTML = `<div class="v3msg">${esc(t('v3Shaping'))}</div>`;
-    for (const k of new Set(fx.map(f => f.type))) { const ty = state.d.types[k]; if (ty && ty.gdtfData) { const sh = await gdtfShape(T0, ty.gdtf || k, ty); if (sh) { shapes.set(k, sh); nShapes++; } } }
+    for (const k of new Set(fx.map(f => f.type))) { const ty = state.d.types[k] || { name: k }; const r = await typeShape(T0, k, ty); shapes.set(k, r.obj); if (r.src === 'gdtf') nShapes++; }
     if (state.v3.struct) meshes = await meshFiles(T0);
     if (state.tab !== 'v3d' || !$('#v3')) return;
   }
@@ -1969,6 +2022,7 @@ function buildV3Scene(fx) {
   cone.translate(0, -1.2, 0); cone.rotateX(Math.PI / 2);   // faisceau le long de -z du projecteur
   const beamMat = new T.MeshBasicMaterial({ color: 0xfff3c0, transparent: true, opacity: .1, depthWrite: false, side: T.DoubleSide });
   const mats = new Map(), pick = [];
+  const metalMat = new T.MeshStandardMaterial({ color: 0x2c2d33, roughness: .5, metalness: .6 }), lensMat = new T.MeshStandardMaterial({ color: 0xfff6d8, emissive: 0x6b6450, roughness: .2 });
   const matOf = c => mats.get(c) || (mats.set(c, new T.MeshStandardMaterial({ color: c, roughness: .55, metalness: .1 })), mats.get(c));
   const sprite = (text, scale, cw = 128) => {
     const cv = document.createElement('canvas'), cx = cv.getContext('2d'); cv.width = cw; cv.height = 48;
@@ -1987,10 +2041,10 @@ function buildV3Scene(fx) {
     const mat = matOf(colOf.get(ckey(f)) || '#999'), sh = V3.shapes && V3.shapes.get(f.type);
     let beamAt = g;
     if (sh) {
-      const c = sh.clone(true); c.traverse(o => { if (o.isMesh) { o.material = mat; o.userData.f = f; pick.push(o); } });
-      g.add(c); beamAt = c.getObjectByName('__beam') || c;
+      const c = sh.clone(true); c.traverse(o => { if (o.isMesh) { o.material = o.userData.part === 'metal' ? metalMat : o.userData.part === 'lens' ? lensMat : mat; o.userData.f = f; pick.push(o); } });
+      g.add(c); beamAt = c.userData.noBeam ? null : (c.getObjectByName('__beam') || c);
     } else { const body = new T.Mesh(box, mat); body.userData.f = f; g.add(body); pick.push(body); }
-    if (S.beams) { const b = new T.Mesh(cone, beamMat); beamAt.add(b); }
+    if (S.beams && beamAt) { const b = new T.Mesh(cone, beamMat); beamAt.add(b); }
     world.add(g);
     if (S.labels) { const sp = sprite(f.fid || '?', .22); sp.position.set(f.x, f.y, f.z + .32); world.add(sp); }
   }
@@ -2066,7 +2120,7 @@ function buildV3Scene(fx) {
   el.addEventListener('wheel', e => { e.preventDefault(); sph.r = Math.min(400, Math.max(1, sph.r * (e.deltaY > 0 ? 1.1 : .9))); place(); }, { passive: false });
   const size = () => { const w = wrap.clientWidth, h = wrap.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
   V3.ro = new ResizeObserver(size); V3.ro.observe(wrap); size();
-  wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst, V3.nShapes ? `${V3.nShapes} GDTF, ${V3.meshes ? V3.meshes.size : 0} 3ds` : '');
+  wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst, V3.shapes && V3.shapes.size ? t('v3Src', V3.nShapes, V3.shapes.size - V3.nShapes, V3.meshes ? V3.meshes.size : 0) : '');
   V3.renderer = renderer; V3.running = true;
   const loop = () => { if (!V3.running || !document.body.contains(el)) { V3.running = false; return; } renderer.render(scene, cam); V3.raf = requestAnimationFrame(loop); };
   loop();
@@ -2143,13 +2197,15 @@ function renderInventory() {
 <td class="ro num" style="color:var(--ink)"><b>${n || ''}</b></td><td class="w-unit">${inp('stock', ty.stock)}</td>
 <td class="ro num">${miss === null ? '' : miss ? `<span class="missing">${miss}</span>` : '<span class="okv">✓</span>'}</td>
 <td class="w-unit">${inp('weight', ty.weight)}</td><td class="w-unit">${inp('power', ty.power)}</td>
+<td style="white-space:nowrap"><select class="c" data-t="${esc(k)}" data-f="shape">${['auto', 'gdtf', ...SHAPE_KINDS].map(v => `<option value="${v}"${v === (ty.shape || 'auto') ? ' selected' : ''}>${esc(v === 'auto' ? t('shAuto', t('sh_' + shapeGuess(ty.name))) : t('sh_' + v))}</option>`).join('')}</select>
+${['barre', 'blinder', 'strobe', 'video', 'fog', 'cube'].includes(ty.shape && ty.shape !== 'auto' ? ty.shape : shapeGuess(ty.name)) ? `<input class="c box" data-t="${esc(k)}" data-f="shapeLen" inputmode="decimal" style="width:3.6em" title="${esc(t('shLen'))}" placeholder="cm" value="${ty.shapeLen ?? ''}">` : ''}</td>
 <td class="ro">${ty.gdtfData ? `<span class="gdtfok" title="${esc(ty.gdtf || '')}">✓ GDTF</span><button type="button" class="minibtn noprint" data-gdtf-get="${esc(k)}">${esc(t('gdtfGet'))}</button>` : `<button type="button" class="minibtn noprint" data-gdtf-add="${esc(k)}">${esc(t('gdtfAdd'))}</button>`}</td></tr>`;
   }).join('');
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabInventory'))}</h1><p class="hint" style="margin:14px 0 6px">${esc(t('invHint'))}</p>
-<div class="gridwrap"><table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower', 'invGdtf'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
+<div class="gridwrap"><table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower', 'invShape', 'invGdtf'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
-<td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td></tr></tbody></table></div>`;
+<td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td><td></td></tr></tbody></table></div>`;
 }
 function render() {
   $('#pagesize').textContent = '';
@@ -2283,6 +2339,8 @@ view.addEventListener('change', e => {
     else { const n = parseFloat(v.replace(',', '.')); p[k] = v === '' ? (k === 'extra' ? 0 : null) : (isNaN(n) ? p[k] : n); }
     touch(); render(); return;
   }
+  const tsel = e.target.closest('select[data-t]');
+  if (tsel) { const ty = state.d.types[tsel.dataset.t]; if (ty) ty[tsel.dataset.f] = tsel.value === 'auto' ? undefined : tsel.value; touch(); render(); return; }
   const inp = e.target.closest('input.c'); if (!inp) return;
   if (inp.dataset.t) {                     // inventaire : stock, poids, puissance par type
     const ty = state.d.types[inp.dataset.t], v = inp.value.trim().replace(',', '.');
