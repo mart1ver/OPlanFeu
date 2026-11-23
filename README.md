@@ -6,6 +6,10 @@ Par **Mart1ver**.
 
 Ouvrir `index.html` dans un navigateur (ou la page publiée sur GitHub Pages). Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur.
 
+## Interface
+
+Mise en page inspirée de Give Me The Patch : menu vertical des vues à gauche (rétractable en barre d'icônes), panneau du dossier à côté (rétractable, sections dépliables : dossier, en bref, enregistrer et exporter, plugins), zone de travail avec le titre de la vue. Les réglages d'affichage sont gardés dans le navigateur.
+
 ## Ce que fait la première version
 
 - **Import**

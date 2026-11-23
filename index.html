@@ -10,24 +10,66 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #e8eaea; --panel: #fbfcfb; --ink: #15181a; --muted: #687075; --line: #d5dadb; --row: #f3f5f5;
-  --accent: #16917f; --accent-ink: #ffffff; --warn-bg: #fff3c4; --ok: #2f7d4a; --err: #b3261e; --sel: #d9f2ee;
+  --bg: #e9e9e6; --panel: #fbfbf9; --ink: #16161a; --muted: #6b6b70; --line: #d8d8d3; --row: #f3f3f0;
+  --accent: #e8a317; --accent-ink: #1a1405; --warn-bg: #fff3c4; --ok: #2f7d4a; --err: #b3261e; --sel: #fdf0cf;
+  --nav: #1f1f23; --nav-ink: #e9e9ea; --nav-muted: #9a9aa0; --nav-hover: #2c2c31;
+  --navw: 214px; --sidew: 304px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #191c1e; --panel: #222629; --ink: #eceeee; --muted: #9aa2a6; --line: #363c40; --row: #262b2e;
-    --accent: #33b8a5; --accent-ink: #06201c; --warn-bg: #4a3d12; --ok: #6cc28a; --err: #ff8a80; --sel: #1d3a36;
+    --bg: #1b1b1e; --panel: #232327; --ink: #ececec; --muted: #9a9aa0; --line: #38383e; --row: #28282c;
+    --accent: #f0b432; --accent-ink: #1a1405; --warn-bg: #4a3d12; --ok: #6cc28a; --err: #ff8a80; --sel: #3d331a;
+    --nav: #141416; --nav-hover: #222226;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #191c1e; --panel: #222629; --ink: #eceeee; --muted: #9aa2a6; --line: #363c40; --row: #262b2e;
-  --accent: #33b8a5; --accent-ink: #06201c; --warn-bg: #4a3d12; --ok: #6cc28a; --err: #ff8a80; --sel: #1d3a36;
+  --bg: #1b1b1e; --panel: #232327; --ink: #ececec; --muted: #9a9aa0; --line: #38383e; --row: #28282c;
+  --accent: #f0b432; --accent-ink: #1a1405; --warn-bg: #4a3d12; --ok: #6cc28a; --err: #ff8a80; --sel: #3d331a;
+  --nav: #141416; --nav-hover: #222226;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body { background: var(--bg); color: var(--ink); font: 14px/1.45 "IBM Plex Sans", system-ui, sans-serif; }
-.app { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
-aside { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 20px; }
+.app { display: grid; grid-template-columns: var(--navw) var(--sidew) 1fr; height: 100vh; transition: grid-template-columns .18s ease; }
+body.nav-min { --navw: 58px; } body.side-off { --sidew: 0px; }
+/* navigation verticale (rétractable) */
+nav.nav { background: var(--nav); color: var(--nav-ink); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.navhead { display: flex; align-items: center; gap: 10px; padding: 16px 12px 14px 18px; min-height: 58px; }
+.navhead .brandlink { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+.navhead .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); flex: none; box-shadow: 0 0 0 4px rgba(232,163,23,.18); }
+.navhead b { font-size: 15px; font-weight: 600; white-space: nowrap; }
+.iconbtn { font: inherit; border: 0; background: transparent; color: inherit; cursor: pointer; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; opacity: .75; }
+.iconbtn:hover { background: var(--nav-hover); opacity: 1; }
+.iconbtn svg { width: 17px; height: 17px; }
+nav .tabs { display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; background: none; border: 0; border-radius: 0; flex: 1; overflow-y: auto; }
+nav .tabs button { display: flex; align-items: center; gap: 12px; font: inherit; font-size: 13.5px; text-align: left; border: 0; border-radius: 9px; padding: 9px 10px; background: transparent; color: var(--nav-ink); cursor: pointer; white-space: nowrap; opacity: .82; }
+nav .tabs button:hover { background: var(--nav-hover); opacity: 1; }
+nav .tabs button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; opacity: 1; }
+nav .tabs button svg { width: 18px; height: 18px; flex: none; }
+nav .navsep { height: 1px; background: rgba(255,255,255,.08); margin: 7px 8px; }
+nav .navgrp { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--nav-muted); padding: 8px 10px 3px; white-space: nowrap; }
+.navfoot { padding: 10px 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.navfoot select { font: inherit; font-size: 12px; color: var(--nav-ink); background: var(--nav-hover); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 5px 6px; }
+body.nav-min nav .tabs button span, body.nav-min .navhead b, body.nav-min nav .navgrp, body.nav-min .navfoot select { display: none; }
+body.nav-min nav .tabs button { justify-content: center; padding: 10px 0; }
+body.nav-min .navhead { flex-direction: column; padding: 16px 0 10px; gap: 12px; }
+body.nav-min .navhead .brandlink { flex: none; }
+body.nav-min #navToggle svg { transform: rotate(180deg); }
+/* panneau du dossier (rétractable, sections dépliables) */
+aside { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; overflow-x: hidden; padding: 0 18px 24px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+body.side-off aside { padding: 0; border: 0; }
+body.side-off aside > * { display: none; }
+.sidehead { position: sticky; top: 0; z-index: 2; background: var(--panel); display: flex; align-items: center; gap: 8px; padding: 16px 0 10px; border-bottom: 1px solid var(--line); margin: 0 0 2px; }
+.sidehead b { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); flex: 1; }
+.sidehead .iconbtn { color: var(--muted); }
+.sidehead .iconbtn:hover { background: var(--bg); }
+details.sec { border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+details.sec > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; padding: 4px 0 8px; user-select: none; }
+details.sec > summary::-webkit-details-marker { display: none; }
+details.sec > summary::after { content: ''; margin-inline-start: auto; width: 7px; height: 7px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
+details.sec[open] > summary::after { transform: rotate(45deg); }
+details.sec > .secbody { display: flex; flex-direction: column; gap: 10px; }
+.sidefoot { margin-top: auto; }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brandlink { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; color: inherit; text-decoration: none; }
 .brandlink:hover h1 { text-decoration: underline; }
@@ -46,8 +88,9 @@ legend { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color:
 label.f { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
 input[type=text], input[type=number], input[type=date], textarea, select.in { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; min-width: 0; }
 textarea { resize: vertical; min-height: 56px; }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.btn { font: inherit; font-weight: 600; font-size: 14px; border: 0; border-radius: 10px; padding: 11px 14px; background: var(--accent); color: var(--accent-ink); cursor: pointer; text-align: center; text-decoration: none; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .row2 > *, .row2 input, .row2 select { min-width: 0; width: 100%; }
+label.f input, label.f textarea, label.f select { width: 100%; }
+.btn { font: inherit; font-weight: 600; font-size: 14px; border: 0; border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: var(--accent-ink); cursor: pointer; text-align: center; text-decoration: none; }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
 .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 500; font-size: 13px; padding: 8px 12px; }
 .hint { font-size: 11.5px; color: var(--muted); margin: 0; }
@@ -62,7 +105,10 @@ textarea { resize: vertical; min-height: 56px; }
 .foot { font-size: 11px; color: var(--muted); }
 
 main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-.toolbar { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+.toolbar { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 10px 22px; min-height: 58px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(6px); flex-wrap: wrap; }
+.toolbar .iconbtn { color: var(--muted); } .toolbar .iconbtn:hover { background: var(--panel); color: var(--ink); }
+.viewtitle { margin: 0; font-size: 17px; font-weight: 600; white-space: nowrap; }
+.viewsub { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 30vw; }
 .tabs { display: flex; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 3px; }
 .tabs button { font: inherit; font-size: 13px; border: 0; border-radius: 6px; padding: 6px 12px; background: transparent; color: var(--ink); cursor: pointer; white-space: nowrap; }
 .tabs button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
@@ -76,7 +122,7 @@ main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .bulk button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
 .bulk button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .bulk button.danger { color: var(--err); }
-.view { flex: 1; overflow: auto; padding: 0 18px 30px; }
+.view { flex: 1; overflow: auto; padding: 0 22px 34px; }
 .empty { height: 100%; display: grid; place-items: center; color: var(--muted); text-align: center; padding: 40px; }
 
 table.grid { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
@@ -131,6 +177,7 @@ table.grid td.ids2 { white-space: normal; }
 .subtabs { display: flex; gap: 6px; margin: 14px 0 0; flex-wrap: wrap; }
 .subtabs button { font: inherit; font-size: 12.5px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
 .subtabs button.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.subtabs button:hover:not(.on) { border-color: var(--accent); }
 details.series { margin: 6px 0 10px; font-size: 13px; }
 details.series summary { cursor: pointer; color: var(--accent); font-weight: 600; }
 details.series .row { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: center; margin-top: 8px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
@@ -319,7 +366,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .v3panel details.ly > summary::-webkit-details-marker { display: none; }
 .v3panel details.ly > summary .tw { width: 10px; color: #9a9aa2; } .v3panel details.ly[open] > summary .tw { transform: rotate(90deg); }
 .v3panel details.ly > div { padding-inline-start: 22px; }
-.v3panel input { accent-color: #16917f; margin: 0; }
+.v3panel input { accent-color: #e8a317; margin: 0; }
 .v3msg { position: absolute; inset: 0; display: grid; place-items: center; color: #cfcfd4; text-align: center; padding: 30px; }
 #dosPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .dpage { background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); width: 297mm; min-height: 210mm; box-sizing: border-box; padding: 12mm; font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 9pt; flex: none;
@@ -394,14 +441,18 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
 .phead .pnote { font-size: .95em; border-left: .2em solid #111; padding-left: .5em; }
 #rigPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 @media print { #rigPages { padding: 0; gap: 0; display: block; } .phead { box-shadow: none; zoom: 1 !important; break-after: page; } .phead:last-child { break-after: auto; } }
-@media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
+@media (max-width: 800px) {
+  .app { grid-template-columns: 1fr; height: auto; }
+  nav.nav { flex-direction: row; flex-wrap: wrap; align-items: center; } nav .tabs { flex-direction: row; flex-wrap: wrap; } nav .navsep, nav .navgrp, #navToggle { display: none; }
+  aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; }
+}
 
 /* impression : la vue affichée, sans l'interface */
 @media print {
   @page { size: A4 landscape; margin: 12mm; }
   html, body { height: auto; background: #fff; color: #000; }
   .app { display: block; height: auto; }
-  aside, .toolbar, .bulk, td.chk, th.chkh, .noprint { display: none !important; }
+  aside, nav.nav, .toolbar, .bulk, td.chk, th.chkh, .noprint { display: none !important; }
   table.grid td input.c, table.grid td select.c { border: 0; background: transparent; padding: 0; appearance: none; }
   .view { overflow: visible; padding: 0; }
   .ptitle { display: block !important; font: 600 16pt "IBM Plex Sans", sans-serif; margin: 0 0 4mm; }
@@ -422,25 +473,42 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
 </head>
 <body>
 <div class="app">
-  <aside>
-    <div class="brand">
-      <a class="brandlink" href="https://github.com/mart1ver/OPlanFeu" target="_blank" rel="noopener" data-i18n-title="repoLink" title="Le projet sur GitHub">
-        <div class="dot" aria-hidden="true"></div>
-        <div><h1>OPlanFeu</h1><p data-i18n="brandSub">Dossier lumière : patch, positions, inventaire</p></div>
-      </a>
+  <nav class="nav" id="nav">
+    <div class="navhead">
+      <a class="brandlink" href="https://github.com/mart1ver/OPlanFeu" target="_blank" rel="noopener" data-i18n-title="repoLink" title="Le projet sur GitHub"><span class="dot" aria-hidden="true"></span><b>OPlanFeu</b></a>
+      <button type="button" class="iconbtn" id="navToggle" data-i18n-title="navToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+    </div>
+    <div class="tabs" id="tabs">
+        <div class="navgrp" data-i18n="navSee"></div>
+        <button type="button" data-v="fixtures" data-i18n-title="tabFixtures"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="tabFixtures"></span></button>
+        <button type="button" data-v="plan" data-i18n-title="tabPlan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-i18n="tabPlan"></span></button>
+        <button type="button" data-v="v3d" data-i18n-title="tab3d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg><span data-i18n="tab3d"></span></button>
+        <div class="navsep"></div>
+        <div class="navgrp" data-i18n="navTech"></div>
+        <button type="button" data-v="rigging" data-i18n-title="tabRigging"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18"/><path d="M7 5v4M12 5v6M17 5v4"/><circle cx="7" cy="11" r="2"/><circle cx="12" cy="13" r="2"/><circle cx="17" cy="11" r="2"/></svg><span data-i18n="tabRigging"></span></button>
+        <button type="button" data-v="elec" data-i18n-title="tabElec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span data-i18n="tabElec"></span></button>
+        <button type="button" data-v="net" data-i18n-title="tabNet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></svg><span data-i18n="tabNet"></span></button>
+        <div class="navsep"></div>
+        <div class="navgrp" data-i18n="navOut"></div>
+        <button type="button" data-v="inventory" data-i18n-title="tabInventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg><span data-i18n="tabInventory"></span></button>
+        <button type="button" data-v="dossier" data-i18n-title="tabDossier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/></svg><span data-i18n="tabDossier"></span></button>
+    </div>
+    <div class="navfoot">
       <select class="lang" id="lang" aria-label="Langue / Language">
         <option value="fr">FR · Français</option>
         <option value="en">EN · English</option>
       </select>
     </div>
-
+  </nav>
+  <aside id="side">
+    <div class="sidehead"><b data-i18n="sideTitle">Dossier</b><button type="button" class="iconbtn" id="sideClose" data-i18n-title="sideClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button></div>
     <label class="drop" id="drop" tabindex="0">
       <input type="file" id="file" accept=".mvr,.gdtf,.zip,.csv,.txt,.json,.oplanfeu,.html,.htm" hidden>
       <div id="dropText"><b data-i18n="dropTitle">Ouvrir ou importer</b><span data-i18n="dropSub">MVR (WYSIWYG, Capture, grandMA3…), CSV de patch, ou dossier OPlanFeu (.json)</span></div>
     </label>
 
-    <fieldset id="metaBox" hidden>
-      <legend data-i18n="legDossier">Dossier</legend>
+    <details class="sec" id="metaBox" data-sec="meta" hidden open>
+      <summary data-i18n="legDossier">Dossier</summary><div class="secbody">
       <label class="f"><span data-i18n="mTitre">Titre</span><input type="text" id="m_titre"></label>
       <div class="row2">
         <label class="f"><span data-i18n="mKind">Type</span><select class="in" id="m_kind"><option value="lieu" data-i18n="kindLieu">Lieu</option><option value="spectacle" data-i18n="kindShow">Spectacle accueilli</option></select></label>
@@ -449,16 +517,16 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <label class="f"><span data-i18n="mLieu">Lieu / salle</span><input type="text" id="m_lieu"></label>
       <label class="f"><span data-i18n="mAuteur">Responsable</span><input type="text" id="m_auteur"></label>
       <label class="f"><span data-i18n="mNotes">Notes</span><textarea id="m_notes"></textarea></label>
-    </fieldset>
+    </div></details>
 
-    <fieldset id="statBox" hidden>
-      <legend data-i18n="legSummary">En bref</legend>
+    <details class="sec" id="statBox" data-sec="stats" hidden open>
+      <summary data-i18n="legSummary">En bref</summary><div class="secbody">
       <div class="stats" id="stats"></div>
       <div id="alerts"></div>
-    </fieldset>
+    </div></details>
 
-    <fieldset id="outBox" hidden>
-      <legend data-i18n="legOut">Enregistrer et exporter</legend>
+    <details class="sec" id="outBox" data-sec="out" hidden open>
+      <summary data-i18n="legOut">Enregistrer et exporter</summary><div class="secbody">
       <button class="btn" id="save" data-i18n="save">Enregistrer le dossier (.json)</button>
       <button class="btn ghost" id="exportMvr" data-i18n="exportMvr">Exporter en MVR</button>
       <button class="btn ghost" id="exportCsv" data-i18n="exportCsv">Exporter le patch pour Give Me The Patch (.csv)</button>
@@ -466,30 +534,21 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <a class="btn ghost" href="https://mart1ver.github.io/GiveMeThePatch/" target="_blank" rel="noopener" data-i18n="openGmtp">Ouvrir Give Me The Patch</a>
       <button class="btn ghost" id="print" data-i18n="print">Imprimer la vue affichée</button>
       <p class="hint" data-i18n="saveHint">Le dossier est aussi gardé dans ce navigateur au fil des modifications.</p>
-    </fieldset>
+    </div></details>
 
-    <div class="spacer"></div>
-    <fieldset>
-      <legend data-i18n="legPlugins">Plugins pour la console</legend>
+    <details class="sec sidefoot" data-sec="plugins">
+      <summary data-i18n="legPlugins">Plugins pour la console</summary><div class="secbody">
       <div style="display:flex;gap:8px"><a class="btn ghost" style="flex:1;text-align:center;text-decoration:none" href="https://github.com/mart1ver/GiveMeThePatch/raw/main/grandma2/GiveMeThePatch_grandMA2.zip" download>grandMA2</a>
       <a class="btn ghost" style="flex:1;text-align:center;text-decoration:none" href="https://github.com/mart1ver/GiveMeThePatch/raw/main/grandma3/GiveMeThePatch_grandMA3.zip" download>grandMA3</a></div>
       <p class="hint2" data-i18n="pluginsHint"></p>
-    </fieldset>
+    </div></details>
     <div class="foot" data-i18n="foot">Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.</div>
   </aside>
 
   <main>
     <div class="toolbar">
-      <div class="tabs" id="tabs">
-        <button type="button" data-v="fixtures" class="on" data-i18n="tabFixtures">Projecteurs</button>
-        <button type="button" data-v="plan" data-i18n="tabPlan">Plan</button>
-        <button type="button" data-v="v3d" data-i18n="tab3d">3D</button>
-        <button type="button" data-v="rigging" data-i18n="tabRigging">Accroches et charges</button>
-        <button type="button" data-v="elec" data-i18n="tabElec">Électricité</button>
-        <button type="button" data-v="net" data-i18n="tabNet">DMX, réseau et patch</button>
-        <button type="button" data-v="inventory" data-i18n="tabInventory">Types et inventaire</button>
-        <button type="button" data-v="dossier" data-i18n="tabDossier">Dossier complet</button>
-      </div>
+      <button type="button" class="iconbtn" id="sideToggle" data-i18n-title="sideToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+      <div><h2 class="viewtitle" id="viewTitle"></h2><div class="viewsub" id="viewSub"></div></div>
       <div class="filters" id="filters">
         <input type="search" id="q" data-i18n-ph="searchPh" placeholder="Rechercher…">
         <select id="fPos"></select>
@@ -560,6 +619,7 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
     iv_inv: 'Inventaire', iv_gdtf: 'GDTF du projet', gdType: 'Type', gdSource: 'Profil', gdFile: 'Fichier GDTF', gd3d: '3D', gdCh: 'Canaux', gdMode: 'Mode utilisé',
     gsNone: 'aucun', gsGeneric: 'générique (WYSIWYG)', gsFull: 'profil complet', gdReplaced: 'remplace le GDTF d’origine', gdPick: '— mode à choisir —', gdModeBad: 'le mode du patch n’existe pas dans ce profil',
     gdShare: 'GDTF Share', gdShareTip: 'Ouvre GDTF Share ; le nom du projecteur est copié pour la recherche', gdReplace: 'Remplacer…', gdRevert: 'Revenir à l’origine',
@@ -679,6 +739,7 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
     iv_inv: 'Inventory', iv_gdtf: 'Project GDTFs', gdType: 'Type', gdSource: 'Profile', gdFile: 'GDTF file', gd3d: '3D', gdCh: 'Channels', gdMode: 'Mode used',
     gsNone: 'none', gsGeneric: 'generic (WYSIWYG)', gsFull: 'full profile', gdReplaced: 'replaces the original GDTF', gdPick: '— choose a mode —', gdModeBad: 'the patch mode does not exist in this profile',
     gdShare: 'GDTF Share', gdShareTip: 'Opens GDTF Share; the fixture name is copied for the search', gdReplace: 'Replace…', gdRevert: 'Back to original',
@@ -2360,8 +2421,11 @@ ${['barre', 'blinder', 'strobe', 'video', 'fog', 'cube'].includes(ty.shape && ty
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
 <td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td><td></td></tr></tbody></table></div>`;
 }
+const TAB_KEYS = { fixtures: 'tabFixtures', plan: 'tabPlan', v3d: 'tab3d', rigging: 'tabRigging', elec: 'tabElec', net: 'tabNet', inventory: 'tabInventory', dossier: 'tabDossier' };
 function render() {
   $('#pagesize').textContent = '';
+  $('#viewTitle').textContent = t(TAB_KEYS[state.tab] || 'tabFixtures');
+  $('#viewSub').textContent = state.d ? [state.d.meta.titre, state.d.meta.lieu].filter(Boolean).join(' — ') : '';
   if (V3.running && state.tab !== 'v3d') v3Stop();
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === state.tab));
   $('#filters').style.visibility = state.d ? '' : 'hidden';
@@ -3318,6 +3382,18 @@ $('#exportCsv').addEventListener('click', () => {
 });
 $('#print').addEventListener('click', () => window.print());
 $('#exportMvr').addEventListener('click', () => state.d && exportMVR());
+
+// ───────────── menus rétractables (mémorisés dans le navigateur) ─────────────
+const layoutSet = () => { document.body.classList.toggle('nav-min', !!store.get('navMin', false)); document.body.classList.toggle('side-off', !!store.get('sideOff', false)); };
+layoutSet();
+$('#navToggle').addEventListener('click', () => { store.set('navMin', !store.get('navMin', false)); layoutSet(); window.dispatchEvent(new Event('resize')); });
+const sideFlip = () => { store.set('sideOff', !store.get('sideOff', false)); layoutSet(); window.dispatchEvent(new Event('resize')); };
+$('#sideToggle').addEventListener('click', sideFlip); $('#sideClose').addEventListener('click', sideFlip);
+const SEC = store.get('secOpen', {});
+document.querySelectorAll('details.sec[data-sec]').forEach(dt => {
+  if (dt.dataset.sec in SEC) dt.open = SEC[dt.dataset.sec];
+  dt.addEventListener('toggle', () => { SEC[dt.dataset.sec] = dt.open; store.set('secOpen', SEC); });
+});
 
 // ───────────── langue, démarrage ─────────────
 $('#lang').addEventListener('change', e => { LANG = e.target.value; store.set('lang', LANG); applyI18n(); if (state.d) { refreshSide(); render(); } });
