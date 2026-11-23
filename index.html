@@ -302,6 +302,38 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .mapprev { font-size: 11.5px; color: var(--muted); margin: 6px 0 0; max-height: 6.5em; overflow: auto; white-space: pre; font-family: "IBM Plex Sans Condensed", monospace; background: var(--bg); border-radius: 7px; padding: 6px 8px; }
 @media (max-width: 600px) { #mapRows { grid-template-columns: 1fr; } }
 [hidden] { display: none !important; }
+.ccard { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
+.ccard .cgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 16px; }
+.ccard label.cf { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--muted); }
+.ccard label.cf input, .ccard label.cf select { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 4px 7px; min-width: 0; }
+.ccard .protos { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; margin-top: 8px; } .ccard .protos label { display: flex; gap: 5px; align-items: center; }
+.ccard .cstat { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px 16px; margin-top: 12px; font-size: 13px; }
+.ccard .cstat > div { background: var(--bg); border-radius: 9px; padding: 8px 10px; } .ccard .cstat b { font-size: 15px; } .ccard .cstat small { display: block; color: var(--muted); font-size: 11.5px; }
+.ccard h3 { margin: 0 0 10px; font-size: 15px; display: flex; gap: 10px; align-items: center; }
+/* étiquettes de tête de perche : une page par point (A4, A5 ou A6 paysage) */
+.phead { position: relative; background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); flex: none; overflow: hidden; font-family: "IBM Plex Sans", Arial, sans-serif;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; display: flex; flex-direction: column; font-size: calc(var(--s) * 10pt); padding: calc(var(--s) * 9mm); gap: .7em; }
+.phead .ph1 { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em; border-bottom: .25em solid #111; padding-bottom: .5em; }
+.phead .pn { font: 700 3.4em/1 "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif; letter-spacing: -.01em; }
+.phead .pk { font-size: 1.1em; margin-top: .35em; color: #333; }
+.phead .pload { text-align: right; flex: none; }
+.phead .pload .big { font: 700 2.4em/1 "IBM Plex Sans Condensed", sans-serif; }
+.phead .pload .sm { font-size: .95em; color: #333; margin-top: .2em; }
+.phead .pload.over .big { color: #b3261e; } .phead .pload.warn .big, .phead .pload.part .big { color: #9a6a00; }
+.phead .pbar { height: .7em; border: .08em solid #111; position: relative; margin-top: .3em; } .phead .pbar i { position: absolute; left: 0; top: 0; bottom: 0; background: #111; }
+.phead .strip { width: 100%; height: auto; display: block; }
+.phead .pcols { display: flex; gap: 1.2em; flex: 1; min-height: 0; }
+.phead .pcols > div { min-width: 0; }
+.phead table { border-collapse: collapse; width: 100%; font-size: .95em; }
+.phead th { text-align: left; font-size: .72em; text-transform: uppercase; letter-spacing: .05em; background: #222; color: #fff; padding: .25em .4em; font-weight: 600; }
+.phead td { padding: .18em .4em; border-bottom: .06em solid #c4c4c4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 12em; }
+.phead tbody tr:nth-child(even) td { background: #efefef; }
+.phead td.b { font-weight: 700; } .phead td.m { color: #444; font-size: .9em; }
+.phead h4 { margin: 0 0 .3em; font-size: .85em; text-transform: uppercase; letter-spacing: .06em; border-bottom: .08em solid #111; }
+.phead .pfoot2 { display: flex; justify-content: space-between; font-size: .75em; color: #777; border-top: .06em solid #ccc; padding-top: .3em; }
+.phead .pnote { font-size: .95em; border-left: .2em solid #111; padding-left: .5em; }
+#rigPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+@media print { #rigPages { padding: 0; gap: 0; display: block; } .phead { box-shadow: none; zoom: 1 !important; break-after: page; } .phead:last-child { break-after: auto; } }
 @media (max-width: 800px) { .app { grid-template-columns: 1fr; height: auto; } aside { border-right: 0; border-bottom: 1px solid var(--line); } .view { overflow: visible; } }
 
 /* impression : la vue affichée, sans l'interface */
@@ -456,6 +488,18 @@ const I18N = {
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
+    addConsole: 'Ajouter une console', newConsole: 'Console', delConsoleAsk: n => `Supprimer la console « ${n} » ?`,
+    cnName: 'Nom', cnRole: 'Rôle', rMain: 'Principale', rBackup: 'Secours', rOnpc: 'onPC / préparation', rViz: 'Visualisation', rOther: 'Autre', cnModel: 'Modèle', cnParams: 'Paramètres de la console', cnExt: 'Extension', cnExtN: 'Nombre d’extensions', cnExtP: 'Paramètres par extension',
+    cnUniv: 'Univers en sortie (max)', cnPorts: 'Ports DMX sur la console', cnVersion: 'Version du logiciel', cnDevice: 'Appareil réseau', cnShow: 'Fichier de show', cnNotes: 'Notes', cnProtos: 'Protocoles utilisés',
+    extNone: '— aucune —', extOther: 'Autre (à saisir)', mOther: 'Autre (à saisir)',
+    csParams: 'Paramètres', csParamsSub: (u, m) => `≈ ${u} utilisés (estimation haute : canaux DMX patchés) sur ${m}`, csNoMax: 'nombre de paramètres de la licence à renseigner',
+    csUniv: 'Univers', csUnivSub: (u, m) => `${u} utilisés par le patch${m ? ' sur ' + m : ''}`, csProto: 'Protocole du réseau', csProtoOk: p => `${p} : la console le sort`, csProtoBad: p => `${p} n’est pas coché pour cette console`,
+    csDev: 'Réseau', csDevSub: (n, ip) => n ? `${n}${ip ? ' · ' + ip : ''}` : 'aucun appareil réseau associé',
+    alConParams: n => `${n} console(s) sans assez de paramètres pour le patch`, alConUniv: n => `${n} console(s) sans assez d’univers pour le patch`, alConProto: n => `${n} console(s) qui ne sortent pas le protocole du réseau`,
+    rvPoints: 'Points et charges', rvHeads: 'Étiquettes de tête', hdFormat: 'Format', hdSol: 'Inclure le sol et les points sans projecteur', hdHint: "Une étiquette par point d’accroche, à fixer en tête de perche : charge et CMU, projecteurs dans l’ordre en x avec leur patch, lignes électriques et DMX qui arrivent sur le point.",
+    hdCmu: 'CMU', hdLoad: 'Charge', hdFix: 'Projecteurs', hdAcc: 'accessoires', hdExtra: 'ajouts', hdH: 'h', hdL: 'L', hdElec: 'Lignes électriques', hdDmx: 'Lignes DMX', hdNone: '—', hdCh: 'Proj.', hdType: 'Type', hdPatch: 'Patch', hdLine: 'Ligne', hdDmxL: 'DMX', hdGel: 'Gél.', hdNoCmu: 'CMU ?', hdXdir: 'x →',
+    hdPrint: 'Imprimer les étiquettes', noHeads: 'Aucun point d’accroche à étiqueter.',
     mapBtn: 'Colonnes du fichier CSV…', mapTitle: 'Colonnes du fichier', mapHint: n => `${n} — indique quelle colonne contient quoi. Il faut au moins le patch, ou l’univers et l’adresse, ou le numéro de projecteur. Le choix est mémorisé pour les fichiers qui ont le même en-tête.`,
     mapAuto: "Numéroter les projecteurs sans numéro (dans l'ordre des adresses)", mapReset: 'Détection automatique', mapCancel: 'Annuler', mapApply: 'Appliquer', mapNeed: 'Choisis au moins la colonne Patch, ou Univers + Adresse, ou Fix ID.', mapNone: '— aucune —',
     mf_fid: 'Fix ID', mf_chid: 'Ch ID', mf_unit: 'Unit', mf_name: 'Nom', mf_type: 'Type de projecteur', mf_mode: 'Mode', mf_patch: 'Patch (univ.adresse)', mf_univ: 'Univers (colonne à part)', mf_addr: 'Adresse (colonne à part)', mf_nch: 'Nombre de canaux',
@@ -538,6 +582,18 @@ const I18N = {
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
+    addConsole: 'Add a console', newConsole: 'Console', delConsoleAsk: n => `Delete the console “${n}”?`,
+    cnName: 'Name', cnRole: 'Role', rMain: 'Main', rBackup: 'Backup', rOnpc: 'onPC / programming', rViz: 'Visualiser', rOther: 'Other', cnModel: 'Model', cnParams: 'Console parameters', cnExt: 'Extension', cnExtN: 'Number of extensions', cnExtP: 'Parameters per extension',
+    cnUniv: 'Output universes (max)', cnPorts: 'DMX ports on the console', cnVersion: 'Software version', cnDevice: 'Network device', cnShow: 'Show file', cnNotes: 'Notes', cnProtos: 'Protocols used',
+    extNone: '— none —', extOther: 'Other (enter)', mOther: 'Other (enter)',
+    csParams: 'Parameters', csParamsSub: (u, m) => `≈ ${u} used (upper estimate: patched DMX channels) of ${m}`, csNoMax: 'licensed parameter count to fill in',
+    csUniv: 'Universes', csUnivSub: (u, m) => `${u} used by the patch${m ? ' of ' + m : ''}`, csProto: 'Network protocol', csProtoOk: p => `${p}: the console outputs it`, csProtoBad: p => `${p} is not ticked for this console`,
+    csDev: 'Network', csDevSub: (n, ip) => n ? `${n}${ip ? ' · ' + ip : ''}` : 'no network device linked',
+    alConParams: n => `${n} console(s) without enough parameters for the patch`, alConUniv: n => `${n} console(s) without enough universes for the patch`, alConProto: n => `${n} console(s) not outputting the network protocol`,
+    rvPoints: 'Points and loads', rvHeads: 'Bar head labels', hdFormat: 'Size', hdSol: 'Include the floor and points without fixtures', hdHint: 'One label per rigging point, to fix at the head of the bar: load and WLL, fixtures in x order with their patch, power and DMX lines landing on the point.',
+    hdCmu: 'WLL', hdLoad: 'Load', hdFix: 'Fixtures', hdAcc: 'accessories', hdExtra: 'extra', hdH: 'h', hdL: 'L', hdElec: 'Power lines', hdDmx: 'DMX lines', hdNone: '—', hdCh: 'Fix.', hdType: 'Type', hdPatch: 'Patch', hdLine: 'Line', hdDmxL: 'DMX', hdGel: 'Gel', hdNoCmu: 'WLL ?', hdXdir: 'x →',
+    hdPrint: 'Print the labels', noHeads: 'No rigging point to label.',
     mapBtn: 'CSV file columns…', mapTitle: 'File columns', mapHint: n => `${n} — say which column holds what. At least the patch, or universe and address, or the fixture number is needed. The choice is remembered for files with the same header.`,
     mapAuto: 'Number fixtures without a number (in address order)', mapReset: 'Automatic detection', mapCancel: 'Cancel', mapApply: 'Apply', mapNeed: 'Choose at least the Patch column, or Universe + Address, or Fix ID.', mapNone: '— none —',
     mf_fid: 'Fix ID', mf_chid: 'Ch ID', mf_unit: 'Unit', mf_name: 'Name', mf_type: 'Fixture type', mf_mode: 'Mode', mf_patch: 'Patch (univ.address)', mf_univ: 'Universe (separate column)', mf_addr: 'Address (separate column)', mf_nch: 'Number of channels',
@@ -862,6 +918,7 @@ function ensureLieu(d) {
   d.lieu.lines = d.lieu.lines || [];
   d.lieu.dmxLines = d.lieu.dmxLines || [];
   d.lieu.devices = d.lieu.devices || [];
+  d.lieu.consoles = d.lieu.consoles || [];
   d.lieu.settings = { proto: 'artnet', artBase: 1, net: '2.0.0.0', mask: '255.0.0.0', gw: '', ...d.lieu.settings };
   const have = new Set(d.lieu.points.map(p => p.name)), byPos = new Map();
   d.fixtures.forEach(f => { if (f.position) { if (!byPos.has(f.position)) byPos.set(f.position, []); byPos.get(f.position).push(f); } });
@@ -885,7 +942,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -950,6 +1007,12 @@ function refreshSide() {
       if (wu.length) al.push([t('alDmxU', wu.length), cut(wu.map(f => `${f.fid || '?'} (U${f.univ} ≠ ${f.dmxLine})`))]);
       const big = [...DL.values()].filter(x => dmxChain(x).length > 32).map(x => x.name);
       if (big.length) al.push([t('alDmx32', big.length), cut(big)]);
+    }
+    if (state.d.lieu.consoles.length) {
+      const CC = state.d.lieu.consoles.map(c => [c, consoleCheck(c)]), nm = f => CC.filter(([, r]) => f(r)).map(([c]) => c.name);
+      if (nm(r => r.overP).length) al.push([t('alConParams', nm(r => r.overP).length), cut(nm(r => r.overP))]);
+      if (nm(r => r.overU).length) al.push([t('alConUniv', nm(r => r.overU).length), cut(nm(r => r.overU))]);
+      if (nm(r => !r.protoOk).length) al.push([t('alConProto', nm(r => !r.protoOk).length), cut(nm(r => !r.protoOk))]);
     }
     if (state.d.lieu.devices.length) {
       const iss = netIssues();
@@ -1187,6 +1250,34 @@ function renderElecLabels() {
   }
   return out;
 }
+// ───────────── console ─────────────
+// paramètres : manuels MA Lighting (grandMA2 « Parameter expansion », grandMA3 « Expand parameters ») ; null = à saisir
+const CONSOLE_MODELS = [
+  ['ma2full', 'grandMA2 full-size', 8192, 'ma2'], ['ma2light', 'grandMA2 light', 4096, 'ma2'], ['ma2ul', 'grandMA2 ultra-light', 4096, 'ma2'], ['ma2replay', 'grandMA2 replay unit', 4096, 'ma2'],
+  ['ma2onpc', 'grandMA2 onPC', 2048, 'ma2pc'],
+  ['ma3full', 'grandMA3 full-size', 20480, 'ma3'], ['ma3light', 'grandMA3 light', 16384, 'ma3'], ['ma3compact', 'grandMA3 compact', null, 'ma3'], ['ma3compactxt', 'grandMA3 compact XT', null, 'ma3'],
+  ['ma3onpc', 'grandMA3 onPC', 4096, 'ma3pc'],
+  ['eos', 'ETC Eos / Gio / Ion', null, ''], ['magicq', 'ChamSys MagicQ', null, ''], ['avo', 'Avolites (Titan)', null, ''], ['hog', 'High End Hog 4', null, ''], ['onyx', 'Obsidian Onyx', null, ''], ['other', null, null, ''],
+];
+const CONSOLE_EXT = [['npu', 'MA NPU (grandMA2)', 4096], ['pum', 'grandMA3 processing unit M', 4096], ['puxl', 'grandMA3 processing unit XL', 16384], ['other', null, null]];
+const CON_PROTOS = [['artnet', 'Art-Net'], ['sacn', 'sACN'], ['manet2', 'MA-Net2'], ['manet3', 'MA-Net3'], ['dmx', 'DMX 512'], ['osc', 'OSC'], ['midi', 'MIDI / MSC'], ['tc', 'Timecode']];
+const conModel = c => CONSOLE_MODELS.find(m => m[0] === c.model) || null;
+function consoleMax(c) {
+  const m = conModel(c), fam = m ? m[3] : '', base = +c.params || 0, ext = (+c.extCount || 0) * (+c.extParams || 0);
+  if (!base && !ext) return null;
+  // onPC : le matériel onPC plafonne à 4 096 ; les NPU / processing units s'ajoutent, jusqu'au maximum d'une session
+  const pc = /pc$/.test(fam), sess = { ma2: 65536, ma2pc: 65536, ma3: 262144, ma3pc: 262144 }[fam];
+  const tot = (pc ? Math.min(base, 4096) : base) + ext;
+  return sess ? Math.min(tot, sess) : tot;
+}
+function patchUse() {   // paramètres utilisés : au plus les canaux DMX patchés ; univers patchés
+  const P = state.d.fixtures.filter(f => f.univ);
+  return { ch: P.reduce((a, f) => a + Math.max(1, f.nch || 1), 0), univ: new Set(P.map(f => f.univ)).size };
+}
+function consoleCheck(c) {
+  const U = patchUse(), max = consoleMax(c), proto = state.d.lieu.settings.proto || 'artnet';
+  return { U, max, overP: max !== null && U.ch > max, overU: c.universes > 0 && U.univ > c.universes, protoOk: (c.protocols || []).includes(proto), proto };
+}
 // ───────────── DMX et réseau ─────────────
 const DEV_KINDS = ['console', 'node', 'splitter', 'switch', 'pc', 'media', 'wifi', 'other'];
 const ipInt = s => { const m = /^\s*(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\s*$/.exec(s || ''); return m && m.slice(1).every(x => +x < 256) ? ((+m[1] << 24) >>> 0) + (+m[2] << 16) + (+m[3] << 8) + +m[4] : null; };
@@ -1221,7 +1312,7 @@ function renderNet() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings, nv = state.netView || 'univ';
   const sb = k => `<button type="button" data-nv="${k}"${k === nv ? ' class="on"' : ''}>${esc(t('nv' + k[0].toUpperCase() + k.slice(1)))}</button>`;
-  const head = `<div class="subtabs">${['univ', 'dmx', 'net', 'labels'].map(sb).join('')}<span class="sep"></span>${['sheet', 'fxlabels', 'diff'].map(sb).join('')}</div>`;
+  const head = `<div class="subtabs">${['console', 'univ', 'dmx', 'net', 'labels'].map(sb).join('')}<span class="sep"></span>${['sheet', 'fxlabels', 'diff'].map(sb).join('')}</div>`;
   if (['sheet', 'fxlabels', 'diff'].includes(nv)) { $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length); $('#view').innerHTML = head + renderDocs(nv); renderDocPages(); return; }
   const title = k => `<h1 class="ptitle">${esc(t(k))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>`;
   const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
@@ -1234,7 +1325,32 @@ function renderNet() {
 <span class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   let body = '';
-  if (nv === 'univ') {
+  if (nv === 'console') {
+    const devs = L.devices.map(d => d.name), protoName = k => (CON_PROTOS.find(p => p[0] === k) || [k, k])[1];
+    const cards = L.consoles.map(c => {
+      const C = consoleCheck(c), dev = L.devices.find(d => d.name === c.device), m = conModel(c);
+      const f = (k, lab, inner) => `<label class="cf"><span>${esc(t(lab))}</span>${inner}</label>`;
+      const pct = C.max ? Math.min(100, C.U.ch / C.max * 100) : 0;
+      return `<div class="ccard"><h3>${esc(c.name)}<span class="st ${C.overP || C.overU || !C.protoOk ? 'over' : 'ok'}">${esc(C.overP || C.overU || !C.protoOk ? '⚠' : '✓')}</span><span class="spacer"></span><button type="button" class="minibtn x noprint" data-delcon="${esc(c.id)}">×</button></h3>
+<div class="cgrid">${f('name', 'cnName', inp('consoles', c, 'name', c.name, 10))}
+${f('role', 'cnRole', sel('consoles', c, 'role', opt(['main', 'backup', 'onpc', 'viz', 'other'], c.role, v => t('r' + v[0].toUpperCase() + v.slice(1)))))}
+${f('model', 'cnModel', sel('consoles', c, 'model', '<option value=""></option>' + opt(CONSOLE_MODELS.map(x => x[0]), c.model, v => (CONSOLE_MODELS.find(x => x[0] === v)[1] || t('mOther')))))}
+${f('params', 'cnParams', inp('consoles', c, 'params', c.params, 6, 1))}
+${f('ext', 'cnExt', sel('consoles', c, 'ext', `<option value="">${esc(t('extNone'))}</option>` + opt(CONSOLE_EXT.map(x => x[0]), c.ext, v => (CONSOLE_EXT.find(x => x[0] === v)[1] || t('extOther')))))}
+${c.ext ? f('extCount', 'cnExtN', inp('consoles', c, 'extCount', c.extCount, 4, 1)) + f('extParams', 'cnExtP', inp('consoles', c, 'extParams', c.extParams, 6, 1)) : ''}
+${f('universes', 'cnUniv', inp('consoles', c, 'universes', c.universes, 4, 1))}${f('dmxPorts', 'cnPorts', inp('consoles', c, 'dmxPorts', c.dmxPorts, 4, 1))}
+${f('version', 'cnVersion', inp('consoles', c, 'version', c.version, 8))}
+${f('device', 'cnDevice', sel('consoles', c, 'device', '<option value=""></option>' + opt(devs, c.device)))}
+${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('notes', 'cnNotes', inp('consoles', c, 'notes', c.notes, 10))}</div>
+<div class="protos"><span style="color:var(--muted)">${esc(t('cnProtos'))} :</span>${CON_PROTOS.map(([k, n]) => `<label><input type="checkbox" data-o="consoles" data-id="${esc(c.id)}" data-f="protocols" data-v="${k}"${(c.protocols || []).includes(k) ? ' checked' : ''}> ${esc(n)}</label>`).join('')}</div>
+<div class="cstat"><div><b class="${C.overP ? 'missing' : ''}">${esc(t('csParams'))}</b>${C.max ? ` <span class="gauge ${C.overP ? 'over' : pct > 90 ? 'warn' : 'ok'}"><i style="width:${pct}%"></i></span>` : ''}<small>${esc(C.max ? t('csParamsSub', C.U.ch, C.max) : t('csNoMax'))}</small></div>
+<div><b class="${C.overU ? 'missing' : ''}">${esc(t('csUniv'))}</b><small>${esc(t('csUnivSub', C.U.univ, c.universes))}</small></div>
+<div><b class="${C.protoOk ? '' : 'missing'}">${esc(t('csProto'))}</b><small>${esc(C.protoOk ? t('csProtoOk', protoName(C.proto)) : t('csProtoBad', protoName(C.proto)))}</small></div>
+<div><b>${esc(t('csDev'))}</b><small>${esc(t('csDevSub', dev ? dev.name : '', dev ? dev.ip : ''))}</small></div></div></div>`;
+    }).join('');
+    body = title('nvConsole') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('conHint'))}</p>` + setRow +
+      `<button type="button" class="minibtn noprint" id="addConsole">${esc(t('addConsole'))}</button>${cards}`;
+  } else if (nv === 'univ') {
     const rows = universes().map(r => {
       const pct = r.used / 512 * 100, srcs = [...new Set(r.lines.map(x => x.src).filter(Boolean))];
       return `<tr><td class="ro num" style="color:var(--ink)"><b>${r.u}</b></td><td class="ro num">${r.u}</td><td class="ro">${esc(artAddr(r.u))}</td><td class="ro num">${r.fx.length}</td>
@@ -1306,9 +1422,58 @@ function autoDmx() {
   });
   return [n, m];
 }
+const HEAD_FMT = { A4: [297, 210, 1], A5: [210, 148, .72], A6: [148, 105, .5] };
+function renderHeads() {
+  const L = state.d.lieu, fmt = HEAD_FMT[state.headFmt] ? state.headFmt : 'A5', [W, H, sc] = HEAD_FMT[fmt];
+  const pts = [...L.points].sort((x, y) => natCmp(x.name, y.name)).filter(p => state.headSol || (p.kind !== 'sol' && state.d.fixtures.some(f => f.position === p.name)));
+  const today = new Date().toLocaleDateString(LANG);
+  const page = p => {
+    const R = pointLoad(p), g = [...R.g].sort((a, b) => (a.x ?? 0) - (b.x ?? 0)), cap = p.cmu > 0 ? p.cmu : (p.cmuM > 0 && p.length > 0 ? p.cmuM * p.length : null);
+    const el = L.lines.filter(l => l.dest === p.name).sort((a, b) => natCmp(a.name, b.name)), dm = L.dmxLines.filter(l => l.dest === p.name).sort((a, b) => natCmp(a.name, b.name));
+    // bande : position de chaque projecteur sur la longueur du point (ordre en x)
+    const xs = g.map(f => f.x).filter(Number.isFinite), x0 = Math.min(...xs), x1 = Math.max(...xs), span = x1 - x0 || 1;
+    const strip = xs.length > 1 ? `<svg class="strip" viewBox="0 0 1000 70"><line x1="10" y1="40" x2="990" y2="40" stroke="#111" stroke-width="4"/>${g.map((f, i) => {
+      const x = 20 + ((f.x ?? x0) - x0) / span * 960, up = i % 2;
+      return `<line x1="${x}" y1="32" x2="${x}" y2="48" stroke="#111" stroke-width="3"/><text x="${x}" y="${up ? 66 : 24}" text-anchor="middle" font-size="17" font-weight="700" font-family="IBM Plex Sans Condensed, sans-serif">${esc(f.fid || '?')}</text>`;
+    }).join('')}<text x="990" y="66" text-anchor="end" font-size="13" fill="#777">${esc(t('hdXdir'))}</text></svg>` : '';
+    // beaucoup de projecteurs : le tableau se replie en colonnes (moins de champs quand il y en a plusieurs)
+    const rpc = { A4: 20, A5: 13, A6: 9 }[fmt], nc = Math.min(4, Math.max(1, Math.ceil(g.length / rpc))), per = Math.ceil(g.length / nc) || 1, full = nc === 1;
+    const th = `<thead><tr><th></th><th>Fix ID</th><th>${esc(t('hdType'))}</th><th>${esc(t('hdPatch'))}</th><th>${esc(t('hdLine'))}</th>${full ? `<th>${esc(t('hdDmxL'))}</th><th>${esc(t('hdGel'))}</th>` : ''}</tr></thead>`;
+    const tr = (f, i) => `<tr><td class="m">${i + 1}</td><td class="b">${esc(f.fid || '?')}</td><td>${esc(typeName(f.type))}</td><td class="b">${esc(patchText(f))}</td><td>${esc(f.circuit || '')}</td>${full ? `<td>${esc(f.dmxLine || '')}</td><td class="m">${esc(f.gel || '')}</td>` : ''}</tr>`;
+    const tables = [...Array(nc).keys()].map(c => `<table style="font-size:${nc > 2 ? .8 : nc > 1 ? .88 : .95}em">${th}<tbody>${g.slice(c * per, c * per + per).map((f, j) => tr(f, c * per + j)).join('')}</tbody></table>`).join('');
+    const kinds = [t('k' + p.kind), p.height ? `${t('hdH')} ${fmtNum(p.height)} m` : '', p.length ? `${t('hdL')} ${fmtNum(p.length)} m` : ''].filter(Boolean).join(' · ');
+    const pct = R.worst >= 0 ? Math.round(R.worst) : null;
+    return `<div class="phead" style="width:${W}mm;height:${H}mm;--s:${sc}">
+<div class="ph1"><div><div class="pn">${esc(p.name)}</div><div class="pk">${esc(kinds)}</div></div>
+<div class="pload ${R.status}"><div class="sm">${esc(t('hdCmu'))} ${cap ? fmtNum(cap) + ' kg' + (p.cmuM > 0 && !(p.cmu > 0) ? ` (${fmtNum(p.cmuM)} kg/m)` : '') : '?'}</div>
+<div class="big">${fmtNum(R.total)} kg${pct !== null ? ` · ${pct} %` : ''}</div>
+${pct !== null ? `<div class="pbar"><i style="width:${Math.min(100, pct)}%"></i></div>` : ''}
+<div class="sm">${esc(t('hdFix'))} ${R.miss === R.g.length && R.miss ? '?' : fmtNum(R.fx) + (R.miss ? ' (?)' : '')} + ${esc(t('hdAcc'))} ${fmtNum(R.acc)}${R.extra ? ` + ${esc(t('hdExtra'))} ${fmtNum(R.extra)}` : ''} kg</div></div></div>
+${strip}
+<div class="pcols"><div style="flex:${nc > 2 ? 3 : 1.7}"><h4>${esc(t('hdFix'))} · ${g.length}</h4><div style="display:flex;gap:.6em;align-items:flex-start">${tables}</div></div>
+<div style="flex:1"><h4>${esc(t('hdElec'))}</h4>${el.length ? `<table><tbody>${el.map(l => `<tr><td class="b">${esc(l.name)}</td><td>${esc(l.phase === 'tri' ? '3P' : l.phase || '')}</td><td>${esc(l.amps ? l.amps + ' A' : '')}</td><td class="m">${esc(t('k' + (l.kind || 'direct') + 'S'))}</td><td class="m">${esc(l.board || '')}</td></tr>`).join('')}</tbody></table>` : `<p class="m">${esc(t('hdNone'))}</p>`}
+<h4 style="margin-top:.8em">${esc(t('hdDmx'))}</h4>${dm.length ? `<table><tbody>${dm.map(l => `<tr><td class="b">${esc(l.name)}</td><td>${l.universe ? 'U ' + esc(l.universe) : ''}</td><td class="m">${esc([l.src, l.port ? 'p' + l.port : ''].filter(Boolean).join(' · '))}</td></tr>`).join('')}</tbody></table>` : `<p class="m">${esc(t('hdNone'))}</p>`}
+${p.notes ? `<div class="pnote" style="margin-top:.8em">${esc(p.notes)}</div>` : ''}</div></div>
+<div class="pfoot2"><span>${esc(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + esc(state.d.meta.lieu) : ''}</span><span>${esc(today)}</span></div></div>`;
+  };
+  return { size: `${W}mm ${H}mm`, html: pts.length ? pts.map(page).join('') : `<div class="empty"><div>${esc(t('noHeads'))}</div></div>` };
+}
 function renderRigging() {
   ensureLieu(state.d);
-  const L = state.d.lieu, st = L.settings;
+  const L = state.d.lieu, st = L.settings, rv = state.rigView || 'points';
+  const rhead = `<div class="subtabs">${['points', 'heads'].map(k => `<button type="button" data-rv="${k}"${k === rv ? ' class="on"' : ''}>${esc(t('rv' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}</div>`;
+  if (rv === 'heads') {
+    const Hd = renderHeads();
+    $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+    $('#view').innerHTML = rhead + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('hdHint'))}</p>
+<div class="settings noprint"><label>${esc(t('hdFormat'))} <select id="headFmt" style="font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink)">${Object.keys(HEAD_FMT).map(k => `<option${k === (state.headFmt || 'A5') ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
+<label><input type="checkbox" id="headSol"${state.headSol ? ' checked' : ''}> ${esc(t('hdSol'))}</label><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('hdPrint'))}</button>
+<span class="zoom" style="display:flex;gap:6px;align-items:center">${esc(t('zoom'))} <input type="range" id="hZoom" min="20" max="100" value="${state.headZoom || 60}"></span></div>
+<p class="hint2 noprint">${t('printHintDoc')}</p><div id="rigPages">${Hd.html}</div>`;
+    $('#pagesize').textContent = `@page { size: ${Hd.size}; margin: 0; }`;
+    document.querySelectorAll('#rigPages .phead').forEach(x => { x.style.zoom = (state.headZoom || 60) / 100; });
+    return;
+  }
   const num = (id, f, v, w) => `<input class="c box" data-p="${esc(id)}" data-pf="${f}" inputmode="decimal" style="width:${w || 4.6}em" value="${v === null || v === undefined || v === 0 && f === 'extra' ? '' : esc(v)}">`;
   const pts = [...L.points].sort((x, y) => (x.kind === 'sol') - (y.kind === 'sol') || x.name.localeCompare(y.name, LANG, { numeric: true }));
   let totAll = 0, nAll = 0;
@@ -1332,7 +1497,7 @@ function renderRigging() {
   }).join('');
   const heads = ['rgPoint', 'rgKind', 'rgLen', 'rgH', 'rgCmu', 'rgCmuM', 'rgFix', 'rgFixKg', 'rgAccKg', 'rgExtra', 'rgTotal', 'rgLoad', 'rgIds', 'rgNotes'];
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  $('#view').innerHTML = `<h1 class="ptitle">${esc(t('printLoads'))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>
+  $('#view').innerHTML = rhead + `<h1 class="ptitle">${esc(t('printLoads'))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>
 <p class="hint noprint" style="margin:14px 0 0">${esc(t('rgHint'))}</p>
 <div class="settings"><label>${esc(t('setAcc'))} <input id="setAcc" data-set="accKg" inputmode="decimal" value="${esc(st.accKg)}"></label>
 <label>${esc(t('setWarn'))} <input id="setWarn" data-set="warnPct" inputmode="decimal" value="${esc(st.warnPct)}"></label>
@@ -1435,6 +1600,8 @@ view.addEventListener('change', e => {
   if (setI) { if (setI.tagName === 'SELECT') state.d.lieu.settings[setI.dataset.set] = setI.value; else { const v = parseFloat(setI.value.replace(',', '.')); if (!isNaN(v) && v >= 0) state.d.lieu.settings[setI.dataset.set] = v; } touch(); render(); return; }
   const setS = e.target.closest('[data-sets]');
   if (setS) { state.d.lieu.settings[setS.dataset.sets] = setS.value.trim(); touch(); render(); return; }
+  if (e.target.id === 'headFmt') { state.headFmt = e.target.value; store.set('headFmt', state.headFmt); render(); return; }
+  if (e.target.id === 'headSol') { state.headSol = e.target.checked; render(); return; }
   if (e.target.id === 'labEnds' || e.target.id === 'labJar') { state[e.target.id] = e.target.checked; render(); return; }
   if (e.target.id && e.target.id.startsWith('ds_')) { state.dmxSeries[e.target.id.slice(3)] = e.target.value; return; }
   const go = e.target.closest('[data-o]');
@@ -1444,12 +1611,20 @@ view.addEventListener('change', e => {
     if (k === 'name') {
       if (v && v !== x.name && !col.some(y => y.name === v)) {
         if (go.dataset.o === 'dmxLines') state.d.fixtures.forEach(f => { if (f.dmxLine === x.name) f.dmxLine = v; });
-        if (go.dataset.o === 'devices') { state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
+        if (go.dataset.o === 'devices') { state.d.lieu.consoles.forEach(c => { if (c.device === x.name) c.device = v; }); state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
         x.name = v;
       }
-    } else if (['universe', 'port', 'length', 'vlan'].includes(k) && !(go.dataset.o === 'devices' && k === 'port')) {
+    } else if (k === 'protocols') {
+      const set = new Set(x.protocols || []); if (go.checked) set.add(go.dataset.v); else set.delete(go.dataset.v); x.protocols = CON_PROTOS.map(p => p[0]).filter(p => set.has(p));
+    } else if (['universe', 'port', 'length', 'vlan', 'params', 'extCount', 'extParams', 'universes', 'dmxPorts'].includes(k) && !(go.dataset.o === 'devices' && k === 'port')) {
       const n = parseFloat(v.replace(',', '.')); x[k] = v === '' ? null : isNaN(n) ? x[k] : n;
     } else x[k] = v;
+    if (go.dataset.o === 'consoles' && k === 'model') {     // modèle choisi : paramètres et protocoles proposés
+      const m = conModel(x); if (m && m[2]) x.params = m[2];
+      if (m && /^ma2/.test(m[3]) && !(x.protocols || []).length) x.protocols = ['artnet', 'manet2', 'dmx'];
+      if (m && /^ma3/.test(m[3]) && !(x.protocols || []).length) x.protocols = ['artnet', 'sacn', 'manet3', 'dmx'];
+    }
+    if (go.dataset.o === 'consoles' && k === 'ext') { const e2 = CONSOLE_EXT.find(y => y[0] === x.ext); x.extParams = e2 ? e2[2] : null; x.extCount = x.ext ? (x.extCount || 1) : null; }
     touch(); render(); return;
   }
   const bf = e.target.closest('[data-b]');
@@ -1515,6 +1690,7 @@ view.addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.ev) { state.elecView = b.dataset.ev; store.set('elecView', state.elecView); render(); return; }
   if (b.dataset.nv) { state.netView = b.dataset.nv; store.set('netView', state.netView); render(); return; }
+  if (b.dataset.rv) { state.rigView = b.dataset.rv; store.set('rigView', state.rigView); render(); return; }
   if (b.id === 'addDmx') {
     let i = state.d.lieu.dmxLines.length + 1, n; do n = 'DMX ' + i++; while (state.d.lieu.dmxLines.some(x => x.name === n));
     state.d.lieu.dmxLines.push({ id: uid(), name: n, src: '', port: null, universe: null, dest: '', length: null, notes: '' }); touch(); render(); return;
@@ -1535,6 +1711,16 @@ view.addEventListener('click', async e => {
       if (port && S.portInc === '1') port++; if (u && S.uInc === '1') u++;
     }
     state.dmxSeriesOpen = true; touch(); render(); alert(t('srDone', made)); return;
+  }
+  if (b.id === 'addConsole') {
+    let i = state.d.lieu.consoles.length + 1, n; do n = t('newConsole') + ' ' + i++; while (state.d.lieu.consoles.some(x => x.name === n));
+    state.d.lieu.consoles.push({ id: uid(), name: n, role: state.d.lieu.consoles.length ? 'backup' : 'main', model: '', params: null, ext: '', extCount: null, extParams: null, universes: null, dmxPorts: null, protocols: [], version: '', device: '', showfile: '', notes: '' });
+    touch(); render(); return;
+  }
+  if (b.dataset.delcon) {
+    const x = state.d.lieu.consoles.find(y => y.id === b.dataset.delcon);
+    if (x && confirm(t('delConsoleAsk', x.name))) { state.d.lieu.consoles = state.d.lieu.consoles.filter(y => y !== x); touch(); render(); }
+    return;
   }
   if (b.id === 'addDev') {
     let i = state.d.lieu.devices.length + 1, n; do n = t('newDev') + ' ' + i++; while (state.d.lieu.devices.some(x => x.name === n));
@@ -1582,7 +1768,7 @@ view.addEventListener('click', async e => {
     const p = state.d.lieu.points.find(x => x.id === b.dataset.delpt);
     if (p && confirm(t('delPointAsk', p.name))) { state.d.lieu.points = state.d.lieu.points.filter(x => x !== p); touch(); render(); }
   } else if (b.id === 'saveLieu') {
-    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, settings: state.d.lieu.settings };
+    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, consoles: state.d.lieu.consoles, settings: state.d.lieu.settings };
     download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
   } else if (b.id === 'loadLieu') $('#lieuFile').click();
   else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
@@ -1984,6 +2170,7 @@ view.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset.dnote !== undefined) { ensureDocs(state.d).note[+el.dataset.dnote] = el.value; touch(); clearTimeout(view._dn); view._dn = setTimeout(renderDocPages, 250); return; }
   if (el.dataset.lcol) { DOC.colors[el.dataset.lcol] = el.value; store.set('docColors', DOC.colors); renderDocPages(); return; }
+  if (el.id === 'hZoom') { state.headZoom = +el.value; store.set('headZoom', state.headZoom); document.querySelectorAll('#rigPages .phead').forEach(x => { x.style.zoom = state.headZoom / 100; }); return; }
   if (el.id === 'dZoom') { DOC.zoom = +el.value; store.set('docZoom', DOC.zoom); applyDocZoom(); return; }
   const a = el.closest && el.closest('#docPages .ann[data-k]');
   if (a) { const v = a.textContent.replace(/\s+/g, ' ').trim(), N = ensureDocs(state.d).notes; if (v) N[a.dataset.k] = v; else delete N[a.dataset.k]; touch(); }
@@ -2056,7 +2243,7 @@ $('#lieuFile').addEventListener('change', async e => {
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu.points.push({ ...q, id: uid() });
       n++;
     }
-    for (const [key, list] of [['boards', L.boards], ['lines', L.lines], ['dmxLines', L.dmxLines], ['devices', L.devices]]) for (const q of list || []) {
+    for (const [key, list] of [['boards', L.boards], ['lines', L.lines], ['dmxLines', L.dmxLines], ['devices', L.devices], ['consoles', L.consoles]]) for (const q of list || []) {
       const p = state.d.lieu[key].find(x => x.name === q.name);
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu[key].push({ ...q, id: uid() });
     }
