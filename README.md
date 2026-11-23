@@ -9,6 +9,7 @@ Ouvrir `index.html` dans un navigateur (ou la page publiée sur GitHub Pages). T
 ## Ce que fait la première version
 
 - **Import**
+  - **Feuille .html des plugins grandMA2 / grandMA3** de Give Me The Patch (patch lu sur la console) ; les liens de téléchargement des plugins sont dans le panneau latéral.
   - **MVR** exporté de WYSIWYG, Capture, Vectorworks ou grandMA3 : projecteurs, patch, positions (perches), calques, coordonnées 3D, structures, types GDTF avec le nombre de canaux de chaque mode.
   - **CSV de patch** : rapport *Spots* de WYSIWYG, export Capture, export grandMA2 / grandMA3 ou de Give Me The Patch.
 - **Projecteurs** : un tableau à compléter et corriger (Fix ID, unit, patch, position, calque, gélatine, accessoires, fonction, notes) ; tri par colonne, recherche, filtres par position et par type ; sélection multiple (Maj+clic pour une plage) pour remplir un champ, numéroter ou supprimer d'un coup. Entrée passe à la ligne suivante.
@@ -19,6 +20,7 @@ Ouvrir `index.html` dans un navigateur (ou la page publiée sur GitHub Pages). T
   - *Lignes DMX* : source (console, node, splitter), port, univers, point d'arrivée, longueur ; création en série (ports et univers qui s'incrémentent) ; « Répartir automatiquement » raccroche chaque projecteur à la ligne de même univers et de même position ; chaînage dans l'ordre en x. Colonne « Ligne DMX » dans les projecteurs.
   - *Réseau* : protocole (Art-Net ou sACN), réseau, masque, passerelle, et tous les appareils (consoles, nodes, switches, ordinateurs, serveurs média…) avec IP, masque, VLAN, switch et port, MAC, emplacement. Adresses en double, hors réseau et ports de switch pris deux fois signalés.
   - *Étiquettes DMX* : une étiquette au départ et une à l'arrivée de chaque ligne, et en option une par projecteur pour les jarretières.
+  - *Feuille de patch*, *Étiquettes projecteurs* et *Changements* : toutes les fonctions de [Give Me The Patch](https://github.com/mart1ver/GiveMeThePatch), sur le dossier ouvert. Feuille de patch paginée en A3 ou A4 paysage (en-tête et cartouche, récapitulatifs par calque ou par position, par univers et par type, patch par calque ou par position, patch par univers, plan d'occupation des univers, alertes) ; étiquettes de projecteurs en A3 à découper ou sur planches adhésives Avery (ou planche aux dimensions saisies), couleur par regroupement, annotations ; changements entre le dossier et un ancien patch (MVR, CSV, dossier, feuille .html des plugins) ou un état figé du dossier. Documents imprimés en 11 langues, au choix, indépendamment de l'interface. Projecteurs à masquer sur les documents d'un clic.
 - **Types et inventaire** : chaque type garde son fichier **GDTF** dans le dossier (tiré du MVR, ajouté avec un bouton ou en déposant un `.gdtf` sur la page, téléchargeable) ; modes et canaux, poids et puissance (lus dans le GDTF ou saisis), quantités du dossier, stock du lieu et ce qui manque.
 - **Alertes** : Fix ID en double, adresses de départ en double, plages DMX qui se chevauchent, projecteurs sans patch, points d'accroche au-delà ou proches de la CMU, points sans CMU.
 - **Enregistrer** le dossier en `.json` (à rouvrir plus tard ou à envoyer), **exporter le patch** en CSV pour [Give Me The Patch](https://github.com/mart1ver/GiveMeThePatch) (feuilles de patch, étiquettes), **imprimer** la vue affichée.
@@ -27,7 +29,7 @@ Le dossier est aussi gardé dans le navigateur au fil des modifications.
 
 ## Étapes suivantes
 
-1. Étiquettes de tête de perche ; reprise des feuilles de patch et étiquettes de Give Me The Patch.
+1. Étiquettes de tête de perche.
 2. Plan feu 2D imprimable, puis vue 3D.
 3. Dossier complet imprimable et export MVR.
 
@@ -37,4 +39,4 @@ Logiciel libre sous licence **GNU GPL v3 ou ultérieure** (fichier `LICENSE`).
 
 ---
 
-**English.** OPlanFeu opens MVR files (WYSIWYG, Capture, Vectorworks, grandMA3) and patch CSVs, and turns them into an editable lighting dossier: fixtures table with bulk editing, rigging points with working load limits and load per point (fixture weights + per-fixture accessory allowance + extras), electrical boards and lines (dimmed/direct, phases, ratings) with load per line, phase balance, printable one-line diagram and board labels, DMX universes (sACN / Art-Net), DMX lines with daisy chains and cable labels, lighting network devices with IP checks, type library keeping each GDTF file, inventory with venue stock and missing items, patch and load alerts, JSON save, and patch export for Give Me The Patch. Everything runs in the browser. License: GNU GPL v3 or later.
+**English.** OPlanFeu opens MVR files (WYSIWYG, Capture, Vectorworks, grandMA3) and patch CSVs, and turns them into an editable lighting dossier: fixtures table with bulk editing, rigging points with working load limits and load per point (fixture weights + per-fixture accessory allowance + extras), electrical boards and lines (dimmed/direct, phases, ratings) with load per line, phase balance, printable one-line diagram and board labels, DMX universes (sACN / Art-Net), DMX lines with daisy chains and cable labels, lighting network devices with IP checks, all Give Me The Patch documents (paginated patch sheet, universe map, fixture labels on cut sheets or Avery sheets, patch changes, 11 print languages), type library keeping each GDTF file, inventory with venue stock and missing items, patch and load alerts, JSON save, and patch export for Give Me The Patch. Everything runs in the browser. License: GNU GPL v3 or later.
