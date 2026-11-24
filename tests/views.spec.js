@@ -1,7 +1,7 @@
 // Chaque vue s'affiche sans erreur avec le dossier de test ; plan, 3D et dossier complet produisent quelque chose
 const { test, expect, loadSynthetic } = require('./helpers');
 
-const TABS = { fixtures: [], plan: [], rigging: ['rv', ['points', 'heads']], elec: ['ev', ['lines', 'syno', 'labels']], net: ['nv', ['console', 'univ', 'dmx', 'net', 'labels', 'sheet', 'fxlabels', 'diff']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], dossier: [] };
+const TABS = { fixtures: [], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines', 'syno']], net: ['nv', ['console', 'univ', 'dmx', 'net', 'sheet', 'diff']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
 
 for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
   test(`vue ${tab}${subs ? ' et ses sous-vues' : ''}`, async ({ page }) => {
@@ -42,4 +42,21 @@ test('dossier complet : couverture, plan, patch, accroches, inventaire', async (
   for (const k of ['Accroches et charges', 'Types et inventaire']) expect(h.join('|')).toContain(k);
   await expect(page.locator('#dosPages .cover')).toHaveCount(1);
   await expect(page.locator('#dosPages svg').first()).toBeVisible();
+});
+
+test('étiquettes : une par projecteur, tête de perche, lignes, réseau', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'G1', board: 'TD1', kind: 'grada', phase: 'L1', amps: 16, dest: 'P2 Milieu' }],
+      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }], devices: [{ id: 'v1', name: 'Node 1', kind: 'node', ip: '2.0.0.10', vlan: 10, sw: 'SW1', port: '4' }], consoles: [] };
+  });
+  await page.click('#tabs button[data-v=labels]');
+  await page.click('#view [data-lv=fx]');
+  await expect(page.locator('#docPages .lbl, #docPages [class*=lab]').first()).toBeVisible();
+  await page.click('#view [data-lv=heads]'); await expect(page.locator('#rigPages .phead')).toHaveCount(3);   // le sol est exclu par défaut
+  await page.click('#view [data-lv=elec]'); await expect(page.locator('#view .lab')).toHaveCount(2);
+  await page.click('#view [data-lv=dmx]'); await expect(page.locator('#view .lab.dmx')).toHaveCount(2);
+  await page.click('#view [data-lv=net]'); await expect(page.locator('#view .lab.net')).toContainText('2.0.0.10');
+  // depuis Accroches, le lien mène aux étiquettes de tête
+  await page.click('#tabs button[data-v=rigging]'); await page.click('#view [data-golab=heads]');
+  await expect(page.locator('#view [data-lv=heads]')).toHaveClass(/on/);
 });
