@@ -42,3 +42,16 @@ test('feuille de patch : récapitulatif par position', async ({ page }) => {
   await expect(pages.locator('h2', { hasText: 'Récapitulatif par position' })).toHaveCount(1);
   await expect(page.locator('#view [data-dck=optSumPos]')).toHaveCount(0);
 });
+
+test('feuille de patch : patch par position', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#view [data-pv=sheet]');
+  const pages = page.locator('#docPages');
+  await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(1);
+  await page.click('#view [data-dck=optPos]');
+  await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(0);
+  await page.click('#view [data-dck=optPos]');
+  await page.click('#view [data-dgroup=position]');
+  await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(1);
+  await expect(page.locator('#view [data-dck=optPos]')).toHaveCount(0);
+});

@@ -746,7 +746,7 @@ const I18N = {
     pvw_table: 'Tableau', pvw_sheet: 'Feuille de patch', pvw_diff: 'Changements', nvSheet: 'Feuille de patch', nvFxlabels: 'Étiquettes projecteurs', nvDiff: 'Changements',
     hideRow: 'Cliquer pour masquer ce projecteur sur les documents', annPh: 'annotation…', doOptions: 'Réglages des documents', doPlang: 'Langue des documents imprimés', doGroup: 'Regrouper par', gLayer: 'Calque', gPosition: 'Position', gwLayer: 'calque', gwPos: 'position',
     doFormat: 'Format papier (paysage)', fmtA3: 'A3 · 3 colonnes', fmtA4: 'A4 · 2 colonnes', doNote: 'Cartouche (texte libre)', line: n => `Ligne ${n}`, doHeadHint: 'Titre et sous-titre : ceux du dossier (Titre, Lieu / salle).',
-    doContent: 'Contenu', optSumG: g => `Récap. par ${g}`, optSumPos: 'Récap. par position', optSumUniv: 'Récap. par univers', optSumType: 'Récap. par type de projecteur', optG: g => `Patch par ${g}`, optUniv: 'Patch par univers', optMap: "Plan d'occupation des univers", optHide: 'Masquer les non patchés', optExport: "Afficher la date d'export du fichier", diffInSheet: 'Ajouter les changements en tête de la feuille de patch',
+    doContent: 'Contenu', optSumG: g => `Récap. par ${g}`, optSumPos: 'Récap. par position', optPos: 'Patch par position', optSumUniv: 'Récap. par univers', optSumType: 'Récap. par type de projecteur', optG: g => `Patch par ${g}`, optUniv: 'Patch par univers', optMap: "Plan d'occupation des univers", optHide: 'Masquer les non patchés', optExport: "Afficher la date d'export du fichier", diffInSheet: 'Ajouter les changements en tête de la feuille de patch',
     legHidden: 'Projecteurs masqués sur les documents', hidePh: 'Fix ID ou nom…', hideBtn: 'Masquer', hideHint: "Ou cliquer sur une ligne de l'aperçu pour la masquer.", unhideAll: 'Tout réafficher', notFound: 'Aucun projecteur ne correspond.',
     legLabels: 'Format des étiquettes', lbCutGrp: 'A3 à découper (scotch)', lbAdhGrp: 'Planches adhésives A4', lbCustom: 'Autre planche (dimensions à saisir)…', cuPage: 'Papier', cuCols: 'Colonnes', cuRows: 'Lignes', cuW: 'Largeur étiquette (mm)', cuH: 'Hauteur étiquette (mm)', cuLeft: 'Marge gauche (mm)', cuTop: 'Marge haut (mm)', cuPx: 'Pas horizontal (mm)', cuPy: 'Pas vertical (mm)',
     lbAdhHint: "Planche adhésive : imprimer à 100 % (« Taille réelle »), marges Aucune. Faire d'abord un essai sur papier ordinaire, par transparence.", lbOnly: 'Fix ID seul (lisible de loin)', lbPatch: 'Adresse DMX (univ.adr)', lbName: 'Nom', lbType: 'Type de projecteur', lbLayerG: g => g === 'position' ? 'Nom de la position (bandeau)' : 'Nom du calque (bandeau)', lbAnn: "Zone d'annotation", lbHint: "Annotation : cliquer en bas d'une étiquette dans l'aperçu et écrire.",
@@ -871,7 +871,7 @@ const I18N = {
     pvw_table: 'Table', pvw_sheet: 'Patch sheet', pvw_diff: 'Changes', nvSheet: 'Patch sheet', nvFxlabels: 'Fixture labels', nvDiff: 'Changes',
     hideRow: 'Click to hide this fixture on the documents', annPh: 'note…', doOptions: 'Document settings', doPlang: 'Language of printed documents', doGroup: 'Group by', gLayer: 'Layer', gPosition: 'Position', gwLayer: 'layer', gwPos: 'position',
     doFormat: 'Paper size (landscape)', fmtA3: 'A3 · 3 columns', fmtA4: 'A4 · 2 columns', doNote: 'Title block (free text)', line: n => `Line ${n}`, doHeadHint: 'Title and subtitle: those of the dossier (Title, Venue / room).',
-    doContent: 'Content', optSumG: g => `Summary by ${g}`, optSumPos: 'Summary by position', optSumUniv: 'Summary by universe', optSumType: 'Summary by fixture type', optG: g => `Patch by ${g}`, optUniv: 'Patch by universe', optMap: 'Universe occupancy map', optHide: 'Hide unpatched', optExport: 'Show the file export date', diffInSheet: 'Add the changes at the start of the patch sheet',
+    doContent: 'Content', optSumG: g => `Summary by ${g}`, optSumPos: 'Summary by position', optPos: 'Patch by position', optSumUniv: 'Summary by universe', optSumType: 'Summary by fixture type', optG: g => `Patch by ${g}`, optUniv: 'Patch by universe', optMap: 'Universe occupancy map', optHide: 'Hide unpatched', optExport: 'Show the file export date', diffInSheet: 'Add the changes at the start of the patch sheet',
     legHidden: 'Fixtures hidden on the documents', hidePh: 'Fix ID or name…', hideBtn: 'Hide', hideHint: 'Or click a row in the preview to hide it.', unhideAll: 'Show all', notFound: 'No matching fixture.',
     legLabels: 'Label format', lbCutGrp: 'A3 to cut (tape)', lbAdhGrp: 'A4 adhesive sheets', lbCustom: 'Other sheet (enter dimensions)…', cuPage: 'Paper', cuCols: 'Columns', cuRows: 'Rows', cuW: 'Label width (mm)', cuH: 'Label height (mm)', cuLeft: 'Left margin (mm)', cuTop: 'Top margin (mm)', cuPx: 'Horizontal pitch (mm)', cuPy: 'Vertical pitch (mm)',
     lbAdhHint: 'Adhesive sheet: print at 100% (“Actual size”), margins None. Test on plain paper first, against the light.', lbOnly: 'Fix ID only (readable from afar)', lbPatch: 'DMX address (univ.addr)', lbName: 'Name', lbType: 'Fixture type', lbLayerG: g => `${g[0].toUpperCase() + g.slice(1)} name (band)`, lbAnn: 'Note area', lbHint: 'Note: click the bottom of a label in the preview and type.',
@@ -3838,7 +3838,7 @@ const DOC_LANGS = [['fr', 'FR · Français'], ['en', 'EN · English'], ['es', 'E
 const DOC = {
   fmt: store.get('docFmt', 'A3'), plang: store.get('docPlang', null), group: store.get('docGroup', 'layer'), zoom: store.get('docZoom', 45),
   lbSize: store.get('docLbSize', '40x30'), colors: store.get('docColors', {}),
-  chk: { optSumLayer: true, optSumPos: true, optSumUniv: true, optSumType: true, optLayer: true, optUniv: true, optMap: true, optHideUnp: false, optExport: true,
+  chk: { optSumLayer: true, optSumPos: true, optPos: true, optSumUniv: true, optSumType: true, optLayer: true, optUniv: true, optMap: true, optHideUnp: false, optExport: true,
     lbOnly: false, lbFid: true, lbPatch: true, lbName: true, lbType: false, lbChid: false, lbLayer: true, lbAnn: true, lbCirc: false, lbDmxL: false, lbHideUnp: false, diffInSheet: false, ...store.get('docChk', {}) },
 };
 const PL = () => DOC_I18N[DOC.plang] ? DOC.plang : (DOC_I18N[LANG] ? LANG : 'fr');
@@ -3981,6 +3981,12 @@ function sheetPages() {
   const sheets = [...pre]; let page1 = cur;
   const sections = [];
   if (DOC.chk.optLayer) sections.push([tp('secLayer'), gL]);
+  // patch par position (quand le regroupement est par calque ; sinon c'est déjà le patch du regroupement)
+  if (DOC.chk.optPos && DOC.group !== 'position') {
+    const tpr = k => DOC_I18N[PL()][k] ?? DOC_I18N.fr[k];
+    const gP = [...new Set(fx.map(f => f.pos))].sort(natCmp).map(p => { const g = fx.filter(f => f.pos === p).sort((a, b) => cmpKey(a.key, b.key)); return [p, pluralP(g.length), g.map(rowL), TH_L()]; });
+    sections.push([tpr('secPos'), gP]);
+  }
   if (DOC.chk.optUniv) sections.push([tp('secUniv'), gU]);
   sections.forEach(([title, groups]) => {
     gPack(groups, pageH - G_H2, pageH, ncol).forEach((cols, i) => {
@@ -4147,7 +4153,7 @@ ${hidden.length > 1 ? `<button type="button" class="linkbtn" id="dUnhideAll">${x
   if (nv === 'sheet') {
     opts = fmtBox + common + `<fieldset><legend>${x(t('doNote'))}</legend>${[0, 1, 2, 3].map(i => `<input type="text" class="dtext" data-dnote="${i}" placeholder="${x(t('line', i + 1))}" value="${x(D.note[i] || '')}">`).join('')}
 <p class="hint2">${x(t('doHeadHint'))}</p></fieldset>
-<fieldset><legend>${x(t('doContent'))}</legend>${ck('optSumLayer', t('optSumG', gw))}${DOC.group === 'position' ? '' : ck('optSumPos', t('optSumPos'))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}${ck('optLayer', t('optG', gw))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}${D.ref ? ck('diffInSheet', t('diffInSheet')) : ''}</fieldset>` + hideBox;
+<fieldset><legend>${x(t('doContent'))}</legend>${ck('optSumLayer', t('optSumG', gw))}${DOC.group === 'position' ? '' : ck('optSumPos', t('optSumPos'))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}${ck('optLayer', t('optG', gw))}${DOC.group === 'position' ? '' : ck('optPos', t('optPos'))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}${D.ref ? ck('diffInSheet', t('diffInSheet')) : ''}</fieldset>` + hideBox;
   } else if (nv === 'fxlabels') {
     const A = gAnalyse(docFx()), colors = layerColors(A.layers), cnt = {}; docVisible().forEach(f => { cnt[f.layer] = (cnt[f.layer] || 0) + 1; });
     const cu = { ...CU_DEF, ...store.get('docLbCustom', {}) };
