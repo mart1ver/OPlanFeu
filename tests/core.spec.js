@@ -2,7 +2,8 @@
 const { test, expect, syntheticDossier, loadSynthetic, tmpFile } = require('./helpers');
 
 test('la page s’ouvre sans dossier et sans erreur', async ({ page }) => {
-  await expect(page.locator('#view .empty')).toBeVisible();
+  await expect(page.locator('#viewTitle')).toHaveText('Shows');
+  await expect(page.locator('#view [data-sh=open]')).toBeVisible();
   await expect(page.locator('#tabs button')).not.toHaveCount(0);
 });
 

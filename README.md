@@ -10,6 +10,8 @@ Ouvrir `index.html` dans un navigateur (ou la page publiée sur GitHub Pages). T
 
 Mise en page inspirée de Give Me The Patch : menu vertical des vues à gauche (rétractable en barre d'icônes), panneau du dossier à côté (rétractable, sections dépliables : dossier, en bref, enregistrer et exporter, plugins), zone de travail avec le titre de la vue. Les réglages d'affichage sont gardés dans le navigateur.
 
+
+**Shows** (en tête du menu, et page d'accueil quand rien n'est ouvert) : le show ouvert avec ses boutons Enregistrer (Ctrl+S), Enregistrer sous…, Télécharger une copie, Dupliquer et Versions ; ouvrir un fichier (show enregistré, ou nouveau show depuis un MVR, un CSV ou la feuille des plugins grandMA) ; tous les shows gardés dans ce navigateur, avec recherche, pour les rouvrir, les dupliquer, les télécharger ou les supprimer ; archive complète à exporter ou restaurer.
 ## Ce que fait la première version
 
 - **Import**

@@ -347,6 +347,17 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .doctool .zoom { display: flex; align-items: center; gap: 6px; } .doctool input[type=range] { accent-color: var(--accent); width: 120px; }
 .subtabs .sep { width: 1px; background: var(--line); margin: 0 4px; }
 .undobar { display: inline-flex; gap: 2px; } .undobar .iconbtn:disabled { opacity: .3; cursor: default; }
+.shtop { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 14px 0 6px; }
+.shcur, .shopen { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 16px 18px; }
+.shcur { border-color: var(--accent); } .shcur h2 { margin: 4px 0 4px; font-size: 22px; }
+.shk { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); font-weight: 600; }
+.shm { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.shbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; } .shbtns .btn { width: auto; margin: 0; padding: 7px 14px; }
+.shlisthead { display: flex; align-items: center; gap: 12px; margin-top: 18px; } .shlisthead input { font: inherit; font-size: 13px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); margin-inline-start: auto; min-width: 220px; }
+.shgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin: 10px 0 30px; }
+.shcard { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 12px 14px; } .shcard.on { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.shcard .sht { display: flex; gap: 8px; align-items: baseline; } .shcard .sht b { font-size: 14.5px; } .shbadge { font-size: 10.5px; background: var(--accent); color: #111; border-radius: 99px; padding: 1px 7px; }
+.shcard .shbtns { margin-top: 9px; }
 .bkstate button { font: inherit; font-size: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 4px 11px; cursor: pointer; white-space: nowrap; max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
 .bkstate.ok button { color: var(--ok); } .bkstate.warn button { color: #fff; background: #c77700; border-color: #c77700; } .bkstate.bad button { color: #fff; background: var(--err); border-color: var(--err); }
 .bkline { display: flex; gap: 9px; align-items: flex-start; font-size: 12.5px; margin: 0 0 10px; } .bkline span { color: var(--muted); } .bkline small { color: var(--muted); font-size: 11px; } .bkline small.bad { color: var(--err); }
@@ -524,6 +535,8 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <button type="button" class="iconbtn" id="navToggle" data-i18n-title="navToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     </div>
     <div class="tabs" id="tabs">
+        <button type="button" data-v="shows" data-i18n-title="tabShows"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M12 10v6M9 13l3 3 3-3"/></svg><span data-i18n="tabShows"></span></button>
+        <div class="navsep"></div>
         <div class="navgrp" data-i18n="navSee"></div>
         <button type="button" data-v="fixtures" data-i18n-title="tabFixtures"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="tabFixtures"></span></button>
         <button type="button" data-v="plan" data-i18n-title="tabPlan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-i18n="tabPlan"></span></button>
@@ -683,7 +696,7 @@ const I18N = {
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabSyno: 'Synoptiques', sv_elec: 'Électrique', sv_net: 'Réseau et DMX', sNetsyno: 'Synoptique réseau et DMX', nsTitle: 'Synoptique réseau et DMX', nsHint: 'D’après l’onglet DMX et réseau : chaque appareil est raccordé à son switch (colonnes Switch et Port), les lignes DMX partent de leur source (node, console) et arrivent à leur point d’accroche. En pointillé : appareil non raccordé. En rouge : adresse en double, hors réseau ou port déjà pris.', nsEmpty: 'Aucun appareil ni ligne DMX : renseigne-les dans DMX et réseau.', nsPort: p => `port ${p}`, nsDmxPort: p => `sortie ${p}`, nsFx: n => `${n} projecteur(s)`, nsNoIp: 'pas d’adresse', nsLands: 'arrivée', goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX et réseau → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX et réseau → Réseau.', tabFixtures: 'Patch', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
-    navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
+    tabShows: 'Shows', shCurrent: 'Show ouvert', shLinked: n => `Enregistré dans le fichier ${n}, à chaque modification.`, shNotLinked: 'Gardé dans ce navigateur. « Enregistrer » le met aussi dans un fichier sur le disque, réécrit à chaque modification.', shNoFsa: 'Gardé dans ce navigateur. « Enregistrer » en télécharge une copie (ce navigateur ne peut pas réécrire un fichier).', shSave: 'Enregistrer', shSaveAs: 'Enregistrer sous…', shDownload: 'Télécharger une copie', shDup: 'Dupliquer', shDupShort: 'Dupliquer', shVersions: 'Versions…', shOpenTitle: 'Ouvrir ou créer', shOpenHint: 'Un show enregistré (.oplanfeu.json), ou un nouveau show à partir d’un MVR (WYSIWYG, Capture, grandMA3…), d’un CSV de patch ou de la feuille des plugins grandMA. On peut aussi déposer le fichier n’importe où sur la page.', shOpen: 'Ouvrir un fichier…', shList: 'Shows gardés dans ce navigateur', shFx: n => `${n} projecteur(s)`, shUpdated: d => `modifié le ${d}`, shDelT: 'Supprimer de ce navigateur', shNone: 'Aucun show pour l’instant : ouvre un fichier pour commencer.', shNoMatch: 'Aucun show ne correspond.', shCopyOf: n => `${n} (copie)`, shDupOpen: n => `« ${n} » est créé. L’ouvrir maintenant ?`, navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
     undoT: n => `Annuler (Ctrl+Z)${n ? ' — ' + n + ' pas' : ''}`, redoT: n => `Rétablir (Ctrl+Maj+Z)${n ? ' — ' + n + ' pas' : ''}`, bkTitle: 'Sauvegarde', bkBrowser: 'Dans ce navigateur', bkAt: h => `enregistré à ${h}`, bkPersist: 'Stockage protégé : le navigateur ne l’effacera pas pour faire de la place.', bkNotPersist: 'Stockage non protégé : le navigateur peut l’effacer s’il manque de place. Garde aussi une copie sur le disque.', bkBrowserErr: 'enregistrement dans le navigateur impossible', bkFile: 'Fichier sur le disque', bkFileNone: 'Aucun : lie le dossier à un fichier, il sera réécrit à chaque modification (dans un dossier Nextcloud, Dropbox ou Drive, il part aussi hors de l’ordinateur).', bkLink: 'Enregistrer dans un fichier…', bkUnlink: 'Délier', bkResume: 'Reprendre l’enregistrement', bkNeedPerm: 'enregistrement sur le disque en pause : clique pour reprendre', bkDiskErr: 'erreur d’écriture sur le disque', bkSaving: 'enregistrement…', bkOnDisk: (n, h) => `enregistré dans ${n}${h ? ' à ' + h : ''}`, bkInBrowser: h => `gardé dans le navigateur${h ? ' à ' + h : ''}`, bkRemind: 'pas de copie sur le disque depuis 30 min : télécharger', bkDl: 'Copie sur le disque', bkLastDl: d => `dernière copie téléchargée le ${d}`, bkNoDl: 'aucune copie téléchargée', bkNoFsa: 'Ce navigateur ne peut pas réécrire un fichier : télécharge une copie de temps en temps (Ctrl+S), ou utilise Chrome ou Edge pour l’enregistrement automatique sur le disque.', bkDlNow: 'Télécharger une copie', bkDir: 'Dossier de sauvegarde', bkDirNone: 'Aucun : choisis un dossier, une copie datée de chaque dossier OPlanFeu y est écrite tous les quarts d’heure de travail (40 gardées par dossier).', bkDirHint: 'copie datée tous les quarts d’heure de travail, 40 gardées', bkDirPick: 'Choisir un dossier…', bkDirChange: 'Changer…', bkDirNow: 'Copier maintenant', bkHistory: 'Versions et dossiers…', bkAll: 'Tout exporter (.zip)', bkAllIn: 'Restaurer une archive…',
     bkDlgHint: 'Chaque dossier ouvert reste gardé dans ce navigateur, avec une version toutes les 10 minutes de travail (les 25 dernières, puis une par jour) et à chaque ouverture, import ou restauration. Ctrl+S enregistre tout de suite.', bkVersions: 'Versions de ce dossier', bkDossiers: 'Dossiers gardés dans ce navigateur', bkArchive: 'Tout sauvegarder', bkArchiveHint: 'Une archive .zip avec tous les dossiers du navigateur, la bibliothèque de profils GDTF et les réglages : à garder sur un disque ou un serveur, et à recharger sur un autre ordinateur (dépose-la sur la page).', bkWhen: 'Date', bkWhy: 'Origine', bkFix: 'Projecteurs', bkUpdated: 'Modifié', bkCurrent: 'ouvert', bkOpen: 'Ouvrir', bkDlShort: 'Télécharger', bkRestore: 'Restaurer', bkNoVer: 'Pas encore de version.', bkVerNow: 'Créer une version maintenant', bkRestoreAsk: d => `Revenir à la version du ${d} ? L’état actuel est gardé comme version.`, bkDelAsk: n => `Supprimer « ${n} » et ses versions de ce navigateur ? (Les fichiers sur le disque ne sont pas touchés.)`, bkImported: (n, g) => `Archive restaurée : ${n} dossier(s) ajouté(s) ou mis à jour, ${g} profil(s) GDTF.`, bkNotBackup: 'Ce fichier n’est pas une archive de sauvegarde OPlanFeu.', bkR_auto: 'automatique', bkR_import: 'import', bkR_open: 'ouverture', bkR_restore: 'avant restauration', bkR_manual: 'manuelle',
     iv_parc: 'Parc du lieu', iv_ecart: 'Écart avec le parc', pcTitle: 'Parc du lieu', pcHint: "Les appareils que le lieu possède, avec leur quantité. Le parc est enregistré avec le fichier de lieu et sert à l’onglet « Écart avec le parc » : la fiche technique d’un spectacle (le dossier ouvert) comparée à ce que le lieu peut fournir. Import d’une liste (CSV ou texte « 12 x MAC Aura », colonnes nom, quantité, fabricant, puissance…), d’un MVR ou d’un dossier (un appareil par type) ; ou reprise des types du dossier ouvert (stock saisi, sinon quantité).", pcAdd: 'Ajouter un appareil', pcImport: 'Importer une liste…', pcSeed: 'Reprendre les types du dossier', pcClear: 'Vider le parc', pcClearAsk: 'Vider tout le parc du lieu ?', pcNew: 'Nouvel appareil', pcName: 'Appareil', pcFam: 'Famille', pcQty: 'Quantité', pcUsed: 'Pris par le dossier', pcNotes: 'Notes', pcEmpty: 'Parc vide : ajoute les appareils du lieu, importe une liste ou reprends les types du dossier.', pcNone: 'Aucun appareil trouvé dans ce fichier.', pcImported: (a, u) => `Parc : ${a} appareil(s) ajouté(s), ${u} mis à jour.`,
@@ -808,7 +821,7 @@ const I18N = {
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabSyno: 'Diagrams', sv_elec: 'Electrical', sv_net: 'Network and DMX', sNetsyno: 'Network and DMX diagram', nsTitle: 'Network and DMX diagram', nsHint: 'From the DMX and network tab: each device hangs from its switch (Switch and Port columns), DMX lines leave their source (node, console) and land at their rigging point. Dashed: unconnected device. Red: duplicate address, off-network or port already taken.', nsEmpty: 'No device or DMX line: fill them in DMX and network.', nsPort: p => `port ${p}`, nsDmxPort: p => `out ${p}`, nsFx: n => `${n} fixture(s)`, nsNoIp: 'no address', nsLands: 'lands at', goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX and network → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX and network → Network.', tabFixtures: 'Patch', tabInventory: 'Types and inventory', searchPh: 'Search…',
     vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
-    navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
+    tabShows: 'Shows', shCurrent: 'Open show', shLinked: n => `Saved to the file ${n}, on every change.`, shNotLinked: 'Kept in this browser. “Save” also puts it in a file on disk, rewritten on every change.', shNoFsa: 'Kept in this browser. “Save” downloads a copy (this browser cannot rewrite a file).', shSave: 'Save', shSaveAs: 'Save as…', shDownload: 'Download a copy', shDup: 'Duplicate', shDupShort: 'Duplicate', shVersions: 'Versions…', shOpenTitle: 'Open or create', shOpenHint: 'A saved show (.oplanfeu.json), or a new show from an MVR (WYSIWYG, Capture, grandMA3…), a patch CSV or the grandMA plugins sheet. You can also drop the file anywhere on the page.', shOpen: 'Open a file…', shList: 'Shows kept in this browser', shFx: n => `${n} fixture(s)`, shUpdated: d => `modified ${d}`, shDelT: 'Delete from this browser', shNone: 'No show yet: open a file to start.', shNoMatch: 'No show matches.', shCopyOf: n => `${n} (copy)`, shDupOpen: n => `“${n}” is created. Open it now?`, navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
     undoT: n => `Undo (Ctrl+Z)${n ? ' — ' + n + ' steps' : ''}`, redoT: n => `Redo (Ctrl+Shift+Z)${n ? ' — ' + n + ' steps' : ''}`, bkTitle: 'Backup', bkBrowser: 'In this browser', bkAt: h => `saved at ${h}`, bkPersist: 'Protected storage: the browser will not clear it to free space.', bkNotPersist: 'Unprotected storage: the browser may clear it when short of space. Keep a copy on disk too.', bkBrowserErr: 'cannot save in the browser', bkFile: 'File on disk', bkFileNone: 'None: link the dossier to a file, it is rewritten on every change (in a Nextcloud, Dropbox or Drive folder it also leaves the computer).', bkLink: 'Save to a file…', bkUnlink: 'Unlink', bkResume: 'Resume saving', bkNeedPerm: 'saving to disk paused: click to resume', bkDiskErr: 'disk write error', bkSaving: 'saving…', bkOnDisk: (n, h) => `saved to ${n}${h ? ' at ' + h : ''}`, bkInBrowser: h => `kept in the browser${h ? ' at ' + h : ''}`, bkRemind: 'no copy on disk for 30 min: download', bkDl: 'Copy on disk', bkLastDl: d => `last copy downloaded ${d}`, bkNoDl: 'no copy downloaded', bkNoFsa: 'This browser cannot rewrite a file: download a copy now and then (Ctrl+S), or use Chrome or Edge for automatic saving to disk.', bkDlNow: 'Download a copy', bkDir: 'Backup folder', bkDirNone: 'None: choose a folder, a dated copy of each OPlanFeu dossier is written there every quarter hour of work (40 kept per dossier).', bkDirHint: 'dated copy every quarter hour of work, 40 kept', bkDirPick: 'Choose a folder…', bkDirChange: 'Change…', bkDirNow: 'Copy now', bkHistory: 'Versions and dossiers…', bkAll: 'Export everything (.zip)', bkAllIn: 'Restore an archive…',
     bkDlgHint: 'Every dossier you open stays in this browser, with a version every 10 minutes of work (the last 25, then one a day) and on each open, import or restore. Ctrl+S saves at once.', bkVersions: 'Versions of this dossier', bkDossiers: 'Dossiers kept in this browser', bkArchive: 'Back up everything', bkArchiveHint: 'A .zip archive with all the browser dossiers, the GDTF profile library and the settings: keep it on a disk or server, and reload it on another computer (drop it on the page).', bkWhen: 'Date', bkWhy: 'Origin', bkFix: 'Fixtures', bkUpdated: 'Modified', bkCurrent: 'open', bkOpen: 'Open', bkDlShort: 'Download', bkRestore: 'Restore', bkNoVer: 'No version yet.', bkVerNow: 'Create a version now', bkRestoreAsk: d => `Go back to the version of ${d}? The current state is kept as a version.`, bkDelAsk: n => `Delete “${n}” and its versions from this browser? (Files on disk are not touched.)`, bkImported: (n, g) => `Archive restored: ${n} dossier(s) added or updated, ${g} GDTF profile(s).`, bkNotBackup: 'This file is not an OPlanFeu backup archive.', bkR_auto: 'automatic', bkR_import: 'import', bkR_open: 'open', bkR_restore: 'before restore', bkR_manual: 'manual',
     iv_parc: 'Venue stock', iv_ecart: 'Gap with the stock', pcTitle: 'Venue stock', pcHint: 'The fixtures the venue owns, with their quantity. The stock is saved with the venue file and feeds the “Gap with the stock” tab: a show rider (the open dossier) compared with what the venue can supply. Import a list (CSV or text “12 x MAC Aura”, columns name, quantity, manufacturer, power…), an MVR or a dossier (one item per type); or take the types of the open dossier (stock entered, otherwise quantity).', pcAdd: 'Add an item', pcImport: 'Import a list…', pcSeed: 'Take the dossier types', pcClear: 'Clear the stock', pcClearAsk: 'Clear the whole venue stock?', pcNew: 'New item', pcName: 'Item', pcFam: 'Family', pcQty: 'Quantity', pcUsed: 'Used by the dossier', pcNotes: 'Notes', pcEmpty: 'Empty stock: add the venue items, import a list or take the dossier types.', pcNone: 'No item found in this file.', pcImported: (a, u) => `Stock: ${a} item(s) added, ${u} updated.`,
@@ -1619,6 +1632,61 @@ function refreshFilters() {
   $('#fPos').innerHTML = `<option value="">${esc(t('allPos'))}</option>` + pos.map(p => `<option value="${esc(p)}"${p === state.fPos ? ' selected' : ''}>${esc(p === '\u0000' ? t('noPos') : p)}</option>`).join('');
   $('#fType').innerHTML = `<option value="">${esc(t('allTypes'))}</option>` + types.map(k => `<option value="${esc(k)}"${k === state.fType ? ' selected' : ''}>${esc(typeName(k))}</option>`).join('');
 }
+// ───────────── shows : ouvrir, enregistrer, retrouver ─────────────
+// un « show » est un dossier OPlanFeu ; tous ceux ouverts dans ce navigateur restent dans la liste
+function renderShows() {
+  const d = state.d, x = esc, FS = FSA;
+  $('#count').textContent = d ? t('count', d.fixtures.length, d.fixtures.length) : '';
+  const btn = (k, lab, cls = '', title = '') => `<button type="button" class="btn ${cls}" data-sh="${k}"${title ? ` title="${x(title)}"` : ''}>${x(lab)}</button>`;
+  const cur = d ? `<div class="shcur"><div class="shk">${x(t('shCurrent'))}</div><h2>${x(d.meta.titre || t('untitled'))}</h2>
+<div class="shm">${x([d.meta.lieu, d.meta.date ? new Date(d.meta.date).toLocaleDateString(LANG) : '', t('count', d.fixtures.length, d.fixtures.length)].filter(Boolean).join(' · '))}</div>
+<div class="shm">${BK.handle ? x(t('shLinked', BK.handle.name)) : x(FS ? t('shNotLinked') : t('shNoFsa'))}</div>
+<div class="shbtns">${btn('save', t('shSave'), 'primary', 'Ctrl+S')}${FS ? btn('saveas', t('shSaveAs'), 'ghost') : ''}${btn('dl', t('shDownload'), 'ghost')}${btn('dup', t('shDup'), 'ghost')}${btn('versions', t('shVersions'), 'ghost')}</div></div>` : '';
+  $('#view').innerHTML = `<h1 class="ptitle">${x(t('tabShows'))}</h1>
+<div class="shtop">${cur}<div class="shopen"><div class="shk">${x(t('shOpenTitle'))}</div>
+<p class="hint2">${x(t('shOpenHint'))}</p><div class="shbtns">${btn('open', t('shOpen'), d ? '' : 'primary')}${btn('restore', t('bkAllIn'), 'ghost')}${btn('all', t('bkAll'), 'ghost')}</div></div></div>
+<div class="shlisthead"><h2 class="sec">${x(t('shList'))}</h2><input type="search" id="shQ" placeholder="${x(t('searchPh'))}" value="${x(state.shQ || '')}"></div>
+<div id="shList"><p class="hint2">…</p></div>`;
+  shFill();
+}
+async function shFill() {
+  const el = $('#shList'); if (!el) return;
+  const x = esc, d = state.d, q = nrm(state.shQ || '');
+  let ds = await DOSDB.listDos().catch(() => []);
+  if (q) ds = ds.filter(r => nrm([r.titre, r.lieu, r.source].join(' ')).includes(q));
+  ds.sort((a, b) => b.updated - a.updated);
+  el.innerHTML = ds.length ? `<div class="shgrid">${ds.map(r => {
+    const isCur = d && r.id === d.meta.id;
+    return `<div class="shcard${isCur ? ' on' : ''}"><div class="sht"><b>${x(r.titre || t('untitled'))}</b>${isCur ? `<span class="shbadge">${x(t('bkCurrent'))}</span>` : ''}</div>
+<div class="shm">${x([r.lieu, t('shFx', r.nfx)].filter(Boolean).join(' · '))}</div><div class="shm">${x(t('shUpdated', dmy(r.updated)))}</div>
+<div class="shbtns">${isCur ? '' : `<button type="button" class="minibtn primary" data-sh="openid" data-id="${x(r.id)}">${x(t('bkOpen'))}</button>`}<button type="button" class="minibtn" data-sh="dupid" data-id="${x(r.id)}">${x(t('shDupShort'))}</button><button type="button" class="minibtn" data-sh="dlid" data-id="${x(r.id)}">${x(t('bkDlShort'))}</button>${isCur ? '' : `<button type="button" class="minibtn x" data-sh="delid" data-id="${x(r.id)}" title="${x(t('shDelT'))}">×</button>`}</div></div>`;
+  }).join('')}</div>` : `<p class="hint2">${x(q ? t('shNoMatch') : t('shNone'))}</p>`;
+}
+async function shDuplicate(id) {
+  const r = id ? await DOSDB.getDos(id) : null, src = r ? r.d : state.d; if (!src) return;
+  const d = JSON.parse(JSON.stringify(src)); d.meta.id = newUuid(); d.meta.titre = t('shCopyOf', d.meta.titre || t('untitled')); delete d.meta.downloaded;
+  await DOSDB.tx('dossiers', 'readwrite', tx => { tx.objectStore('dossiers').put({ ...dosSummary(d), updated: Date.now(), d }); });
+  return d;
+}
+document.addEventListener('input', e => { if (e.target.id === 'shQ') { state.shQ = e.target.value; shFill(); } });
+document.addEventListener('click', async e => {
+  const b = e.target.closest && e.target.closest('[data-sh]'); if (!b) return;
+  const k = b.dataset.sh;
+  try {
+    if (k === 'save') bkSaveNow();
+    else if (k === 'saveas') await bkLinkFile();
+    else if (k === 'dl') bkDownload();
+    else if (k === 'versions') await bkDialog();
+    else if (k === 'open') { if (typeof window.showOpenFilePicker === 'function') $('#drop').click(); else $('#file').click(); }
+    else if (k === 'restore') $('#bkFile').click();
+    else if (k === 'all') await bkExportAll();
+    else if (k === 'dup' || k === 'dupid') { const d = await shDuplicate(b.dataset.id); if (d && confirm(t('shDupOpen', d.meta.titre))) { await saveDossier(state.d); load(checkDossier(d)); } else shFill(); }
+    else if (k === 'openid') { state.tab = 'fixtures'; store.set('tab', 'fixtures'); await bkOpenStored(b.dataset.id); }
+    else if (k === 'dlid') { const r = await DOSDB.getDos(b.dataset.id); if (r) download(slug(r.titre) + '.oplanfeu.json', JSON.stringify(r.d, null, 1), 'application/json'); }
+    else if (k === 'delid') { const r = await DOSDB.getDos(b.dataset.id); if (r && confirm(t('bkDelAsk', r.titre || t('untitled')))) { await DOSDB.delDos(r.id); shFill(); } }
+  } catch (err) { alert(err.message || String(err)); }
+  if (state.tab === 'shows' && ['save', 'saveas', 'dl'].includes(k)) setTimeout(() => { if (state.tab === 'shows') renderShows(); }, 600);
+});
 const PATCH_VIEWS = ['table', 'sheet', 'diff'];
 const patchView = () => PATCH_VIEWS.includes(state.patchView) ? state.patchView : 'table';
 function renderFixtures() {
@@ -3434,16 +3502,18 @@ ${['barre', 'blinder', 'strobe', 'video', 'fog', 'cube'].includes(ty.shape && ty
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
 <td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td><td></td></tr></tbody></table></div>`;
 }
-const TAB_KEYS = { syno: 'tabSyno', labels: 'tabLabels', fixtures: 'tabFixtures', plan: 'tabPlan', v3d: 'tab3d', rigging: 'tabRigging', elec: 'tabElec', net: 'tabNet', inventory: 'tabInventory', dossier: 'tabDossier' };
+const TAB_KEYS = { shows: 'tabShows', syno: 'tabSyno', labels: 'tabLabels', fixtures: 'tabFixtures', plan: 'tabPlan', v3d: 'tab3d', rigging: 'tabRigging', elec: 'tabElec', net: 'tabNet', inventory: 'tabInventory', dossier: 'tabDossier' };
 function render() {
   $('#pagesize').textContent = '';
-  $('#viewTitle').textContent = t(TAB_KEYS[state.tab] || 'tabFixtures');
+  $('#viewTitle').textContent = t(TAB_KEYS[state.d ? state.tab : 'shows'] || 'tabFixtures');
   $('#viewSub').textContent = state.d ? [state.d.meta.titre, state.d.meta.lieu].filter(Boolean).join(' — ') : '';
   if (V3.running && state.tab !== 'v3d') v3Stop();
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === state.tab));
+  const tab = state.d ? state.tab : 'shows';
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === tab));
   $('#filters').style.visibility = state.d ? '' : 'hidden';
   ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = state.tab === 'fixtures' && patchView() === 'table' ? '' : 'none'; });
-  if (!state.d) return;
+  // pas de dossier ouvert : la page des shows (ouvrir, retrouver) tient lieu d'accueil
+  if (!state.d || state.tab === 'shows') { $('#bulk').classList.remove('on'); ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = 'none'; }); renderShows(); return; }
   refreshFilters(); refreshBulk();
   if (state.tab === 'rigging') renderRigging();
   else if (state.tab === 'elec') renderElec();
@@ -4438,6 +4508,7 @@ $('#mapReset').addEventListener('click', () => { store.set(csvSig(mapCtx.rows[0]
 $('#mapBtn').addEventListener('click', () => { const c = state.csvSrc; if (c) openMap({ ...c, meta: { exported: state.d && state.d.meta.exported, titre: state.d && state.d.meta.titre, lieu: state.d && state.d.meta.lieu }, reimport: true }); });
 function load(d, reason, handle) {
   if (!d.meta.id) d.meta.id = newUuid();
+  if (reason && state.tab === 'shows') { state.tab = 'fixtures'; store.set('tab', 'fixtures'); }
   undoReset(d);
   state.csvSrc = lastCsv && lastCsv.fileName === d.meta.source ? lastCsv : null;
   $('#mapBtn').hidden = !state.csvSrc;
