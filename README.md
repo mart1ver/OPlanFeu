@@ -38,7 +38,7 @@ Mise en page inspirée de Give Me The Patch : menu vertical des vues à gauche (
 - **Alertes** : Fix ID en double, adresses de départ en double, plages DMX qui se chevauchent, projecteurs sans patch, points d'accroche au-delà ou proches de la CMU, points sans CMU.
 - **Enregistrer** le dossier en `.json` (à rouvrir plus tard ou à envoyer), **exporter le patch** en CSV pour [Give Me The Patch](https://github.com/mart1ver/GiveMeThePatch) (feuilles de patch, étiquettes), **imprimer** la vue affichée.
 
-Le dossier est aussi gardé dans le navigateur au fil des modifications.
+Le dossier est aussi gardé dans le navigateur au fil des modifications (IndexedDB, sans la limite de 5 Mo de localStorage : modèles 3D des structures et fichiers GDTF compris). Si un dossier ancien a perdu les modèles 3D de ses structures (affichées en petits cubes), la vue 3D le signale et propose de les reprendre depuis le MVR sans toucher au reste.
 
 ## Étapes suivantes
 

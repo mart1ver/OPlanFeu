@@ -397,6 +397,8 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .dpage.full { width: 297mm; height: 210mm; padding: 12mm; display: flex; flex-direction: column; }
 .v3page img { flex: 1; min-height: 0; width: 100%; object-fit: contain; background: #15161a; border-radius: 2mm; }
 .v3page .v3cap { font-size: 8pt; color: #666; margin-top: 2mm; }
+.v3warn { position: absolute; left: 50%; transform: translateX(-50%); top: 10px; max-width: 340px; z-index: 2; background: rgba(120,60,0,.88); color: #fff; font-size: 12px; padding: 8px 10px; border-radius: 9px; }
+.v3warn button { font: inherit; margin-top: 6px; display: block; background: #e8a317; color: #111; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 .v3msg { position: absolute; inset: 0; display: grid; place-items: center; color: #cfcfd4; text-align: center; padding: 30px; }
 #dosPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .dpage { background: #fff; color: #111; box-shadow: 0 2px 18px rgba(0,0,0,.18); width: 297mm; min-height: 210mm; box-sizing: border-box; padding: 12mm; font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 9pt; flex: none;
@@ -598,7 +600,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
       <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
     </div>
-    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="gdtfMulti" accept=".gdtf,.zip" multiple hidden><input type="file" id="refFile" accept=".mvr,.csv,.txt,.json,.html,.htm" hidden><div id="measure"></div><input type="file" id="lieuFile" accept=".json" hidden><input type="file" id="parcFile" accept=".csv,.txt,.tsv,.mvr,.json,.html,.htm" hidden>
+    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="gdtfMulti" accept=".gdtf,.zip" multiple hidden><input type="file" id="refFile" accept=".mvr,.csv,.txt,.json,.html,.htm" hidden><div id="measure"></div><input type="file" id="lieuFile" accept=".json" hidden><input type="file" id="meshFile" accept=".mvr" hidden><input type="file" id="parcFile" accept=".csv,.txt,.tsv,.mvr,.json,.html,.htm" hidden>
     <div class="view" id="view">
       <div class="empty"><div><b data-i18n="emptyTitle">Aucun dossier ouvert</b><br><span data-i18n="emptyMsg">Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.</span></div></div>
     </div>
@@ -665,7 +667,7 @@ const I18N = {
     gdPowered: 'Powered by GDTF — profils GDTF Share (gdtf-share.com).',
     invShape: 'Forme 3D', shAuto: g => `auto (${g})`, shLen: 'Longueur ou largeur (cm)', sh_gdtf: 'modèle du GDTF', sh_lyre: 'lyre', sh_par: 'PAR', sh_ledpar: 'PAR LED', sh_decoupe: 'découpe', sh_pc: 'PC / Fresnel', sh_barre: 'barre / rampe', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'vidéoprojecteur', sh_fog: 'machine à brouillard', sh_cube: 'boîte',
     tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
-    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Elems: 'Éléments affichés', v3Fix: 'Projecteurs par position', v3All: 'tout', v3None: 'rien', v3HidObjs: 'Objets masqués', v3DblHint: 'Double-clic sur un objet pour le masquer. Déplier un calque pour choisir objet par objet.', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
+    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Elems: 'Éléments affichés', v3Fix: 'Projecteurs par position', v3All: 'tout', v3None: 'rien', v3HidObjs: 'Objets masqués', v3DblHint: 'Double-clic sur un objet pour le masquer. Déplier un calque pour choisir objet par objet.', v3MeshMiss: n => `${n} structure(s) sans leur modèle 3D (dossier gardé dans le navigateur sans les modèles). Reprends-les depuis le fichier MVR :`, v3MeshLoader: n => `${n} structure(s) affichées en cubes : le lecteur de modèles 3ds n’a pas pu être chargé (connexion, bloqueur de contenu ?). Recharge la page, ou reprends les modèles depuis le MVR :`, v3MeshBtn: 'Reprendre les modèles du MVR…', v3MeshDone: (n, m) => `Modèles repris : ${n} structure(s), ${m} fichier(s) 3ds.`, v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
     v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s, g) => `${n} projecteurs · ${s} structures${g ? ` · formes : ${g}` : ''}`,
     tabDossier: 'Dossier complet', mvrGeo: n => `${n} structure(s) et décor(s) avec leur modèle 3D.`, exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
     dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
@@ -788,7 +790,7 @@ const I18N = {
     gdPowered: 'Powered by GDTF — GDTF Share profiles (gdtf-share.com).',
     invShape: '3D shape', shAuto: g => `auto (${g})`, shLen: 'Length or width (cm)', sh_gdtf: 'GDTF model', sh_lyre: 'moving head', sh_par: 'PAR', sh_ledpar: 'LED PAR', sh_decoupe: 'profile', sh_pc: 'PC / Fresnel', sh_barre: 'batten', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'video projector', sh_fog: 'haze / fog', sh_cube: 'box',
     tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
-    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Elems: 'Shown elements', v3Fix: 'Fixtures by position', v3All: 'all', v3None: 'none', v3HidObjs: 'Hidden objects', v3DblHint: 'Double-click an object to hide it. Unfold a layer to choose object by object.', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
+    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Elems: 'Shown elements', v3Fix: 'Fixtures by position', v3All: 'all', v3None: 'none', v3HidObjs: 'Hidden objects', v3DblHint: 'Double-click an object to hide it. Unfold a layer to choose object by object.', v3MeshMiss: n => `${n} structure(s) without their 3D model (dossier kept in the browser without the models). Take them back from the MVR file:`, v3MeshLoader: n => `${n} structure(s) shown as cubes: the 3ds model reader could not be loaded (connection, content blocker?). Reload the page, or take the models from the MVR:`, v3MeshBtn: 'Take the models from the MVR…', v3MeshDone: (n, m) => `Models restored: ${n} structure(s), ${m} 3ds file(s).`, v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
     v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s, g) => `${n} fixtures · ${s} structures${g ? ` · shapes: ${g}` : ''}`,
     tabDossier: 'Full dossier', mvrGeo: n => `${n} structure(s) and set piece(s) with their 3D model.`, exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
     dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
@@ -1196,7 +1198,26 @@ function checkDossier(d) {
 // ───────────── état ─────────────
 const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
-function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
+// dossier courant : IndexedDB (modèles 3D et GDTF compris, pas de limite de 5 Mo) ; localStorage en secours, allégé si trop gros
+const DOSDB = {
+  open() { return this.db || (this.db = new Promise((ok, ko) => { try { const r = indexedDB.open('oplanfeu-dossier', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); } catch (e) { ko(e); } })); },
+  async put(v) { const db = await this.open(); return new Promise((ok, ko) => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, 'current'); tx.oncomplete = () => ok(); tx.onerror = () => ko(tx.error); tx.onabort = () => ko(tx.error); }); },
+  async get() { const db = await this.open(); return new Promise(ok => { const r = db.transaction('kv').objectStore('kv').get('current'); r.onsuccess = () => ok(r.result || null); r.onerror = () => ok(null); }); },
+};
+async function saveDossier(d) {
+  if (!d) return;
+  const stamp = Date.now();
+  let idbOk = false;
+  try { await DOSDB.put({ stamp, d: JSON.parse(JSON.stringify(d)) }); idbOk = true; } catch {}
+  try { localStorage.setItem('oplanfeu.dossier', JSON.stringify(d)); localStorage.setItem('oplanfeu.dossierStamp', String(stamp)); return; } catch {}
+  // trop gros pour localStorage : copie allégée (sans modèles 3D ni fichiers GDTF), complétée depuis IndexedDB au chargement
+  try {
+    const light = { ...d, meshes: {}, types: Object.fromEntries(Object.entries(d.types).map(([k, ty]) => [k, { ...ty, gdtfData: undefined, gdtfOrig: undefined }])), light: true };
+    localStorage.setItem('oplanfeu.dossier', JSON.stringify(light)); localStorage.setItem('oplanfeu.dossierStamp', String(stamp));
+  } catch {}
+  if (!idbOk) console.warn('OPlanFeu : dossier trop gros pour être gardé dans le navigateur');
+}
+function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => saveDossier(state.d), 400); refreshSide(); }
 
 const typeName = k => (state.d.types[k] && state.d.types[k].name) || k || '';
 const patchText = f => f.univ ? `${f.univ}.${String(f.addr).padStart(3, '0')}` : '';
@@ -2255,9 +2276,10 @@ const V3 = { running: false, raf: 0 };
 let threeP = null;
 const TDS_URL = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/TDSLoader.js';
 const GLTF_URL = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+const UNPKG = u => u.replace('https://cdn.jsdelivr.net/npm/', 'https://unpkg.com/');
 const addScript = src => new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = src; sc.onload = () => ok(); sc.onerror = () => ko(new Error(src)); document.head.appendChild(sc); });
 const loadThree = () => threeP || (threeP = (window.THREE ? Promise.resolve() : addScript(THREE_URL))
-  .then(() => Promise.all([window.THREE.TDSLoader ? null : addScript(TDS_URL).catch(() => null), window.THREE.GLTFLoader ? null : addScript(GLTF_URL).catch(() => null)]))   // sans chargeurs : formes simples
+  .then(() => Promise.all([window.THREE.TDSLoader ? null : addScript(TDS_URL).catch(() => addScript(UNPKG(TDS_URL))).catch(() => null), window.THREE.GLTFLoader ? null : addScript(GLTF_URL).catch(() => addScript(UNPKG(GLTF_URL))).catch(() => null)]))   // sans chargeurs : formes simples
   .catch(e => { threeP = null; throw e; }));
 function v3Stop() { V3.running = false; cancelAnimationFrame(V3.raf); if (V3.ro) V3.ro.disconnect(); if (V3.renderer) { V3.renderer.dispose(); V3.renderer.forceContextLoss && V3.renderer.forceContextLoss(); } V3.renderer = null; }
 function renderV3() {
@@ -2505,7 +2527,7 @@ function buildV3Scene(fx) {
       if (S.labels) { const sp = sprite(name, .3, 448); sp.center.set(1, .5); sp.position.set(x0 - .15, y, z); world.add(sp); it.label = sp; }
     }
   }
-  let nst = 0;
+  let nst = 0, nMissing = 0;
   if (S.struct) {
     const smat = new T.MeshStandardMaterial({ color: 0x5a5d66, roughness: .8, transparent: true, opacity: .8 }), sg = new T.BoxGeometry(.18, .18, .18);
     const gmat = new T.MeshStandardMaterial({ color: 0x8d9099, roughness: .5, metalness: .5, side: T.DoubleSide });
@@ -2520,7 +2542,7 @@ function buildV3Scene(fx) {
           lg.add(mm); sg2.add(lg);
         }
         world.add(sg2); V3.items.push({ o: sg2, st: o2 });
-      } else { const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); V3.items.push({ o: m, st: o2 }); }
+      } else { if ((o2.geo || []).length || !Object.keys(d.meshes || {}).length) nMissing++; const m = new T.Mesh(sg, smat); m.position.set(o2.x, o2.y, o2.z); m.userData.st = o2; world.add(m); pick.push(m); V3.items.push({ o: m, st: o2 }); }
       nst++;
     });
   }
@@ -2574,6 +2596,11 @@ function buildV3Scene(fx) {
   el.addEventListener('wheel', e => { e.preventDefault(); sph.r = Math.min(400, Math.max(1, sph.r * (e.deltaY > 0 ? 1.1 : .9))); place(); }, { passive: false });
   const size = () => { const w = wrap.clientWidth, h = wrap.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
   V3.ro = new ResizeObserver(size); V3.ro.observe(wrap); size();
+  if (nMissing) {
+    const w = document.createElement('div'); w.className = 'v3warn';
+    w.innerHTML = `${esc(t(T.TDSLoader ? 'v3MeshMiss' : 'v3MeshLoader', nMissing))} <button type="button" data-v3mvr="1">${esc(t('v3MeshBtn'))}</button>`;
+    wrap.appendChild(w);
+  }
   wrap.querySelector('.v3info').textContent = t('v3Count', fx.length, nst, V3.shapes && V3.shapes.size ? t('v3Src', V3.nShapes, V3.shapes.size - V3.nShapes, V3.meshes ? V3.meshes.size : 0) : '');
   applyV3Vis();
   V3.renderer = renderer; V3.cam = cam; V3.scene = scene; V3.running = true;
@@ -2594,6 +2621,7 @@ document.getElementById('view').addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[data-copy]'); if (a) { try { navigator.clipboard.writeText(a.dataset.copy); } catch {} }
   const b = e.target.closest && e.target.closest('button'); if (!b) return;
   if (b.dataset.cam && V3.setView) V3.setView(b.dataset.cam);
+  if (b.dataset.v3mvr) { $('#meshFile').click(); return; }
   if ((b.dataset.v3all || b.dataset.v3none || b.dataset.v3unhide) && state.d) {
     const H = v3Hide();
     if (b.dataset.v3unhide) H.objs = [];
@@ -3632,6 +3660,16 @@ $('#refFile').addEventListener('change', async e => {
 });
 
 // lieu enregistré : les points de même nom sont mis à jour, les autres ajoutés
+$('#meshFile').addEventListener('change', async e => {   // reprendre les modèles 3D des structures d'un MVR, sans toucher au reste du dossier
+  const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
+  try {
+    const dd = await parseMVR(await f.arrayBuffer(), f.name), by = new Map((dd.structures || []).map(o => [o.uid || o.name, o]));
+    let n = 0;
+    for (const o of state.d.structures || []) { const q = by.get(o.uid || o.name); if (q && (q.geo || []).length) { o.geo = q.geo; n++; } }
+    state.d.meshes = { ...(state.d.meshes || {}), ...dd.meshes };
+    touch(); render(); alert(t('v3MeshDone', n, Object.keys(dd.meshes || {}).length));
+  } catch (err) { alert(t('readErr') + ' ' + err.message); }
+});
 $('#parcFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
   try {
@@ -3852,7 +3890,7 @@ function load(d) {
   state.d = d; state.sel.clear(); state.fPos = ''; state.fType = ''; state.q = ''; $('#q').value = '';
   ['#metaBox', '#statBox', '#outBox'].forEach(s => { $(s).hidden = false; });
   $('#drop').classList.add('loaded');
-  fillMeta(); store.set('dossier', d); refreshSide(); render();
+  fillMeta(); saveDossier(d); refreshSide(); render();
 }
 const drop = $('#drop');
 $('#file').addEventListener('change', e => { if (e.target.files[0]) openFile(e.target.files[0]); e.target.value = ''; });
@@ -3906,8 +3944,12 @@ document.querySelectorAll('details.sec[data-sec]').forEach(dt => {
 $('#lang').addEventListener('change', e => { LANG = e.target.value; store.set('lang', LANG); applyI18n(); if (state.d) { refreshSide(); render(); } });
 applyI18n();
 render();
-const saved = store.get('dossier', null);
-if (saved) { try { load(checkDossier(saved)); } catch {} }
+(async () => {   // dossier du navigateur : IndexedDB si elle est à jour, sinon localStorage
+  let saved = store.get('dossier', null), stamp = +(localStorage.getItem('oplanfeu.dossierStamp') || 0), idb = null;
+  try { idb = await DOSDB.get(); } catch {}
+  if (idb && idb.d && (!saved || saved.light || idb.stamp >= stamp)) saved = idb.d;
+  if (saved) { try { load(checkDossier(saved)); } catch {} }
+})();
 </script>
 </body>
 </html>
