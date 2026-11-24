@@ -147,6 +147,12 @@ table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; }
 .xyz { font-size: 11.5px; font-family: "IBM Plex Sans Condensed", sans-serif; }
 .missing { color: var(--err); font-weight: 600; }
+.warnv { color: var(--warn, #c77700); }
+.eck { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.eck div { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; min-width: 96px; background: var(--card, transparent); }
+.eck div b { display: block; font-size: 20px; line-height: 1.1; } .eck div span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.eck div.bad b { color: var(--err); }
+select[data-ec] { max-width: 230px; } td.ecn { white-space: normal; min-width: 180px; font-size: 12px; }
 .okv { color: var(--ok); }
 h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; margin: 22px 0 8px; color: var(--muted); }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; padding-top: 16px; }
@@ -592,7 +598,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
       <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
     </div>
-    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="gdtfMulti" accept=".gdtf,.zip" multiple hidden><input type="file" id="refFile" accept=".mvr,.csv,.txt,.json,.html,.htm" hidden><div id="measure"></div><input type="file" id="lieuFile" accept=".json" hidden>
+    <input type="file" id="gdtfFile" accept=".gdtf" hidden><input type="file" id="gdtfMulti" accept=".gdtf,.zip" multiple hidden><input type="file" id="refFile" accept=".mvr,.csv,.txt,.json,.html,.htm" hidden><div id="measure"></div><input type="file" id="lieuFile" accept=".json" hidden><input type="file" id="parcFile" accept=".csv,.txt,.tsv,.mvr,.json,.html,.htm" hidden>
     <div class="view" id="view">
       <div class="empty"><div><b data-i18n="emptyTitle">Aucun dossier ouvert</b><br><span data-i18n="emptyMsg">Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.</span></div></div>
     </div>
@@ -646,6 +652,8 @@ const I18N = {
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
     navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
+    iv_parc: 'Parc du lieu', iv_ecart: 'Écart avec le parc', pcTitle: 'Parc du lieu', pcHint: "Les appareils que le lieu possède, avec leur quantité. Le parc est enregistré avec le fichier de lieu et sert à l’onglet « Écart avec le parc » : la fiche technique d’un spectacle (le dossier ouvert) comparée à ce que le lieu peut fournir. Import d’une liste (CSV ou texte « 12 x MAC Aura », colonnes nom, quantité, fabricant, puissance…), d’un MVR ou d’un dossier (un appareil par type) ; ou reprise des types du dossier ouvert (stock saisi, sinon quantité).", pcAdd: 'Ajouter un appareil', pcImport: 'Importer une liste…', pcSeed: 'Reprendre les types du dossier', pcClear: 'Vider le parc', pcClearAsk: 'Vider tout le parc du lieu ?', pcNew: 'Nouvel appareil', pcName: 'Appareil', pcFam: 'Famille', pcQty: 'Quantité', pcUsed: 'Pris par le dossier', pcNotes: 'Notes', pcEmpty: 'Parc vide : ajoute les appareils du lieu, importe une liste ou reprends les types du dossier.', pcNone: 'Aucun appareil trouvé dans ce fichier.', pcImported: (a, u) => `Parc : ${a} appareil(s) ajouté(s), ${u} mis à jour.`,
+    ecTitle: 'Écart fiche technique / parc du lieu', ecHint: "Pour chaque type demandé par le dossier, l’appareil du parc qui le fournit : le même (=, trouvé par le nom) ou une équivalence (≈) choisie dans la liste, de la même famille de préférence. Les mêmes appareils sont servis d’abord, puis les équivalences. Indique ce que la compagnie apporte ; le reste est à trouver (location). Suggestion : appareil libre de la même famille, à la puissance la plus proche.", ecNoParc: 'Le parc du lieu est vide : renseigne-le d’abord (ou charge un fichier de lieu qui le contient).', ecType: 'Type demandé', ecAsked: 'Demandés', ecVenue: 'Appareil du lieu', ecAvail: 'Dispo.', ecTaken: 'Fournis par le lieu', ecComp: 'Apportés', ecShort: 'À trouver', ecNotes: 'Remarques', ecAuto: n => `auto : ${n}`, ecNone: 'aucun (à apporter ou louer)', ecGrpSame: f => `Même famille (${f})`, ecGrpOther: 'Autres familles', ecExact: 'même appareil', ecSub: 'équivalence', ecSameFam: 'équivalence, même famille', ecOtherFam: f => `autre famille (${f})`, ecPow: w => `${w} W par appareil`, ecSugg: (n, q) => `suggestion : ${n} (${q} libres)`, ecTakeT: 'Prendre cet appareil du parc en équivalence', ecFree: 'Parc non utilisé', ecFreeNone: 'Tout le parc est utilisé.', ecReset: 'Revenir aux choix automatiques', ecResetAsk: 'Effacer les équivalences choisies et les quantités apportées ?', ecK_n: 'demandés', ecK_same: 'mêmes appareils', ecK_sub: 'équivalences', ecK_comp: 'apportés', ecK_short: 'à trouver', sEcart: 'Écart avec le parc du lieu', alParc: n => `${n} appareil(s) à trouver (écart avec le parc)`, invFromParc: 'Tiré du parc du lieu (onglet Écart avec le parc)', invComp: 'apportés',
     iv_inv: 'Inventaire', iv_gdtf: 'GDTF du projet', gdType: 'Type', gdSource: 'Profil', gdFile: 'Fichier GDTF', gd3d: '3D', gdCh: 'Canaux', gdMode: 'Mode utilisé',
     gsNone: 'aucun', gsGeneric: 'générique (WYSIWYG)', gsFull: 'profil complet', gdReplaced: 'remplace le GDTF d’origine', gdPick: '— mode à choisir —', gdModeBad: 'le mode du patch n’existe pas dans ce profil',
     gdShare: 'GDTF Share', gdShareTip: 'Ouvre GDTF Share ; le nom du projecteur est copié pour la recherche', gdReplace: 'Remplacer…', gdRevert: 'Revenir à l’origine',
@@ -767,6 +775,8 @@ const I18N = {
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
     vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
     navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
+    iv_parc: 'Venue stock', iv_ecart: 'Gap with the stock', pcTitle: 'Venue stock', pcHint: 'The fixtures the venue owns, with their quantity. The stock is saved with the venue file and feeds the “Gap with the stock” tab: a show rider (the open dossier) compared with what the venue can supply. Import a list (CSV or text “12 x MAC Aura”, columns name, quantity, manufacturer, power…), an MVR or a dossier (one item per type); or take the types of the open dossier (stock entered, otherwise quantity).', pcAdd: 'Add an item', pcImport: 'Import a list…', pcSeed: 'Take the dossier types', pcClear: 'Clear the stock', pcClearAsk: 'Clear the whole venue stock?', pcNew: 'New item', pcName: 'Item', pcFam: 'Family', pcQty: 'Quantity', pcUsed: 'Used by the dossier', pcNotes: 'Notes', pcEmpty: 'Empty stock: add the venue items, import a list or take the dossier types.', pcNone: 'No item found in this file.', pcImported: (a, u) => `Stock: ${a} item(s) added, ${u} updated.`,
+    ecTitle: 'Rider / venue stock gap', ecHint: 'For each type the dossier asks for, the stock item that supplies it: the same (=, matched by name) or a substitute (≈) chosen in the list, preferably of the same family. Same items are served first, then substitutes. Enter what the company brings; the rest is to be found (rental). Suggestion: free item of the same family with the closest power.', ecNoParc: 'The venue stock is empty: fill it first (or load a venue file that holds it).', ecType: 'Requested type', ecAsked: 'Requested', ecVenue: 'Venue item', ecAvail: 'Avail.', ecTaken: 'Supplied by venue', ecComp: 'Brought', ecShort: 'To find', ecNotes: 'Remarks', ecAuto: n => `auto: ${n}`, ecNone: 'none (bring or rent)', ecGrpSame: f => `Same family (${f})`, ecGrpOther: 'Other families', ecExact: 'same item', ecSub: 'substitute', ecSameFam: 'substitute, same family', ecOtherFam: f => `other family (${f})`, ecPow: w => `${w} W per unit`, ecSugg: (n, q) => `suggestion: ${n} (${q} free)`, ecTakeT: 'Use this stock item as a substitute', ecFree: 'Unused stock', ecFreeNone: 'The whole stock is used.', ecReset: 'Back to automatic choices', ecResetAsk: 'Clear the chosen substitutes and brought quantities?', ecK_n: 'requested', ecK_same: 'same items', ecK_sub: 'substitutes', ecK_comp: 'brought', ecK_short: 'to find', sEcart: 'Gap with the venue stock', alParc: n => `${n} item(s) to find (gap with the stock)`, invFromParc: 'From the venue stock (Gap with the stock tab)', invComp: 'brought',
     iv_inv: 'Inventory', iv_gdtf: 'Project GDTFs', gdType: 'Type', gdSource: 'Profile', gdFile: 'GDTF file', gd3d: '3D', gdCh: 'Channels', gdMode: 'Mode used',
     gsNone: 'none', gsGeneric: 'generic (WYSIWYG)', gsFull: 'full profile', gdReplaced: 'replaces the original GDTF', gdPick: '— choose a mode —', gdModeBad: 'the patch mode does not exist in this profile',
     gdShare: 'GDTF Share', gdShareTip: 'Opens GDTF Share; the fixture name is copied for the search', gdReplace: 'Replace…', gdRevert: 'Back to original',
@@ -1184,7 +1194,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('dossier', state.d), 400); refreshSide(); }
 
@@ -1255,6 +1265,10 @@ function refreshSide() {
       if (nm(r => r.overP).length) al.push([t('alConParams', nm(r => r.overP).length), cut(nm(r => r.overP))]);
       if (nm(r => r.overU).length) al.push([t('alConUniv', nm(r => r.overU).length), cut(nm(r => r.overU))]);
       if (nm(r => !r.protoOk).length) al.push([t('alConProto', nm(r => !r.protoOk).length), cut(nm(r => !r.protoOk))]);
+    }
+    if ((state.d.lieu.parc || []).length) {
+      const E = parcAlloc().rows.filter(r => r.short);
+      if (E.length) al.push([t('alParc', E.reduce((a, r) => a + r.short, 0)), cut(E.map(r => `${r.name} (${r.short})`))]);
     }
     if (state.d.lieu.devices.length) {
       const iss = netIssues();
@@ -2062,7 +2076,7 @@ document.getElementById('view').addEventListener('click', e => {
   if (kind === 'plan') renderPlanView(); else { const bar = document.querySelector('.vbar'); if (bar) bar.outerHTML = viewBar('3d'); }
 });
 // ───────────── dossier complet ─────────────
-const DOS_SECTIONS = ['cover', 'plan', 'patch', 'loads', 'heads', 'elec', 'syno', 'dmx', 'inv'];
+const DOS_SECTIONS = ['cover', 'plan', 'patch', 'loads', 'heads', 'elec', 'syno', 'dmx', 'inv', 'ecart'];
 const dtab = (heads, rows) => `<table class="dtab"><thead><tr>${heads.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
 const td = (v, c) => `<td${c ? ` class="${c}"` : ''}>${v === null || v === undefined || v === '' ? '' : esc(v)}</td>`;
 function withTemp(obj, patch, fn) { const old = {}; for (const k in patch) { old[k] = obj[k]; obj[k] = patch[k]; } try { return fn(); } finally { Object.assign(obj, old); } }
@@ -2118,12 +2132,14 @@ ${vRows.length ? `<h3>${esc(t('dDevices'))}</h3>${dtab([t('dvName'), t('dvKind')
   }
   if (S.inv) {
     const qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
-    const rows = Object.keys(d.types).filter(k => qty.get(k) || d.types[k].stock).sort((a, b) => typeName(a).localeCompare(typeName(b))).map(k => {
-      const ty = d.types[k], n = qty.get(k) || 0, miss = ty.stock === null || ty.stock === '' || ty.stock === undefined ? null : Math.max(0, n - ty.stock);
-      return `<tr>${td(ty.name, 'b')}${td(ty.maker)}${td(Object.entries(ty.modes || {}).map(([m, c]) => `${m || '—'} (${c})`).join(', '), 'w')}${td(n, 'n b')}${td(ty.stock ?? '', 'n')}${td(miss === null ? '' : miss || '✓', 'n' + (miss ? ' bad' : ''))}${td(ty.weight ? fmtNum(ty.weight) : '', 'n')}${td(ty.power ? fmtNum(ty.power) : '', 'n')}${td(ty.gdtfData ? t('dYes') : t('dNo'))}</tr>`;
+    const PR = (L.parc || []).length ? new Map(parcAlloc().rows.map(r => [r.k, r])) : null;
+    const rows = Object.keys(d.types).filter(k => qty.get(k) || (!PR && d.types[k].stock)).sort((a, b) => typeName(a).localeCompare(typeName(b))).map(k => {
+      const ty = d.types[k], n = qty.get(k) || 0, pr = PR && PR.get(k), miss = PR ? (pr ? pr.short : null) : ty.stock === null || ty.stock === '' || ty.stock === undefined ? null : Math.max(0, n - ty.stock);
+      return `<tr>${td(ty.name, 'b')}${td(ty.maker)}${td(Object.entries(ty.modes || {}).map(([m, c]) => `${m || '—'} (${c})`).join(', '), 'w')}${td(n, 'n b')}${td(PR ? (pr && pr.p ? (pr.exact ? '' : '≈ ') + pr.p.name + ' : ' + pr.take : '') : ty.stock ?? '', PR ? '' : 'n')}${td(miss === null ? '' : miss || '✓', 'n' + (miss ? ' bad' : ''))}${td(ty.weight ? fmtNum(ty.weight) : '', 'n')}${td(ty.power ? fmtNum(ty.power) : '', 'n')}${td(ty.gdtfData ? t('dYes') : t('dNo'))}</tr>`;
     });
     sec('inv', `<div class="dpage"><h2>${esc(t('dInvTitle'))}</h2>${dtab([t('invType'), t('invMaker'), t('invModes'), t('invQty'), t('invStock'), t('invMissing'), t('invWeight'), t('invPower'), 'GDTF'], rows)}</div>`);
   }
+  if (S.ecart) sec('ecart', ecartPage());
   // couverture : en tête, avec le sommaire des parties retenues
   if (S.cover) {
     const m = d.meta, kg = L.points.reduce((a, p2) => a + pointLoad(p2).total, 0), W = d.fixtures.reduce((a, f) => a + ((d.types[f.type] || {}).power || 0), 0);
@@ -2681,20 +2697,183 @@ async function applyLibrary() {
   }
   alert(t('gdLibDone', n));
 }
+// ───────────── parc du lieu et écart avec la fiche technique ─────────────
+// parc : liste des appareils du lieu (gardée avec le fichier de lieu) ; chaque type du dossier prend un appareil du parc
+// (même appareil trouvé par le nom, ou équivalence choisie), le reste est apporté par la compagnie ou à trouver.
+const parcList = () => { const L = state.d.lieu; L.parc = L.parc || []; return L.parc; };
+const typeFam = ty => (ty.shape && ty.shape !== 'auto' && ty.shape !== 'gdtf' ? ty.shape : shapeGuess(ty.name));
+const parcFam = p => p.family || shapeGuess(p.name);
+function parcExact(ty) {           // appareil du parc qui porte le même nom que le type (fabricant en bonus)
+  const tn = nrm(ty.name); if (!tn) return null;
+  let best = null, bs = 0;
+  for (const p of parcList()) {
+    const pn = nrm(p.name); if (!pn) continue;
+    let sc = pn === tn ? 3 : (pn.length >= 4 && tn.includes(pn)) || (tn.length >= 4 && pn.includes(tn)) ? 2 : 0;
+    if (sc && nrm(p.maker) && nrm(p.maker) === nrm(ty.maker)) sc += 1;
+    if (sc > bs) { bs = sc; best = p; }
+  }
+  return best;
+}
+function parcAlloc() {
+  const d = state.d, P = parcList(), byId = new Map(P.map(p => [p.id, p])), left = new Map(P.map(p => [p.id, Math.max(0, +p.qty || 0)]));
+  const qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
+  const rows = [...qty.keys()].sort((a, b) => typeName(a).localeCompare(typeName(b))).map(k => {
+    const ty = d.types[k] || { name: k }, n = qty.get(k), ex = parcExact(ty);
+    const p = ty.parc === 'none' ? null : ty.parc ? byId.get(ty.parc) || null : ex;
+    const comp = Math.min(n, Math.max(0, +ty.comp || 0));
+    return { k, ty, name: ty.name || k, fam: typeFam(ty), n, p, auto: !ty.parc, exact: !!p && p === ex, comp, take: 0, short: 0, avail: 0 };
+  });
+  // les mêmes appareils d'abord, les équivalences ensuite
+  for (const pass of [true, false]) for (const r of rows) {
+    if (!r.p || r.exact !== pass) continue;
+    r.avail = left.get(r.p.id); r.take = Math.min(r.n - r.comp, r.avail); left.set(r.p.id, r.avail - r.take);
+  }
+  for (const r of rows) {
+    r.short = r.n - r.comp - r.take;
+    if (r.short > 0) {           // suggestion : appareil de la même famille encore libre, puissance la plus proche
+      const pw = +r.ty.power || 0;
+      r.sugg = P.filter(p => p !== r.p && left.get(p.id) > 0 && parcFam(p) === r.fam)
+        .sort((a, b) => (pw ? Math.abs((+a.power || 0) - pw) - Math.abs((+b.power || 0) - pw) : 0) || left.get(b.id) - left.get(a.id))[0] || null;
+    }
+  }
+  const used = new Map(); rows.forEach(r => { if (r.p) used.set(r.p.id, (used.get(r.p.id) || 0) + r.take); });
+  const sum = k => rows.reduce((a, r) => a + r[k], 0);
+  return { rows, left, used, tot: { n: sum('n'), comp: sum('comp'), short: sum('short'), same: rows.filter(r => r.exact).reduce((a, r) => a + r.take, 0), sub: rows.filter(r => r.p && !r.exact).reduce((a, r) => a + r.take, 0) } };
+}
+// remarques d'une ligne d'écart : équivalence, autre famille, écart de puissance
+function ecartNote(r) {
+  const out = [];
+  if (r.p && !r.exact) {
+    out.push(parcFam(r.p) === r.fam ? t('ecSameFam') : t('ecOtherFam', t('sh_' + parcFam(r.p))));
+    const a = +r.ty.power || 0, b = +r.p.power || 0;
+    if (a && b && a !== b) out.push(t('ecPow', (b > a ? '+' : '−') + fmtNum(Math.abs(b - a))));
+  }
+  if (r.p && r.p.notes) out.push(r.p.notes);
+  return out.join(' · ');
+}
+// lecture d'une liste d'appareils : « nom;quantité;fabricant », « 12 x MAC Aura », avec ou sans en-tête
+function parseParcList(text) {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l && !/^#/.test(l));
+  if (!lines.length) return [];
+  const seps = [';', '\t', ','].map(s => [s, lines.slice(0, 20).filter(l => l.includes(s)).length]).sort((a, b) => b[1] - a[1]);
+  const sep = seps[0][1] >= Math.ceil(Math.min(lines.length, 20) / 2) ? seps[0][0] : null;
+  const unq = c => c.trim().replace(/^"(.*)"$/, '$1').replace(/""/g, '"').trim();
+  const isNum = c => /^\d+([.,]\d+)?$/.test(c);
+  if (!sep) {                       // une colonne : « 12 x MAC Aura », « MAC Aura : 12 », « MAC Aura 12 »
+    return lines.map(l => {
+      let m = /^(\d+)\s*(?:[x×*]\s*|\s+)(.+)$/i.exec(l); if (m) return { name: m[2].trim(), qty: +m[1] };
+      m = /^(.+?)\s*(?:[x×:=*]\s*|\s+)(\d+)$/i.exec(l); if (m) return { name: m[1].trim(), qty: +m[2] };
+      return { name: l, qty: 1 };
+    }).filter(x => x.name);
+  }
+  const rows = lines.map(l => l.split(sep).map(unq));
+  const H = { qty: /^(qt|quant|nb|nombre|qty|count|stock|parc|nbre)/i, name: /(type|nom|name|mod[eè]le|model|appareil|fixture|projecteur|d[ée]signation|article)/i, maker: /(fabr|marque|maker|manuf|brand|constructeur)/i, power: /(puiss|power|watt|^w$|conso)/i, weight: /(poids|weight|kg)/i, family: /(famille|family|cat[ée]g)/i };
+  const hasHead = rows[0].some(c => H.qty.test(c)) || (rows[0].some(c => H.name.test(c)) && !rows[0].some(isNum));
+  const head = hasHead ? rows.shift() : null, col = {};
+  if (head) for (const k of ['qty', 'maker', 'power', 'weight', 'family', 'name']) { const i = head.findIndex((c, j) => H[k].test(c) && !Object.values(col).includes(j)); if (i >= 0) col[k] = i; }
+  const nc = Math.max(...rows.map(r => r.length));
+  if (col.qty === undefined) for (let j = 0; j < nc; j++) if (rows.every(r => !r[j] || isNum(r[j])) && rows.some(r => r[j])) { col.qty = j; break; }
+  if (col.name === undefined) for (let j = 0; j < nc; j++) if (j !== col.qty && j !== col.maker && rows.some(r => r[j] && !isNum(r[j]))) { col.name = j; break; }
+  if (col.name === undefined) return [];
+  const famOf = v => { const x = nrm(v); return SHAPE_KINDS.find(k => x === nrm(k) || x === nrm(t('sh_' + k))) || ''; };
+  const num = v => { const n = parseFloat(String(v || '').replace(',', '.')); return isNaN(n) ? null : n; };
+  return rows.map(r => ({ name: r[col.name] || '', qty: col.qty === undefined ? 1 : Math.round(num(r[col.qty]) || 0), maker: col.maker === undefined ? '' : r[col.maker] || '', power: col.power === undefined ? null : num(r[col.power]), weight: col.weight === undefined ? null : num(r[col.weight]), family: col.family === undefined ? '' : famOf(r[col.family]) }))
+    .filter(x => x.name);
+}
+// liste d'appareils tirée d'un dossier (MVR, CSV, .json) : un appareil par type, quantité = nombre de projecteurs
+function parcFromDossier(d) {
+  const qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
+  return [...qty].map(([k, n]) => { const ty = d.types[k] || { name: k }; return { name: ty.name || k, maker: ty.maker || '', qty: n, power: ty.power || null, weight: ty.weight || null, family: ty.shape && ty.shape !== 'auto' && ty.shape !== 'gdtf' ? ty.shape : '' }; });
+}
+function parcMerge(items) {           // même nom : quantité et champs remplacés ; sinon ajouté
+  const P = parcList(); let add = 0, upd = 0;
+  for (const it of items) {
+    const p = P.find(x => nrm(x.name) === nrm(it.name) && (!it.maker || !x.maker || nrm(x.maker) === nrm(it.maker)));
+    const clean = Object.fromEntries(Object.entries(it).filter(([, v]) => v !== null && v !== undefined && v !== ''));
+    if (p) { Object.assign(p, clean, { id: p.id }); upd++; } else { P.push({ id: uid(), name: '', maker: '', family: '', qty: 0, power: null, weight: null, notes: '', ...clean }); add++; }
+  }
+  return [add, upd];
+}
+function renderParc(ihead) {
+  const P = parcList(), A = parcAlloc(), x = esc, fams = SHAPE_KINDS;
+  const inp = (p, f, v, cls = 'w-unit', im = 'decimal') => `<input class="c box" data-pc="${x(p.id)}" data-f="${f}"${im ? ` inputmode="${im}"` : ''} value="${v === null || v === undefined ? '' : x(v)}">`;
+  let tq = 0, tw = 0;
+  const rows = [...P].sort((a, b) => natCmp(a.name, b.name)).map(p => {
+    const u = A.used.get(p.id) || 0, q = +p.qty || 0; tq += q; tw += q * (+p.power || 0);
+    return `<tr><td>${inp(p, 'name', p.name, '', '')}</td><td>${inp(p, 'maker', p.maker, '', '')}</td>
+<td><select class="c" data-pc="${x(p.id)}" data-f="family"><option value="">${x(t('shAuto', t('sh_' + shapeGuess(p.name))))}</option>${fams.map(k => `<option value="${k}"${p.family === k ? ' selected' : ''}>${x(t('sh_' + k))}</option>`).join('')}</select></td>
+<td class="w-unit">${inp(p, 'qty', p.qty)}</td><td class="w-unit">${inp(p, 'power', p.power)}</td><td class="w-unit">${inp(p, 'weight', p.weight)}</td>
+<td class="ro num">${u ? `<b style="color:var(--ink)">${u}</b>` : ''}${q && u ? ` / ${q}` : ''}</td><td>${inp(p, 'notes', p.notes, '', '')}</td>
+<td class="noprint"><button type="button" class="minibtn x" data-pcdel="${x(p.id)}">×</button></td></tr>`;
+  }).join('');
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  $('#view').innerHTML = ihead + `<h1 class="ptitle">${x(t('pcTitle'))}${state.d.meta.lieu ? ' — ' + x(state.d.meta.lieu) : ''}</h1>
+<p class="hint noprint" style="margin:12px 0 0">${x(t('pcHint'))}</p>
+<div class="settings noprint"><button type="button" class="minibtn" id="pcAdd">${x(t('pcAdd'))}</button><button type="button" class="minibtn" id="pcImport">${x(t('pcImport'))}</button><button type="button" class="minibtn" id="pcSeed">${x(t('pcSeed'))}</button>${P.length ? `<button type="button" class="minibtn x" id="pcClear">${x(t('pcClear'))}</button>` : ''}
+<span style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${x(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${x(t('lieuLoad'))}</button></span></div>
+${P.length ? `<div class="gridwrap"><table class="grid"><thead><tr>${['pcName', 'invMaker', 'pcFam', 'pcQty', 'invPower', 'invWeight', 'pcUsed', 'pcNotes'].map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}<th class="noprint"></th></tr></thead>
+<tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${x(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td class="ro num">${tw ? fmtNum(tw) + ' W' : ''}</td><td></td><td class="ro num">${[...A.used.values()].reduce((a, b) => a + b, 0) || ''}</td><td></td><td class="noprint"></td></tr></tbody></table></div>` : `<p class="hint2" style="margin-top:14px">${x(t('pcEmpty'))}</p>`}`;
+}
+// tableau d'écart (écran et impression) ; edit = listes et champs modifiables
+function ecartTable(A, edit) {
+  const P = parcList(), x = esc;
+  const rows = A.rows.map(r => {
+    const same = P.filter(p => parcFam(p) === r.fam), other = P.filter(p => parcFam(p) !== r.fam), ex = parcExact(r.ty);
+    const opt = p => `<option value="${x(p.id)}"${!r.auto && r.p === p ? ' selected' : ''}>${x(p.name)}${p.maker ? ' — ' + x(p.maker) : ''} (${+p.qty || 0})</option>`;
+    const sel = `<select class="c" data-ec="${x(r.k)}" data-f="parc"><option value="">${x(t('ecAuto', ex ? ex.name : '—'))}</option>${same.length ? `<optgroup label="${x(t('ecGrpSame', t('sh_' + r.fam)))}">${same.map(opt).join('')}</optgroup>` : ''}${other.length ? `<optgroup label="${x(t('ecGrpOther'))}">${other.map(opt).join('')}</optgroup>` : ''}<option value="none"${r.ty.parc === 'none' ? ' selected' : ''}>${x(t('ecNone'))}</option></select>`;
+    const mark = r.p ? (r.exact ? '<span class="okv" title="' + x(t('ecExact')) + '">=</span> ' : '<b class="warnv" title="' + x(t('ecSub')) + '">≈</b> ') : '';
+    const sugg = r.sugg ? (edit ? `<button type="button" class="minibtn" data-ectake="${x(r.k)}" data-p="${x(r.sugg.id)}" title="${x(t('ecTakeT'))}">→ ${x(r.sugg.name)} (${A.left.get(r.sugg.id)})</button>` : x(t('ecSugg', r.sugg.name, A.left.get(r.sugg.id)))) : '';
+    const note = [ecartNote(r), sugg].filter(Boolean).join(edit ? ' ' : ' · ');
+    if (!edit) return `<tr>${td(r.name, 'b')}${td(t('sh_' + r.fam))}${td(r.n, 'n b')}<td>${r.p ? (r.exact ? '= ' : '≈ ') + x(r.p.name) : '—'}</td>${td(r.take || '', 'n')}${td(r.comp || '', 'n')}${td(r.short || '✓', 'n' + (r.short ? ' bad' : ' ok'))}<td class="w">${note}</td></tr>`;
+    return `<tr><td class="ro" style="color:var(--ink)"><b>${x(r.name)}</b>${r.ty.maker ? `<br><small>${x(r.ty.maker)}</small>` : ''}</td><td class="ro">${x(t('sh_' + r.fam))}</td><td class="ro num" style="color:var(--ink)"><b>${r.n}</b></td>
+<td style="white-space:nowrap">${mark}${sel}</td><td class="ro num">${r.p ? r.avail : ''}</td><td class="ro num">${r.take || ''}</td>
+<td class="w-unit"><input class="c box" data-ec="${x(r.k)}" data-f="comp" inputmode="numeric" value="${r.ty.comp ? x(r.ty.comp) : ''}"></td>
+<td class="ro num">${r.short ? `<span class="missing">${r.short}</span>` : '<span class="okv">✓</span>'}</td><td class="ro ecn">${note}</td></tr>`;
+  });
+  const T = A.tot;
+  const total = edit ? `<tr><td class="ro" style="color:var(--ink)"><b>${x(t('invTotal'))}</b></td><td></td><td class="ro num" style="color:var(--ink)"><b>${T.n}</b></td><td></td><td></td><td class="ro num">${T.same + T.sub || ''}</td><td class="ro num">${T.comp || ''}</td><td class="ro num">${T.short ? `<span class="missing">${T.short}</span>` : ''}</td><td></td></tr>`
+    : `<tr>${td(t('invTotal'), 'b')}${td('')}${td(T.n, 'n b')}${td('')}${td(T.same + T.sub || '', 'n')}${td(T.comp || '', 'n')}${td(T.short || '', 'n' + (T.short ? ' bad' : ''))}${td('')}</tr>`;
+  const heads = edit ? ['ecType', 'pcFam', 'ecAsked', 'ecVenue', 'ecAvail', 'ecTaken', 'ecComp', 'ecShort', 'ecNotes'] : ['ecType', 'pcFam', 'ecAsked', 'ecVenue', 'ecTaken', 'ecComp', 'ecShort', 'ecNotes'];
+  if (!edit) return dtab(heads.map(k => t(k)), [...rows, total]);
+  return `<div class="gridwrap"><table class="grid"><thead><tr>${heads.map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}</tr></thead><tbody>${rows.join('')}${total}</tbody></table></div>`;
+}
+const ecartKpis = A => [[A.tot.n, 'ecK_n'], [A.tot.same, 'ecK_same'], [A.tot.sub, 'ecK_sub'], [A.tot.comp, 'ecK_comp'], [A.tot.short, 'ecK_short']];
+const parcFree = A => parcList().filter(p => A.left.get(p.id) > 0).sort((a, b) => natCmp(a.name, b.name));
+function renderEcart(ihead) {
+  const P = parcList(), x = esc;
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  if (!P.length) { $('#view').innerHTML = ihead + `<h1 class="ptitle">${x(t('ecTitle'))}</h1><p class="hint2" style="margin-top:14px">${x(t('ecNoParc'))}</p><p><button type="button" class="minibtn" data-iv="parc">${x(t('iv_parc'))} →</button></p>`; return; }
+  const A = parcAlloc(), free = parcFree(A);
+  $('#view').innerHTML = ihead + `<h1 class="ptitle">${x(t('ecTitle'))} — ${x(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + x(state.d.meta.lieu) : ''}</h1>
+<p class="hint noprint" style="margin:12px 0 0">${x(t('ecHint'))}</p>
+<div class="ckpis eck">${ecartKpis(A).map(([v, k]) => `<div${k === 'ecK_short' && v ? ' class="bad"' : ''}><b>${v}</b><span>${x(t(k))}</span></div>`).join('')}</div>
+${ecartTable(A, true)}
+<h2 class="sec">${x(t('ecFree'))}</h2>${free.length ? `<p style="margin:4px 0 0">${free.map(p => `<span class="chip">${x(p.name)} <b>${A.left.get(p.id)}</b>${+p.qty !== A.left.get(p.id) ? ` / ${+p.qty}` : ''} <small>${x(t('sh_' + parcFam(p)))}</small></span>`).join(' ')}</p>` : `<p class="hint2">${x(t('ecFreeNone'))}</p>`}
+<p class="noprint" style="margin-top:14px"><button type="button" class="minibtn" id="ecReset">${x(t('ecReset'))}</button></p>`;
+}
+function ecartPage() {   // page du dossier complet
+  if (!parcList().length || !state.d.fixtures.length) return '';
+  const A = parcAlloc(), free = parcFree(A);
+  return `<div class="dpage"><h2>${esc(t('ecTitle'))}</h2><p style="margin:0 0 3mm">${ecartKpis(A).map(([v, k]) => `${esc(t(k))} : <b>${v}</b>`).join(' · ')}</p>${ecartTable(A, false)}
+${free.length ? `<h3>${esc(t('ecFree'))}</h3><p>${free.map(p => `${esc(p.name)} : ${A.left.get(p.id)}`).join(' · ')}</p>` : ''}</div>`;
+}
 function renderInventory() {
-  const ihead = `<div class="subtabs noprint">${['inv', 'gdtf'].map(k => `<button type="button" data-iv="${k}"${k === (state.invView || 'inv') ? ' class="on"' : ''}>${esc(t('iv_' + k))}</button>`).join('')}</div>`;
+  const ihead = `<div class="subtabs noprint">${['inv', 'gdtf', 'parc', 'ecart'].map(k => `<button type="button" data-iv="${k}"${k === (state.invView || 'inv') ? ' class="on"' : ''}>${esc(t('iv_' + k))}</button>`).join('')}</div>`;
   if (state.invView === 'gdtf') return renderGdtfView(ihead);
+  if (state.invView === 'parc') return renderParc(ihead);
+  if (state.invView === 'ecart') return renderEcart(ihead);
+  const PA = parcList().length ? parcAlloc() : null, PR = PA ? new Map(PA.rows.map(r => [r.k, r])) : null;
   const qty = new Map(); state.d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
   const keys = [...new Set([...Object.keys(state.d.types), ...qty.keys()])].sort((a, b) => typeName(a).localeCompare(typeName(b)));
   let tq = 0, tm = 0, tw = 0, tp = 0;
   const rows = keys.map(k => {
     const ty = state.d.types[k] || (state.d.types[k] = { name: k, maker: '', gdtf: '', modes: {}, weight: null, power: null, stock: null });
-    const n = qty.get(k) || 0, miss = ty.stock === null || ty.stock === '' ? null : Math.max(0, n - ty.stock);
+    const n = qty.get(k) || 0, pr = PR && PR.get(k), miss = PR ? (pr ? pr.short : null) : ty.stock === null || ty.stock === '' ? null : Math.max(0, n - ty.stock);
     tq += n; if (miss) tm += miss; if (ty.weight) tw += ty.weight * n; if (ty.power) tp += ty.power * n;
     const modes = Object.entries(ty.modes || {}).map(([m, c]) => `${m || '—'} (${c})`).join(', ');
     const inp = (f, v) => `<input class="c box" data-t="${esc(k)}" data-f="${f}" inputmode="decimal" value="${v === null || v === undefined ? '' : esc(v)}">`;
     return `<tr><td class="ro" style="color:var(--ink)"><b>${esc(ty.name)}</b></td><td class="ro">${esc(ty.maker)}</td><td class="ro">${esc(modes)}</td>
-<td class="ro num" style="color:var(--ink)"><b>${n || ''}</b></td><td class="w-unit">${inp('stock', ty.stock)}</td>
+<td class="ro num" style="color:var(--ink)"><b>${n || ''}</b></td>${PR ? `<td class="ro num" title="${esc(t('invFromParc'))}">${pr ? (pr.p ? (pr.exact ? '' : '≈ ') + esc(pr.p.name) + ' : ' + pr.take : '—') + (pr.comp ? ' + ' + pr.comp + ' ' + esc(t('invComp')) : '') : ''}</td>` : `<td class="w-unit">${inp('stock', ty.stock)}</td>`}
 <td class="ro num">${miss === null ? '' : miss ? `<span class="missing">${miss}</span>` : '<span class="okv">✓</span>'}</td>
 <td class="w-unit">${inp('weight', ty.weight)}</td><td class="w-unit">${inp('power', ty.power)}</td>
 <td style="white-space:nowrap"><select class="c" data-t="${esc(k)}" data-f="shape">${['auto', 'gdtf', ...SHAPE_KINDS].map(v => `<option value="${v}"${v === (ty.shape || 'auto') ? ' selected' : ''}>${esc(v === 'auto' ? t('shAuto', t('sh_' + shapeGuess(ty.name))) : t('sh_' + v))}</option>`).join('')}</select>
@@ -2844,6 +3023,20 @@ view.addEventListener('change', e => {
   }
   if (e.target.id === 'gdLibKeep') { store.set('gdtfLib', e.target.checked); return; }
   if (e.target.id === 'gdExport') { state.d.meta.mvrGdtf = e.target.value; touch(); return; }
+  const pc = e.target.closest('[data-pc]');
+  if (pc && state.d) {
+    const p = parcList().find(x => x.id === pc.dataset.pc), k = pc.dataset.f, v = pc.value.trim(); if (!p) return;
+    if (['qty', 'power', 'weight'].includes(k)) { const n = parseFloat(v.replace(',', '.')); p[k] = v === '' ? (k === 'qty' ? 0 : null) : isNaN(n) ? p[k] : k === 'qty' ? Math.max(0, Math.round(n)) : n; }
+    else p[k] = v;
+    touch(); render(); return;
+  }
+  const ec = e.target.closest('[data-ec]');
+  if (ec && state.d) {
+    const ty = state.d.types[ec.dataset.ec]; if (!ty) return;
+    if (ec.dataset.f === 'parc') ty.parc = ec.value || undefined;
+    else { const n = parseInt(ec.value, 10); ty.comp = n > 0 ? n : undefined; }
+    touch(); render(); return;
+  }
   const ms = e.target.closest('select[data-msel]');
   if (ms) { const ty = state.d.types[ms.dataset.msel]; if (ty && ms.value !== '' && ms.value in ty.modes) { ty.modeSel = ms.value; state.d.fixtures.forEach(f => { if (f.type === ms.dataset.msel) { if (f.modeOrig === undefined && !(f.mode in ty.modes)) f.modeOrig = f.mode; f.mode = ty.modeSel; f.nch = ty.modes[f.mode]; } }); touch(); render(); } return; }
   const tsel = e.target.closest('select[data-t]');
@@ -2959,11 +3152,22 @@ view.addEventListener('click', async e => {
     const p = state.d.lieu.points.find(x => x.id === b.dataset.delpt);
     if (p && confirm(t('delPointAsk', p.name))) { state.d.lieu.points = state.d.lieu.points.filter(x => x !== p); touch(); render(); }
   } else if (b.id === 'saveLieu') {
-    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, consoles: state.d.lieu.consoles, settings: state.d.lieu.settings };
+    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, consoles: state.d.lieu.consoles, parc: state.d.lieu.parc || [], settings: state.d.lieu.settings };
     download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
   } else if (b.id === 'loadLieu') $('#lieuFile').click();
   else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
   else if (b.dataset.gdtfRevert) revertGdtf(b.dataset.gdtfRevert);
+  else if (b.id === 'pcAdd') { parcList().push({ id: uid(), name: t('pcNew'), maker: '', family: '', qty: 1, power: null, weight: null, notes: '' }); touch(); render(); }
+  else if (b.id === 'pcImport') $('#parcFile').click();
+  else if (b.id === 'pcSeed') {
+    const qty = new Map(); state.d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
+    const items = Object.entries(state.d.types).filter(([k, ty]) => ty.stock > 0 || qty.get(k)).map(([k, ty]) => ({ name: ty.name || k, maker: ty.maker || '', qty: ty.stock > 0 ? ty.stock : qty.get(k), power: ty.power || null, weight: ty.weight || null, family: ty.shape && ty.shape !== 'auto' && ty.shape !== 'gdtf' ? ty.shape : '' }));
+    const [a, u] = parcMerge(items); touch(); render(); alert(t('pcImported', a, u));
+  }
+  else if (b.id === 'pcClear') { if (confirm(t('pcClearAsk'))) { state.d.lieu.parc = []; Object.values(state.d.types).forEach(ty => { delete ty.parc; }); touch(); render(); } }
+  else if (b.dataset.pcdel) { state.d.lieu.parc = parcList().filter(p => p.id !== b.dataset.pcdel); Object.values(state.d.types).forEach(ty => { if (ty.parc === b.dataset.pcdel) delete ty.parc; }); touch(); render(); }
+  else if (b.dataset.ectake) { const ty = state.d.types[b.dataset.ectake]; if (ty) { ty.parc = b.dataset.p; touch(); render(); } }
+  else if (b.id === 'ecReset') { if (confirm(t('ecResetAsk'))) { Object.values(state.d.types).forEach(ty => { delete ty.parc; delete ty.comp; }); touch(); render(); } }
   else if (b.dataset.iv) { state.invView = b.dataset.iv; store.set('invView', state.invView); render(); }
   else if (b.id === 'gdImport') $('#gdtfMulti').click();
   else if (b.id === 'gdLib') applyLibrary();
@@ -3428,6 +3632,19 @@ $('#refFile').addEventListener('change', async e => {
 });
 
 // lieu enregistré : les points de même nom sont mis à jour, les autres ajoutés
+$('#parcFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
+  try {
+    const buf = await f.arrayBuffer(), u8 = new Uint8Array(buf.slice(0, 2)), text = u8[0] === 0x50 && u8[1] === 0x4b ? '' : decode(buf);
+    let items;
+    if (!text) items = parcFromDossier(await parseMVR(buf, f.name));
+    else if (/^\s*\{/.test(text)) { const J = JSON.parse(text); items = J.format === 'oplanfeu-lieu' ? (J.parc || []).map(({ id, ...q }) => q) : parcFromDossier(checkDossier(J)); }
+    else if (/^\s*</.test(text)) items = parcFromDossier(await readAnyPatch(f));
+    else { items = parseParcList(text); if (!items.length) items = parcFromDossier(await readAnyPatch(f)); }
+    if (!items.length) throw new Error(t('pcNone'));
+    const [a, u] = parcMerge(items); touch(); render(); alert(t('pcImported', a, u));
+  } catch (err) { alert(t('readErr') + ' ' + err.message); }
+});
 $('#lieuFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f || !state.d) return;
   try {
@@ -3442,6 +3659,10 @@ $('#lieuFile').addEventListener('change', async e => {
     for (const [key, list] of [['boards', L.boards], ['lines', L.lines], ['dmxLines', L.dmxLines], ['devices', L.devices], ['consoles', L.consoles]]) for (const q of list || []) {
       const p = state.d.lieu[key].find(x => x.name === q.name);
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu[key].push({ ...q, id: uid() });
+    }
+    if (Array.isArray(L.parc) && L.parc.length) {     // parc : même nom remplacé, les autres ajoutés ; les équivalences choisies suivent les identifiants
+      const P = parcList();
+      for (const q of L.parc) { const p = P.find(x => nrm(x.name) === nrm(q.name) && nrm(x.maker) === nrm(q.maker)); if (p) { const id = p.id; Object.assign(p, q); if (id !== q.id) Object.values(state.d.types).forEach(ty => { if (ty.parc === id) ty.parc = q.id; }); } else P.push({ ...q, id: q.id && !P.some(x => x.id === q.id) ? q.id : uid() }); }
     }
     if (L.settings) state.d.lieu.settings = { ...state.d.lieu.settings, ...L.settings };
     touch(); render(); alert(t('lieuLoaded', n));
