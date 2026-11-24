@@ -1,7 +1,7 @@
 // Chaque vue s'affiche sans erreur avec le dossier de test ; plan, 3D et dossier complet produisent quelque chose
 const { test, expect, loadSynthetic } = require('./helpers');
 
-const TABS = { fixtures: ['pv', ['table', 'sheet', 'diff']], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines', 'syno']], net: ['nv', ['console', 'univ', 'dmx', 'net']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
+const TABS = { fixtures: ['pv', ['table', 'sheet', 'diff']], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines']], syno: ['sv', ['elec', 'net']], net: ['nv', ['console', 'univ', 'dmx', 'net']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
 
 for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
   test(`vue ${tab}${subs ? ' et ses sous-vues' : ''}`, async ({ page }) => {
@@ -84,4 +84,22 @@ test('patch : la feuille de patch est dans l’onglet Patch', async ({ page }) =
   await expect(page.locator('#q')).toBeHidden();
   await page.click('#view [data-pv=table]');
   await expect(page.locator('#view tbody tr')).toHaveCount(24);
+});
+
+test('synoptiques : électrique et réseau / DMX', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'G1', board: 'TD1', kind: 'grada', phase: 'L1', amps: 16, dest: 'P2 Milieu' }],
+      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }, { id: 'd2', name: 'DMX B', src: 'Node 1', port: 2, universe: 2, dest: 'P3 Face' }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch', ip: '2.0.0.2' }, { id: 'v1', name: 'Node 1', kind: 'node', ip: '2.0.0.10', sw: 'SW1', port: '4' }, { id: 'c', name: 'MA3', kind: 'console', ip: '2.0.0.1', sw: 'SW1', port: '1' }, { id: 'x', name: 'PC perdu', kind: 'pc', ip: '2.0.0.50' }],
+      consoles: [{ id: 'k', name: 'Console principale', model: 'ma3light', device: 'MA3' }] };
+    d.fixtures.forEach(f => { if (f.position === 'P1 Lointain') f.dmxLine = 'DMX A'; });
+  });
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=elec]'); await expect(page.locator('#view .syn svg')).toHaveCount(1);
+  await page.click('#view [data-sv=net]');
+  const svg = page.locator('#view .nsyn svg');
+  for (const txt of ['SW1', 'Node 1', 'MA3', 'DMX A', 'DMX B', 'P1 Lointain', 'port 4', 'sortie 2', '6 projecteur(s)', 'PC perdu']) await expect(svg).toContainText(txt);
+  await expect(svg.locator('.box.loose')).toHaveCount(1);
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-gosyn=net]');
+  await expect(page.locator('#view [data-sv=net]')).toHaveClass(/on/);
 });

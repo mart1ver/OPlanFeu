@@ -198,6 +198,7 @@ details.series input { width: 4.5em; }
 .syn svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
 .syn text { fill: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; }
 .syn .mut { fill: var(--muted); } .syn .wire { stroke: var(--ink); fill: none; } .syn .box { fill: var(--bg); stroke: var(--ink); }
+.nsyn svg { min-width: 640px; } .syn .box.loose { stroke-dasharray: 4 3; } .syn .box.pos { fill: var(--panel); stroke: var(--line); } .syn .bad .box { stroke: var(--err); stroke-width: 2; }
 .syn .over { fill: var(--err); } .syn .warn { fill: #b07d00; }
 .labs { display: flex; flex-wrap: wrap; gap: 3mm; margin: 8px 0 16px; }
 .lab { width: 62mm; height: 26mm; box-sizing: border-box; border: 1px dashed var(--muted); border-radius: 2mm; padding: 2mm 3mm; background: #fff; color: #000; overflow: hidden; display: flex; flex-direction: column; gap: .6mm; break-inside: avoid; }
@@ -527,6 +528,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
         <button type="button" data-v="fixtures" data-i18n-title="tabFixtures"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span data-i18n="tabFixtures"></span></button>
         <button type="button" data-v="plan" data-i18n-title="tabPlan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-i18n="tabPlan"></span></button>
         <button type="button" data-v="v3d" data-i18n-title="tab3d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg><span data-i18n="tab3d"></span></button>
+        <button type="button" data-v="syno" data-i18n-title="tabSyno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="9" width="6" height="6" rx="1"/><rect x="15.5" y="3" width="6" height="5" rx="1"/><rect x="15.5" y="16" width="6" height="5" rx="1"/><path d="M8.5 12h3.5V5.5h3.5M12 12v6.5h3.5"/></svg><span data-i18n="tabSyno"></span></button>
         <div class="navsep"></div>
         <div class="navgrp" data-i18n="navTech"></div>
         <button type="button" data-v="rigging" data-i18n-title="tabRigging"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18"/><path d="M7 5v4M12 5v6M17 5v4"/><circle cx="7" cy="11" r="2"/><circle cx="12" cy="13" r="2"/><circle cx="17" cy="11" r="2"/></svg><span data-i18n="tabRigging"></span></button>
@@ -679,7 +681,7 @@ const I18N = {
     save: 'Enregistrer le dossier (.json) — Ctrl+S', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
-    goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX et réseau → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX et réseau → Réseau.', tabFixtures: 'Patch', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabSyno: 'Synoptiques', sv_elec: 'Électrique', sv_net: 'Réseau et DMX', sNetsyno: 'Synoptique réseau et DMX', nsTitle: 'Synoptique réseau et DMX', nsHint: 'D’après l’onglet DMX et réseau : chaque appareil est raccordé à son switch (colonnes Switch et Port), les lignes DMX partent de leur source (node, console) et arrivent à leur point d’accroche. En pointillé : appareil non raccordé. En rouge : adresse en double, hors réseau ou port déjà pris.', nsEmpty: 'Aucun appareil ni ligne DMX : renseigne-les dans DMX et réseau.', nsPort: p => `port ${p}`, nsDmxPort: p => `sortie ${p}`, nsFx: n => `${n} projecteur(s)`, nsNoIp: 'pas d’adresse', nsLands: 'arrivée', goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX et réseau → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX et réseau → Réseau.', tabFixtures: 'Patch', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
     navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
     undoT: n => `Annuler (Ctrl+Z)${n ? ' — ' + n + ' pas' : ''}`, redoT: n => `Rétablir (Ctrl+Maj+Z)${n ? ' — ' + n + ' pas' : ''}`, bkTitle: 'Sauvegarde', bkBrowser: 'Dans ce navigateur', bkAt: h => `enregistré à ${h}`, bkPersist: 'Stockage protégé : le navigateur ne l’effacera pas pour faire de la place.', bkNotPersist: 'Stockage non protégé : le navigateur peut l’effacer s’il manque de place. Garde aussi une copie sur le disque.', bkBrowserErr: 'enregistrement dans le navigateur impossible', bkFile: 'Fichier sur le disque', bkFileNone: 'Aucun : lie le dossier à un fichier, il sera réécrit à chaque modification (dans un dossier Nextcloud, Dropbox ou Drive, il part aussi hors de l’ordinateur).', bkLink: 'Enregistrer dans un fichier…', bkUnlink: 'Délier', bkResume: 'Reprendre l’enregistrement', bkNeedPerm: 'enregistrement sur le disque en pause : clique pour reprendre', bkDiskErr: 'erreur d’écriture sur le disque', bkSaving: 'enregistrement…', bkOnDisk: (n, h) => `enregistré dans ${n}${h ? ' à ' + h : ''}`, bkInBrowser: h => `gardé dans le navigateur${h ? ' à ' + h : ''}`, bkRemind: 'pas de copie sur le disque depuis 30 min : télécharger', bkDl: 'Copie sur le disque', bkLastDl: d => `dernière copie téléchargée le ${d}`, bkNoDl: 'aucune copie téléchargée', bkNoFsa: 'Ce navigateur ne peut pas réécrire un fichier : télécharge une copie de temps en temps (Ctrl+S), ou utilise Chrome ou Edge pour l’enregistrement automatique sur le disque.', bkDlNow: 'Télécharger une copie', bkDir: 'Dossier de sauvegarde', bkDirNone: 'Aucun : choisis un dossier, une copie datée de chaque dossier OPlanFeu y est écrite tous les quarts d’heure de travail (40 gardées par dossier).', bkDirHint: 'copie datée tous les quarts d’heure de travail, 40 gardées', bkDirPick: 'Choisir un dossier…', bkDirChange: 'Changer…', bkDirNow: 'Copier maintenant', bkHistory: 'Versions et dossiers…', bkAll: 'Tout exporter (.zip)', bkAllIn: 'Restaurer une archive…',
@@ -804,7 +806,7 @@ const I18N = {
     save: 'Save the dossier (.json) — Ctrl+S', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
-    goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX and network → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX and network → Network.', tabFixtures: 'Patch', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabSyno: 'Diagrams', sv_elec: 'Electrical', sv_net: 'Network and DMX', sNetsyno: 'Network and DMX diagram', nsTitle: 'Network and DMX diagram', nsHint: 'From the DMX and network tab: each device hangs from its switch (Switch and Port columns), DMX lines leave their source (node, console) and land at their rigging point. Dashed: unconnected device. Red: duplicate address, off-network or port already taken.', nsEmpty: 'No device or DMX line: fill them in DMX and network.', nsPort: p => `port ${p}`, nsDmxPort: p => `out ${p}`, nsFx: n => `${n} fixture(s)`, nsNoIp: 'no address', nsLands: 'lands at', goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX and network → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX and network → Network.', tabFixtures: 'Patch', tabInventory: 'Types and inventory', searchPh: 'Search…',
     vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
     navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
     undoT: n => `Undo (Ctrl+Z)${n ? ' — ' + n + ' steps' : ''}`, redoT: n => `Redo (Ctrl+Shift+Z)${n ? ' — ' + n + ' steps' : ''}`, bkTitle: 'Backup', bkBrowser: 'In this browser', bkAt: h => `saved at ${h}`, bkPersist: 'Protected storage: the browser will not clear it to free space.', bkNotPersist: 'Unprotected storage: the browser may clear it when short of space. Keep a copy on disk too.', bkBrowserErr: 'cannot save in the browser', bkFile: 'File on disk', bkFileNone: 'None: link the dossier to a file, it is rewritten on every change (in a Nextcloud, Dropbox or Drive folder it also leaves the computer).', bkLink: 'Save to a file…', bkUnlink: 'Unlink', bkResume: 'Resume saving', bkNeedPerm: 'saving to disk paused: click to resume', bkDiskErr: 'disk write error', bkSaving: 'saving…', bkOnDisk: (n, h) => `saved to ${n}${h ? ' at ' + h : ''}`, bkInBrowser: h => `kept in the browser${h ? ' at ' + h : ''}`, bkRemind: 'no copy on disk for 30 min: download', bkDl: 'Copy on disk', bkLastDl: d => `last copy downloaded ${d}`, bkNoDl: 'no copy downloaded', bkNoFsa: 'This browser cannot rewrite a file: download a copy now and then (Ctrl+S), or use Chrome or Edge for automatic saving to disk.', bkDlNow: 'Download a copy', bkDir: 'Backup folder', bkDirNone: 'None: choose a folder, a dated copy of each OPlanFeu dossier is written there every quarter hour of work (40 kept per dossier).', bkDirHint: 'dated copy every quarter hour of work, 40 kept', bkDirPick: 'Choose a folder…', bkDirChange: 'Change…', bkDirNow: 'Copy now', bkHistory: 'Versions and dossiers…', bkAll: 'Export everything (.zip)', bkAllIn: 'Restore an archive…',
@@ -1232,7 +1234,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { patchView: store.get('patchView', 'table'), labView: store.get('labView', 'fx'), planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { synView: store.get('synView', 'elec'), patchView: store.get('patchView', 'table'), labView: store.get('labView', 'fx'), planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, netsyno: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 // ───────────── sauvegarde ─────────────
 // 1. navigateur (IndexedDB) : chaque dossier ouvert est gardé, avec un historique de versions ; localStorage en secours
@@ -1686,10 +1688,9 @@ function boardLoad(b) {
 const stText = s => ({ ok: t('stOk'), part: t('stPart'), warn: t('stElWarn'), over: t('stElOver'), unk: '', na: t('stNa'), free: t('stFree') }[s] || '');
 function renderElec() {
   ensureLieu(state.d);
-  const L = state.d.lieu, st = L.settings, ev = state.elecView || 'lines';
-  const head = `<div class="subtabs">${['lines', 'syno'].map(k => `<button type="button" data-ev="${k}"${k === ev ? ' class="on"' : ''}>${esc(t('ev' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}<span class="sep"></span><button type="button" data-golab="elec">${esc(t('goLab'))} →</button></div>`;
+  const L = state.d.lieu, st = L.settings, ev = 'lines';
+  const head = `<div class="subtabs">${['lines'].map(k => `<button type="button" data-ev="${k}"${k === ev ? ' class="on"' : ''}>${esc(t('ev' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}<span class="sep"></span><button type="button" data-gosyn="elec">${esc(t('tabSyno'))} →</button><button type="button" data-golab="elec">${esc(t('goLab'))} →</button></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  if (ev === 'syno') { $('#view').innerHTML = head + renderSyno(); return; }
   const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
   const inB = (b, f, v, w, num) => `<input class="c box" data-b="${esc(b.id)}" data-bf="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
   const inL = (l, f, v, w, num) => `<input class="c box" data-l="${esc(l.id)}" data-lf="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
@@ -1741,6 +1742,94 @@ function renderElec() {
 <div class="gridwrap"><table class="grid"><thead><tr>${['lnName', 'lnBoard', 'lnKind', 'lnPhase', 'lnAmps', 'lnDest', 'lnDimmer', 'lnDmx', 'lnFix', 'lnPower', 'lnLoad', 'lnNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${lRows}</tbody></table></div>`;
 }
 // synoptique : un schéma unifilaire par tableau, découpé en blocs imprimables
+// ───────────── synoptique réseau et DMX ─────────────
+// arbre de gauche à droite : switches → appareils (raccordés par leur switch et leur port) → lignes DMX des nodes et consoles → arrivées
+function renderNetSyno() {
+  const L = state.d.lieu, st = L.settings, x = s => esc(String(s ?? ''));
+  if (!L.devices.length && !L.dmxLines.length) return `<p class="hint" style="margin-top:16px">${x(t('nsEmpty'))}</p>`;
+  const iss = netIssues(), N = [], byName = new Map();
+  const node = o => { o.kids = []; N.push(o); return o; };
+  // appareils du réseau, et consoles qui n'y figurent pas
+  L.devices.forEach(d => { const n = node({ t: 'dev', d, name: d.name || '?', kind: d.kind || 'other' }); if (d.name && !byName.has(d.name)) byName.set(d.name, n); });
+  L.consoles.forEach(c => {
+    const host = c.device && byName.get(c.device);
+    if (host) { host.cons = (host.cons || []).concat(c); if (c.name && !byName.has(c.name)) byName.set(c.name, host); }
+    else if (c.name && !byName.has(c.name)) byName.set(c.name, node({ t: 'dev', d: { name: c.name, kind: 'console' }, name: c.name, kind: 'console', cons: [c], virtual: true }));
+  });
+  // raccordement Ethernet : switch de l'appareil (garde-fou contre les boucles)
+  for (const n of N) {
+    const sw = n.d && n.d.sw && byName.get(n.d.sw);
+    if (!sw || sw === n) continue;
+    let p = sw, loop = false; while (p) { if (p === n) { loop = true; break; } p = p.parent; }
+    if (!loop) { n.parent = sw; n.port = n.d.port; sw.kids.push(n); }
+  }
+  // lignes DMX : sous leur source ; source inconnue → boîte « source » à part
+  for (const l of [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name))) {
+    let src = l.src && byName.get(l.src);
+    if (!src) { const k = 'src:' + (l.src || '?'); src = byName.get(k) || node({ t: 'dev', d: { name: l.src || '?' }, name: l.src || '?', kind: 'src', virtual: true }); byName.set(k, src); }
+    const ch = dmxChain(l), ln = node({ t: 'dmx', l, name: l.name, parent: src, port: l.port, n: ch.length });
+    src.kids.push(ln);
+    if (l.dest) { const pn = node({ t: 'pos', name: l.dest, parent: ln, n: state.d.fixtures.filter(f => f.position === l.dest && f.dmxLine === l.name).length }); ln.kids.push(pn); }
+  }
+  // ordre : switches, consoles, nodes, puis le reste ; enfants dans l'ordre des ports
+  const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, splitter: 3, src: 4 }[n.kind] ?? 5);
+  const cmp = (a, b) => rank(a) - rank(b) || natCmp(String(a.port ?? ''), String(b.port ?? '')) || natCmp(a.name, b.name);
+  const roots = N.filter(n => !n.parent).sort(cmp);
+  const CW = 214, BW = 176, BH = 50, RH = 60, PAD = 18, TOP = 70;
+  let row = 0, maxD = 0;
+  const place = (n, dep) => {
+    n.dep = dep; maxD = Math.max(maxD, dep); n.kids.sort(cmp);
+    if (!n.kids.length) { n.y = row++ * RH; return; }
+    n.kids.forEach(k => place(k, dep + 1));
+    n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2;
+  };
+  roots.forEach((r, i) => { if (i && r.kids.length) row += .35; place(r, 0); });
+  const W = PAD * 2 + (maxD + 1) * CW - (CW - BW), H = TOP + row * RH + 30;
+  const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
+  const ucol = u => u ? pal[(+u - 1) % pal.length] : '#888';
+  const X = n => PAD + n.dep * CW, Y = n => TOP + n.y;
+  let edges = '', boxes = '';
+  for (const n of N) {
+    const bx = X(n), by = Y(n), bad = n.d && n.d.id && iss.has(n.d.id);
+    if (n.parent) {
+      const p = n.parent, x1 = X(p) + BW, y1 = Y(p) + BH / 2, x2 = bx, y2 = by + BH / 2, xm = x1 + (x2 - x1) * .45;
+      const dmx = n.t === 'dmx', pos = n.t === 'pos', col = dmx ? ucol(n.l.universe) : pos ? ucol(p.l.universe) : 'var(--ink)';
+      edges += `<path d="M${x1} ${y1} H${xm} V${y2} H${x2}" fill="none" stroke="${col}" stroke-width="${dmx ? 2.6 : pos ? 1.6 : 1.6}"${pos ? ' stroke-dasharray="5 4"' : ''}/>`;
+      if (n.port !== undefined && n.port !== null && n.port !== '') edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(dmx ? t('nsDmxPort', n.port) : t('nsPort', n.port))}</text>`;
+    }
+    let l1 = n.name, l2 = '', l3 = '', stripe = '', cls = 'box';
+    if (n.t === 'dev') {
+      const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
+      l2 = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean).join(' · ');
+      l3 = n.d.ip ? n.d.ip + (n.d.vlan ? ' · VLAN ' + n.d.vlan : '') : n.virtual ? t('nsNoIp') : '';
+      stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
+      if (n.virtual || (n.kind !== 'switch' && !n.parent && L.devices.some(d => d.kind === 'switch'))) cls += ' loose';
+    } else if (n.t === 'dmx') {
+      l2 = [n.l.universe ? 'U ' + n.l.universe + (st.proto === 'sacn' ? '' : ' · ' + artAddr(n.l.universe)) : '', n.l.length ? n.l.length + ' m' : ''].filter(Boolean).join(' · ');
+      l3 = n.n ? t('nsFx', n.n) : ''; stripe = ucol(n.l.universe);
+    } else { l2 = n.n ? t('nsFx', n.n) : ''; stripe = '#c9c9c4'; cls += ' pos'; }
+    boxes += `<g${bad ? ' class="bad"' : ''}><rect class="${cls}" x="${bx}" y="${by}" width="${BW}" height="${BH}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${BH}" rx="2" fill="${stripe}"/>
+<text x="${bx + 13}" y="${by + 17}" font-size="13" font-weight="700">${x(l1.length > 24 ? l1.slice(0, 23) + '…' : l1)}</text>
+<text x="${bx + 13}" y="${by + 31}" font-size="10.5" class="mut">${x(l2.length > 30 ? l2.slice(0, 29) + '…' : l2)}</text><text x="${bx + 13}" y="${by + 44}" font-size="10.5"${n.t === 'dev' ? ` style="font-family:'IBM Plex Mono',monospace"` : ''}>${x(l3)}</text></g>`;
+  }
+  const head = `<text x="${PAD}" y="26" font-size="17" font-weight="700">${x(t('nsTitle'))}</text>
+<text x="${PAD}" y="46" font-size="12" class="mut">${x([st.proto === 'sacn' ? 'sACN' : 'Art-Net', st.net ? `${t('setNet')} ${st.net} / ${st.mask || ''}` : '', st.gw ? `${t('setGw')} ${st.gw}` : ''].filter(Boolean).join(' · '))}</text>
+<g font-size="10.5" class="mut"><line x1="${W - 330}" y1="22" x2="${W - 300}" y2="22" stroke="var(--ink)" stroke-width="1.6"/><text x="${W - 294}" y="26">Ethernet</text>
+<line x1="${W - 230}" y1="22" x2="${W - 200}" y2="22" stroke="#4363d8" stroke-width="2.6"/><text x="${W - 194}" y="26">DMX</text>
+<line x1="${W - 150}" y1="22" x2="${W - 120}" y2="22" stroke="#888" stroke-width="1.6" stroke-dasharray="5 4"/><text x="${W - 114}" y="26">${x(t('nsLands'))}</text></g>`;
+  return `<h1 class="ptitle">${x(t('nsTitle'))} — ${x(state.d.meta.titre || '')} — ${x(state.d.meta.date || '')}</h1>
+<p class="hint noprint" style="margin:12px 0 0">${x(t('nsHint'))}</p>
+<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 700)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${boxes}</svg></div>`;
+}
+const SYN_VIEWS = ['elec', 'net'];
+function renderSynoView() {
+  ensureLieu(state.d);
+  const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec';
+  const head = `<div class="subtabs">${SYN_VIEWS.map(k => `<button type="button" data-sv="${k}"${k === sv ? ' class="on"' : ''}>${esc(t('sv_' + k))}</button>`).join('')}</div>
+<div class="settings noprint" style="margin-bottom:0"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
+  $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
+  $('#view').innerHTML = head + (sv === 'elec' ? renderSyno() : renderNetSyno());
+}
 function renderSyno() {
   const L = state.d.lieu, V = +L.settings.volts || 230;
   if (!L.lines.length) return `<p class="hint" style="margin-top:16px">${esc(t('synEmpty'))}</p>`;
@@ -1923,7 +2012,7 @@ function renderNet() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings, nv = ['labels', 'fxlabels', 'sheet', 'diff'].includes(state.netView) ? 'univ' : state.netView || 'univ';
   const sb = k => `<button type="button" data-nv="${k}"${k === nv ? ' class="on"' : ''}>${esc(t('nv' + k[0].toUpperCase() + k.slice(1)))}</button>`;
-  const head = `<div class="subtabs">${['console', 'univ', 'dmx', 'net'].map(sb).join('')}<span class="sep"></span><button type="button" data-golab="dmx">${esc(t('goLab'))} →</button></div>`;
+  const head = `<div class="subtabs">${['console', 'univ', 'dmx', 'net'].map(sb).join('')}<span class="sep"></span><button type="button" data-gosyn="net">${esc(t('tabSyno'))} →</button><button type="button" data-golab="dmx">${esc(t('goLab'))} →</button></div>`;
   const title = k => `<h1 class="ptitle">${esc(t(k))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>`;
   const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
   const inp = (o, x, f, v, w, num, cls) => `<input class="c box${cls ? ' ' + cls : ''}" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
@@ -2443,7 +2532,7 @@ document.getElementById('view').addEventListener('click', e => {
   if (kind === 'plan') renderPlanView(); else { const bar = document.querySelector('.vbar'); if (bar) bar.outerHTML = viewBar('3d'); }
 });
 // ───────────── dossier complet ─────────────
-const DOS_SECTIONS = ['cover', 'plan', 'patch', 'loads', 'heads', 'elec', 'syno', 'dmx', 'inv', 'ecart'];
+const DOS_SECTIONS = ['cover', 'plan', 'patch', 'loads', 'heads', 'elec', 'syno', 'dmx', 'netsyno', 'inv', 'ecart'];
 const dtab = (heads, rows) => `<table class="dtab"><thead><tr>${heads.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
 const td = (v, c) => `<td${c ? ` class="${c}"` : ''}>${v === null || v === undefined || v === '' ? '' : esc(v)}</td>`;
 function withTemp(obj, patch, fn) { const old = {}; for (const k in patch) { old[k] = obj[k]; obj[k] = patch[k]; } try { return fn(); } finally { Object.assign(obj, old); } }
@@ -2497,6 +2586,7 @@ ${cRows.length ? `<h3>${esc(t('dConsoles'))}</h3>${dtab([t('cnName'), t('cnRole'
 ${dRows.length ? `<h3>${esc(t('dDmxLines'))}</h3>${dtab([t('dlName'), t('dlSrc'), t('dlPort'), t('dlU'), t('dlDest'), t('dlLen'), t('dlN'), t('dlChain')], dRows)}` : ''}
 ${vRows.length ? `<h3>${esc(t('dDevices'))}</h3>${dtab([t('dvName'), t('dvKind'), t('dvIp'), t('dvMask'), t('dvVlan'), t('dvSwitch'), t('dvPort'), t('dvMac'), t('dvLoc')], vRows)}` : ''}</div>`);
   }
+  if (S.netsyno && (L.devices.length || L.dmxLines.length)) sec('netsyno', `<div class="dpage"><h2>${esc(t('nsTitle'))}</h2>${renderNetSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '').replace(/<p class="hint noprint"[^]*?<\/p>/, '')}</div>`);
   if (S.inv) {
     const qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
     const PR = (L.parc || []).length ? new Map(parcAlloc().rows.map(r => [r.k, r])) : null;
@@ -3318,7 +3408,7 @@ ${['barre', 'blinder', 'strobe', 'video', 'fog', 'cube'].includes(ty.shape && ty
 <tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
 <td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td><td></td></tr></tbody></table></div>`;
 }
-const TAB_KEYS = { labels: 'tabLabels', fixtures: 'tabFixtures', plan: 'tabPlan', v3d: 'tab3d', rigging: 'tabRigging', elec: 'tabElec', net: 'tabNet', inventory: 'tabInventory', dossier: 'tabDossier' };
+const TAB_KEYS = { syno: 'tabSyno', labels: 'tabLabels', fixtures: 'tabFixtures', plan: 'tabPlan', v3d: 'tab3d', rigging: 'tabRigging', elec: 'tabElec', net: 'tabNet', inventory: 'tabInventory', dossier: 'tabDossier' };
 function render() {
   $('#pagesize').textContent = '';
   $('#viewTitle').textContent = t(TAB_KEYS[state.tab] || 'tabFixtures');
@@ -3337,6 +3427,7 @@ function render() {
   else if (state.tab === 'net') renderNet();
   else if (state.tab === 'inventory') renderInventory();
   else if (state.tab === 'labels') renderLabels();
+  else if (state.tab === 'syno') renderSynoView();
   else renderFixtures();
 }
 
@@ -3521,6 +3612,8 @@ view.addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.ev) { state.elecView = b.dataset.ev; store.set('elecView', state.elecView); render(); return; }
   if (b.dataset.golab) { state.labView = b.dataset.golab; store.set('labView', state.labView); const nb = document.querySelector('#tabs button[data-v=labels]'); if (nb) nb.click(); return; }
+  if (b.dataset.sv) { state.synView = b.dataset.sv; store.set('synView', state.synView); render(); return; }
+  if (b.dataset.gosyn) { state.synView = b.dataset.gosyn; store.set('synView', state.synView); const nb = document.querySelector('#tabs button[data-v=syno]'); if (nb) nb.click(); return; }
   if (b.dataset.pv) { state.patchView = b.dataset.pv; store.set('patchView', state.patchView); render(); return; }
   if (b.dataset.lv) { state.labView = b.dataset.lv; store.set('labView', state.labView); render(); return; }
   if (b.dataset.nv) { state.netView = b.dataset.nv; store.set('netView', state.netView); render(); return; }
