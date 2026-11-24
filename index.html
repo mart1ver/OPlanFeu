@@ -343,6 +343,14 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .doctool { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
 .doctool .zoom { display: flex; align-items: center; gap: 6px; } .doctool input[type=range] { accent-color: var(--accent); width: 120px; }
 .subtabs .sep { width: 1px; background: var(--line); margin: 0 4px; }
+.bkstate button { font: inherit; font-size: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 4px 11px; cursor: pointer; white-space: nowrap; max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+.bkstate.ok button { color: var(--ok); } .bkstate.warn button { color: #fff; background: #c77700; border-color: #c77700; } .bkstate.bad button { color: #fff; background: var(--err); border-color: var(--err); }
+.bkline { display: flex; gap: 9px; align-items: flex-start; font-size: 12.5px; margin: 0 0 10px; } .bkline span { color: var(--muted); } .bkline small { color: var(--muted); font-size: 11px; } .bkline small.bad { color: var(--err); }
+.bkline i { flex: none; width: 9px; height: 9px; border-radius: 50%; margin-top: 4px; background: var(--line); } .bkline i.ok { background: var(--ok); } .bkline i.warn { background: #e8a317; } .bkline i.bad { background: var(--err); }
+.bkbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+dialog#bkDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 860px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); } dialog#bkDlg::backdrop { background: rgba(0,0,0,.45); }
+.bkdlg h2 { margin: 0; font-size: 17px; } .bkdlg h3 { margin: 16px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); } .bkhead { display: flex; justify-content: space-between; align-items: center; }
+#bkVers, #bkDos { max-height: 34vh; overflow: auto; } #bkVers td, #bkDos td { padding: 5px 8px; } #bkDos tr.cur td { background: color-mix(in srgb, var(--accent, #e8a317) 12%, transparent); }
 dialog#gdtfDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 760px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); } dialog#gdtfDlg::backdrop { background: rgba(0,0,0,.45); } dialog#gdtfDlg h2 { margin: 0 0 6px; font-size: 17px; } #gdtfRows td { padding: 6px; white-space: normal; } #gdtfRows small { color: var(--muted); } #gdtfRows select { font: inherit; font-size: 13px; max-width: 16em; }
 dialog#mapDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 600px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); }
 dialog#mapDlg::backdrop { background: rgba(0,0,0,.45); }
@@ -566,8 +574,11 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <button type="button" class="linkbtn" id="mapBtn" data-i18n="mapBtn" hidden>Colonnes du fichier CSV…</button>
       <a class="btn ghost" href="https://mart1ver.github.io/GiveMeThePatch/" target="_blank" rel="noopener" data-i18n="openGmtp">Ouvrir Give Me The Patch</a>
       <button class="btn ghost" id="print" data-i18n="print">Imprimer la vue affichée</button>
-      <p class="hint" data-i18n="saveHint">Le dossier est aussi gardé dans ce navigateur au fil des modifications.</p>
+      
     </div></details>
+
+    <details class="sec" id="bkBox" data-sec="bk" open>
+      <summary data-i18n="bkTitle">Sauvegarde</summary><div class="secbody" id="bkBody"></div></details>
 
     <details class="sec sidefoot" data-sec="plugins">
       <summary data-i18n="legPlugins">Plugins pour la console</summary><div class="secbody">
@@ -588,6 +599,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
         <select id="fType"></select>
         <span class="count" id="count"></span>
       </div>
+      <span class="bkstate" id="bkState"></span>
     </div>
     <div class="bulk" id="bulk">
       <b id="selCount"></b>
@@ -614,6 +626,17 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
     <div style="max-height:60vh;overflow:auto;margin:10px 0"><table class="grid"><tbody id="gdtfRows"></tbody></table></div>
     <div class="mapbtns"><button type="button" class="btn ghost" id="gdtfCancel" data-i18n="mapCancel">Annuler</button><button type="submit" class="btn" data-i18n="gdApply">Rattacher</button></div>
   </form>
+</dialog>
+<dialog id="bkDlg">
+  <div class="bkdlg">
+    <div class="bkhead"><h2 data-i18n="bkTitle">Sauvegarde</h2><button type="button" class="iconbtn" data-bk="close">✕</button></div>
+    <p class="hint2" data-i18n="bkDlgHint"></p>
+    <h3 data-i18n="bkVersions">Versions de ce dossier</h3><div id="bkVers"></div>
+    <h3 data-i18n="bkDossiers">Dossiers gardés dans ce navigateur</h3><div id="bkDos"></div>
+    <h3 data-i18n="bkArchive">Tout sauvegarder</h3><p class="hint2" data-i18n="bkArchiveHint"></p>
+    <div class="bkbtns"><button type="button" class="minibtn primary" data-bk="all" data-i18n="bkAll">Tout exporter (.zip)</button><button type="button" class="minibtn" data-bk="allin" data-i18n="bkAllIn">Restaurer une archive…</button></div>
+    <input type="file" id="bkFile" accept=".zip" hidden>
+  </div>
 </dialog>
 <dialog id="mapDlg">
   <form method="dialog" id="mapForm">
@@ -648,12 +671,14 @@ const I18N = {
     dropLoaded: 'Dossier ouvert', dropChange: 'Cliquer ou déposer un fichier pour en ouvrir un autre',
     legDossier: 'Dossier', mTitre: 'Titre', mKind: 'Type', kindLieu: 'Lieu', kindShow: 'Spectacle accueilli', mDate: 'Date', mLieu: 'Lieu / salle', mAuteur: 'Responsable', mNotes: 'Notes',
     legSummary: 'En bref', legOut: 'Enregistrer et exporter',
-    save: 'Enregistrer le dossier (.json)', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
+    save: 'Enregistrer le dossier (.json) — Ctrl+S', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
     tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
     navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
+    bkTitle: 'Sauvegarde', bkBrowser: 'Dans ce navigateur', bkAt: h => `enregistré à ${h}`, bkPersist: 'Stockage protégé : le navigateur ne l’effacera pas pour faire de la place.', bkNotPersist: 'Stockage non protégé : le navigateur peut l’effacer s’il manque de place. Garde aussi une copie sur le disque.', bkBrowserErr: 'enregistrement dans le navigateur impossible', bkFile: 'Fichier sur le disque', bkFileNone: 'Aucun : lie le dossier à un fichier, il sera réécrit à chaque modification (dans un dossier Nextcloud, Dropbox ou Drive, il part aussi hors de l’ordinateur).', bkLink: 'Enregistrer dans un fichier…', bkUnlink: 'Délier', bkResume: 'Reprendre l’enregistrement', bkNeedPerm: 'enregistrement sur le disque en pause : clique pour reprendre', bkDiskErr: 'erreur d’écriture sur le disque', bkSaving: 'enregistrement…', bkOnDisk: (n, h) => `enregistré dans ${n}${h ? ' à ' + h : ''}`, bkInBrowser: h => `gardé dans le navigateur${h ? ' à ' + h : ''}`, bkRemind: 'pas de copie sur le disque depuis 30 min : télécharger', bkDl: 'Copie sur le disque', bkLastDl: d => `dernière copie téléchargée le ${d}`, bkNoDl: 'aucune copie téléchargée', bkNoFsa: 'Ce navigateur ne peut pas réécrire un fichier : télécharge une copie de temps en temps (Ctrl+S), ou utilise Chrome ou Edge pour l’enregistrement automatique sur le disque.', bkDlNow: 'Télécharger une copie', bkDir: 'Dossier de sauvegarde', bkDirNone: 'Aucun : choisis un dossier, une copie datée de chaque dossier OPlanFeu y est écrite tous les quarts d’heure de travail (40 gardées par dossier).', bkDirHint: 'copie datée tous les quarts d’heure de travail, 40 gardées', bkDirPick: 'Choisir un dossier…', bkDirChange: 'Changer…', bkDirNow: 'Copier maintenant', bkHistory: 'Versions et dossiers…', bkAll: 'Tout exporter (.zip)', bkAllIn: 'Restaurer une archive…',
+    bkDlgHint: 'Chaque dossier ouvert reste gardé dans ce navigateur, avec une version toutes les 10 minutes de travail (les 25 dernières, puis une par jour) et à chaque ouverture, import ou restauration. Ctrl+S enregistre tout de suite.', bkVersions: 'Versions de ce dossier', bkDossiers: 'Dossiers gardés dans ce navigateur', bkArchive: 'Tout sauvegarder', bkArchiveHint: 'Une archive .zip avec tous les dossiers du navigateur, la bibliothèque de profils GDTF et les réglages : à garder sur un disque ou un serveur, et à recharger sur un autre ordinateur (dépose-la sur la page).', bkWhen: 'Date', bkWhy: 'Origine', bkFix: 'Projecteurs', bkUpdated: 'Modifié', bkCurrent: 'ouvert', bkOpen: 'Ouvrir', bkDlShort: 'Télécharger', bkRestore: 'Restaurer', bkNoVer: 'Pas encore de version.', bkVerNow: 'Créer une version maintenant', bkRestoreAsk: d => `Revenir à la version du ${d} ? L’état actuel est gardé comme version.`, bkDelAsk: n => `Supprimer « ${n} » et ses versions de ce navigateur ? (Les fichiers sur le disque ne sont pas touchés.)`, bkImported: (n, g) => `Archive restaurée : ${n} dossier(s) ajouté(s) ou mis à jour, ${g} profil(s) GDTF.`, bkNotBackup: 'Ce fichier n’est pas une archive de sauvegarde OPlanFeu.', bkR_auto: 'automatique', bkR_import: 'import', bkR_open: 'ouverture', bkR_restore: 'avant restauration', bkR_manual: 'manuelle',
     iv_parc: 'Parc du lieu', iv_ecart: 'Écart avec le parc', pcTitle: 'Parc du lieu', pcHint: "Les appareils que le lieu possède, avec leur quantité. Le parc est enregistré avec le fichier de lieu et sert à l’onglet « Écart avec le parc » : la fiche technique d’un spectacle (le dossier ouvert) comparée à ce que le lieu peut fournir. Import d’une liste (CSV ou texte « 12 x MAC Aura », colonnes nom, quantité, fabricant, puissance…), d’un MVR ou d’un dossier (un appareil par type) ; ou reprise des types du dossier ouvert (stock saisi, sinon quantité).", pcAdd: 'Ajouter un appareil', pcImport: 'Importer une liste…', pcSeed: 'Reprendre les types du dossier', pcClear: 'Vider le parc', pcClearAsk: 'Vider tout le parc du lieu ?', pcNew: 'Nouvel appareil', pcName: 'Appareil', pcFam: 'Famille', pcQty: 'Quantité', pcUsed: 'Pris par le dossier', pcNotes: 'Notes', pcEmpty: 'Parc vide : ajoute les appareils du lieu, importe une liste ou reprends les types du dossier.', pcNone: 'Aucun appareil trouvé dans ce fichier.', pcImported: (a, u) => `Parc : ${a} appareil(s) ajouté(s), ${u} mis à jour.`,
     ecTitle: 'Écart fiche technique / parc du lieu', ecHint: "Pour chaque type demandé par le dossier, l’appareil du parc qui le fournit : le même (=, trouvé par le nom) ou une équivalence (≈) choisie dans la liste, de la même famille de préférence. Les mêmes appareils sont servis d’abord, puis les équivalences. Indique ce que la compagnie apporte ; le reste est à trouver (location). Suggestion : appareil libre de la même famille, à la puissance la plus proche.", ecNoParc: 'Le parc du lieu est vide : renseigne-le d’abord (ou charge un fichier de lieu qui le contient).', ecType: 'Type demandé', ecAsked: 'Demandés', ecVenue: 'Appareil du lieu', ecAvail: 'Dispo.', ecTaken: 'Fournis par le lieu', ecComp: 'Apportés', ecShort: 'À trouver', ecNotes: 'Remarques', ecAuto: n => `auto : ${n}`, ecNone: 'aucun (à apporter ou louer)', ecGrpSame: f => `Même famille (${f})`, ecGrpOther: 'Autres familles', ecExact: 'même appareil', ecSub: 'équivalence', ecSameFam: 'équivalence, même famille', ecOtherFam: f => `autre famille (${f})`, ecPow: w => `${w} W par appareil`, ecSugg: (n, q) => `suggestion : ${n} (${q} libres)`, ecTakeT: 'Prendre cet appareil du parc en équivalence', ecFree: 'Parc non utilisé', ecFreeNone: 'Tout le parc est utilisé.', ecReset: 'Revenir aux choix automatiques', ecResetAsk: 'Effacer les équivalences choisies et les quantités apportées ?', ecK_n: 'demandés', ecK_same: 'mêmes appareils', ecK_sub: 'équivalences', ecK_comp: 'apportés', ecK_short: 'à trouver', sEcart: 'Écart avec le parc du lieu', alParc: n => `${n} appareil(s) à trouver (écart avec le parc)`, invFromParc: 'Tiré du parc du lieu (onglet Écart avec le parc)', invComp: 'apportés',
     iv_inv: 'Inventaire', iv_gdtf: 'GDTF du projet', gdType: 'Type', gdSource: 'Profil', gdFile: 'Fichier GDTF', gd3d: '3D', gdCh: 'Canaux', gdMode: 'Mode utilisé',
@@ -771,12 +796,14 @@ const I18N = {
     dropLoaded: 'Dossier open', dropChange: 'Click or drop a file to open another one',
     legDossier: 'Dossier', mTitre: 'Title', mKind: 'Type', kindLieu: 'Venue', kindShow: 'Visiting show', mDate: 'Date', mLieu: 'Venue / room', mAuteur: 'In charge', mNotes: 'Notes',
     legSummary: 'At a glance', legOut: 'Save and export',
-    save: 'Save the dossier (.json)', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
+    save: 'Save the dossier (.json) — Ctrl+S', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
     tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
     vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
     navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
+    bkTitle: 'Backup', bkBrowser: 'In this browser', bkAt: h => `saved at ${h}`, bkPersist: 'Protected storage: the browser will not clear it to free space.', bkNotPersist: 'Unprotected storage: the browser may clear it when short of space. Keep a copy on disk too.', bkBrowserErr: 'cannot save in the browser', bkFile: 'File on disk', bkFileNone: 'None: link the dossier to a file, it is rewritten on every change (in a Nextcloud, Dropbox or Drive folder it also leaves the computer).', bkLink: 'Save to a file…', bkUnlink: 'Unlink', bkResume: 'Resume saving', bkNeedPerm: 'saving to disk paused: click to resume', bkDiskErr: 'disk write error', bkSaving: 'saving…', bkOnDisk: (n, h) => `saved to ${n}${h ? ' at ' + h : ''}`, bkInBrowser: h => `kept in the browser${h ? ' at ' + h : ''}`, bkRemind: 'no copy on disk for 30 min: download', bkDl: 'Copy on disk', bkLastDl: d => `last copy downloaded ${d}`, bkNoDl: 'no copy downloaded', bkNoFsa: 'This browser cannot rewrite a file: download a copy now and then (Ctrl+S), or use Chrome or Edge for automatic saving to disk.', bkDlNow: 'Download a copy', bkDir: 'Backup folder', bkDirNone: 'None: choose a folder, a dated copy of each OPlanFeu dossier is written there every quarter hour of work (40 kept per dossier).', bkDirHint: 'dated copy every quarter hour of work, 40 kept', bkDirPick: 'Choose a folder…', bkDirChange: 'Change…', bkDirNow: 'Copy now', bkHistory: 'Versions and dossiers…', bkAll: 'Export everything (.zip)', bkAllIn: 'Restore an archive…',
+    bkDlgHint: 'Every dossier you open stays in this browser, with a version every 10 minutes of work (the last 25, then one a day) and on each open, import or restore. Ctrl+S saves at once.', bkVersions: 'Versions of this dossier', bkDossiers: 'Dossiers kept in this browser', bkArchive: 'Back up everything', bkArchiveHint: 'A .zip archive with all the browser dossiers, the GDTF profile library and the settings: keep it on a disk or server, and reload it on another computer (drop it on the page).', bkWhen: 'Date', bkWhy: 'Origin', bkFix: 'Fixtures', bkUpdated: 'Modified', bkCurrent: 'open', bkOpen: 'Open', bkDlShort: 'Download', bkRestore: 'Restore', bkNoVer: 'No version yet.', bkVerNow: 'Create a version now', bkRestoreAsk: d => `Go back to the version of ${d}? The current state is kept as a version.`, bkDelAsk: n => `Delete “${n}” and its versions from this browser? (Files on disk are not touched.)`, bkImported: (n, g) => `Archive restored: ${n} dossier(s) added or updated, ${g} GDTF profile(s).`, bkNotBackup: 'This file is not an OPlanFeu backup archive.', bkR_auto: 'automatic', bkR_import: 'import', bkR_open: 'open', bkR_restore: 'before restore', bkR_manual: 'manual',
     iv_parc: 'Venue stock', iv_ecart: 'Gap with the stock', pcTitle: 'Venue stock', pcHint: 'The fixtures the venue owns, with their quantity. The stock is saved with the venue file and feeds the “Gap with the stock” tab: a show rider (the open dossier) compared with what the venue can supply. Import a list (CSV or text “12 x MAC Aura”, columns name, quantity, manufacturer, power…), an MVR or a dossier (one item per type); or take the types of the open dossier (stock entered, otherwise quantity).', pcAdd: 'Add an item', pcImport: 'Import a list…', pcSeed: 'Take the dossier types', pcClear: 'Clear the stock', pcClearAsk: 'Clear the whole venue stock?', pcNew: 'New item', pcName: 'Item', pcFam: 'Family', pcQty: 'Quantity', pcUsed: 'Used by the dossier', pcNotes: 'Notes', pcEmpty: 'Empty stock: add the venue items, import a list or take the dossier types.', pcNone: 'No item found in this file.', pcImported: (a, u) => `Stock: ${a} item(s) added, ${u} updated.`,
     ecTitle: 'Rider / venue stock gap', ecHint: 'For each type the dossier asks for, the stock item that supplies it: the same (=, matched by name) or a substitute (≈) chosen in the list, preferably of the same family. Same items are served first, then substitutes. Enter what the company brings; the rest is to be found (rental). Suggestion: free item of the same family with the closest power.', ecNoParc: 'The venue stock is empty: fill it first (or load a venue file that holds it).', ecType: 'Requested type', ecAsked: 'Requested', ecVenue: 'Venue item', ecAvail: 'Avail.', ecTaken: 'Supplied by venue', ecComp: 'Brought', ecShort: 'To find', ecNotes: 'Remarks', ecAuto: n => `auto: ${n}`, ecNone: 'none (bring or rent)', ecGrpSame: f => `Same family (${f})`, ecGrpOther: 'Other families', ecExact: 'same item', ecSub: 'substitute', ecSameFam: 'substitute, same family', ecOtherFam: f => `other family (${f})`, ecPow: w => `${w} W per unit`, ecSugg: (n, q) => `suggestion: ${n} (${q} free)`, ecTakeT: 'Use this stock item as a substitute', ecFree: 'Unused stock', ecFreeNone: 'The whole stock is used.', ecReset: 'Back to automatic choices', ecResetAsk: 'Clear the chosen substitutes and brought quantities?', ecK_n: 'requested', ecK_same: 'same items', ecK_sub: 'substitutes', ecK_comp: 'brought', ecK_short: 'to find', sEcart: 'Gap with the venue stock', alParc: n => `${n} item(s) to find (gap with the stock)`, invFromParc: 'From the venue stock (Gap with the stock tab)', invComp: 'brought',
     iv_inv: 'Inventory', iv_gdtf: 'Project GDTFs', gdType: 'Type', gdSource: 'Profile', gdFile: 'GDTF file', gd3d: '3D', gdCh: 'Channels', gdMode: 'Mode used',
@@ -1202,26 +1229,217 @@ function checkDossier(d) {
 // ───────────── état ─────────────
 const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
-// dossier courant : IndexedDB (modèles 3D et GDTF compris, pas de limite de 5 Mo) ; localStorage en secours, allégé si trop gros
+// ───────────── sauvegarde ─────────────
+// 1. navigateur (IndexedDB) : chaque dossier ouvert est gardé, avec un historique de versions ; localStorage en secours
+// 2. fichier lié sur le disque (Chrome, Edge) : réécrit à chaque modification
+// 3. dossier de sauvegarde sur le disque (Chrome, Edge) : une copie horodatée régulière par dossier
+// 4. archive complète (.zip) : tous les dossiers du navigateur, la bibliothèque GDTF et les réglages
+const BK = { dirty: false, diskAt: 0, diskErr: '', diskPerm: '', handle: null, dir: null, dirPerm: '', dirAt: 0, dirty2: false, persisted: null, timer: 0, saving: null };
+const FSA = typeof window.showSaveFilePicker === 'function';
+const VER_EVERY = 10 * 60e3, DIR_EVERY = 15 * 60e3, VER_KEEP = 25, DIR_KEEP = 40, DL_REMIND = 30 * 60e3;
 const DOSDB = {
-  open() { return this.db || (this.db = new Promise((ok, ko) => { try { const r = indexedDB.open('oplanfeu-dossier', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); } catch (e) { ko(e); } })); },
-  async put(v) { const db = await this.open(); return new Promise((ok, ko) => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, 'current'); tx.oncomplete = () => ok(); tx.onerror = () => ko(tx.error); tx.onabort = () => ko(tx.error); }); },
-  async get() { const db = await this.open(); return new Promise(ok => { const r = db.transaction('kv').objectStore('kv').get('current'); r.onsuccess = () => ok(r.result || null); r.onerror = () => ok(null); }); },
+  open() {
+    return this.db || (this.db = new Promise((ok, ko) => {
+      try {
+        const r = indexedDB.open('oplanfeu-dossier', 2);
+        r.onupgradeneeded = () => {
+          const db = r.result;
+          if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+          if (!db.objectStoreNames.contains('dossiers')) db.createObjectStore('dossiers', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('versions')) db.createObjectStore('versions', { keyPath: 'vid', autoIncrement: true }).createIndex('id', 'id');
+        };
+        r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+      } catch (e) { ko(e); }
+    }));
+  },
+  async tx(stores, mode, fn) {
+    const db = await this.open();
+    return new Promise((ok, ko) => { const tx = db.transaction(stores, mode); let res; Promise.resolve(fn(tx, v => { res = v; })).catch(ko); tx.oncomplete = () => ok(res); tx.onerror = () => ko(tx.error); tx.onabort = () => ko(tx.error); });
+  },
+  req: r => new Promise(ok => { r.onsuccess = () => ok(r.result); r.onerror = () => ok(null); }),
+  async kvGet(k) { return this.tx('kv', 'readonly', async (tx, set) => set(await this.req(tx.objectStore('kv').get(k)))); },
+  async kvSet(k, v) { return this.tx('kv', 'readwrite', tx => { tx.objectStore('kv').put(v, k); }); },
+  async kvDel(k) { return this.tx('kv', 'readwrite', tx => { tx.objectStore('kv').delete(k); }); },
+  async getDos(id) { return this.tx('dossiers', 'readonly', async (tx, set) => set(await this.req(tx.objectStore('dossiers').get(id)))); },
+  async listDos() { return this.tx('dossiers', 'readonly', async (tx, set) => set((await this.req(tx.objectStore('dossiers').getAll())) || [])); },
+  async delDos(id) {
+    return this.tx(['dossiers', 'versions', 'kv'], 'readwrite', async tx => {
+      tx.objectStore('dossiers').delete(id); tx.objectStore('kv').delete('h:' + id);
+      const vs = (await this.req(tx.objectStore('versions').index('id').getAllKeys(id))) || []; vs.forEach(k => tx.objectStore('versions').delete(k));
+    });
+  },
+  async versions(id) { return this.tx('versions', 'readonly', async (tx, set) => set(((await this.req(tx.objectStore('versions').index('id').getAll(id))) || []).sort((a, b) => b.at - a.at))); },
+  async getVer(vid) { return this.tx('versions', 'readonly', async (tx, set) => set(await this.req(tx.objectStore('versions').get(vid)))); },
 };
-async function saveDossier(d) {
+const dosSummary = d => ({ id: d.meta.id, titre: d.meta.titre || '', lieu: d.meta.lieu || '', kind: d.meta.kind || '', nfx: d.fixtures.length, source: d.meta.source || '' });
+// enregistre le dossier dans le navigateur ; version de l'historique toutes les 10 minutes de travail (ou à la demande)
+async function saveDossier(d, reason) {
   if (!d) return;
-  const stamp = Date.now();
+  if (!d.meta.id) d.meta.id = newUuid();
+  const now = Date.now(), plain = JSON.parse(JSON.stringify(d)), id = d.meta.id;
   let idbOk = false;
-  try { await DOSDB.put({ stamp, d: JSON.parse(JSON.stringify(d)) }); idbOk = true; } catch {}
-  try { localStorage.setItem('oplanfeu.dossier', JSON.stringify(d)); localStorage.setItem('oplanfeu.dossierStamp', String(stamp)); return; } catch {}
-  // trop gros pour localStorage : copie allégée (sans modèles 3D ni fichiers GDTF), complétée depuis IndexedDB au chargement
   try {
-    const light = { ...d, meshes: {}, types: Object.fromEntries(Object.entries(d.types).map(([k, ty]) => [k, { ...ty, gdtfData: undefined, gdtfOrig: undefined }])), light: true };
-    localStorage.setItem('oplanfeu.dossier', JSON.stringify(light)); localStorage.setItem('oplanfeu.dossierStamp', String(stamp));
-  } catch {}
-  if (!idbOk) console.warn('OPlanFeu : dossier trop gros pour être gardé dans le navigateur');
+    await DOSDB.tx(['dossiers', 'kv', 'versions'], 'readwrite', async tx => {
+      tx.objectStore('dossiers').put({ ...dosSummary(d), updated: now, d: plain });
+      tx.objectStore('kv').put(id, 'cur');
+      const vs = (await DOSDB.req(tx.objectStore('versions').index('id').getAll(id))) || [];
+      const last = vs.reduce((a, v) => Math.max(a, v.at), 0);
+      if (reason || now - last >= VER_EVERY) {
+        tx.objectStore('versions').add({ id, at: now, reason: reason || 'auto', nfx: d.fixtures.length, titre: d.meta.titre || '', d: { ...plain, meshes: {}, meshesOmitted: true } });   // modèles 3D des structures : repris du dossier à la restauration
+        // on garde les 25 dernières, puis une par jour
+        const sorted = vs.sort((a, b) => b.at - a.at), seen = new Set();
+        sorted.forEach((v, i) => { const day = new Date(v.at).toDateString(); if (i >= VER_KEEP - 1 && (seen.has(day) || i > 120)) tx.objectStore('versions').delete(v.vid); seen.add(day); });
+      }
+    });
+    idbOk = true;
+  } catch (e) { console.warn('OPlanFeu : sauvegarde navigateur impossible', e); }
+  try { localStorage.setItem('oplanfeu.dossier', JSON.stringify(d)); localStorage.setItem('oplanfeu.dossierStamp', String(now)); }
+  catch {   // trop gros pour localStorage : copie allégée (sans modèles 3D ni fichiers GDTF), IndexedDB fait foi
+    try { localStorage.setItem('oplanfeu.dossier', JSON.stringify({ ...d, meshes: {}, types: Object.fromEntries(Object.entries(d.types).map(([k, ty]) => [k, { ...ty, gdtfData: undefined, gdtfOrig: undefined }])), light: true })); localStorage.setItem('oplanfeu.dossierStamp', String(now)); } catch {}
+  }
+  BK.browserAt = idbOk ? now : BK.browserAt; BK.browserErr = !idbOk;
+  if (BK.persisted === null && navigator.storage && navigator.storage.persist) { try { BK.persisted = await navigator.storage.persisted() || await navigator.storage.persist(); } catch { BK.persisted = false; } }
+  bkStatus();
 }
-function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => saveDossier(state.d), 400); refreshSide(); }
+// modification : navigateur tout de suite (0,4 s), fichier lié 1,5 s après, dossier de sauvegarde au plus tous les quarts d'heure
+function bkTouched() {
+  if (!BK.dirty) BK.firstChange = Date.now();
+  BK.dirty = true; BK.dirty2 = true;
+  clearTimeout(BK.timer); BK.timer = setTimeout(bkFlushDisk, 1500);
+  bkStatus();
+}
+async function bkFlushDisk(force) {
+  if (!state.d) return;
+  if (BK.handle) await bkWriteFile();
+  if (BK.dir && (force || (BK.dirty2 && Date.now() - BK.dirAt >= DIR_EVERY))) await bkWriteDir();
+  bkStatus();
+}
+const dosText = d => { d.meta.saved = new Date().toISOString(); return JSON.stringify(d, null, 1); };
+async function bkPerm(h, ask) {
+  if (typeof h.queryPermission !== 'function') return 'granted';
+  try { const o = { mode: 'readwrite' }; if ((await h.queryPermission(o)) === 'granted') return 'granted'; return ask ? await h.requestPermission(o) : 'prompt'; } catch { return 'denied'; }
+}
+async function bkWriteFile(ask) {
+  const h = BK.handle; if (!h || !state.d) return false;
+  BK.diskPerm = await bkPerm(h, ask);
+  if (BK.diskPerm !== 'granted') { bkStatus(); return false; }
+  try { const w = await h.createWritable(); await w.write(new Blob([dosText(state.d)], { type: 'application/json' })); await w.close(); BK.diskAt = Date.now(); BK.dirty = false; BK.diskErr = ''; }
+  catch (e) { BK.diskErr = e.message || String(e); }
+  bkStatus(); return !BK.diskErr;
+}
+const stampName = () => { const p = n => String(n).padStart(2, '0'), x = new Date(); return `${x.getFullYear()}-${p(x.getMonth() + 1)}-${p(x.getDate())}_${p(x.getHours())}${p(x.getMinutes())}${p(x.getSeconds())}`; };
+async function bkWriteDir(ask) {
+  const dir = BK.dir; if (!dir || !state.d) return false;
+  BK.dirPerm = await bkPerm(dir, ask);
+  if (BK.dirPerm !== 'granted') { bkStatus(); return false; }
+  try {
+    const sub = await dir.getDirectoryHandle(slug(state.d.meta.titre || 'dossier') + '_' + state.d.meta.id.slice(0, 8), { create: true });
+    const fh = await sub.getFileHandle(stampName() + '.oplanfeu.json', { create: true }), w = await fh.createWritable();
+    await w.write(new Blob([dosText(state.d)], { type: 'application/json' })); await w.close();
+    BK.dirAt = Date.now(); BK.dirty2 = false; BK.dirErr = '';
+    const names = []; for await (const [n, e] of sub.entries()) if (e.kind === 'file' && /\.oplanfeu\.json$/.test(n)) names.push(n);
+    names.sort().reverse().slice(DIR_KEEP).forEach(n => sub.removeEntry(n).catch(() => {}));
+  } catch (e) { BK.dirErr = e.message || String(e); }
+  bkStatus(); return !BK.dirErr;
+}
+async function bkLinkFile() {
+  if (!FSA) { bkDownload(); return; }
+  try {
+    const h = await showSaveFilePicker({ suggestedName: slug(state.d.meta.titre) + '.oplanfeu.json', types: [{ description: 'OPlanFeu', accept: { 'application/json': ['.json'] } }] });
+    BK.handle = h; await DOSDB.kvSet('h:' + state.d.meta.id, h).catch(() => {});
+    await bkWriteFile(true);
+  } catch (e) { if (e.name !== 'AbortError') alert(e.message); }
+}
+async function bkUnlinkFile() { BK.handle = null; BK.diskAt = 0; if (state.d) await DOSDB.kvDel('h:' + state.d.meta.id).catch(() => {}); bkStatus(); }
+async function bkPickDir() {
+  if (typeof window.showDirectoryPicker !== 'function') return;
+  try { const dir = await showDirectoryPicker({ id: 'oplanfeu-backup', mode: 'readwrite' }); BK.dir = dir; await DOSDB.kvSet('dir', dir).catch(() => {}); await bkWriteDir(true); }
+  catch (e) { if (e.name !== 'AbortError') alert(e.message); }
+}
+function bkDownload() {
+  const d = state.d; if (!d) return;
+  download(slug(d.meta.titre) + '_' + stampName() + '.oplanfeu.json', dosText(d), 'application/json');
+  d.meta.downloaded = new Date().toISOString(); BK.dirty = false; saveDossier(d);
+}
+// au changement de dossier : fichier lié de ce dossier, dossier de sauvegarde commun
+async function bkAttach(d) {
+  BK.handle = null; BK.diskAt = 0; BK.dirty = false; BK.diskPerm = ''; BK.dirty2 = true; BK.dirAt = 0;
+  try { BK.handle = (await DOSDB.kvGet('h:' + d.meta.id)) || null; } catch {}
+  try { if (!BK.dir) BK.dir = (await DOSDB.kvGet('dir')) || null; } catch {}
+  if (BK.handle) BK.diskPerm = await bkPerm(BK.handle, false);
+  if (BK.dir) BK.dirPerm = await bkPerm(BK.dir, false);
+  bkStatus();
+}
+const hm = ts => new Date(ts).toLocaleTimeString(LANG, { hour: '2-digit', minute: '2-digit' });
+const dmy = ts => new Date(ts).toLocaleString(LANG, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+// état affiché dans la barre et dans le panneau
+function bkStatus() {
+  const top = $('#bkState'), box = $('#bkBody'); if (!top || !box) return;
+  const d = state.d; if (!d) { top.innerHTML = ''; box.innerHTML = `<div class="bkbtns"><button type="button" class="minibtn" data-bk="open">${esc(t('bkHistory'))}</button><button type="button" class="minibtn" data-bk="allin">${esc(t('bkAllIn'))}</button></div>`; return; }
+  const x = esc, lastDl = d.meta.downloaded ? Date.parse(d.meta.downloaded) : 0;
+  let cls = 'ok', txt;
+  if (BK.browserErr) { cls = 'bad'; txt = t('bkBrowserErr'); }
+  else if (BK.handle && BK.diskPerm !== 'granted') { cls = 'warn'; txt = t('bkNeedPerm'); }
+  else if (BK.handle && BK.diskErr) { cls = 'bad'; txt = t('bkDiskErr'); }
+  else if (BK.handle) txt = BK.dirty ? t('bkSaving') : t('bkOnDisk', BK.handle.name, BK.diskAt ? hm(BK.diskAt) : '');
+  else if (!FSA && BK.dirty && Date.now() - Math.max(lastDl, BK.firstChange || 0) > DL_REMIND) { cls = 'warn'; txt = t('bkRemind'); }
+  else txt = t('bkInBrowser', BK.browserAt ? hm(BK.browserAt) : '');
+  top.className = 'bkstate ' + cls; top.innerHTML = `<button type="button" data-bk="open" title="${x(t('bkTitle'))}">${cls === 'ok' ? '✓' : '!'} ${x(txt)}</button>`;
+  const line = (ok, label, val, btns) => `<div class="bkline"><i class="${ok}"></i><div><b>${x(label)}</b><br><span>${val}</span>${btns ? `<div class="bkbtns">${btns}</div>` : ''}</div></div>`;
+  const b = (k, lab, cl = '') => `<button type="button" class="minibtn ${cl}" data-bk="${k}">${x(lab)}</button>`;
+  box.innerHTML =
+    line(BK.browserErr ? 'bad' : 'ok', t('bkBrowser'), x(BK.browserAt ? t('bkAt', hm(BK.browserAt)) : '—') + (BK.persisted === false ? `<br><small>${x(t('bkNotPersist'))}</small>` : BK.persisted ? `<br><small>${x(t('bkPersist'))}</small>` : '')) +
+    (FSA ? line(!BK.handle ? 'off' : BK.diskPerm !== 'granted' || BK.diskErr ? 'warn' : 'ok', t('bkFile'),
+      BK.handle ? x(BK.handle.name) + (BK.diskAt ? ' · ' + x(t('bkAt', hm(BK.diskAt))) : '') + (BK.diskErr ? `<br><small class="bad">${x(BK.diskErr)}</small>` : '') : x(t('bkFileNone')),
+      BK.handle ? (BK.diskPerm !== 'granted' ? b('perm', t('bkResume'), 'primary') : '') + b('unlink', t('bkUnlink')) : b('link', t('bkLink'), 'primary'))
+      : line(lastDl ? 'ok' : 'warn', t('bkDl'), x(lastDl ? t('bkLastDl', dmy(lastDl)) : t('bkNoDl')) + `<br><small>${x(t('bkNoFsa'))}</small>`, b('dl', t('bkDlNow'), 'primary'))) +
+    (typeof window.showDirectoryPicker === 'function' ? line(!BK.dir ? 'off' : BK.dirPerm !== 'granted' || BK.dirErr ? 'warn' : 'ok', t('bkDir'),
+      BK.dir ? x(BK.dir.name) + (BK.dirAt ? ' · ' + x(t('bkAt', hm(BK.dirAt))) : '') + `<br><small>${x(t('bkDirHint'))}</small>` : x(t('bkDirNone')),
+      BK.dir ? (BK.dirPerm !== 'granted' ? b('dirperm', t('bkResume'), 'primary') : b('dirnow', t('bkDirNow'))) + b('dir', t('bkDirChange')) : b('dir', t('bkDirPick'))) : '') +
+    `<div class="bkbtns">${b('open', t('bkHistory'))}${b('all', t('bkAll'))}</div>`;
+}
+// fenêtre : versions du dossier, dossiers du navigateur, archive complète
+async function bkDialog() {
+  const dlg = $('#bkDlg'), x = esc, d = state.d;
+  const [vs, ds] = await Promise.all([d ? DOSDB.versions(d.meta.id).catch(() => []) : [], DOSDB.listDos().catch(() => [])]);
+  const reasons = { auto: t('bkR_auto'), import: t('bkR_import'), open: t('bkR_open'), restore: t('bkR_restore'), manual: t('bkR_manual') };
+  $('#bkVers').innerHTML = d ? (vs.length ? `<table class="grid"><thead><tr><th class="nosort">${x(t('bkWhen'))}</th><th class="nosort">${x(t('bkWhy'))}</th><th class="nosort">${x(t('bkFix'))}</th><th class="nosort"></th></tr></thead><tbody>${vs.map(v => `<tr><td>${x(dmy(v.at))}</td><td>${x(reasons[v.reason] || v.reason)}</td><td class="num">${v.nfx}</td><td style="white-space:nowrap;text-align:right"><button type="button" class="minibtn" data-bk="vdl" data-v="${v.vid}">${x(t('bkDlShort'))}</button><button type="button" class="minibtn primary" data-bk="vrest" data-v="${v.vid}">${x(t('bkRestore'))}</button></td></tr>`).join('')}</tbody></table>` : `<p class="hint2">${x(t('bkNoVer'))}</p>`) +
+    `<p style="margin:8px 0 0"><button type="button" class="minibtn" data-bk="vnow">${x(t('bkVerNow'))}</button></p>` : '';
+  $('#bkDos').innerHTML = ds.length ? `<table class="grid"><thead><tr><th class="nosort">${x(t('mTitre'))}</th><th class="nosort">${x(t('mLieu'))}</th><th class="nosort">${x(t('bkFix'))}</th><th class="nosort">${x(t('bkUpdated'))}</th><th class="nosort"></th></tr></thead><tbody>${ds.sort((a, b) => b.updated - a.updated).map(r => `<tr${d && r.id === d.meta.id ? ' class="cur"' : ''}><td><b>${x(r.titre || t('untitled'))}</b>${d && r.id === d.meta.id ? ` <small>(${x(t('bkCurrent'))})</small>` : ''}</td><td>${x(r.lieu)}</td><td class="num">${r.nfx}</td><td>${x(dmy(r.updated))}</td><td style="white-space:nowrap;text-align:right"><button type="button" class="minibtn" data-bk="ddl" data-id="${x(r.id)}">${x(t('bkDlShort'))}</button>${d && r.id === d.meta.id ? '' : `<button type="button" class="minibtn primary" data-bk="dopen" data-id="${x(r.id)}">${x(t('bkOpen'))}</button><button type="button" class="minibtn x" data-bk="ddel" data-id="${x(r.id)}">×</button>`}</td></tr>`).join('')}</tbody></table>` : `<p class="hint2">${x(t('dEmpty'))}</p>`;
+  if (!dlg.open) dlg.showModal();
+}
+async function bkExportAll() {
+  const enc = new TextEncoder(), files = [], ds = await DOSDB.listDos().catch(() => []);
+  const cur = state.d; if (cur && !ds.some(r => r.id === cur.meta.id)) ds.push({ ...dosSummary(cur), updated: Date.now(), d: cur });
+  for (const r of ds) files.push([`dossiers/${slug(r.titre || 'dossier')}_${r.id.slice(0, 8)}.oplanfeu.json`, enc.encode(JSON.stringify(r.id === (cur && cur.meta.id) ? cur : r.d, null, 1))]);
+  for (const g of await libAll()) if (g.b64) files.push([`gdtf/${slug(g.fileName || g.name || g.key)}${/\.gdtf$/i.test(g.fileName || '') ? '' : '.gdtf'}`, fromB64(g.b64)]);
+  const settings = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('oplanfeu.') && !/^oplanfeu\.dossier/.test(k)) settings[k] = localStorage.getItem(k); }
+  files.push(['reglages.json', enc.encode(JSON.stringify(settings, null, 1))]);
+  files.push(['oplanfeu-sauvegarde.json', enc.encode(JSON.stringify({ format: 'oplanfeu-backup', version: 1, date: new Date().toISOString(), dossiers: ds.length, gdtf: files.filter(f => f[0].startsWith('gdtf/')).length }, null, 1))]);
+  const blob = zipStore(files), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `OPlanFeu_sauvegarde_${stampName()}.zip`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+// archive complète : dossiers ajoutés ou mis à jour (le plus récent l'emporte), profils GDTF et réglages
+async function bkImportAll(z) {
+  const dec = new TextDecoder(); let nd = 0, ng = 0;
+  for (const n of z.names.filter(n => /^dossiers\/.+\.json$/i.test(n))) {
+    try {
+      const d = checkDossier(JSON.parse(dec.decode(await z.get(n)))); if (!d.meta.id) d.meta.id = newUuid();
+      const old = await DOSDB.getDos(d.meta.id), at = Date.parse(d.meta.saved || '') || Date.now();
+      if (old && old.updated >= at) continue;
+      await DOSDB.tx('dossiers', 'readwrite', tx => { tx.objectStore('dossiers').put({ ...dosSummary(d), updated: at, d }); }); nd++;
+    } catch {}
+  }
+  for (const n of z.names.filter(n => /^gdtf\/.+\.gdtf$/i.test(n))) { try { const g = await parseGdtf(await z.get(n)); await libPut(g, n.slice(5)); ng++; } catch {} }
+  if (z.names.includes('reglages.json')) { try { Object.entries(JSON.parse(dec.decode(await z.get('reglages.json')))).forEach(([k, v]) => { if (k.startsWith('oplanfeu.')) localStorage.setItem(k, v); }); } catch {} }
+  alert(t('bkImported', nd, ng)); bkDialog();
+}
+async function bkOpenStored(id) {
+  const r = await DOSDB.getDos(id); if (!r) return;
+  if (state.d) await saveDossier(state.d);
+  load(checkDossier(r.d));
+}
+function touch() { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; saveDossier(state.d); }, 400); bkTouched(); refreshSide(); }
 
 const typeName = k => (state.d.types[k] && state.d.types[k].name) || k || '';
 const patchText = f => f.univ ? `${f.univ}.${String(f.addr).padStart(3, '0')}` : '';
@@ -3908,12 +4126,15 @@ document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click
 
 // ───────────── ouvrir / importer ─────────────
 function showError(msg) { $('#alerts').innerHTML = `<div class="alert err">${esc(msg)}</div>`; $('#statBox').hidden = false; }
-async function openFile(file) {
+async function openFile(file, handle) {
   try {
     const buf = await file.arrayBuffer();
     const u8 = new Uint8Array(buf.slice(0, 4));
     let d;
     if (u8[0] === 0x50 && u8[1] === 0x4b && /\.gdtf$/i.test(file.name)) { await importGdtfFiles([file]); return; }   // GDTF : rapproché d'un type du dossier
+    if (u8[0] === 0x50 && u8[1] === 0x4b && /\.zip$/i.test(file.name)) {                                       // archive complète de sauvegarde
+      const z = await unzip(buf); if (z.names.includes('oplanfeu-sauvegarde.json')) { await bkImportAll(z); return; }
+    }
     if (u8[0] === 0x50 && u8[1] === 0x4b && /\.zip$/i.test(file.name) && state.d) {                            // .zip de GDTF
       const z = await unzip(buf); if (!z.names.some(n => /GeneralSceneDescription\.xml$/i.test(n))) { await importGdtfFiles([file]); return; }
     }
@@ -3929,8 +4150,9 @@ async function openFile(file) {
       }
     }
     if (!d.meta.exported && !/^\s*\{/.test(decode(buf.slice(0, 8))) && file.lastModified) d.meta.exported = new Date(file.lastModified).toISOString();
-    if (state.d && state.d.fixtures.length && !confirm(t('replaceAsk'))) return;
-    load(d);
+    const isJson = /^\s*\{/.test(decode(buf.slice(0, 8)));
+    if (state.d) await saveDossier(state.d);
+    load(d, isJson ? 'open' : 'import', isJson && handle && /\.json$/i.test(handle.name) ? handle : null);
   } catch (err) {
     if (err.needMap) { const m = err.needMap; m.meta = { exported: file.lastModified ? new Date(file.lastModified).toISOString() : null, ...(m.meta || {}) }; openMap(m); return; }
     showError(t('readErr') + ' ' + err.message);
@@ -3960,29 +4182,45 @@ $('#mapForm').addEventListener('submit', e => {
     const d = parseCSV(mapCtx.text, mapCtx.fileName, m);
     Object.entries(mapCtx.meta || {}).forEach(([k, v]) => { if (v) d.meta[k] = v; });
     $('#mapDlg').close();
-    if (!mapCtx.reimport && state.d && state.d.fixtures.length && !confirm(t('replaceAsk'))) return;
+    if (!mapCtx.reimport && state.d) saveDossier(state.d);
     load(d);
   } catch (err) { $('#mapErr').textContent = err.message; $('#mapErr').hidden = false; }
 });
 $('#mapCancel').addEventListener('click', () => $('#mapDlg').close());
 $('#mapReset').addEventListener('click', () => { store.set(csvSig(mapCtx.rows[0]), null); openMap(mapCtx, autoCsvMap(mapCtx.rows[0])); });
 $('#mapBtn').addEventListener('click', () => { const c = state.csvSrc; if (c) openMap({ ...c, meta: { exported: state.d && state.d.meta.exported, titre: state.d && state.d.meta.titre, lieu: state.d && state.d.meta.lieu }, reimport: true }); });
-function load(d) {
+function load(d, reason, handle) {
+  if (!d.meta.id) d.meta.id = newUuid();
   state.csvSrc = lastCsv && lastCsv.fileName === d.meta.source ? lastCsv : null;
   $('#mapBtn').hidden = !state.csvSrc;
   state.d = d; state.sel.clear(); state.fPos = ''; state.fType = ''; state.q = ''; $('#q').value = '';
   ['#metaBox', '#statBox', '#outBox'].forEach(s => { $(s).hidden = false; });
   $('#drop').classList.add('loaded');
-  fillMeta(); saveDossier(d); refreshSide(); render();
+  fillMeta(); refreshSide(); render();
+  bkAttach(d).then(async () => {
+    if (handle) { BK.handle = handle; await DOSDB.kvSet('h:' + d.meta.id, handle).catch(() => {}); BK.diskPerm = await bkPerm(handle, false); BK.diskAt = Date.now(); }
+    await saveDossier(d, reason);
+    if (reason && BK.dir) bkWriteDir();
+  });
 }
 const drop = $('#drop');
 $('#file').addEventListener('change', e => { if (e.target.files[0]) openFile(e.target.files[0]); e.target.value = ''; });
+drop.addEventListener('click', async e => {
+  if (typeof window.showOpenFilePicker !== 'function') return;
+  e.preventDefault();
+  try {
+    const [h] = await showOpenFilePicker({ id: 'oplanfeu-open', types: [{ description: 'OPlanFeu, MVR, CSV, GDTF', accept: { 'application/octet-stream': ['.mvr', '.gdtf', '.zip', '.csv', '.txt', '.json', '.oplanfeu', '.html', '.htm'] } }] });
+    openFile(await h.getFile(), h);
+  } catch (err) { if (err.name !== 'AbortError') $('#file').click(); }
+});
 ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
 ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, () => drop.classList.remove('over')));
 document.addEventListener('dragover', e => e.preventDefault());
 document.addEventListener('drop', e => {
   e.preventDefault();
   const fs = [...e.dataTransfer.files]; if (!fs.length) return;
+  const it0 = e.dataTransfer.items && e.dataTransfer.items[0], hp = fs.length === 1 && /\.json$/i.test(fs[0].name) && it0 && it0.getAsFileSystemHandle ? it0.getAsFileSystemHandle() : null;
+  if (hp) { hp.then(h => openFile(fs[0], h && h.kind === 'file' ? h : null)).catch(() => openFile(fs[0])); return; }
   if (fs.length > 1 && state.d && fs.every(f => /\.(gdtf|zip)$/i.test(f.name))) { importGdtfFiles(fs).catch(err => alert(t('readErr') + ' ' + err.message)); return; }
   openFile(fs[0]);
 });
@@ -3994,10 +4232,47 @@ function download(name, text, type) {
   a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
-$('#save').addEventListener('click', () => {
-  state.d.meta.saved = new Date().toISOString();
-  download(slug(state.d.meta.titre) + '.oplanfeu.json', JSON.stringify(state.d, null, 1), 'application/json');
+function bkSaveNow() {
+  if (!state.d) return;
+  clearTimeout(saveTimer); saveDossier(state.d);
+  if (BK.handle) bkWriteFile(true); else if (FSA) bkLinkFile(); else bkDownload();
+}
+$('#save').addEventListener('click', bkSaveNow);
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); bkSaveNow(); } });
+document.addEventListener('click', async e => {
+  const b = e.target.closest && e.target.closest('[data-bk]'); if (!b) return;
+  const k = b.dataset.bk;
+  try {
+    if (k === 'open') await bkDialog();
+    else if (k === 'link') await bkLinkFile();
+    else if (k === 'unlink') await bkUnlinkFile();
+    else if (k === 'perm') await bkWriteFile(true);
+    else if (k === 'dir') await bkPickDir();
+    else if (k === 'dirperm' || k === 'dirnow') await bkWriteDir(true);
+    else if (k === 'dl') bkDownload();
+    else if (k === 'all') await bkExportAll();
+    else if (k === 'allin') $('#bkFile').click();
+    else if (k === 'close') $('#bkDlg').close();
+    else if (k === 'vnow') { await saveDossier(state.d, 'manual'); await bkDialog(); }
+    else if (k === 'vdl' || k === 'vrest') {
+      const v = await DOSDB.getVer(+b.dataset.v); if (!v) return;
+      if (v.d.meshesOmitted) { const r = await DOSDB.getDos(v.id); v.d = { ...v.d, meshes: (r && r.d.meshes) || (state.d && state.d.meta.id === v.id ? state.d.meshes : {}) }; delete v.d.meshesOmitted; }
+      if (k === 'vdl') download(slug(v.titre) + '_' + new Date(v.at).toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.oplanfeu.json', JSON.stringify(v.d, null, 1), 'application/json');
+      else if (confirm(t('bkRestoreAsk', dmy(v.at)))) { await saveDossier(state.d, 'restore'); const d = checkDossier(JSON.parse(JSON.stringify(v.d))); d.meta.id = state.d.meta.id; load(d); bkTouched(); $('#bkDlg').close(); }
+    }
+    else if (k === 'ddl') { const r = await DOSDB.getDos(b.dataset.id); if (r) download(slug(r.titre) + '.oplanfeu.json', JSON.stringify(r.d, null, 1), 'application/json'); }
+    else if (k === 'dopen') { $('#bkDlg').close(); await bkOpenStored(b.dataset.id); }
+    else if (k === 'ddel') { const r = await DOSDB.getDos(b.dataset.id); if (r && confirm(t('bkDelAsk', r.titre || t('untitled')))) { await DOSDB.delDos(r.id); await bkDialog(); } }
+  } catch (err) { alert(err.message || String(err)); }
 });
+$('#bkFile').addEventListener('change', async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; try { const z = await unzip(await f.arrayBuffer()); if (!z.names.includes('oplanfeu-sauvegarde.json')) throw new Error(t('bkNotBackup')); await bkImportAll(z); } catch (err) { alert(t('readErr') + ' ' + err.message); } });
+// on quitte la page ou on change d'onglet : tout ce qui attend est écrit
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && state.d) { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; saveDossier(state.d); } if (BK.dirty && BK.handle) bkWriteFile(); } });
+window.addEventListener('beforeunload', e => {
+  if (saveTimer && state.d) { clearTimeout(saveTimer); saveDossier(state.d); }
+  if (state.d && BK.handle && BK.dirty) { bkWriteFile(); e.preventDefault(); e.returnValue = ''; }
+});
+setInterval(() => { bkStatus(); if (BK.dir && BK.dirty2 && Date.now() - BK.dirAt >= DIR_EVERY) bkWriteDir(); }, 60e3);
 $('#exportCsv').addEventListener('click', () => {
   // format lu par Give Me The Patch : Layer;Fix ID;Ch ID;Name;FixtureType;Patch;Channels
   const q = s => '"' + String(s ?? '').replace(/"/g, '""') + '"';
@@ -4027,11 +4302,16 @@ document.querySelectorAll('details.sec[data-sec]').forEach(dt => {
 $('#lang').addEventListener('change', e => { LANG = e.target.value; store.set('lang', LANG); applyI18n(); if (state.d) { refreshSide(); render(); } });
 applyI18n();
 render();
-(async () => {   // dossier du navigateur : IndexedDB si elle est à jour, sinon localStorage
+(async () => {   // dernier dossier ouvert : IndexedDB si elle est à jour, sinon localStorage
   let saved = store.get('dossier', null), stamp = +(localStorage.getItem('oplanfeu.dossierStamp') || 0), idb = null;
-  try { idb = await DOSDB.get(); } catch {}
-  if (idb && idb.d && (!saved || saved.light || idb.stamp >= stamp)) saved = idb.d;
+  try {
+    const old = await DOSDB.kvGet('current');                       // format de la version précédente
+    if (old && old.d) { if (!old.d.meta) old.d.meta = {}; if (!old.d.meta.id) old.d.meta.id = newUuid(); await DOSDB.tx(['dossiers', 'kv'], 'readwrite', tx => { tx.objectStore('dossiers').put({ ...dosSummary(old.d), updated: old.stamp || Date.now(), d: old.d }); tx.objectStore('kv').put(old.d.meta.id, 'cur'); tx.objectStore('kv').delete('current'); }); }
+    const cur = await DOSDB.kvGet('cur'); if (cur) idb = await DOSDB.getDos(cur);
+  } catch {}
+  if (idb && idb.d && (!saved || saved.light || idb.updated >= stamp || (saved.meta && saved.meta.id && saved.meta.id !== idb.id && idb.updated >= stamp - 2000))) saved = idb.d;
   if (saved) { try { load(checkDossier(saved)); } catch {} }
+  else bkStatus();
 })();
 </script>
 </body>

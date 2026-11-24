@@ -38,7 +38,16 @@ Mise en page inspirée de Give Me The Patch : menu vertical des vues à gauche (
 - **Alertes** : Fix ID en double, adresses de départ en double, plages DMX qui se chevauchent, projecteurs sans patch, points d'accroche au-delà ou proches de la CMU, points sans CMU.
 - **Enregistrer** le dossier en `.json` (à rouvrir plus tard ou à envoyer), **exporter le patch** en CSV pour [Give Me The Patch](https://github.com/mart1ver/GiveMeThePatch) (feuilles de patch, étiquettes), **imprimer** la vue affichée.
 
-Le dossier est aussi gardé dans le navigateur au fil des modifications (IndexedDB, sans la limite de 5 Mo de localStorage : modèles 3D des structures et fichiers GDTF compris). Si un dossier ancien a perdu les modèles 3D de ses structures (affichées en petits cubes), la vue 3D le signale et propose de les reprendre depuis le MVR sans toucher au reste.
+## Sauvegarde
+
+Rien ne se perd, à quatre niveaux (section « Sauvegarde » du panneau, état dans la barre du haut) :
+
+- **Navigateur** : chaque dossier ouvert est gardé dans le navigateur (IndexedDB, modèles 3D et GDTF compris), à chaque modification. Ouvrir un autre fichier ne remplace plus rien : les dossiers précédents restent dans la liste « Versions et dossiers… ». Historique de **versions** : une toutes les 10 minutes de travail (les 25 dernières, puis une par jour) et à chaque ouverture, import ou restauration ; chaque version se restaure ou se télécharge. Le navigateur est prié de protéger ce stockage.
+- **Fichier sur le disque** (Chrome, Edge) : « Enregistrer dans un fichier… » ou Ctrl+S lie le dossier à un fichier `.oplanfeu.json`, réécrit à chaque modification ; un `.json` ouvert depuis la page (clic ou glisser-déposer) est lié directement. Placé dans un dossier Nextcloud, Dropbox ou Drive, il part aussi hors de l'ordinateur. Au rechargement de la page, un clic suffit pour reprendre l'enregistrement (autorisation du navigateur).
+- **Dossier de sauvegarde** (Chrome, Edge) : une copie datée de chaque dossier tous les quarts d'heure de travail, 40 gardées par dossier.
+- **Archive complète** : « Tout exporter (.zip) » réunit tous les dossiers du navigateur, la bibliothèque de profils GDTF et les réglages ; déposée sur la page, elle restaure tout sur un autre ordinateur.
+
+Firefox et Safari ne peuvent pas réécrire un fichier : Ctrl+S télécharge une copie datée, et la page le rappelle après 30 minutes de modifications sans copie.
 
 ## Étapes suivantes
 
