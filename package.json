@@ -1,0 +1,14 @@
+{
+  "name": "oplanfeu",
+  "private": true,
+  "description": "OPlanFeu — éditeur de dossier lumière (tests automatiques ; la page elle-même n'a besoin de rien)",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "three": "0.128.0"
+  }
+}

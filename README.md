@@ -53,6 +53,16 @@ Firefox et Safari ne peuvent pas réécrire un fichier : Ctrl+S télécharge une
 
 Les étapes du cahier des charges sont en place. Pistes : synchronisation automatique avec GDTF Share (nécessite un compte et un petit relais local).
 
+## Tests
+
+Une batterie de tests de bout en bout (Playwright) vérifie l'import, l'enregistrement, l'export MVR, les calculs (charges, électricité, univers, parc), chaque vue, le plan, la 3D, le dossier complet et la sauvegarde, sur un dossier de test fabriqué (aucune donnée réelle) :
+
+```
+npm install
+npx playwright install chromium   # la première fois
+npm test
+```
+
 ## Licence
 
 Logiciel libre sous licence **GNU GPL v3 ou ultérieure** (fichier `LICENSE`).

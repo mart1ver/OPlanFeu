@@ -2013,7 +2013,8 @@ function hull2(pts) {   // enveloppe convexe (chaîne monotone)
   for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
   up.pop(); lo.pop(); return lo.concat(up);
 }
-const fxMatrix = f => Array.isArray(f.m) && f.m.length === 12 ? f.m : [1, 0, 0, 0, 1, 0, 0, 0, 1, (f.x || 0) * 1000, (f.y || 0) * 1000, (f.z || 0) * 1000];
+// matrice d'un projecteur : orientation du MVR, position tirée de x, y, z (qui font foi si on les a modifiés)
+const fxMatrix = f => { const r = Array.isArray(f.m) && f.m.length === 12 ? f.m.slice(0, 9) : [1, 0, 0, 0, 1, 0, 0, 0, 1]; return [...r, Math.round((f.x || 0) * 1e6) / 1000, Math.round((f.y || 0) * 1e6) / 1000, Math.round((f.z || 0) * 1e6) / 1000]; };
 // projection d'un nuage de points (repère local) sur la vue, après la matrice MVR ; unité du nuage : m ou mm
 // teinte d'une pièce : couleur du type, plus sombre pour la monture et le métal, claire pour la lentille
 const shade = (c, f) => { const m = /^#([0-9a-f]{6})$/i.exec(c || ''); if (!m) return c; const n = parseInt(m[1], 16), ch = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f)); return '#' + ch.map(v => v.toString(16).padStart(2, '0')).join(''); };
@@ -2470,7 +2471,7 @@ async function exportMVR() {
   }
   const posU = new Map(); d.fixtures.forEach(f => { if (f.position && !posU.has(f.position)) posU.set(f.position, newUuid()); });
   const mtx = f => {
-    const m = Array.isArray(f.m) && f.m.length === 12 ? f.m : [1, 0, 0, 0, 1, 0, 0, 0, 1, (f.x || 0) * 1000, (f.y || 0) * 1000, (f.z || 0) * 1000];
+    const m = fxMatrix(f);
     const r = v => +(+v).toFixed(4);
     return `{${r(m[0])},${r(m[1])},${r(m[2])}}{${r(m[3])},${r(m[4])},${r(m[5])}}{${r(m[6])},${r(m[7])},${r(m[8])}}{${r(m[9])},${r(m[10])},${r(m[11])}}`;
   };
@@ -2750,8 +2751,7 @@ function buildV3Scene(fx) {
   const cvals = [...new Set(fx.map(ckey))].sort(natCmp), colOf = new Map(cvals.map((v, i) => [v, pal[(S.color === 'type' ? tOrder.indexOf(v) : i) % pal.length]]));
   const lab = v => S.color === 'type' ? typeName(v) : v;
   wrap.querySelector('.v3leg').innerHTML = cvals.map(v => `<div><i style="background:${colOf.get(v)}"></i>${esc(lab(v))}${S.color === 'type' ? ` <b>${cnt.get(v)}</b>` : ''}</div>`).join('');
-  const box = new T.BoxGeometry(.26, .26, .34), cone = new T.ConeGeometry(.55, 2.4, 20, 1, true);
-  cone.translate(0, -1.2, 0); cone.rotateX(Math.PI / 2);   // faisceau le long de -z du projecteur
+  const box = new T.BoxGeometry(.26, .26, .34);
   V3.beamMats = [];
   const bmCache = new Map(), pmCache = new Map(), POOL_GEO = new T.PlaneGeometry(1, 1);
   const beamMatOf = (col, i) => { const key = col.join() + '|' + i.toFixed(3); if (bmCache.has(key)) return bmCache.get(key);
@@ -2776,7 +2776,7 @@ function buildV3Scene(fx) {
     return M;
   };
   for (const f of fx) {
-    const g = new T.Group(); g.matrixAutoUpdate = false; g.matrix.copy(toM4(f.m, f.x, f.y, f.z));
+    const g = new T.Group(); g.matrixAutoUpdate = false; g.matrix.copy(toM4(fxMatrix(f)));
     const mat = matOf(colOf.get(ckey(f)) || '#999'), sh = V3.shapes && V3.shapes.get(f.type);
     let beamAt = g;
     if (sh) {
@@ -2787,7 +2787,7 @@ function buildV3Scene(fx) {
     const it = { o: g, f, extra: [] }; V3.items.push(it);
     const bs = S.beams && beamAt && V3.beamInfo && V3.beamInfo.get(f.type);
     if (bs) {
-      const nodes = []; if (sh) beamAt.parent && g.traverse(o => { if (o.name === '__beam') nodes.push(o); });
+      const nodes = []; if (sh) g.traverse(o => { if (o.name === '__beam') nodes.push(o); });
       if (!nodes.length) nodes.push(beamAt);
       const col = S.beamCol === 'color' ? (() => { const c = new T.Color(colOf.get(ckey(f)) || '#fff'); return [c.r, c.g, c.b]; })() : cctRGB(bs.cct);
       const i0 = bs.k / Math.sqrt(nodes.length) * .13 * (bs.ba >= 45 ? .45 : 1), inv = new T.Matrix4();
