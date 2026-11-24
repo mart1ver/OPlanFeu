@@ -103,3 +103,23 @@ test('synoptiques : électrique et réseau / DMX', async ({ page }) => {
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-gosyn=net]');
   await expect(page.locator('#view [data-sv=net]')).toHaveClass(/on/);
 });
+
+test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [],
+      devices: [{ id: 'c1', name: 'MA3', kind: 'console' }, { id: 'c2', name: 'Avo', kind: 'console' }, { id: 'm', name: 'Merger 1', kind: 'merger', merge: 'ltp' }],
+      dmxLines: [{ id: 'a', name: 'IN A', src: 'MA3', port: 1, universe: 1, dest: 'Merger 1' }, { id: 'b', name: 'IN B', src: 'Avo', port: 1, universe: 1, dest: 'Merger 1' },
+        { id: 'o', name: 'OUT', src: 'Merger 1', port: 1, universe: 1, dest: 'P1 Lointain' }] };
+  });
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=dmx]');
+  await expect(page.locator('#view select[data-f=dest]').first()).toHaveValue('Merger 1');
+  await page.click('#view [data-nv=net]');
+  await expect(page.locator('#view select[data-f=merge]')).toHaveValue('ltp');
+  await page.click('#tabs button[data-v=syno]'); await page.click('#view [data-sv=net]');
+  const svg = page.locator('#view .nsyn svg');
+  for (const txt of ['Merger 1', 'fusion LTP', 'IN A', 'IN B', 'OUT', 'entrée 2', 'P1 Lointain']) await expect(svg).toContainText(txt);
+  // renommer le merger suit dans les lignes
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
+  const nm = page.locator('#view input[data-o=devices][data-f=name]').nth(2); await nm.fill('Merger régie'); await nm.press('Enter');
+  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => l.dest + '|' + l.src).join(' '))).toBe('Merger régie|MA3 Merger régie|Avo P1 Lointain|Merger régie');
+});

@@ -749,12 +749,12 @@ const I18N = {
     unHint: "Univers utilisés par le patch du dossier ou par les lignes DMX. Numéro sACN = numéro d’univers ; Art-Net = univers − décalage (1 par défaut : l’univers 1 du patch est l’univers Art-Net 0:0:0).",
     setProto: 'Protocole', setArtBase: 'Décalage Art-Net', setNet: 'Réseau', setMask: 'Masque', setGw: 'Passerelle',
     dmxHint: "Une ligne DMX part d’un port de node (ou d’une console, d’un splitter) et porte un univers jusqu’à un point d’accroche. Les projecteurs s’y raccrochent dans l’onglet Projecteurs (colonne « Ligne DMX ») ou avec « Répartir automatiquement » : même univers et même position que la ligne. Le chaînage suit l’ordre en x sur le point.",
-    dlName: 'Ligne', dlSrc: 'Source', dlPort: 'Port', dlU: 'Univers', dlDest: 'Arrivée', dlLen: 'Long. (m)', dlChain: 'Chaînage (ordre en x)', dlN: 'Proj.', dlNotes: 'Notes',
+    dlName: 'Ligne', dlSrc: 'Source', dlPort: 'Port', dlU: 'Univers', dlDest: 'Arrivée', dlDestPts: 'Points d’accroche', dlDestDev: 'Merger ou splitter', mg_htp: 'fusion HTP', mg_ltp: 'fusion LTP', mg_backup: 'secours (bascule)', nsIn: n => `entrée ${n}`, dlLen: 'Long. (m)', dlChain: 'Chaînage (ordre en x)', dlN: 'Proj.', dlNotes: 'Notes',
     addDmx: 'Ajouter une ligne DMX', dmxSeries: 'Créer une série de lignes DMX', srPort: 'premier port', srU: 'premier univers', srUStep: 'univers', srUSame: 'le même', srUInc: '+1 par ligne', srPortInc: 'port +1 par ligne',
     autoDmx: 'Répartir automatiquement', autoDone: (n, m) => `${n} projecteur(s) raccroché(s) à une ligne DMX, ${m} sans ligne possible.`, delDmxAsk: n => `Supprimer la ligne DMX « ${n} » ?`,
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, ordinateurs, serveurs média… Les adresses en double, hors du réseau, et les ports de switch occupés deux fois sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
-    kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
+    kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
     addDev: 'Ajouter un appareil', newDev: 'Appareil', delDevAsk: n => `Supprimer l’appareil « ${n} » ?`, ipDup: 'adresse en double', ipOut: 'hors du réseau', portDup: 'port déjà pris',
     labDmxHint: 'Une étiquette à chaque bout de chaque ligne DMX (départ et arrivée), et en option une petite étiquette par projecteur pour les jarretières.', labEnds: 'Départ et arrivée', labJar: 'Jarretières (une par projecteur)', endA: 'départ', endB: 'arrivée',
     alDmxU: n => `${n} projecteur(s) sur une ligne DMX d’un autre univers`, alDmx32: n => `${n} ligne(s) DMX de plus de 32 projecteurs`, alNoDmx: n => `${n} projecteur(s) sur une ligne DMX inconnue`, alIp: n => `${n} problème(s) d’adressage réseau`,
@@ -874,12 +874,12 @@ const I18N = {
     unHint: 'Universes used by the patch of the dossier or by the DMX lines. sACN number = universe number; Art-Net = universe − offset (1 by default: patch universe 1 is Art-Net universe 0:0:0).',
     setProto: 'Protocol', setArtBase: 'Art-Net offset', setNet: 'Network', setMask: 'Mask', setGw: 'Gateway',
     dmxHint: 'A DMX line leaves a node port (or a console, a splitter) and carries one universe to a rigging point. Fixtures are attached in the Fixtures tab (“DMX line” column) or with “Auto-assign”: same universe and same position as the line. The daisy chain follows the x order on the point.',
-    dlName: 'Line', dlSrc: 'Source', dlPort: 'Port', dlU: 'Universe', dlDest: 'Lands at', dlLen: 'Length (m)', dlChain: 'Daisy chain (x order)', dlN: 'Fix.', dlNotes: 'Notes',
+    dlName: 'Line', dlSrc: 'Source', dlPort: 'Port', dlU: 'Universe', dlDest: 'Lands at', dlDestPts: 'Rigging points', dlDestDev: 'Merger or splitter', mg_htp: 'HTP merge', mg_ltp: 'LTP merge', mg_backup: 'backup (failover)', nsIn: n => `input ${n}`, dlLen: 'Length (m)', dlChain: 'Daisy chain (x order)', dlN: 'Fix.', dlNotes: 'Notes',
     addDmx: 'Add a DMX line', dmxSeries: 'Create a series of DMX lines', srPort: 'first port', srU: 'first universe', srUStep: 'universe', srUSame: 'same', srUInc: '+1 per line', srPortInc: 'port +1 per line',
     autoDmx: 'Auto-assign', autoDone: (n, m) => `${n} fixture(s) attached to a DMX line, ${m} with no possible line.`, delDmxAsk: n => `Delete the DMX line “${n}”?`,
     netHint: 'Every device on the lighting network: consoles, nodes, switches, computers, media servers… Duplicate addresses, addresses outside the network and switch ports used twice are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
-    kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
+    kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
     addDev: 'Add a device', newDev: 'Device', delDevAsk: n => `Delete the device “${n}”?`, ipDup: 'duplicate address', ipOut: 'outside the network', portDup: 'port already used',
     labDmxHint: 'One label at each end of each DMX line (source and landing), and optionally a small label per fixture for the jumpers.', labEnds: 'Source and landing', labJar: 'Jumpers (one per fixture)', endA: 'source', endB: 'landing',
     alDmxU: n => `${n} fixture(s) on a DMX line of another universe`, alDmx32: n => `${n} DMX line(s) with more than 32 fixtures`, alNoDmx: n => `${n} fixture(s) on an unknown DMX line`, alIp: n => `${n} network addressing issue(s)`,
@@ -1769,13 +1769,26 @@ function renderNetSyno() {
     if (!src) { const k = 'src:' + (l.src || '?'); src = byName.get(k) || node({ t: 'dev', d: { name: l.src || '?' }, name: l.src || '?', kind: 'src', virtual: true }); byName.set(k, src); }
     const ch = dmxChain(l), ln = node({ t: 'dmx', l, name: l.name, parent: src, port: l.port, n: ch.length });
     src.kids.push(ln);
-    if (l.dest) { const pn = node({ t: 'pos', name: l.dest, parent: ln, n: state.d.fixtures.filter(f => f.position === l.dest && f.dmxLine === l.name).length }); ln.kids.push(pn); }
+    const dd = l.dest && byName.get(l.dest);
+    if (dd && dd.t === 'dev' && ['merger', 'splitter'].includes(dd.kind)) { (dd.ins = dd.ins || []).push(ln); ln.toDev = dd; }
+    else if (l.dest) { const pn = node({ t: 'pos', name: l.dest, parent: ln, n: state.d.fixtures.filter(f => f.position === l.dest && f.dmxLine === l.name).length }); ln.kids.push(pn); }
+  }
+  // un merger se range derrière sa première entrée DMX ; ses autres entrées (et son raccordement Ethernet) deviennent des liaisons à part
+  const extra = [];
+  const isAnc = (a, n) => { for (let p = n; p; p = p.parent) if (p === a) return true; return false; };
+  for (const m of N.filter(n => n.ins && n.ins.length)) {
+    const first = m.ins.find(l => !isAnc(m, l));
+    if (first) {
+      if (m.parent) { m.parent.kids = m.parent.kids.filter(k => k !== m); extra.push({ a: m.parent, b: m, eth: true, port: m.port }); }
+      m.parent = first; m.port = undefined; first.kids.push(m);
+    }
+    m.ins.forEach((l, i) => { if (l !== first) extra.push({ a: l, b: m, n: i + 1 }); else m.inN = i + 1; });
   }
   // ordre : switches, consoles, nodes, puis le reste ; enfants dans l'ordre des ports
   const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, splitter: 3, src: 4 }[n.kind] ?? 5);
   const cmp = (a, b) => rank(a) - rank(b) || natCmp(String(a.port ?? ''), String(b.port ?? '')) || natCmp(a.name, b.name);
   const roots = N.filter(n => !n.parent).sort(cmp);
-  const CW = 214, BW = 176, BH = 50, RH = 60, PAD = 18, TOP = 70;
+  const CW = 240, BW = 176, BH = 50, RH = 60, PAD = 18, TOP = 70;
   let row = 0, maxD = 0;
   const place = (n, dep) => {
     n.dep = dep; maxD = Math.max(maxD, dep); n.kids.sort(cmp);
@@ -1796,14 +1809,15 @@ function renderNetSyno() {
       const dmx = n.t === 'dmx', pos = n.t === 'pos', col = dmx ? ucol(n.l.universe) : pos ? ucol(p.l.universe) : 'var(--ink)';
       edges += `<path d="M${x1} ${y1} H${xm} V${y2} H${x2}" fill="none" stroke="${col}" stroke-width="${dmx ? 2.6 : pos ? 1.6 : 1.6}"${pos ? ' stroke-dasharray="5 4"' : ''}/>`;
       if (n.port !== undefined && n.port !== null && n.port !== '') edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(dmx ? t('nsDmxPort', n.port) : t('nsPort', n.port))}</text>`;
+      else if (n.inN && n.ins.length > 1) edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(t('nsIn', n.inN))}</text>`;
     }
     let l1 = n.name, l2 = '', l3 = '', stripe = '', cls = 'box';
     if (n.t === 'dev') {
       const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
-      l2 = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean).join(' · ');
+      l2 = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), n.kind === 'merger' ? t('mg_' + (n.d.merge || 'htp')) : '', m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean).join(' · ');
       l3 = n.d.ip ? n.d.ip + (n.d.vlan ? ' · VLAN ' + n.d.vlan : '') : n.virtual ? t('nsNoIp') : '';
-      stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
-      if (n.virtual || (n.kind !== 'switch' && !n.parent && L.devices.some(d => d.kind === 'switch'))) cls += ' loose';
+      stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'merger' ? '#b5651d' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
+      if (n.virtual || (n.kind === 'merger' || n.kind === 'splitter') && !n.parent && !n.d.sw || (n.kind !== 'switch' && !n.parent && L.devices.some(d => d.kind === 'switch'))) cls += ' loose';
     } else if (n.t === 'dmx') {
       l2 = [n.l.universe ? 'U ' + n.l.universe + (st.proto === 'sacn' ? '' : ' · ' + artAddr(n.l.universe)) : '', n.l.length ? n.l.length + ' m' : ''].filter(Boolean).join(' · ');
       l3 = n.n ? t('nsFx', n.n) : ''; stripe = ucol(n.l.universe);
@@ -1811,6 +1825,17 @@ function renderNetSyno() {
     boxes += `<g${bad ? ' class="bad"' : ''}><rect class="${cls}" x="${bx}" y="${by}" width="${BW}" height="${BH}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${BH}" rx="2" fill="${stripe}"/>
 <text x="${bx + 13}" y="${by + 17}" font-size="13" font-weight="700">${x(l1.length > 24 ? l1.slice(0, 23) + '…' : l1)}</text>
 <text x="${bx + 13}" y="${by + 31}" font-size="10.5" class="mut">${x(l2.length > 30 ? l2.slice(0, 29) + '…' : l2)}</text><text x="${bx + 13}" y="${by + 44}" font-size="10.5"${n.t === 'dev' ? ` style="font-family:'IBM Plex Mono',monospace"` : ''}>${x(l3)}</text></g>`;
+  }
+  // entrées supplémentaires des mergers, raccordement Ethernet d'un merger rangé derrière ses entrées
+  let k2 = new Map();
+  for (const e of extra) {
+    const kk = (k2.get(e.b) || 0) + (e.eth ? 0 : 1); if (!e.eth) k2.set(e.b, kk);
+    const x1 = X(e.a) + BW, y1 = Y(e.a) + BH / 2, x2 = X(e.b), y2 = e.eth ? Y(e.b) + BH - 7 : Y(e.b) + BH / 2 + Math.min(kk, 2) * 12;
+    const col = e.eth ? '#9a9a9a' : ucol(e.a.l.universe), w = e.eth ? 1.2 : 2.6;
+    // tracé à angles droits ; si la cible n'est pas plus à droite, on passe par-dessus sa boîte
+    const d = x2 - x1 > 28 ? `M${x1} ${y1} H${x2 - 14} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 12} V${Y(e.b) - 8} H${x2 - 14} V${y2} H${x2}`;
+    edges += `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}"${e.eth ? ' stroke-dasharray="2 3"' : ''}/>`
+      + `<text x="${x2 - 16}" y="${y2 + 3.5}" font-size="10" text-anchor="end" class="mut">${x(e.eth ? t('nsPort', e.port ?? '?') + ' · eth.' : t('nsIn', e.n))}</text>`;
   }
   const head = `<text x="${PAD}" y="26" font-size="17" font-weight="700">${x(t('nsTitle'))}</text>
 <text x="${PAD}" y="46" font-size="12" class="mut">${x([st.proto === 'sacn' ? 'sACN' : 'Art-Net', st.net ? `${t('setNet')} ${st.net} / ${st.mask || ''}` : '', st.gw ? `${t('setGw')} ${st.gw}` : ''].filter(Boolean).join(' · '))}</text>
@@ -1979,7 +2004,7 @@ function consoleCheck(c) {
   return { U, max, overP: max !== null && U.ch > max, overU: c.universes > 0 && U.univ > c.universes, protoOk: (c.protocols || []).includes(proto), proto };
 }
 // ───────────── DMX et réseau ─────────────
-const DEV_KINDS = ['console', 'node', 'splitter', 'switch', 'pc', 'media', 'wifi', 'other'];
+const DEV_KINDS = ['console', 'node', 'merger', 'splitter', 'switch', 'pc', 'media', 'wifi', 'other'];
 const ipInt = s => { const m = /^\s*(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\s*$/.exec(s || ''); return m && m.slice(1).every(x => +x < 256) ? ((+m[1] << 24) >>> 0) + (+m[2] << 16) + (+m[3] << 8) + +m[4] : null; };
 const artAddr = u => { const a = u - (+state.d.lieu.settings.artBase || 0); return a < 0 ? '—' : `${a >> 8}:${(a >> 4) & 15}:${a & 15}`; };
 function dmxChain(x) {   // projecteurs d'une ligne DMX, dans l'ordre du chaînage (x croissant)
@@ -2017,7 +2042,8 @@ function renderNet() {
   const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
   const inp = (o, x, f, v, w, num, cls) => `<input class="c box${cls ? ' ' + cls : ''}" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
   const sel = (o, x, f, inner) => `<select class="c" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}">${inner}</select>`;
-  const pointNames = L.points.map(p => p.name).sort(natCmp), srcNames = L.devices.filter(d => ['console', 'node', 'splitter'].includes(d.kind)).map(d => d.name);
+  const pointNames = L.points.map(p => p.name).sort(natCmp), srcNames = L.devices.filter(d => ['console', 'node', 'merger', 'splitter'].includes(d.kind)).map(d => d.name), dmxDevNames = L.devices.filter(d => ['merger', 'splitter'].includes(d.kind)).map(d => d.name).sort(natCmp);
+  const destOpts = cur => '<option value=""></option>' + `<optgroup label="${esc(t('dlDestPts'))}">${opt(pointNames, cur)}</optgroup>` + (dmxDevNames.length ? `<optgroup label="${esc(t('dlDestDev'))}">${opt(dmxDevNames, cur)}</optgroup>` : '') + (cur && !pointNames.includes(cur) && !dmxDevNames.includes(cur) ? opt([cur], cur) : '');
   const setRow = `<div class="settings"><label>${esc(t('setProto'))} <select data-set="proto" style="font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink)">${opt(['artnet', 'sacn'], st.proto, v => v === 'artnet' ? 'Art-Net' : 'sACN (E1.31)')}</select></label>
 <label>${esc(t('setArtBase'))} <input data-set="artBase" inputmode="numeric" value="${esc(st.artBase)}"></label>
 <label>${esc(t('setNet'))} <input data-sets="net" style="width:8em" value="${esc(st.net)}"></label><label>${esc(t('setMask'))} <input data-sets="mask" style="width:8em" value="${esc(st.mask)}"></label><label>${esc(t('setGw'))} <input data-sets="gw" style="width:8em" value="${esc(st.gw)}"></label>
@@ -2065,7 +2091,7 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
       const chain = ch.map(f => (bad.includes(f.fid) ? '⚠' : '') + (f.fid || '?')).join(' → ');
       return `<tr><td>${inp('dmxLines', x, 'name', x.name, 6)}</td><td>${sel('dmxLines', x, 'src', '<option value=""></option>' + opt([...new Set([...srcNames, x.src].filter(Boolean))], x.src))}</td>
 <td>${inp('dmxLines', x, 'port', x.port, 3, 1)}</td><td>${inp('dmxLines', x, 'universe', x.universe, 3.4, 1)}</td>
-<td>${sel('dmxLines', x, 'dest', '<option value=""></option>' + opt(pointNames, x.dest))}</td><td>${inp('dmxLines', x, 'length', x.length, 3.4, 1)}</td>
+<td>${sel('dmxLines', x, 'dest', destOpts(x.dest))}</td><td>${inp('dmxLines', x, 'length', x.length, 3.4, 1)}</td>
 <td class="ro num${ch.length > 32 ? ' missing' : ''}" style="color:var(--ink)">${ch.length || ''}</td><td class="ro chain${bad.length ? ' missing' : ''}">${esc(chain)}</td>
 <td>${inp('dmxLines', x, 'notes', x.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-deldmx="${esc(x.id)}">×</button></td></tr>`;
     }).join('');
@@ -2078,14 +2104,14 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
 <label>${esc(t('dlSrc'))} <select id="ds_src"><option value=""></option>${opt(srcNames, S.src)}</select></label>
 <label>${esc(t('srPort'))} <input id="ds_port" inputmode="numeric" value="${esc(S.port)}"></label><label><select id="ds_portInc">${opt(['1', '0'], S.portInc, v => v === '1' ? t('srPortInc') : '—')}</select></label>
 <label>${esc(t('srU'))} <input id="ds_u" inputmode="numeric" value="${esc(S.u)}"></label><label>${esc(t('srUStep'))} <select id="ds_uInc">${opt(['1', '0'], S.uInc, v => v === '1' ? t('srUInc') : t('srUSame'))}</select></label>
-<label>${esc(t('dlDest'))} <select id="ds_dest"><option value=""></option>${opt(pointNames, S.dest)}</select></label>
+<label>${esc(t('dlDest'))} <select id="ds_dest">${destOpts(S.dest)}</select></label>
 <button type="button" class="minibtn primary" id="dsCreate">${esc(t('srCreate'))}</button></div></details>
 <div class="gridwrap"><table class="grid"><thead><tr>${['dlName', 'dlSrc', 'dlPort', 'dlU', 'dlDest', 'dlLen', 'dlN', 'dlChain', 'dlNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>`;
   } else if (nv === 'net') {
     const iss = netIssues(), swNames = L.devices.filter(d => d.kind === 'switch').map(d => d.name);
     const rows = L.devices.map(d => {
-      const pb = iss.get(d.id) || [], uu = [...new Set(L.dmxLines.filter(x => x.src === d.name).map(x => x.universe).filter(Boolean))].sort((a, b) => a - b);
-      return `<tr><td>${inp('devices', d, 'name', d.name, 9)}</td><td>${sel('devices', d, 'kind', opt(DEV_KINDS, d.kind, v => t('k' + v)))}</td>
+      const pb = iss.get(d.id) || [], uu = [...new Set(L.dmxLines.filter(x => x.src === d.name || x.dest === d.name).map(x => x.universe).filter(Boolean))].sort((a, b) => a - b);
+      return `<tr><td>${inp('devices', d, 'name', d.name, 9)}</td><td>${sel('devices', d, 'kind', opt(DEV_KINDS, d.kind, v => t('k' + v)))}${d.kind === 'merger' ? `<br>${sel('devices', d, 'merge', opt(['htp', 'ltp', 'backup'], d.merge || 'htp', v => t('mg_' + v)))}` : ''}</td>
 <td>${inp('devices', d, 'ip', d.ip, 8, 0, pb.some(m => m !== 'portDup') ? 'ipbad' : '')}${pb.filter(m => m !== 'portDup').map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join('')}</td>
 <td>${inp('devices', d, 'mask', d.mask, 7)}</td><td>${inp('devices', d, 'vlan', d.vlan, 3, 1)}</td>
 <td>${sel('devices', d, 'sw', '<option value=""></option>' + opt(swNames.filter(n => n !== d.name), d.sw))}</td><td>${inp('devices', d, 'port', d.port, 3, 0, pb.includes('portDup') ? 'ipbad' : '')}</td>
@@ -3505,7 +3531,7 @@ view.addEventListener('change', e => {
     if (k === 'name') {
       if (v && v !== x.name && !col.some(y => y.name === v)) {
         if (go.dataset.o === 'dmxLines') state.d.fixtures.forEach(f => { if (f.dmxLine === x.name) f.dmxLine = v; });
-        if (go.dataset.o === 'devices') { state.d.lieu.consoles.forEach(c => { if (c.device === x.name) c.device = v; }); state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
+        if (go.dataset.o === 'devices') { state.d.lieu.consoles.forEach(c => { if (c.device === x.name) c.device = v; }); state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; if (l.dest === x.name) l.dest = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
         x.name = v;
       }
     } else if (k === 'protocols') {
