@@ -733,7 +733,7 @@ const I18N = {
     pvw_table: 'Tableau', pvw_sheet: 'Feuille de patch', pvw_diff: 'Changements', nvSheet: 'Feuille de patch', nvFxlabels: 'Étiquettes projecteurs', nvDiff: 'Changements',
     hideRow: 'Cliquer pour masquer ce projecteur sur les documents', annPh: 'annotation…', doOptions: 'Réglages des documents', doPlang: 'Langue des documents imprimés', doGroup: 'Regrouper par', gLayer: 'Calque', gPosition: 'Position', gwLayer: 'calque', gwPos: 'position',
     doFormat: 'Format papier (paysage)', fmtA3: 'A3 · 3 colonnes', fmtA4: 'A4 · 2 colonnes', doNote: 'Cartouche (texte libre)', line: n => `Ligne ${n}`, doHeadHint: 'Titre et sous-titre : ceux du dossier (Titre, Lieu / salle).',
-    doContent: 'Contenu', optSumG: g => `Récap. par ${g}`, optSumUniv: 'Récap. par univers', optSumType: 'Récap. par type de projecteur', optG: g => `Patch par ${g}`, optUniv: 'Patch par univers', optMap: "Plan d'occupation des univers", optHide: 'Masquer les non patchés', optExport: "Afficher la date d'export du fichier", diffInSheet: 'Ajouter les changements en tête de la feuille de patch',
+    doContent: 'Contenu', optSumG: g => `Récap. par ${g}`, optSumPos: 'Récap. par position', optSumUniv: 'Récap. par univers', optSumType: 'Récap. par type de projecteur', optG: g => `Patch par ${g}`, optUniv: 'Patch par univers', optMap: "Plan d'occupation des univers", optHide: 'Masquer les non patchés', optExport: "Afficher la date d'export du fichier", diffInSheet: 'Ajouter les changements en tête de la feuille de patch',
     legHidden: 'Projecteurs masqués sur les documents', hidePh: 'Fix ID ou nom…', hideBtn: 'Masquer', hideHint: "Ou cliquer sur une ligne de l'aperçu pour la masquer.", unhideAll: 'Tout réafficher', notFound: 'Aucun projecteur ne correspond.',
     legLabels: 'Format des étiquettes', lbCutGrp: 'A3 à découper (scotch)', lbAdhGrp: 'Planches adhésives A4', lbCustom: 'Autre planche (dimensions à saisir)…', cuPage: 'Papier', cuCols: 'Colonnes', cuRows: 'Lignes', cuW: 'Largeur étiquette (mm)', cuH: 'Hauteur étiquette (mm)', cuLeft: 'Marge gauche (mm)', cuTop: 'Marge haut (mm)', cuPx: 'Pas horizontal (mm)', cuPy: 'Pas vertical (mm)',
     lbAdhHint: "Planche adhésive : imprimer à 100 % (« Taille réelle »), marges Aucune. Faire d'abord un essai sur papier ordinaire, par transparence.", lbOnly: 'Fix ID seul (lisible de loin)', lbPatch: 'Adresse DMX (univ.adr)', lbName: 'Nom', lbType: 'Type de projecteur', lbLayerG: g => g === 'position' ? 'Nom de la position (bandeau)' : 'Nom du calque (bandeau)', lbAnn: "Zone d'annotation", lbHint: "Annotation : cliquer en bas d'une étiquette dans l'aperçu et écrire.",
@@ -858,7 +858,7 @@ const I18N = {
     pvw_table: 'Table', pvw_sheet: 'Patch sheet', pvw_diff: 'Changes', nvSheet: 'Patch sheet', nvFxlabels: 'Fixture labels', nvDiff: 'Changes',
     hideRow: 'Click to hide this fixture on the documents', annPh: 'note…', doOptions: 'Document settings', doPlang: 'Language of printed documents', doGroup: 'Group by', gLayer: 'Layer', gPosition: 'Position', gwLayer: 'layer', gwPos: 'position',
     doFormat: 'Paper size (landscape)', fmtA3: 'A3 · 3 columns', fmtA4: 'A4 · 2 columns', doNote: 'Title block (free text)', line: n => `Line ${n}`, doHeadHint: 'Title and subtitle: those of the dossier (Title, Venue / room).',
-    doContent: 'Content', optSumG: g => `Summary by ${g}`, optSumUniv: 'Summary by universe', optSumType: 'Summary by fixture type', optG: g => `Patch by ${g}`, optUniv: 'Patch by universe', optMap: 'Universe occupancy map', optHide: 'Hide unpatched', optExport: 'Show the file export date', diffInSheet: 'Add the changes at the start of the patch sheet',
+    doContent: 'Content', optSumG: g => `Summary by ${g}`, optSumPos: 'Summary by position', optSumUniv: 'Summary by universe', optSumType: 'Summary by fixture type', optG: g => `Patch by ${g}`, optUniv: 'Patch by universe', optMap: 'Universe occupancy map', optHide: 'Hide unpatched', optExport: 'Show the file export date', diffInSheet: 'Add the changes at the start of the patch sheet',
     legHidden: 'Fixtures hidden on the documents', hidePh: 'Fix ID or name…', hideBtn: 'Hide', hideHint: 'Or click a row in the preview to hide it.', unhideAll: 'Show all', notFound: 'No matching fixture.',
     legLabels: 'Label format', lbCutGrp: 'A3 to cut (tape)', lbAdhGrp: 'A4 adhesive sheets', lbCustom: 'Other sheet (enter dimensions)…', cuPage: 'Paper', cuCols: 'Columns', cuRows: 'Rows', cuW: 'Label width (mm)', cuH: 'Label height (mm)', cuLeft: 'Left margin (mm)', cuTop: 'Top margin (mm)', cuPx: 'Horizontal pitch (mm)', cuPy: 'Vertical pitch (mm)',
     lbAdhHint: 'Adhesive sheet: print at 100% (“Actual size”), margins None. Test on plain paper first, against the light.', lbOnly: 'Fix ID only (readable from afar)', lbPatch: 'DMX address (univ.addr)', lbName: 'Name', lbType: 'Fixture type', lbLayerG: g => `${g[0].toUpperCase() + g.slice(1)} name (band)`, lbAnn: 'Note area', lbHint: 'Note: click the bottom of a label in the preview and type.',
@@ -3768,7 +3768,7 @@ const DOC_LANGS = [['fr', 'FR · Français'], ['en', 'EN · English'], ['es', 'E
 const DOC = {
   fmt: store.get('docFmt', 'A3'), plang: store.get('docPlang', null), group: store.get('docGroup', 'layer'), zoom: store.get('docZoom', 45),
   lbSize: store.get('docLbSize', '40x30'), colors: store.get('docColors', {}),
-  chk: { optSumLayer: true, optSumUniv: true, optSumType: true, optLayer: true, optUniv: true, optMap: true, optHideUnp: false, optExport: true,
+  chk: { optSumLayer: true, optSumPos: true, optSumUniv: true, optSumType: true, optLayer: true, optUniv: true, optMap: true, optHideUnp: false, optExport: true,
     lbOnly: false, lbFid: true, lbPatch: true, lbName: true, lbType: false, lbChid: false, lbLayer: true, lbAnn: true, lbCirc: false, lbDmxL: false, lbHideUnp: false, diffInSheet: false, ...store.get('docChk', {}) },
 };
 const PL = () => DOC_I18N[DOC.plang] ? DOC.plang : (DOC_I18N[LANG] ? LANG : 'fr');
@@ -3795,7 +3795,7 @@ function docFx(d = state.d) {
     const grp = g === 'position' ? (f.position || '—') : (f.layer || '—').toUpperCase();
     return {
       k: 'u:' + f.uid, id: f.fid || '', chid: f.chid || '', key: f.fid ? numKey(f.fid) : [2, f.univ ? f.univ * 1000 + f.addr : 1e9, ''],
-      layer: grp, name: f.name || f.purpose || tname, tname, tshort: shortType(tfull), univ: f.univ || null, addr: f.univ ? f.addr : null, nch: f.nch || 0,
+      layer: grp, pos: f.position || '—', name: f.name || f.purpose || tname, tname, tshort: shortType(tfull), univ: f.univ || null, addr: f.univ ? f.addr : null, nch: f.nch || 0,
       circuit: f.circuit || '', dmxLine: f.dmxLine || '', position: f.position || '',
     };
   });
@@ -3866,7 +3866,14 @@ function gSummary(fx, A, titre, lieu, note, show) {
   }).sort((a, b) => b.n - a.n || a.tn.localeCompare(b.tn));
   const typRows = types.map(x => `<tr><td class="nm">${esc(x.tn)}</td><td class="num">${x.n}</td><td class="ty">${esc(x.ls.join(', '))}</td><td class="num">${esc(x.us.join(', ') || '—')}</td></tr>`).join('');
   const blocks = [];
+  // récapitulatif par position (quand le regroupement est par calque ; sinon c'est déjà celui du regroupement)
+  const tpr = k => { const v = DOC_I18N[PL()][k] ?? DOC_I18N.fr[k]; return typeof v === 'function' ? v() : v; };
+  const posRows = show.pos ? [...new Set(fx.map(f => f.pos))].sort(natCmp).map(p => {
+    const g = fx.filter(f => f.pos === p), us = [...new Set(g.filter(f => f.univ !== null).map(f => f.univ))].sort((a, b) => a - b).join(', ') || '—';
+    return `<tr><td class="nm">${esc(p)}</td><td class="num">${g.length}</td><td class="ty">${esc([...new Set(g.map(f => f.tname))].map(tn => `${g.filter(f => f.tname === tn).length} × ${tn}`).join(', '))}</td><td class="num">${esc(us)}</td></tr>`;
+  }).join('') : '';
   if (show.layer) blocks.push(`<div class="wide"><h2>${tp('sumLayer')}</h2><table class="summary"><thead><tr><th style="width:32mm">${tp('thLayer')}</th><th class="num" style="width:12mm">${tp('thQty')}</th><th>${tp('thTypes')}</th><th class="num" style="width:22mm">${tp('thUnivFull')}</th></tr></thead><tbody>${layRows}</tbody></table></div>`);
+  if (show.pos) blocks.push(`<div class="wide"><h2>${tpr('sumPos')}</h2><table class="summary"><thead><tr><th style="width:32mm">${tpr('thPos')}</th><th class="num" style="width:12mm">${tpr('thQty')}</th><th>${tpr('thTypes')}</th><th class="num" style="width:22mm">${tpr('thUnivFull')}</th></tr></thead><tbody>${posRows}</tbody></table></div>`);
   if (show.univ) blocks.push(`<div><h2>${tp('sumUniv')}</h2><table class="summary"><thead><tr><th class="num" style="width:14mm">${tp('thUniv')}</th><th class="num" style="width:12mm">${tp('thQty')}</th><th class="num" style="width:36mm">${tp('thStart')}</th><th>${tp('thLayers')}</th></tr></thead><tbody>${uniRows}</tbody></table></div>`);
   if (show.type) blocks.push(`<div><h2>${tp('sumType')}</h2><table class="summary"><thead><tr><th>${tp('thFxType')}</th><th class="num" style="width:12mm">${tp('thQty')}</th><th>${tp('thLayers')}</th><th class="num" style="width:20mm">${tp('thUnivFull')}</th></tr></thead><tbody>${typRows}</tbody></table></div>`);
   const head = `<header class="top"><div><h1>${esc(titre)}</h1>${lieu ? `<div class="sub">${esc(lieu)}</div>` : ''}</div>${noteHTML(note)}
@@ -3892,7 +3899,7 @@ function sheetPages() {
   const fx = docVisible().filter(f => !(DOC.chk.optHideUnp && f.univ === null));
   if (!fx.length) return null;
   const A = gAnalyse(fx), titre = docTitleText(), lieu = docSub(), note = D.note.map(x => (x || '').trim()).join('\n').replace(/\n+$/, '');
-  const S = gSummary(fx, A, titre, lieu, note, { layer: DOC.chk.optSumLayer, univ: DOC.chk.optSumUniv, type: DOC.chk.optSumType });
+  const S = gSummary(fx, A, titre, lieu, note, { layer: DOC.chk.optSumLayer, pos: DOC.chk.optSumPos && DOC.group !== 'position', univ: DOC.chk.optSumUniv, type: DOC.chk.optSumType });
   const pre = []; let cur = S.head, used = measureMM(S.head, fmt);
   for (let i = 0; i < S.blocks.length; i += ncol) {
     const row = `<div class="sumcols">${S.blocks.slice(i, i + ncol).join('')}</div>`, rh = measureMM(row, fmt);
@@ -4070,7 +4077,7 @@ ${hidden.length > 1 ? `<button type="button" class="linkbtn" id="dUnhideAll">${x
   if (nv === 'sheet') {
     opts = fmtBox + common + `<fieldset><legend>${x(t('doNote'))}</legend>${[0, 1, 2, 3].map(i => `<input type="text" class="dtext" data-dnote="${i}" placeholder="${x(t('line', i + 1))}" value="${x(D.note[i] || '')}">`).join('')}
 <p class="hint2">${x(t('doHeadHint'))}</p></fieldset>
-<fieldset><legend>${x(t('doContent'))}</legend>${ck('optSumLayer', t('optSumG', gw))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}${ck('optLayer', t('optG', gw))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}${D.ref ? ck('diffInSheet', t('diffInSheet')) : ''}</fieldset>` + hideBox;
+<fieldset><legend>${x(t('doContent'))}</legend>${ck('optSumLayer', t('optSumG', gw))}${DOC.group === 'position' ? '' : ck('optSumPos', t('optSumPos'))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}${ck('optLayer', t('optG', gw))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}${D.ref ? ck('diffInSheet', t('diffInSheet')) : ''}</fieldset>` + hideBox;
   } else if (nv === 'fxlabels') {
     const A = gAnalyse(docFx()), colors = layerColors(A.layers), cnt = {}; docVisible().forEach(f => { cnt[f.layer] = (cnt[f.layer] || 0) + 1; });
     const cu = { ...CU_DEF, ...store.get('docLbCustom', {}) };

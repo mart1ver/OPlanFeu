@@ -29,3 +29,16 @@ test('un mode absent du type est signalé dans la liste', async ({ page }) => {
   await loadSynthetic(page, d => { withModes(d); d.fixtures[0].mode = 'Ancien'; });
   await expect(page.locator('#view tbody select.fmode.bad')).toHaveCount(1);
 });
+
+test('feuille de patch : récapitulatif par position', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#view [data-pv=sheet]');
+  const pages = page.locator('#docPages');
+  await expect(pages).toContainText('Récapitulatif par position');
+  await expect(pages).toContainText('6 × Lyre Test');
+  for (const p of ['P1 Lointain', 'P2 Milieu', 'P3 Face', 'Sol']) await expect(pages).toContainText(p);
+  // regroupé par position : un seul récapitulatif par position
+  await page.click('#view [data-dgroup=position]');
+  await expect(pages.locator('h2', { hasText: 'Récapitulatif par position' })).toHaveCount(1);
+  await expect(page.locator('#view [data-dck=optSumPos]')).toHaveCount(0);
+});
