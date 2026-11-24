@@ -667,7 +667,7 @@ const I18N = {
     gdPowered: 'Powered by GDTF — profils GDTF Share (gdtf-share.com).',
     invShape: 'Forme 3D', shAuto: g => `auto (${g})`, shLen: 'Longueur ou largeur (cm)', sh_gdtf: 'modèle du GDTF', sh_lyre: 'lyre', sh_par: 'PAR', sh_ledpar: 'PAR LED', sh_decoupe: 'découpe', sh_pc: 'PC / Fresnel', sh_barre: 'barre / rampe', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'vidéoprojecteur', sh_fog: 'machine à brouillard', sh_cube: 'boîte',
     tab3d: '3D', v3Hint: 'Glisser pour tourner, molette pour zoomer, clic droit (ou Maj + glisser) pour déplacer. Survoler un projecteur pour ses détails.', v3Persp: 'Perspective', v3Top: 'Dessus', v3Front: 'Face', v3Side: 'Côté',
-    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Elems: 'Éléments affichés', v3Fix: 'Projecteurs par position', v3All: 'tout', v3None: 'rien', v3HidObjs: 'Objets masqués', v3DblHint: 'Double-clic sur un objet pour le masquer. Déplier un calque pour choisir objet par objet.', v3MeshMiss: n => `${n} structure(s) sans leur modèle 3D (dossier gardé dans le navigateur sans les modèles). Reprends-les depuis le fichier MVR :`, v3MeshLoader: n => `${n} structure(s) affichées en cubes : le lecteur de modèles 3ds n’a pas pu être chargé (connexion, bloqueur de contenu ?). Recharge la page, ou reprends les modèles depuis le MVR :`, v3MeshBtn: 'Reprendre les modèles du MVR…', v3MeshDone: (n, m) => `Modèles repris : ${n} structure(s), ${m} fichier(s) 3ds.`, v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
+    v3Shapes: 'Formes (GDTF, familles, MVR)', v3Src: (g, c, m) => `${g} type(s) d’après le GDTF du fabricant, ${c} d’après la famille, ${m} modèles de structures`, v3Shaping: 'Chargement des formes…', v3Elems: 'Éléments affichés', v3Fix: 'Projecteurs par position', v3All: 'tout', v3None: 'rien', v3HidObjs: 'Objets masqués', v3DblHint: 'Double-clic sur un objet pour le masquer. Déplier un calque pour choisir objet par objet.', v3MeshMiss: n => `${n} structure(s) sans leur modèle 3D (dossier gardé dans le navigateur sans les modèles). Reprends-les depuis le fichier MVR :`, v3MeshLoader: n => `${n} structure(s) affichées en cubes : le lecteur de modèles 3ds n’a pas pu être chargé (connexion, bloqueur de contenu ?). Recharge la page, ou reprends les modèles depuis le MVR :`, v3MeshBtn: 'Reprendre les modèles du MVR…', v3MeshDone: (n, m) => `Modèles repris : ${n} structure(s), ${m} fichier(s) 3ds.`, v3Zoom: 'Zoom', v3Zoom_min: 'serré', v3Zoom_mid: 'moyen', v3Zoom_max: 'large', v3BeamCol: 'Couleur', v3BeamCol_cct: 'blanc (température du GDTF)', v3BeamCol_color: 'couleur du regroupement', v3BeamI: 'Intensité', v3Pools: 'Taches au sol', v3Labels: 'Numéros', v3Beams: 'Faisceaux', v3Struct: 'Structures', v3Points: 'Perches', v3Grid: 'Sol', v3Png: 'Image (.png)', v3Load: 'Chargement de la bibliothèque 3D…', v3Fail: 'La bibliothèque 3D (three.js) n’a pas pu être chargée : la vue 3D a besoin d’internet la première fois.',
     v3NoXYZ: 'Les projecteurs n’ont pas de coordonnées 3D : importer un MVR pour la vue 3D.', v3Count: (n, s, g) => `${n} projecteurs · ${s} structures${g ? ` · formes : ${g}` : ''}`,
     tabDossier: 'Dossier complet', mvrGeo: n => `${n} structure(s) et décor(s) avec leur modèle 3D.`, exportMvr: 'Exporter en MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exporté : ${n} projecteurs, ${g} fichier(s) GDTF inclus${m ? `, ${m} type(s) sans GDTF (à associer dans le logiciel qui l’ouvre)` : ''}.`,
     dosHint: "Tout le dossier en un seul document A4 paysage, à imprimer ou enregistrer en PDF : couverture et sommaire, puis les parties cochées. Marges Aucune, « Graphiques d’arrière-plan » coché.",
@@ -790,7 +790,7 @@ const I18N = {
     gdPowered: 'Powered by GDTF — GDTF Share profiles (gdtf-share.com).',
     invShape: '3D shape', shAuto: g => `auto (${g})`, shLen: 'Length or width (cm)', sh_gdtf: 'GDTF model', sh_lyre: 'moving head', sh_par: 'PAR', sh_ledpar: 'LED PAR', sh_decoupe: 'profile', sh_pc: 'PC / Fresnel', sh_barre: 'batten', sh_blinder: 'blinder', sh_strobe: 'strobe', sh_video: 'video projector', sh_fog: 'haze / fog', sh_cube: 'box',
     tab3d: '3D', v3Hint: 'Drag to orbit, wheel to zoom, right-click (or Shift + drag) to pan. Hover a fixture for its details.', v3Persp: 'Perspective', v3Top: 'Top', v3Front: 'Front', v3Side: 'Side',
-    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Elems: 'Shown elements', v3Fix: 'Fixtures by position', v3All: 'all', v3None: 'none', v3HidObjs: 'Hidden objects', v3DblHint: 'Double-click an object to hide it. Unfold a layer to choose object by object.', v3MeshMiss: n => `${n} structure(s) without their 3D model (dossier kept in the browser without the models). Take them back from the MVR file:`, v3MeshLoader: n => `${n} structure(s) shown as cubes: the 3ds model reader could not be loaded (connection, content blocker?). Reload the page, or take the models from the MVR:`, v3MeshBtn: 'Take the models from the MVR…', v3MeshDone: (n, m) => `Models restored: ${n} structure(s), ${m} 3ds file(s).`, v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
+    v3Shapes: 'Shapes (GDTF, families, MVR)', v3Src: (g, c, m) => `${g} type(s) from the manufacturer GDTF, ${c} from the family, ${m} structure models`, v3Shaping: 'Loading the shapes…', v3Elems: 'Shown elements', v3Fix: 'Fixtures by position', v3All: 'all', v3None: 'none', v3HidObjs: 'Hidden objects', v3DblHint: 'Double-click an object to hide it. Unfold a layer to choose object by object.', v3MeshMiss: n => `${n} structure(s) without their 3D model (dossier kept in the browser without the models). Take them back from the MVR file:`, v3MeshLoader: n => `${n} structure(s) shown as cubes: the 3ds model reader could not be loaded (connection, content blocker?). Reload the page, or take the models from the MVR:`, v3MeshBtn: 'Take the models from the MVR…', v3MeshDone: (n, m) => `Models restored: ${n} structure(s), ${m} 3ds file(s).`, v3Zoom: 'Zoom', v3Zoom_min: 'narrow', v3Zoom_mid: 'medium', v3Zoom_max: 'wide', v3BeamCol: 'Colour', v3BeamCol_cct: 'white (GDTF colour temperature)', v3BeamCol_color: 'grouping colour', v3BeamI: 'Intensity', v3Pools: 'Floor pools', v3Labels: 'Numbers', v3Beams: 'Beams', v3Struct: 'Structures', v3Points: 'Bars', v3Grid: 'Floor', v3Png: 'Image (.png)', v3Load: 'Loading the 3D library…', v3Fail: 'The 3D library (three.js) could not be loaded: the 3D view needs internet the first time.',
     v3NoXYZ: 'The fixtures have no 3D coordinates: import an MVR for the 3D view.', v3Count: (n, s, g) => `${n} fixtures · ${s} structures${g ? ` · shapes: ${g}` : ''}`,
     tabDossier: 'Full dossier', mvrGeo: n => `${n} structure(s) and set piece(s) with their 3D model.`, exportMvr: 'Export as MVR (WYSIWYG, grandMA3, Vectorworks…)', mvrDone: (n, g, m) => `MVR exported: ${n} fixtures, ${g} GDTF file(s) included${m ? `, ${m} type(s) without GDTF (to link in the software that opens it)` : ''}.`,
     dosHint: 'The whole dossier as one A4 landscape document, to print or save as PDF: cover and contents, then the ticked parts. Margins None, “Background graphics” ticked.',
@@ -978,8 +978,12 @@ async function parseGdtf(bytes) {
       name: out.name, shortName: ft ? ft.getAttribute('ShortName') || '' : '', longName: ft ? ft.getAttribute('LongName') || '' : '', maker: out.maker,
       id: ft ? ft.getAttribute('FixtureTypeID') || '' : '', version: doc.documentElement.getAttribute('DataVersion') || '',
       revision: last ? (last.getAttribute('Text') || '') : '', revDate: last ? (last.getAttribute('Date') || '') : '', nrev: revs.length,
-      generic: isGenericGdtf(doc), has3d, channels: doc.querySelectorAll('DMXChannel').length,
+      generic: isGenericGdtf(doc), has3d, channels: doc.querySelectorAll('DMXChannel').length, bv: 1,
     };
+    const num = (el, a) => { const v = parseFloat(el.getAttribute(a)); return Number.isFinite(v) ? v : null; };
+    out.info.beams = [...doc.querySelectorAll('Geometries Beam')].slice(0, 64).map(b => ({ beam: num(b, 'BeamAngle'), field: num(b, 'FieldAngle'), radius: num(b, 'BeamRadius'), type: b.getAttribute('BeamType') || '', cct: num(b, 'ColorTemperature'), flux: num(b, 'LuminousFlux'), lamp: b.getAttribute('LampType') || '' }));
+    const zs = [...doc.querySelectorAll('ChannelFunction')].filter(c => /^zoom$/i.test(c.getAttribute('Attribute') || '')).flatMap(c => [num(c, 'PhysicalFrom'), num(c, 'PhysicalTo')]).filter(v => v !== null && v > .5 && v < 180);
+    if (zs.length) out.info.zoom = [Math.min(...zs), Math.max(...zs)];
     for (const m of doc.querySelectorAll('DMXModes > DMXMode')) {
       let max = 0;
       for (const c of m.querySelectorAll('DMXChannel')) for (const o of String(c.getAttribute('Offset') || '').split(',')) { const k = parseInt(o, 10); if (k > max) max = k; }
@@ -1196,7 +1200,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 // dossier courant : IndexedDB (modèles 3D et GDTF compris, pas de limite de 5 Mo) ; localStorage en secours, allégé si trop gros
 const DOSDB = {
@@ -2298,7 +2302,10 @@ function renderV3() {
   $('#view').innerHTML = `<p class="hint" style="margin:12px 0 0">${esc(t('v3Hint'))}</p>
 <div class="plopts">${['persp', 'top', 'front', 'side'].map(k => `<button type="button" class="minibtn" data-cam="${k}">${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}
 <label>${esc(t('plColor'))} <select data-v3="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], S.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
-${ck('shapes')}${ck('labels')}${ck('beams')}${ck('points')}${ck('struct')}${ck('grid')}</div><div class="plopts">${viewBar('3d')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
+${ck('shapes')}${ck('labels')}${ck('points')}${ck('struct')}${ck('grid')}</div>
+<div class="plopts">${ck('beams')}${S.beams ? `<label>${esc(t('v3Zoom'))} <select data-v3="beamZoom">${o(['min', 'mid', 'max'], S.beamZoom, v => t('v3Zoom_' + v))}</select></label>
+<label>${esc(t('v3BeamCol'))} <select data-v3="beamCol">${o(['cct', 'color'], S.beamCol, v => t('v3BeamCol_' + v))}</select></label>
+<label>${esc(t('v3BeamI'))} <input type="range" data-v3="beamI" min="10" max="300" step="10" value="${+S.beamI || 100}"></label>${ck('pools')}` : ''}</div><div class="plopts">${viewBar('3d')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
 <div class="v3wrap" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
   const fx = state.d.fixtures.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
   if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
@@ -2428,6 +2435,38 @@ async function meshFiles(T) {   // modèles 3ds des structures du MVR (millimèt
   SHAPE_CACHE.set(key, pr);
   return pr;
 }
+// faisceau d'un type : angles et rayon du GDTF (plage de zoom selon le réglage), sinon valeurs de la famille
+const FAM_BEAM = { lyre: [16, 24, .07], par: [12, 24, .09], ledpar: [22, 34, .1], decoupe: [26, 30, .07], pc: [28, 50, .09], barre: [30, 55, .04], blinder: [50, 70, .07], strobe: [90, 115, .05], video: [30, 30, .04, 'Rectangle'], fog: null, cube: [25, 35, .08] };
+function beamSpec(ty, info) {
+  const fam = ty.shape && ty.shape !== 'auto' && ty.shape !== 'gdtf' ? ty.shape : shapeGuess(ty.name);
+  const B = ((info && info.beams) || []).filter(b => b.beam > 0 || b.field > 0), b0 = B[0];
+  let ba, fa, r, type = '', cct = 3200, flux = null, src = 'fam';
+  if (b0) {
+    ba = b0.beam || b0.field; fa = Math.max(b0.field || ba * 1.4, ba); r = b0.radius > 0 ? b0.radius : .05; type = b0.type; cct = b0.cct || (/led/i.test(b0.lamp) ? 6000 : 3200);
+    flux = B.reduce((a, b) => a + (b.flux || 0), 0) || null; src = 'gdtf';
+    if (/^(glow|none)$/i.test(type)) return null;
+  } else { const F = FAM_BEAM[fam]; if (!F) return null; [ba, fa, r] = F; type = F[3] || ''; cct = /led|rush|aura|spiider|esprite|painte/i.test(ty.name) ? 6500 : 3200; }
+  const z = info && info.zoom, zm = state.v3.beamZoom;
+  if (z && z[1] > z[0]) { const k = fa / ba, v = zm === 'min' ? z[0] : zm === 'max' ? z[1] : (z[0] + z[1]) / 2; ba = v; fa = v * k; }
+  else if (!b0 && fam === 'lyre') { const v = zm === 'min' ? 6 : zm === 'max' ? 40 : 18; ba = v; fa = v * 1.4; }
+  const pw = +ty.power || 0, lm = flux || (pw ? pw * 25 : 8000);
+  return { ba, fa, r, rect: /rectangle/i.test(type), cct, k: Math.min(1.4, Math.max(.35, Math.log10(lm) / 4.4)), n: Math.max(1, B.length), src };
+}
+// couleur d'une température de couleur (approximation de Tanner Helland)
+function cctRGB(K) {
+  const k = Math.min(40000, Math.max(1000, K)) / 100, cl = v => Math.min(255, Math.max(0, v)) / 255;
+  const r = k <= 66 ? 255 : 329.698727446 * Math.pow(k - 60, -0.1332047592);
+  const g = k <= 66 ? 99.4708025861 * Math.log(k) - 161.1195681661 : 288.1221695283 * Math.pow(k - 60, -0.0755148492);
+  const b = k >= 66 ? 255 : k <= 19 ? 0 : 138.5177312231 * Math.log(k - 10) - 305.0447927307;
+  return [cl(r), cl(g), cl(b)];
+}
+const BEAM_VS = `varying vec3 vN; varying vec3 vV; varying float vL;
+void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); vL = uv.y; gl_Position = projectionMatrix * mv; }`;
+const BEAM_FS = `uniform vec3 uCol; uniform float uI; varying vec3 vN; varying vec3 vV; varying float vL;
+void main() { float d = 1.0 - vL; float edge = pow(abs(dot(normalize(vN), normalize(vV))), 1.8); float fall = pow(1.0 - d, 1.6) * smoothstep(0.0, 0.03, d);
+  gl_FragColor = vec4(uCol * uI * edge * fall, 1.0); }`;
+const POOL_FS = `uniform vec3 uCol; uniform float uI; varying vec2 vUv;
+void main() { float r = length(vUv - 0.5) * 2.0; float a = (1.0 - smoothstep(0.55, 1.0, r)) * 0.75 + (1.0 - smoothstep(0.0, 0.55, r)) * 0.25; gl_FragColor = vec4(uCol * uI * a, 1.0); }`;
 async function buildV3(fx) {
   const T0 = window.THREE, shapes = new Map(); let meshes = new Map(), nShapes = 0;
   if (state.v3.shapes) {
@@ -2437,6 +2476,9 @@ async function buildV3(fx) {
     if (state.tab !== 'v3d' || !$('#v3')) return;
   }
   V3.shapes = shapes; V3.meshes = meshes; V3.nShapes = nShapes;
+  V3.beamInfo = new Map();
+  if (state.v3.beams) for (const k of new Set(fx.map(f => f.type))) { const ty = state.d.types[k] || { name: k }; V3.beamInfo.set(k, beamSpec(ty, await ensureGdtfInfo(ty))); }
+  if (state.tab !== 'v3d' || !$('#v3')) return;
   buildV3Scene(fx);
 }
 // ── affichage des éléments : calques et objets des structures, positions des projecteurs, objets masqués d'un double-clic
@@ -2449,7 +2491,7 @@ function applyV3Vis() {
     if (it.st) v = !L.has(it.st.layer || '—') && !N.has(stKey(it.st)) && !O.has('s:' + (it.st.uid || it.st.name));
     else if (it.f) v = !P.has(it.f.position || '—') && !O.has('f:' + it.f.uid);
     else if (it.bar) v = !P.has(it.bar);
-    it.o.visible = v; if (it.label) it.label.visible = v;
+    it.o.visible = v; if (it.label) it.label.visible = v; (it.extra || []).forEach(o => { o.visible = v; });
   }
   const info = document.querySelector('#v3 .v3hid'); if (info) { info.hidden = !H.objs.length; info.querySelector('b').textContent = H.objs.length; }
 }
@@ -2492,7 +2534,14 @@ function buildV3Scene(fx) {
   wrap.querySelector('.v3leg').innerHTML = cvals.map(v => `<div><i style="background:${colOf.get(v)}"></i>${esc(lab(v))}${S.color === 'type' ? ` <b>${cnt.get(v)}</b>` : ''}</div>`).join('');
   const box = new T.BoxGeometry(.26, .26, .34), cone = new T.ConeGeometry(.55, 2.4, 20, 1, true);
   cone.translate(0, -1.2, 0); cone.rotateX(Math.PI / 2);   // faisceau le long de -z du projecteur
-  const beamMat = new T.MeshBasicMaterial({ color: 0xfff3c0, transparent: true, opacity: .1, depthWrite: false, side: T.DoubleSide });
+  V3.beamMats = [];
+  const bmCache = new Map(), pmCache = new Map(), POOL_GEO = new T.PlaneGeometry(1, 1);
+  const beamMatOf = (col, i) => { const key = col.join() + '|' + i.toFixed(3); if (bmCache.has(key)) return bmCache.get(key);
+    const m = new T.ShaderMaterial({ uniforms: { uCol: { value: new T.Vector3(...col) }, uI: { value: i * (+S.beamI || 100) / 100 } }, vertexShader: BEAM_VS, fragmentShader: BEAM_FS, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide });
+    m.userData.i0 = i; V3.beamMats.push(m); bmCache.set(key, m); return m; };
+  const poolMatOf = (col, i) => { const key = col.join() + '|' + i.toFixed(3); if (pmCache.has(key)) return pmCache.get(key);
+    const m = new T.ShaderMaterial({ uniforms: { uCol: { value: new T.Vector3(...col) }, uI: { value: i * (+S.beamI || 100) / 100 } }, vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }', fragmentShader: POOL_FS, transparent: true, depthWrite: false, blending: T.AdditiveBlending });
+    m.userData.i0 = i; V3.beamMats.push(m); pmCache.set(key, m); return m; };
   const mats = new Map(), pick = [];
   const metalMat = new T.MeshStandardMaterial({ color: 0x2c2d33, roughness: .5, metalness: .6 }), lensMat = new T.MeshStandardMaterial({ color: 0xfff6d8, emissive: 0x6b6450, roughness: .2 });
   const matOf = c => mats.get(c) || (mats.set(c, new T.MeshStandardMaterial({ color: c, roughness: .55, metalness: .1 })), mats.get(c));
@@ -2516,9 +2565,33 @@ function buildV3Scene(fx) {
       const c = sh.clone(true); c.traverse(o => { if (o.isMesh) { o.material = o.userData.part === 'metal' ? metalMat : o.userData.part === 'lens' ? lensMat : mat; o.userData.f = f; pick.push(o); } });
       g.add(c); beamAt = c.userData.noBeam ? null : (c.getObjectByName('__beam') || c);
     } else { const body = new T.Mesh(box, mat); body.userData.f = f; g.add(body); pick.push(body); }
-    if (S.beams && beamAt) { const b = new T.Mesh(cone, beamMat); beamAt.add(b); }
     world.add(g);
-    const it = { o: g, f }; V3.items.push(it);
+    const it = { o: g, f, extra: [] }; V3.items.push(it);
+    const bs = S.beams && beamAt && V3.beamInfo && V3.beamInfo.get(f.type);
+    if (bs) {
+      const nodes = []; if (sh) beamAt.parent && g.traverse(o => { if (o.name === '__beam') nodes.push(o); });
+      if (!nodes.length) nodes.push(beamAt);
+      const col = S.beamCol === 'color' ? (() => { const c = new T.Color(colOf.get(ckey(f)) || '#fff'); return [c.r, c.g, c.b]; })() : cctRGB(bs.cct);
+      const i0 = bs.k / Math.sqrt(nodes.length) * .13 * (bs.ba >= 45 ? .45 : 1), inv = new T.Matrix4();
+      world.updateMatrixWorld(true); inv.copy(world.matrixWorld).invert();
+      for (const nd of nodes.slice(0, 32)) {
+        const M = new T.Matrix4().multiplyMatrices(inv, nd.matrixWorld), apex = new T.Vector3().setFromMatrixPosition(M), dir = new T.Vector3(0, 0, -1).transformDirection(M);
+        const L = Math.min(30, Math.max(.6, dir.z < -.05 ? apex.z / -dir.z : 12));
+        const sc = new T.Vector3().setFromMatrixScale(M).x || 1;
+        for (const [ang, ii] of [[bs.fa, i0 * .4], [bs.ba, i0]]) {
+          const r0 = Math.max(.01, bs.r), r1 = r0 + L * Math.tan(ang * Math.PI / 360);
+          const geo = new T.CylinderGeometry(r0, r1, L, bs.rect ? 4 : 36, 1, true, bs.rect ? Math.PI / 4 : 0);
+          geo.translate(0, -L / 2, 0); geo.rotateX(Math.PI / 2);
+          const m = beamMatOf(col, ii); const mesh = new T.Mesh(geo, m); mesh.scale.setScalar(1 / sc); mesh.renderOrder = 5; nd.add(mesh);
+        }
+        if (S.pools && dir.z < -.05 && L < 30) {   // tache au sol : ellipse à l'intersection du faisceau et du plateau
+          const r = Math.max(.01, bs.r) + L * Math.tan(bs.fa * Math.PI / 360), hit = apex.clone().addScaledVector(dir, L);
+          const pm = new T.Mesh(POOL_GEO, poolMatOf(col, i0 * .55));
+          pm.position.set(hit.x, hit.y, .006); pm.rotation.z = Math.atan2(dir.y, dir.x); pm.scale.set(r / Math.max(.25, -dir.z) * 2, r * 2, 1); pm.renderOrder = 4;
+          world.add(pm); it.extra.push(pm);
+        }
+      }
+    }
     if (S.labels) { const sp = sprite(f.fid || '?', .22); sp.position.set(f.x, f.y, f.z + .32); world.add(sp); it.label = sp; }
   }
   // perches : un tube sur l'étendue des projecteurs de chaque point aligné
@@ -2590,7 +2663,7 @@ function buildV3Scene(fx) {
     ray.setFromCamera(mv, cam); const hit = ray.intersectObjects(pick, false).find(h => isShown(h.object));
     if (hit) {
       const f = hit.object.userData.f, o2 = hit.object.userData.st;
-      tip.textContent = f ? [f.fid, typeName(f.type), f.mode, patchText(f), f.position, f.circuit, f.dmxLine, f.gel].filter(Boolean).join(' · ') : `${o2.name} · ${o2.kind} · ${o2.layer}`;
+      tip.textContent = f ? [f.fid, typeName(f.type), f.mode, patchText(f), f.position, f.circuit, f.dmxLine, f.gel, (() => { const b = V3.beamInfo && V3.beamInfo.get(f.type); return b ? `${Math.round(b.ba)}° / ${Math.round(b.fa)}°${b.src === 'gdtf' ? ' (GDTF)' : ''}` : ''; })()].filter(Boolean).join(' · ') : `${o2.name} · ${o2.kind} · ${o2.layer}`;
       tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.hidden = false;
     } else tip.hidden = true;
   });
@@ -2623,7 +2696,9 @@ document.getElementById('view').addEventListener('change', e => {
     touch(); applyV3Vis(); return;
   }
   const el = e.target.closest && e.target.closest('[data-v3]'); if (!el || !state.d) return;
-  state.v3[el.dataset.v3] = el.type === 'checkbox' ? el.checked : el.value; store.set('v3', state.v3); renderV3();
+  state.v3[el.dataset.v3] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value; store.set('v3', state.v3);
+  if (el.dataset.v3 === 'beamI' && V3.beamMats) { V3.beamMats.forEach(m => { m.uniforms.uI.value = m.userData.i0 * (+el.value / 100); }); return; }
+  renderV3();
 });
 document.getElementById('view').addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[data-copy]'); if (a) { try { navigator.clipboard.writeText(a.dataset.copy); } catch {} }
@@ -3729,7 +3804,7 @@ function matchType(g, fileName) {
   return bs >= 2 ? best : null;
 }
 async function ensureGdtfInfo(ty) {
-  if (ty.gdtfInfo || !ty.gdtfData) return ty.gdtfInfo || null;
+  if ((ty.gdtfInfo && ty.gdtfInfo.bv) || !ty.gdtfData) return ty.gdtfInfo || null;
   try { const g = await parseGdtf(fromB64(ty.gdtfData)); ty.gdtfInfo = g.info || null; } catch {}
   return ty.gdtfInfo;
 }
