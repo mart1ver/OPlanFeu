@@ -1,7 +1,7 @@
 // Chaque vue s'affiche sans erreur avec le dossier de test ; plan, 3D et dossier complet produisent quelque chose
 const { test, expect, loadSynthetic } = require('./helpers');
 
-const TABS = { fixtures: [], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines', 'syno']], net: ['nv', ['console', 'univ', 'dmx', 'net', 'sheet', 'diff']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
+const TABS = { fixtures: ['pv', ['table', 'sheet', 'diff']], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines', 'syno']], net: ['nv', ['console', 'univ', 'dmx', 'net']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
 
 for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
   test(`vue ${tab}${subs ? ' et ses sous-vues' : ''}`, async ({ page }) => {
@@ -74,4 +74,14 @@ test('plan : les six vues (dessus, dessous, face, lointain, jardin, cour)', asyn
   }
   expect(firstX.top).toBeLessThan(firstX.bottom);
   expect(firstX.front).toBeLessThan(firstX.back);
+});
+
+test('patch : la feuille de patch est dans l’onglet Patch', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#view [data-pv=sheet]');
+  await expect(page.locator('#docPages .sheet').first()).toBeVisible();
+  await expect(page.locator('#docPages')).toContainText('101');
+  await expect(page.locator('#q')).toBeHidden();
+  await page.click('#view [data-pv=table]');
+  await expect(page.locator('#view tbody tr')).toHaveCount(24);
 });

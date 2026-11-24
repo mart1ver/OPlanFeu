@@ -728,7 +728,7 @@ const I18N = {
     mf_fid: 'Fix ID', mf_chid: 'Ch ID', mf_unit: 'Unit', mf_name: 'Nom', mf_type: 'Type de projecteur', mf_mode: 'Mode', mf_patch: 'Patch (univ.adresse)', mf_univ: 'Univers (colonne à part)', mf_addr: 'Adresse (colonne à part)', mf_nch: 'Nombre de canaux',
     mf_layer: 'Calque', mf_position: 'Position', mf_gel: 'Gélatine', mf_acc: 'Accessoires', mf_purpose: 'Fonction / focus', mf_notes: 'Notes', mf_weight: 'Poids (kg)', mf_power: 'Puissance (W)',
     mapReplace: 'Réimporter ce fichier avec ces colonnes ? Les modifications faites depuis l’import seront perdues.',
-    nvSheet: 'Feuille de patch', nvFxlabels: 'Étiquettes projecteurs', nvDiff: 'Changements',
+    pvw_table: 'Tableau', pvw_sheet: 'Feuille de patch', pvw_diff: 'Changements', nvSheet: 'Feuille de patch', nvFxlabels: 'Étiquettes projecteurs', nvDiff: 'Changements',
     hideRow: 'Cliquer pour masquer ce projecteur sur les documents', annPh: 'annotation…', doOptions: 'Réglages des documents', doPlang: 'Langue des documents imprimés', doGroup: 'Regrouper par', gLayer: 'Calque', gPosition: 'Position', gwLayer: 'calque', gwPos: 'position',
     doFormat: 'Format papier (paysage)', fmtA3: 'A3 · 3 colonnes', fmtA4: 'A4 · 2 colonnes', doNote: 'Cartouche (texte libre)', line: n => `Ligne ${n}`, doHeadHint: 'Titre et sous-titre : ceux du dossier (Titre, Lieu / salle).',
     doContent: 'Contenu', optSumG: g => `Récap. par ${g}`, optSumUniv: 'Récap. par univers', optSumType: 'Récap. par type de projecteur', optG: g => `Patch par ${g}`, optUniv: 'Patch par univers', optMap: "Plan d'occupation des univers", optHide: 'Masquer les non patchés', optExport: "Afficher la date d'export du fichier", diffInSheet: 'Ajouter les changements en tête de la feuille de patch',
@@ -853,7 +853,7 @@ const I18N = {
     mf_fid: 'Fix ID', mf_chid: 'Ch ID', mf_unit: 'Unit', mf_name: 'Name', mf_type: 'Fixture type', mf_mode: 'Mode', mf_patch: 'Patch (univ.address)', mf_univ: 'Universe (separate column)', mf_addr: 'Address (separate column)', mf_nch: 'Number of channels',
     mf_layer: 'Layer', mf_position: 'Position', mf_gel: 'Gel', mf_acc: 'Accessories', mf_purpose: 'Purpose / focus', mf_notes: 'Notes', mf_weight: 'Weight (kg)', mf_power: 'Power (W)',
     mapReplace: 'Re-import this file with these columns? Changes made since the import will be lost.',
-    nvSheet: 'Patch sheet', nvFxlabels: 'Fixture labels', nvDiff: 'Changes',
+    pvw_table: 'Table', pvw_sheet: 'Patch sheet', pvw_diff: 'Changes', nvSheet: 'Patch sheet', nvFxlabels: 'Fixture labels', nvDiff: 'Changes',
     hideRow: 'Click to hide this fixture on the documents', annPh: 'note…', doOptions: 'Document settings', doPlang: 'Language of printed documents', doGroup: 'Group by', gLayer: 'Layer', gPosition: 'Position', gwLayer: 'layer', gwPos: 'position',
     doFormat: 'Paper size (landscape)', fmtA3: 'A3 · 3 columns', fmtA4: 'A4 · 2 columns', doNote: 'Title block (free text)', line: n => `Line ${n}`, doHeadHint: 'Title and subtitle: those of the dossier (Title, Venue / room).',
     doContent: 'Content', optSumG: g => `Summary by ${g}`, optSumUniv: 'Summary by universe', optSumType: 'Summary by fixture type', optG: g => `Patch by ${g}`, optUniv: 'Patch by universe', optMap: 'Universe occupancy map', optHide: 'Hide unpatched', optExport: 'Show the file export date', diffInSheet: 'Add the changes at the start of the patch sheet',
@@ -1232,7 +1232,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { labView: store.get('labView', 'fx'), planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { patchView: store.get('patchView', 'table'), labView: store.get('labView', 'fx'), planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 // ───────────── sauvegarde ─────────────
 // 1. navigateur (IndexedDB) : chaque dossier ouvert est gardé, avec un historique de versions ; localStorage en secours
@@ -1617,7 +1617,12 @@ function refreshFilters() {
   $('#fPos').innerHTML = `<option value="">${esc(t('allPos'))}</option>` + pos.map(p => `<option value="${esc(p)}"${p === state.fPos ? ' selected' : ''}>${esc(p === '\u0000' ? t('noPos') : p)}</option>`).join('');
   $('#fType').innerHTML = `<option value="">${esc(t('allTypes'))}</option>` + types.map(k => `<option value="${esc(k)}"${k === state.fType ? ' selected' : ''}>${esc(typeName(k))}</option>`).join('');
 }
+const PATCH_VIEWS = ['table', 'sheet', 'diff'];
+const patchView = () => PATCH_VIEWS.includes(state.patchView) ? state.patchView : 'table';
 function renderFixtures() {
+  const pv = patchView();
+  const phead = `<div class="subtabs">${PATCH_VIEWS.map(k => `<button type="button" data-pv="${k}"${k === pv ? ' class="on"' : ''}>${esc(t('pvw_' + k))}</button>`).join('')}</div>`;
+  if (pv !== 'table') { $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length); $('#view').innerHTML = phead + renderDocs(pv); renderDocPages(); return; }
   const list = visible();
   $('#count').textContent = t('count', list.length, state.d.fixtures.length);
   const arrow = k => state.sort.k === k ? ` <span class="ar">${state.sort.dir > 0 ? '▲' : '▼'}</span>` : '';
@@ -1636,7 +1641,7 @@ function renderFixtures() {
     }).join('');
     return `<tr data-u="${esc(f.uid)}" class="${state.sel.has(f.uid) ? 'sel' : ''}"><td class="chk"><input type="checkbox" class="rs"${state.sel.has(f.uid) ? ' checked' : ''}></td>${cells}</tr>`;
   }).join('');
-  $('#view').innerHTML = `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabFixtures'))}</h1>` +
+  $('#view').innerHTML = phead + `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabFixtures'))}</h1>` +
     dl('posList', [...state.d.fixtures.map(f => f.position), ...state.d.lieu.points.map(p => p.name)]) + dl('layerList', state.d.fixtures.map(f => f.layer)) +
     dl('lineList', state.d.lieu.lines.map(l => l.name)) + dl('dmxList', state.d.lieu.dmxLines.map(x => x.name)) +
     `<div class="gridwrap"><table class="grid"><thead><tr><th class="chk chkh nosort"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''}></th>` +
@@ -1916,10 +1921,9 @@ function universes() {
 }
 function renderNet() {
   ensureLieu(state.d);
-  const L = state.d.lieu, st = L.settings, nv = ['labels', 'fxlabels'].includes(state.netView) ? 'univ' : state.netView || 'univ';
+  const L = state.d.lieu, st = L.settings, nv = ['labels', 'fxlabels', 'sheet', 'diff'].includes(state.netView) ? 'univ' : state.netView || 'univ';
   const sb = k => `<button type="button" data-nv="${k}"${k === nv ? ' class="on"' : ''}>${esc(t('nv' + k[0].toUpperCase() + k.slice(1)))}</button>`;
-  const head = `<div class="subtabs">${['console', 'univ', 'dmx', 'net'].map(sb).join('')}<span class="sep"></span>${['sheet', 'diff'].map(sb).join('')}<span class="sep"></span><button type="button" data-golab="dmx">${esc(t('goLab'))} →</button></div>`;
-  if (['sheet', 'diff'].includes(nv)) { $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length); $('#view').innerHTML = head + renderDocs(nv); renderDocPages(); return; }
+  const head = `<div class="subtabs">${['console', 'univ', 'dmx', 'net'].map(sb).join('')}<span class="sep"></span><button type="button" data-golab="dmx">${esc(t('goLab'))} →</button></div>`;
   const title = k => `<h1 class="ptitle">${esc(t(k))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>`;
   const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
   const inp = (o, x, f, v, w, num, cls) => `<input class="c box${cls ? ' ' + cls : ''}" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
@@ -3322,7 +3326,7 @@ function render() {
   if (V3.running && state.tab !== 'v3d') v3Stop();
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === state.tab));
   $('#filters').style.visibility = state.d ? '' : 'hidden';
-  ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = state.tab === 'fixtures' ? '' : 'none'; });
+  ['#q', '#fPos', '#fType'].forEach(s => { $(s).style.display = state.tab === 'fixtures' && patchView() === 'table' ? '' : 'none'; });
   if (!state.d) return;
   refreshFilters(); refreshBulk();
   if (state.tab === 'rigging') renderRigging();
@@ -3340,7 +3344,7 @@ function render() {
 const BULK_FIELDS = ['mode', 'position', 'circuit', 'dmxLine', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
 function refreshBulk() {
   const n = [...state.sel].filter(u => state.d.fixtures.some(f => f.uid === u)).length;
-  $('#bulk').classList.toggle('on', state.tab === 'fixtures' && n > 0);
+  $('#bulk').classList.toggle('on', state.tab === 'fixtures' && patchView() === 'table' && n > 0);
   $('#selCount').textContent = t('selCount', n);
   $('#bApply').textContent = t('bApplyTo', n);
   if (!$('#bField').options.length || $('#bField').dataset.lang !== LANG) {
@@ -3517,6 +3521,7 @@ view.addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.ev) { state.elecView = b.dataset.ev; store.set('elecView', state.elecView); render(); return; }
   if (b.dataset.golab) { state.labView = b.dataset.golab; store.set('labView', state.labView); const nb = document.querySelector('#tabs button[data-v=labels]'); if (nb) nb.click(); return; }
+  if (b.dataset.pv) { state.patchView = b.dataset.pv; store.set('patchView', state.patchView); render(); return; }
   if (b.dataset.lv) { state.labView = b.dataset.lv; store.set('labView', state.labView); render(); return; }
   if (b.dataset.nv) { state.netView = b.dataset.nv; store.set('netView', state.netView); render(); return; }
   if (b.dataset.rv) { state.rigView = b.dataset.rv; store.set('rigView', state.rigView); render(); return; }
@@ -3970,7 +3975,7 @@ ${D.ref ? `<p class="reffile"><b>${x(t('refOld'))}</b> ${x(D.ref.name)} · ${x(f
 }
 function renderDocPages() {
   const el = $('#docPages'); if (!el || !state.d) return;
-  const nv = state.tab === 'labels' ? 'fxlabels' : state.netView, info = $('#docInfo');
+  const nv = state.tab === 'labels' ? 'fxlabels' : patchView(), info = $('#docInfo');
   el.dir = PL() === 'ar' ? 'rtl' : 'ltr'; el.lang = PL();
   let pages, size = `${DOC.fmt} landscape`;
   if (nv === 'fxlabels') {
