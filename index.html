@@ -709,7 +709,7 @@ const I18N = {
     plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
     plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
     plHint: "Plan coté à l’échelle, tiré du MVR : chaque projecteur est dessiné d’après sa forme (GDTF ou famille) vue depuis la vue choisie, avec son orientation, et les structures d’après leurs modèles. L’échelle est la plus grande échelle usuelle qui tient sur la page : imprimer en taille réelle, marges Aucune. Survoler un projecteur pour ses détails.",
-    plTitle: v => ({ top: 'Plan feu', front: 'Plan feu — face', side: 'Plan feu — côté' })[v], plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Double-clic sur un projecteur ou une structure pour le masquer.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
+    plTitle: v => ({ top: 'Plan feu', bottom: 'Plan feu — vu de dessous', front: 'Plan feu — face', back: 'Plan feu — vu du lointain', cour: 'Plan feu — vu de cour', side: 'Plan feu — vu de cour', jardin: 'Plan feu — vu de jardin' })[v] || 'Plan feu', pv_top: 'Dessus', pv_bottom: 'Dessous', pv_front: 'Face (vu de la salle)', pv_back: 'Lointain (vu de derrière)', pv_jardin: 'Jardin (vu de gauche)', pv_cour: 'Cour (vu de droite)', plJardin: 'JARDIN', plCour: 'COUR', plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Double-clic sur un projecteur ou une structure pour le masquer.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
     nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
     addConsole: 'Ajouter une console', newConsole: 'Console', delConsoleAsk: n => `Supprimer la console « ${n} » ?`,
     cnName: 'Nom', cnRole: 'Rôle', rMain: 'Principale', rBackup: 'Secours', rOnpc: 'onPC / préparation', rViz: 'Visualisation', rOther: 'Autre', cnModel: 'Modèle', cnParams: 'Paramètres de la console', cnExt: 'Extension', cnExtN: 'Nombre d’extensions', cnExtP: 'Paramètres par extension',
@@ -834,7 +834,7 @@ const I18N = {
     plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
     plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
     plHint: 'Scaled plot from the MVR: each fixture is drawn from its shape (GDTF or family) seen from the chosen view, with its orientation, and structures from their models. The scale is the largest usual scale that fits the page: print at actual size, margins None. Hover a fixture for its details.',
-    plTitle: v => ({ top: 'Lighting plot', front: 'Lighting plot — front', side: 'Lighting plot — side' })[v], plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Double-click a fixture or a structure to hide it.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
+    plTitle: v => ({ top: 'Lighting plot', bottom: 'Lighting plot — from below', front: 'Lighting plot — front', back: 'Lighting plot — from upstage', cour: 'Lighting plot — from stage left', side: 'Lighting plot — from stage left', jardin: 'Lighting plot — from stage right' })[v] || 'Lighting plot', pv_top: 'Top', pv_bottom: 'Bottom', pv_front: 'Front (from the house)', pv_back: 'Back (from upstage)', pv_jardin: 'Stage right (from the left)', pv_cour: 'Stage left (from the right)', plJardin: 'STAGE RIGHT', plCour: 'STAGE LEFT', plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Double-click a fixture or a structure to hide it.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
     nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
     addConsole: 'Add a console', newConsole: 'Console', delConsoleAsk: n => `Delete the console “${n}”?`,
     cnName: 'Name', cnRole: 'Role', rMain: 'Main', rBackup: 'Backup', rOnpc: 'onPC / programming', rViz: 'Visualiser', rOther: 'Other', cnModel: 'Model', cnParams: 'Console parameters', cnExt: 'Extension', cnExtN: 'Number of extensions', cnExtP: 'Parameters per extension',
@@ -2099,14 +2099,28 @@ const fxMatrix = f => { const r = Array.isArray(f.m) && f.m.length === 12 ? f.m.
 const shade = (c, f) => { const m = /^#([0-9a-f]{6})$/i.exec(c || ''); if (!m) return c; const n = parseInt(m[1], 16), ch = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f)); return '#' + ch.map(v => v.toString(16).padStart(2, '0')).join(''); };
 const partFill = (part, c) => part === 'lens' ? '#fffbe6' : part === 'metal' ? shade(c, -.35) : part === 'yoke' || part === 'base' ? shade(c, -.18) : c;
 // pièces dessinées de la plus éloignée à la plus proche du regard, pleines : ce qui est dessous est caché (vue du dessus = vue d'en haut)
-function projPolys(parts, m, unitMM, ax) {
+// les six vues : axes horizontal, vertical et profondeur, avec leur sens (la profondeur grandit vers celui qui regarde)
+// x : de jardin vers cour, y : de la salle vers le lointain, z : vers le haut
+const PLAN_VIEWS = {
+  top: { ax: [0, 1, 2], s: [1, 1, 1], marks: ['plJardin', 'plCour', 'plUp', 'plDown'] },
+  bottom: { ax: [0, 1, 2], s: [-1, 1, -1], marks: ['plCour', 'plJardin', 'plUp', 'plDown'] },
+  front: { ax: [0, 2, 1], s: [1, 1, -1], marks: ['plJardin', 'plCour'] },
+  back: { ax: [0, 2, 1], s: [-1, 1, 1], marks: ['plCour', 'plJardin'] },
+  cour: { ax: [1, 2, 0], s: [1, 1, 1], marks: ['plDown', 'plUp'] },
+  jardin: { ax: [1, 2, 0], s: [-1, 1, -1], marks: ['plUp', 'plDown'] },
+};
+PLAN_VIEWS.side = PLAN_VIEWS.cour;   // ancien nom (vues enregistrées)
+const PLAN_VIEW_KEYS = ['top', 'bottom', 'front', 'back', 'jardin', 'cour'];
+const planView = v => PLAN_VIEWS[v] || PLAN_VIEWS.top;
+const projW = (V, w) => [V.s[0] * w[V.ax[0]], V.s[1] * w[V.ax[1]], V.s[2] * w[V.ax[2]]];
+function projPolys(parts, m, unitMM, V) {
   const out = [];
   for (const { p, part } of parts) {
     const pts = [], s = unitMM ? .001 : 1;
     for (let i = 0; i < p.length; i += 3) {
       const x = p[i] * s, y = p[i + 1] * s, z = p[i + 2] * s;
       const w = [m[0] * x + m[3] * y + m[6] * z + m[9] / 1000, m[1] * x + m[4] * y + m[7] * z + m[10] / 1000, m[2] * x + m[5] * y + m[8] * z + m[11] / 1000];
-      pts.push([w[ax[0]], w[ax[1]], w[ax[2]]]);
+      pts.push(projW(V, w));
     }
     const depth = pts.reduce((a, q) => a + q[2], 0) / pts.length, top = Math.max(...pts.map(q => q[2])), bot = Math.min(...pts.map(q => q[2]));
     out.push({ poly: hull2(pts.map(q => [q[0], q[1]])), part, depth, top, bot });
@@ -2121,8 +2135,7 @@ function renderPlan(forPrint) {
   const P = state.plan, d = state.d, L = d.lieu, H = planHide(), geo = PLAN_GEO.ready && PLAN_GEO.key === planGeoKey();
   const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
   // axes : [horizontal, vertical, profondeur] ; profondeur : ce qui est le plus près du regard est dessiné en dernier
-  const AX = { top: [0, 1, 2], front: [0, 2, 1], side: [1, 2, 0] }[P.view] || [0, 1, 2];
-  const depthSign = { top: 1, front: -1, side: 1 }[P.view] || 1;
+  const VW = planView(P.view), depthSign = 1, plain = P.view === 'top' || P.view === 'bottom';
   const hidP = new Set(H.pos), hidO = new Set(H.objs), hidL = new Set(H.layers), hidN = new Set(H.names);
   let fx = d.fixtures.filter(f => (!P.point || f.position === P.point) && !hidP.has(f.position || '—') && !hidO.has('f:' + f.uid));
   const hasXY = fx.filter(f => [f.x, f.y, f.z].every(Number.isFinite)).length >= fx.length / 2 && fx.length;
@@ -2136,22 +2149,22 @@ function renderPlan(forPrint) {
     rows.forEach((r, i) => fx.filter(f => (f.position || '—') === r).sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).forEach((f, j) => pos.set(f.uid, [j, -i * 2, 0])));
   } else fx = fx.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
   const w3 = f => hasXY ? [f.x, f.y, f.z] : pos.get(f.uid);
-  const at = f => { const w = w3(f); return [w[AX[0]], w[AX[1]], w[AX[2]]]; };
+  const at = f => projW(VW, w3(f));
   // formes des projecteurs (GDTF ou famille) projetées sur la vue
   const fpoly = new Map();
-  if (geo && hasXY) for (const f of fx) { const parts = PLAN_GEO.types.get(f.type); if (parts && parts.length) fpoly.set(f.uid, projPolys(parts, fxMatrix(f), false, AX)); }
+  if (geo && hasXY) for (const f of fx) { const parts = PLAN_GEO.types.get(f.type); if (parts && parts.length) fpoly.set(f.uid, projPolys(parts, fxMatrix(f), false, VW)); }
   // structures et décors : leurs modèles projetés (sinon un repère)
   const stVis = o => !hidL.has(o.layer || '—') && !hidN.has((o.layer || '—') + '\u0001' + (o.name || o.kind)) && !hidO.has('s:' + (o.uid || o.name));
   const st = P.struct && hasXY && !P.point ? (d.structures || []).filter(o => [o.x, o.y, o.z].every(Number.isFinite) && o.kind !== 'FocusPoint' && stVis(o)) : [];
   const spoly = st.map(o => {
     let polys = [];
-    if (geo) for (const g of o.geo || []) { const parts = PLAN_GEO.files.get(g.f); if (parts) polys = polys.concat(projPolys(parts, compose(o.m, g.m), true, AX)); }
+    if (geo) for (const g of o.geo || []) { const parts = PLAN_GEO.files.get(g.f); if (parts) polys = polys.concat(projPolys(parts, compose(o.m, g.m), true, VW)); }
     return { o, polys };
   });
   // emprise du dessin
   const ext = [];
   fx.forEach(f => { const ps = fpoly.get(f.uid); if (ps) ps.forEach(q => q.poly.forEach(v => ext.push(v))); else { const a = at(f); ext.push([a[0], a[1]]); } });
-  spoly.forEach(s2 => { if (s2.polys.length) s2.polys.forEach(q => q.poly.forEach(v => ext.push(v))); else { const w = [s2.o.x, s2.o.y, s2.o.z]; ext.push([w[AX[0]], w[AX[1]]]); } });
+  spoly.forEach(s2 => { if (s2.polys.length) s2.polys.forEach(q => q.poly.forEach(v => ext.push(v))); else { const w = projW(VW, [s2.o.x, s2.o.y, s2.o.z]); ext.push([w[0], w[1]]); } });
   let x0 = Math.min(...ext.map(q => q[0])) - .6, x1 = Math.max(...ext.map(q => q[0])) + .6, y0 = Math.min(...ext.map(q => q[1])) - .6, y1 = Math.max(...ext.map(q => q[1])) + .6;
   const need = Math.max((x1 - x0) * 1000 / AW, (y1 - y0) * 1000 / AH), scale = SCALES.find(v => v >= need) || Math.ceil(need / 100) * 100, k = 1000 / scale;
   const ox = M + (AW - (x1 - x0) * k) / 2, oy = M + 14 + (AH - (y1 - y0) * k) / 2;
@@ -2170,15 +2183,19 @@ function renderPlan(forPrint) {
     for (let v = Math.ceil(y0); v <= y1; v++) g += `<line x1="${X(x0).toFixed(2)}" y1="${Y(v).toFixed(2)}" x2="${X(x1).toFixed(2)}" y2="${Y(v).toFixed(2)}" stroke="${v === 0 ? '#b5b5b5' : '#ececec'}" stroke-width="${v === 0 ? .25 : .12}"/>`;
   }
   const midX = (X(x0) + X(x1)) / 2;
-  if (hasXY && P.view === 'top') g += `<text x="${midX.toFixed(2)}" y="${(Y(y1) + 3.5).toFixed(2)}" font-size="2.6" fill="#999" text-anchor="middle" letter-spacing=".8">${esc(t('plUp'))}</text><text x="${midX.toFixed(2)}" y="${(Y(y0) - 1.5).toFixed(2)}" font-size="2.6" fill="#999" text-anchor="middle" letter-spacing=".8">${esc(t('plDown'))}</text>`;
-  if (hasXY && P.view !== 'top' && y0 < 0) g += `<line x1="${X(x0).toFixed(2)}" y1="${Y(0).toFixed(2)}" x2="${X(x1).toFixed(2)}" y2="${Y(0).toFixed(2)}" stroke="#111" stroke-width=".5"/><text x="${(X(x0) + 1).toFixed(2)}" y="${(Y(0) + 3.2).toFixed(2)}" font-size="2.4" fill="#666">${esc(t('plFloor'))}</text>`;
+  if (hasXY) {
+    const mk = VW.marks, midY = (Y(y0) + Y(y1)) / 2, txt = (x, y, k, a, rot) => `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="2.6" fill="#999" text-anchor="${a}" letter-spacing=".8"${rot ? ` transform="rotate(-90 ${x.toFixed(2)} ${y.toFixed(2)})"` : ''}>${esc(t(k))}</text>`;
+    g += txt(X(x0) + 3, midY, mk[0], 'middle', true) + txt(X(x1) - 1.2, midY, mk[1], 'middle', true);
+    if (mk[2]) g += txt(midX, Y(y1) + 3.5, mk[2], 'middle') + txt(midX, Y(y0) - 1.5, mk[3], 'middle');
+  }
+  if (hasXY && !plain && y0 < 0) g += `<line x1="${X(x0).toFixed(2)}" y1="${Y(0).toFixed(2)}" x2="${X(x1).toFixed(2)}" y2="${Y(0).toFixed(2)}" stroke="#111" stroke-width=".5"/><text x="${(X(x0) + 1).toFixed(2)}" y="${(Y(0) + 3.2).toFixed(2)}" font-size="2.4" fill="#666">${esc(t('plFloor'))}</text>`;
   // structures (du plus loin au plus près)
   spoly.sort((a, b) => depthSign * (avgDepth(a) - avgDepth(b)));
-  function avgDepth(s2) { return s2.polys.length ? s2.polys.reduce((a, q) => a + q.depth, 0) / s2.polys.length : [s2.o.x, s2.o.y, s2.o.z][AX[2]]; }
+  function avgDepth(s2) { return s2.polys.length ? s2.polys.reduce((a, q) => a + q.depth, 0) / s2.polys.length : projW(VW, [s2.o.x, s2.o.y, s2.o.z])[2]; }
   for (const { o, polys } of spoly) {
     const key = 's:' + (o.uid || o.name), tip = esc(o.name + ' · ' + o.layer);
     if (polys.length) g += `<g class="pst" data-k="${esc(key)}"><title>${tip}</title>${polys.map(q => `<path d="${path(q.poly)}" fill="#ededea" fill-opacity=".85" stroke="#8c8c88" stroke-width=".14" stroke-linejoin="round"/>`).join('')}</g>`;
-    else { const w = [o.x, o.y, o.z]; g += `<rect class="pst" data-k="${esc(key)}" x="${(X(w[AX[0]]) - .6).toFixed(2)}" y="${(Y(w[AX[1]]) - .6).toFixed(2)}" width="1.2" height="1.2" fill="#d5d5d2" stroke="#9a9a9a" stroke-width=".12"><title>${tip}</title></rect>`; }
+    else { const w = projW(VW, [o.x, o.y, o.z]); g += `<rect class="pst" data-k="${esc(key)}" x="${(X(w[0]) - .6).toFixed(2)}" y="${(Y(w[1]) - .6).toFixed(2)}" width="1.2" height="1.2" fill="#d5d5d2" stroke="#9a9a9a" stroke-width=".12"><title>${tip}</title></rect>`; }
   }
   // perches : trait et nom
   if (P.points) {
@@ -2250,11 +2267,11 @@ function renderPlan(forPrint) {
   const legSym = (k2, cx2, cy2, size, c) => {
     const parts = geo && PLAN_GEO.types.get(k2);
     if (!parts || !parts.length) return symbol(shapeOf.get(k2), cx2, cy2, size * .45, c, '#111');
-    const ps = projPolys(parts, [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], false, P.view === 'top' ? [0, 1, 2] : AX), all = ps.flatMap(q => q.poly);
+    const ps = projPolys(parts, [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], false, plain ? PLAN_VIEWS.top : VW), all = ps.flatMap(q => q.poly);
     const a0 = Math.min(...all.map(v => v[0])), a1 = Math.max(...all.map(v => v[0])), b0 = Math.min(...all.map(v => v[1])), b1 = Math.max(...all.map(v => v[1]));
     const sc = size / Math.max(a1 - a0, b1 - b0, .01), mx = (a0 + a1) / 2, my = (b0 + b1) / 2;
     const tp = poly => 'M' + poly.map(v => `${(cx2 + (v[0] - mx) * sc).toFixed(2)},${(cy2 - (v[1] - my) * sc).toFixed(2)}`).join('L') + 'Z';
-    return `<path d="${tp(hull2(all.map(v => [v[0], v[1]])))}" fill="${c}" stroke="#16161a" stroke-width=".18"/>` + [...ps].sort((p1, p2) => partCmp(p1, p2, P.view === 'top' ? 1 : depthSign)).map(q => `<path d="${tp(q.poly)}" fill="${partFill(q.part, c)}" stroke="#16161a" stroke-width=".08"/>`).join('');
+    return `<path d="${tp(hull2(all.map(v => [v[0], v[1]])))}" fill="${c}" stroke="#16161a" stroke-width=".18"/>` + [...ps].sort((p1, p2) => partCmp(p1, p2, 1)).map(q => `<path d="${tp(q.poly)}" fill="${partFill(q.part, c)}" stroke="#16161a" stroke-width=".08"/>`).join('');
   };
   tOrder.forEach(k2 => {
     if (ly > PH - M - 48) return;
@@ -2301,7 +2318,7 @@ function renderPlanView() {
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   const geoOk = PLAN_GEO.ready && PLAN_GEO.key === planGeoKey();
   $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('plHint'))}</p>
-<div class="plopts noprint"><label>${esc(t('plView'))} <select data-pl="view">${o(['top', 'front', 'side'], P.view, v => t({ top: 'vTop', front: 'vFront', side: 'vSide' }[v]))}</select></label>
+<div class="plopts noprint"><label>${esc(t('plView'))} <select data-pl="view">${o(PLAN_VIEW_KEYS, P.view === 'side' ? 'cour' : P.view, v => t('pv_' + v))}</select></label>
 <label>${esc(t('plPoint'))} <select data-pl="point"><option value="">${esc(t('plAll'))}</option>${o(pts, P.point, v => v)}</select></label>
 <label>${esc(t('plColor'))} <select data-pl="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], P.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
 <label>${esc(t('plLabel2'))} <select data-pl="l2">${o(['none', 'patch', 'circuit', 'dmx', 'gel', 'type', 'unit'], P.l2, v => t('l2' + v))}</select></label>

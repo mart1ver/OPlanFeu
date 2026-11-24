@@ -60,3 +60,18 @@ test('étiquettes : une par projecteur, tête de perche, lignes, réseau', async
   await page.click('#tabs button[data-v=rigging]'); await page.click('#view [data-golab=heads]');
   await expect(page.locator('#view [data-lv=heads]')).toHaveClass(/on/);
 });
+
+test('plan : les six vues (dessus, dessous, face, lointain, jardin, cour)', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const firstX = {};
+  for (const v of ['top', 'bottom', 'front', 'back', 'jardin', 'cour']) {
+    await page.selectOption('[data-pl=view]', v);
+    await expect(page.locator('#planPages .plab')).toHaveCount(24);
+    // le projecteur 101 (le plus à jardin de la perche du lointain) : à gauche vu de dessus et de face, à droite vu de dessous et du lointain
+    firstX[v] = await page.evaluate(() => { const b = document.querySelector(`#planPages .pfx[data-k="f:${state.d.fixtures[0].uid}"]`).getBBox(); return b.x + b.width / 2; });
+  }
+  expect(firstX.top).toBeLessThan(firstX.bottom);
+  expect(firstX.front).toBeLessThan(firstX.back);
+});
