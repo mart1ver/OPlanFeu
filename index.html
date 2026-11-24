@@ -147,6 +147,7 @@ table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; }
 .xyz { font-size: 11.5px; font-family: "IBM Plex Sans Condensed", sans-serif; }
 .missing { color: var(--err); font-weight: 600; }
+select.fmode { font: inherit; font-size: 12.5px; max-width: 13em; border: 1px solid transparent; background: transparent; color: inherit; padding: 2px 2px; border-radius: 5px; } select.fmode:hover, select.fmode:focus { border-color: var(--line); background: var(--bg); } select.fmode.bad { color: var(--err); }
 .warnv { color: var(--warn, #c77700); }
 .eck { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
 .eck div { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; min-width: 96px; background: var(--card, transparent); }
@@ -678,7 +679,7 @@ const I18N = {
     save: 'Enregistrer le dossier (.json) — Ctrl+S', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
-    goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX, réseau et patch → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX, réseau et patch → Réseau.', tabFixtures: 'Projecteurs', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX, réseau et patch → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX, réseau et patch → Réseau.', tabFixtures: 'Patch', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
     navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
     undoT: n => `Annuler (Ctrl+Z)${n ? ' — ' + n + ' pas' : ''}`, redoT: n => `Rétablir (Ctrl+Maj+Z)${n ? ' — ' + n + ' pas' : ''}`, bkTitle: 'Sauvegarde', bkBrowser: 'Dans ce navigateur', bkAt: h => `enregistré à ${h}`, bkPersist: 'Stockage protégé : le navigateur ne l’effacera pas pour faire de la place.', bkNotPersist: 'Stockage non protégé : le navigateur peut l’effacer s’il manque de place. Garde aussi une copie sur le disque.', bkBrowserErr: 'enregistrement dans le navigateur impossible', bkFile: 'Fichier sur le disque', bkFileNone: 'Aucun : lie le dossier à un fichier, il sera réécrit à chaque modification (dans un dossier Nextcloud, Dropbox ou Drive, il part aussi hors de l’ordinateur).', bkLink: 'Enregistrer dans un fichier…', bkUnlink: 'Délier', bkResume: 'Reprendre l’enregistrement', bkNeedPerm: 'enregistrement sur le disque en pause : clique pour reprendre', bkDiskErr: 'erreur d’écriture sur le disque', bkSaving: 'enregistrement…', bkOnDisk: (n, h) => `enregistré dans ${n}${h ? ' à ' + h : ''}`, bkInBrowser: h => `gardé dans le navigateur${h ? ' à ' + h : ''}`, bkRemind: 'pas de copie sur le disque depuis 30 min : télécharger', bkDl: 'Copie sur le disque', bkLastDl: d => `dernière copie téléchargée le ${d}`, bkNoDl: 'aucune copie téléchargée', bkNoFsa: 'Ce navigateur ne peut pas réécrire un fichier : télécharge une copie de temps en temps (Ctrl+S), ou utilise Chrome ou Edge pour l’enregistrement automatique sur le disque.', bkDlNow: 'Télécharger une copie', bkDir: 'Dossier de sauvegarde', bkDirNone: 'Aucun : choisis un dossier, une copie datée de chaque dossier OPlanFeu y est écrite tous les quarts d’heure de travail (40 gardées par dossier).', bkDirHint: 'copie datée tous les quarts d’heure de travail, 40 gardées', bkDirPick: 'Choisir un dossier…', bkDirChange: 'Changer…', bkDirNow: 'Copier maintenant', bkHistory: 'Versions et dossiers…', bkAll: 'Tout exporter (.zip)', bkAllIn: 'Restaurer une archive…',
@@ -785,7 +786,7 @@ const I18N = {
     bApplyTo: n => `Appliquer à ${n} projecteur${n > 1 ? 's' : ''}`,
     renumAsk: 'Premier Fix ID (les projecteurs sélectionnés sont numérotés dans l’ordre du tableau) :', delAsk: n => `Supprimer ${n} projecteur${n > 1 ? 's' : ''} du dossier ?`,
     emptyTitle: 'Aucun dossier ouvert', emptyMsg: 'Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.',
-    cFid: 'Fix ID', cUnit: 'Unit', cName: 'Nom', cType: 'Type', cMode: 'Mode', cNch: 'Can.', cPatch: 'Patch', cLayer: 'Calque', cPosition: 'Position', cGel: 'Gélatine', cAcc: 'Accessoires', cPurpose: 'Fonction / focus', cNotes: 'Notes', cXyz: 'x · y · z (m)',
+    cFid: 'Fix ID', cUnit: 'Unit', cName: 'Nom', cType: 'Type', modeT: 'Mode du projecteur : le nombre de canaux suit. Sur une sélection, tous les projecteurs sélectionnés du même type changent.', chShort: 'can.', modeNotIn: (m, l) => `Le mode « ${m} » n’existe pas pour : ${l}. Ces projecteurs n’ont pas changé.`, cMode: 'Mode', cNch: 'Can.', cPatch: 'Patch', cLayer: 'Calque', cPosition: 'Position', cGel: 'Gélatine', cAcc: 'Accessoires', cPurpose: 'Fonction / focus', cNotes: 'Notes', cXyz: 'x · y · z (m)',
     stFix: 'projecteurs', stTypes: 'types', stPos: 'positions', stUniv: 'univers',
     alDup: n => `${n} Fix ID en double`, alAddr: n => `${n} adresse(s) de départ en double`, alOvl: n => `${n} chevauchement(s) de plage DMX`, alUnp: n => `${n} projecteur(s) sans patch`,
     posTitle: 'Positions', posFix: n => `${n} proj.`, posWeight: w => `≈ ${w} kg`, posPower: p => `≈ ${p} W`, posUnknown: "Hauteur moyenne des projecteurs de chaque position. Les poids et puissances totaux apparaissent quand ils sont renseignés dans l’inventaire.", partial: '(partiel)',
@@ -803,7 +804,7 @@ const I18N = {
     save: 'Save the dossier (.json) — Ctrl+S', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
-    goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX, network and patch → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX, network and patch → Network.', tabFixtures: 'Fixtures', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX, network and patch → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX, network and patch → Network.', tabFixtures: 'Patch', tabInventory: 'Types and inventory', searchPh: 'Search…',
     vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
     navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
     undoT: n => `Undo (Ctrl+Z)${n ? ' — ' + n + ' steps' : ''}`, redoT: n => `Redo (Ctrl+Shift+Z)${n ? ' — ' + n + ' steps' : ''}`, bkTitle: 'Backup', bkBrowser: 'In this browser', bkAt: h => `saved at ${h}`, bkPersist: 'Protected storage: the browser will not clear it to free space.', bkNotPersist: 'Unprotected storage: the browser may clear it when short of space. Keep a copy on disk too.', bkBrowserErr: 'cannot save in the browser', bkFile: 'File on disk', bkFileNone: 'None: link the dossier to a file, it is rewritten on every change (in a Nextcloud, Dropbox or Drive folder it also leaves the computer).', bkLink: 'Save to a file…', bkUnlink: 'Unlink', bkResume: 'Resume saving', bkNeedPerm: 'saving to disk paused: click to resume', bkDiskErr: 'disk write error', bkSaving: 'saving…', bkOnDisk: (n, h) => `saved to ${n}${h ? ' at ' + h : ''}`, bkInBrowser: h => `kept in the browser${h ? ' at ' + h : ''}`, bkRemind: 'no copy on disk for 30 min: download', bkDl: 'Copy on disk', bkLastDl: d => `last copy downloaded ${d}`, bkNoDl: 'no copy downloaded', bkNoFsa: 'This browser cannot rewrite a file: download a copy now and then (Ctrl+S), or use Chrome or Edge for automatic saving to disk.', bkDlNow: 'Download a copy', bkDir: 'Backup folder', bkDirNone: 'None: choose a folder, a dated copy of each OPlanFeu dossier is written there every quarter hour of work (40 kept per dossier).', bkDirHint: 'dated copy every quarter hour of work, 40 kept', bkDirPick: 'Choose a folder…', bkDirChange: 'Change…', bkDirNow: 'Copy now', bkHistory: 'Versions and dossiers…', bkAll: 'Export everything (.zip)', bkAllIn: 'Restore an archive…',
@@ -910,7 +911,7 @@ const I18N = {
     bApplyTo: n => `Apply to ${n} fixture${n > 1 ? 's' : ''}`,
     renumAsk: 'First Fix ID (selected fixtures are numbered in table order):', delAsk: n => `Delete ${n} fixture${n > 1 ? 's' : ''} from the dossier?`,
     emptyTitle: 'No dossier open', emptyMsg: 'Import an MVR exported from WYSIWYG (or Capture, Vectorworks, grandMA3), a patch CSV, or open a saved OPlanFeu dossier.',
-    cFid: 'Fix ID', cUnit: 'Unit', cName: 'Name', cType: 'Type', cMode: 'Mode', cNch: 'Ch.', cPatch: 'Patch', cLayer: 'Layer', cPosition: 'Position', cGel: 'Gel', cAcc: 'Accessories', cPurpose: 'Purpose / focus', cNotes: 'Notes', cXyz: 'x · y · z (m)',
+    cFid: 'Fix ID', cUnit: 'Unit', cName: 'Name', cType: 'Type', modeT: 'Fixture mode: the channel count follows. On a selection, every selected fixture of the same type changes.', chShort: 'ch', modeNotIn: (m, l) => `Mode “${m}” does not exist for: ${l}. These fixtures were not changed.`, cMode: 'Mode', cNch: 'Ch.', cPatch: 'Patch', cLayer: 'Layer', cPosition: 'Position', cGel: 'Gel', cAcc: 'Accessories', cPurpose: 'Purpose / focus', cNotes: 'Notes', cXyz: 'x · y · z (m)',
     stFix: 'fixtures', stTypes: 'types', stPos: 'positions', stUniv: 'universes',
     alDup: n => `${n} duplicate Fix ID(s)`, alAddr: n => `${n} duplicate start address(es)`, alOvl: n => `${n} overlapping DMX range(s)`, alUnp: n => `${n} unpatched fixture(s)`,
     posTitle: 'Positions', posFix: n => `${n} fix.`, posWeight: w => `≈ ${w} kg`, posPower: p => `≈ ${p} W`, posUnknown: 'Average height of the fixtures on each position. Total weight and power appear once they are filled in the inventory.', partial: '(partial)',
@@ -1580,6 +1581,19 @@ const COLS = [
   { k: 'purpose', label: 'cPurpose', edit: true, cls: 'w-md' }, { k: 'notes', label: 'cNotes', edit: true, cls: 'w-md' },
   { k: 'xyz', label: 'cXyz', ro: f => f.x === null || f.x === undefined ? '' : `<span class="xyz">${[f.x, f.y, f.z].map(v => v.toFixed(2)).join(' · ')}</span>` },
 ];
+function modeCell(f) {
+  const ty = state.d.types[f.type], ms = Object.entries((ty && ty.modes) || {});
+  if (!ms.length) return `<input class="c" data-k="mode" value="${esc(f.mode || '')}">`;
+  const known = ms.some(([m]) => m === (f.mode || ''));
+  return `<select class="c fmode${known ? '' : ' bad'}" data-k="mode" title="${esc(t('modeT'))}">${known ? '' : `<option value="${esc(f.mode || '')}" selected>${esc(f.mode || '—')} (?)</option>`}${ms.map(([m, n]) => `<option value="${esc(m)}"${m === (f.mode || '') ? ' selected' : ''}>${esc(m || '—')} · ${n} ${esc(t('chShort'))}</option>`).join('')}</select>`;
+}
+// mode d'un projecteur : le nombre de canaux suit celui du mode dans le type
+function setMode(f, m) {
+  const ty = state.d.types[f.type], ms = (ty && ty.modes) || {};
+  if (Object.keys(ms).length && !(m in ms)) return false;
+  f.mode = m; if (m in ms) f.nch = ms[m];
+  return true;
+}
 const getVal = (f, k) => k === 'patch' ? patchText(f) : k === 'type' ? typeName(f.type) : k === 'xyz' ? (f.z ?? -1e9) : (f[k] ?? '');
 function visible() {
   const q = state.q.trim().toLowerCase();
@@ -1613,6 +1627,7 @@ function renderFixtures() {
   const dupIds = new Set(); { const seen = new Set(); state.d.fixtures.forEach(f => { if (f.fid) { if (seen.has(f.fid)) dupIds.add(f.fid); seen.add(f.fid); } }); }
   const rows = list.map(f => {
     const cells = COLS.map(c => {
+      if (c.k === 'mode') return `<td class="w-mode">${modeCell(f)}</td>`;
       if (!c.edit) return `<td class="ro">${c.k === 'type' && f.color ? `<span class="sw" style="background:${f.color}"></span>` : ''}${c.ro(f)}</td>`;
       const v = c.k === 'patch' ? patchText(f) : (f[c.k] ?? '');
       const bad = c.k === 'fid' && dupIds.has(f.fid) || c.k === 'circuit' && f.circuit && !lineNames.has(f.circuit)
@@ -3322,7 +3337,7 @@ function render() {
 }
 
 // ───────────── sélection et édition groupée ─────────────
-const BULK_FIELDS = ['position', 'circuit', 'dmxLine', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
+const BULK_FIELDS = ['mode', 'position', 'circuit', 'dmxLine', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
 function refreshBulk() {
   const n = [...state.sel].filter(u => state.d.fixtures.some(f => f.uid === u)).length;
   $('#bulk').classList.toggle('on', state.tab === 'fixtures' && n > 0);
@@ -3333,11 +3348,17 @@ function refreshBulk() {
     $('#bField').dataset.lang = LANG;
   }
   const k = $('#bField').value;
-  $('#bList').innerHTML = [...new Set(state.d.fixtures.map(f => f[k]).filter(Boolean))].sort().map(v => `<option value="${esc(v)}">`).join('');
+  const pool = k === 'mode' ? [...new Set(selected().map(f => f.type))].flatMap(ty => Object.keys((state.d.types[ty] || {}).modes || {})) : state.d.fixtures.map(f => f[k]);
+  $('#bList').innerHTML = [...new Set(pool.filter(Boolean))].sort().map(v => `<option value="${esc(v)}">`).join('');
 }
 const selected = () => visible().filter(f => state.sel.has(f.uid));
 $('#bField').addEventListener('change', refreshBulk);
-$('#bApply').addEventListener('click', () => { const k = $('#bField').value, v = $('#bValue').value; selected().forEach(f => { f[k] = v; }); touch(); render(); });
+$('#bApply').addEventListener('click', () => {
+  const k = $('#bField').value, v = $('#bValue').value;
+  if (k === 'mode') { const s = selected(), ko = s.filter(f => !setMode(f, v)); if (ko.length) alert(t('modeNotIn', v, [...new Set(ko.map(f => typeName(f.type)))].join(', '))); }
+  else selected().forEach(f => { f[k] = v; });
+  touch(); render();
+});
 $('#bValue').addEventListener('keydown', e => { if (e.key === 'Enter') $('#bApply').click(); });
 $('#bNone').addEventListener('click', () => { state.sel.clear(); render(); });
 $('#bDelete').addEventListener('click', () => {
@@ -3453,6 +3474,13 @@ view.addEventListener('change', e => {
   }
   const ms = e.target.closest('select[data-msel]');
   if (ms) { const ty = state.d.types[ms.dataset.msel]; if (ty && ms.value !== '' && ms.value in ty.modes) { ty.modeSel = ms.value; state.d.fixtures.forEach(f => { if (f.type === ms.dataset.msel) { if (f.modeOrig === undefined && !(f.mode in ty.modes)) f.modeOrig = f.mode; f.mode = ty.modeSel; f.nch = ty.modes[f.mode]; } }); touch(); render(); } return; }
+  const fm = e.target.closest('select.fmode');
+  if (fm && state.d) {
+    const tr = fm.closest('tr'), f = tr && state.d.fixtures.find(x => x.uid === tr.dataset.u); if (!f) return;
+    // sur une sélection : tous les projecteurs sélectionnés du même type prennent le mode
+    const group = state.sel.has(f.uid) ? state.d.fixtures.filter(x => state.sel.has(x.uid) && x.type === f.type) : [f];
+    group.forEach(x => setMode(x, fm.value)); touch(); render(); return;
+  }
   const tsel = e.target.closest('select[data-t]');
   if (tsel) { const ty = state.d.types[tsel.dataset.t]; if (ty) ty[tsel.dataset.f] = tsel.value === 'auto' ? undefined : tsel.value; touch(); render(); return; }
   const inp = e.target.closest('input.c'); if (!inp) return;
@@ -3470,6 +3498,7 @@ view.addEventListener('change', e => {
     else if (/^\d+$/.test(v) && +v > 0) { f.univ = Math.floor((+v - 1) / 512) + 1; f.addr = (+v - 1) % 512 + 1; }
     inp.value = patchText(f);
   } else if (k === 'nch') { f.nch = parseInt(v, 10) || 0; }
+  else if (k === 'mode') { setMode(f, v); }
   else f[k] = v;
   touch();
   if (k === 'fid') render(); else refreshSide();

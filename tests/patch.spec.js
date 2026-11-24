@@ -1,0 +1,31 @@
+// Patch : mode de chaque projecteur
+const { test, expect, loadSynthetic } = require('./helpers');
+
+const withModes = d => { d.types['Test@Lyre'].modes = { Std: 20, Basic: 12, Extended: 31 }; };
+
+test('l’onglet s’appelle Patch et le mode se choisit projecteur par projecteur', async ({ page }) => {
+  await loadSynthetic(page, withModes);
+  await expect(page.locator('#viewTitle')).toHaveText('Patch');
+  const row = page.locator('#view tbody tr').filter({ has: page.locator('input[data-k=fid][value="101"]') });
+  await row.locator('select.fmode').selectOption('Basic');
+  expect(await page.evaluate(() => { const f = state.d.fixtures.find(x => x.fid === '101'); return [f.mode, f.nch]; })).toEqual(['Basic', 12]);
+  expect(await page.evaluate(() => state.d.fixtures.find(x => x.fid === '102').mode)).toBe('Std');
+  await page.keyboard.press('Escape'); await page.locator('#viewTitle').click();
+  await page.keyboard.press('Control+z');
+  await expect.poll(() => page.evaluate(() => state.d.fixtures.find(x => x.fid === '101').nch)).toBe(20);
+});
+
+test('mode sur une sélection, et refus d’un mode inconnu pour un type', async ({ page }) => {
+  await loadSynthetic(page, withModes);
+  await page.evaluate(() => { state.d.fixtures.filter(f => ['101', '102', '201'].includes(f.fid)).forEach(f => state.sel.add(f.uid)); render(); });
+  await page.selectOption('#bField', 'mode');
+  await page.fill('#bValue', 'Extended');
+  await page.click('#bApply');
+  const r = await page.evaluate(() => ['101', '102', '201'].map(id => { const f = state.d.fixtures.find(x => x.fid === id); return `${f.mode}:${f.nch}`; }));
+  expect(r).toEqual(['Extended:31', 'Extended:31', ':1']);
+});
+
+test('un mode absent du type est signalé dans la liste', async ({ page }) => {
+  await loadSynthetic(page, d => { withModes(d); d.fixtures[0].mode = 'Ancien'; });
+  await expect(page.locator('#view tbody select.fmode.bad')).toHaveCount(1);
+});
