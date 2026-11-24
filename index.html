@@ -1793,6 +1793,10 @@ function hull2(pts) {   // enveloppe convexe (chaîne monotone)
 }
 const fxMatrix = f => Array.isArray(f.m) && f.m.length === 12 ? f.m : [1, 0, 0, 0, 1, 0, 0, 0, 1, (f.x || 0) * 1000, (f.y || 0) * 1000, (f.z || 0) * 1000];
 // projection d'un nuage de points (repère local) sur la vue, après la matrice MVR ; unité du nuage : m ou mm
+// teinte d'une pièce : couleur du type, plus sombre pour la monture et le métal, claire pour la lentille
+const shade = (c, f) => { const m = /^#([0-9a-f]{6})$/i.exec(c || ''); if (!m) return c; const n = parseInt(m[1], 16), ch = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f)); return '#' + ch.map(v => v.toString(16).padStart(2, '0')).join(''); };
+const partFill = (part, c) => part === 'lens' ? '#fffbe6' : part === 'metal' ? shade(c, -.35) : part === 'yoke' || part === 'base' ? shade(c, -.18) : c;
+// pièces dessinées de la plus éloignée à la plus proche du regard, pleines : ce qui est dessous est caché (vue du dessus = vue d'en haut)
 function projPolys(parts, m, unitMM, ax) {
   const out = [];
   for (const { p, part } of parts) {
@@ -1802,11 +1806,13 @@ function projPolys(parts, m, unitMM, ax) {
       const w = [m[0] * x + m[3] * y + m[6] * z + m[9] / 1000, m[1] * x + m[4] * y + m[7] * z + m[10] / 1000, m[2] * x + m[5] * y + m[8] * z + m[11] / 1000];
       pts.push([w[ax[0]], w[ax[1]], w[ax[2]]]);
     }
-    const depth = pts.reduce((a, q) => a + q[2], 0) / pts.length;
-    out.push({ poly: hull2(pts.map(q => [q[0], q[1]])), part, depth });
+    const depth = pts.reduce((a, q) => a + q[2], 0) / pts.length, top = Math.max(...pts.map(q => q[2])), bot = Math.min(...pts.map(q => q[2]));
+    out.push({ poly: hull2(pts.map(q => [q[0], q[1]])), part, depth, top, bot });
   }
   return out;
 }
+// ordre de dessin de deux pièces : si l'une est entièrement plus près du regard, elle passe après ; sinon par le centre
+const partCmp = (a, b, sg) => sg > 0 ? (a.bot >= b.top - 1e-6 ? 1 : b.bot >= a.top - 1e-6 ? -1 : a.depth - b.depth) : (a.top <= b.bot + 1e-6 ? 1 : b.top <= a.bot + 1e-6 ? -1 : b.depth - a.depth);
 const planHide = () => { const d = state.d; d.planHide = { layers: [], names: [], objs: [], pos: [], ...(d.planHide || {}) }; return d.planHide; };
 const planLabKey = () => state.plan.view + '|' + (state.plan.point || '');
 function renderPlan(forPrint) {
@@ -1890,11 +1896,13 @@ function renderPlan(forPrint) {
     const tip = esc([f.fid, typeName(f.type), f.mode, patchText(f), f.position, f.layer, f.circuit, f.dmxLine, f.gel].filter(Boolean).join(' · '));
     let body, bb;
     if (ps && ps.length) {
-      const ord = [...ps].sort((p1, p2) => depthSign * (p1.depth - p2.depth));
+      const ord = [...ps].sort((p1, p2) => partCmp(p1, p2, depthSign));
       // silhouette entière à la couleur du type, puis le détail des pièces par-dessus (monture ombrée, lentille claire)
       const sil = hull2(ps.flatMap(q => q.poly.map(v => [v[0], v[1]])));
       body = `<path d="${path(sil)}" fill="${c}" stroke="#16161a" stroke-width=".22" stroke-linejoin="round"/>` +
-        ord.map(q => `<path d="${path(q.poly)}" fill="${q.part === 'lens' ? '#fffbe6' : q.part === 'metal' ? '#000' : 'none'}" fill-opacity="${q.part === 'metal' ? .22 : 1}" stroke="#16161a" stroke-width=".1" stroke-opacity=".7" stroke-linejoin="round"/>`).join('');
+        ord.map(q => `<path d="${path(q.poly)}" fill="${partFill(q.part, c)}" stroke="#16161a" stroke-width=".1" stroke-opacity=".7" stroke-linejoin="round"/>`).join('') +
+        // arêtes cachées en tirets, comme sur un dessin technique : ce qui est sous la partie visible (tête, lentille d'un projecteur accroché)
+        `<path d="${ord.map(q => path(q.poly)).join(' ')}" fill="none" stroke="#16161a" stroke-width=".1" stroke-dasharray=".6 .4" stroke-opacity=".65"/>`;
       const all = ps.flatMap(q => q.poly); bb = [Math.min(...all.map(v => X(v[0]))), Math.min(...all.map(v => Y(v[1]))), Math.max(...all.map(v => X(v[0]))), Math.max(...all.map(v => Y(v[1])))];
       if (bb[2] - bb[0] < 1.2 && bb[3] - bb[1] < 1.2) { body = symbol(shapeOf.get(f.type), x, y, r * .7, c, '#111'); bb = [x - r, y - r, x + r, y + r]; }
     } else { body = symbol(shapeOf.get(f.type), x, y, r, c, '#111'); bb = [x - r, y - r, x + r, y + r]; }
@@ -1944,7 +1952,7 @@ function renderPlan(forPrint) {
     const a0 = Math.min(...all.map(v => v[0])), a1 = Math.max(...all.map(v => v[0])), b0 = Math.min(...all.map(v => v[1])), b1 = Math.max(...all.map(v => v[1]));
     const sc = size / Math.max(a1 - a0, b1 - b0, .01), mx = (a0 + a1) / 2, my = (b0 + b1) / 2;
     const tp = poly => 'M' + poly.map(v => `${(cx2 + (v[0] - mx) * sc).toFixed(2)},${(cy2 - (v[1] - my) * sc).toFixed(2)}`).join('L') + 'Z';
-    return `<path d="${tp(hull2(all.map(v => [v[0], v[1]])))}" fill="${c}" stroke="#16161a" stroke-width=".18"/>` + [...ps].sort((p1, p2) => depthSign * (p1.depth - p2.depth)).map(q => `<path d="${tp(q.poly)}" fill="${q.part === 'lens' ? '#fffbe6' : q.part === 'metal' ? '#000' : 'none'}" fill-opacity="${q.part === 'metal' ? .22 : 1}" stroke="#16161a" stroke-width=".08"/>`).join('');
+    return `<path d="${tp(hull2(all.map(v => [v[0], v[1]])))}" fill="${c}" stroke="#16161a" stroke-width=".18"/>` + [...ps].sort((p1, p2) => partCmp(p1, p2, P.view === 'top' ? 1 : depthSign)).map(q => `<path d="${tp(q.poly)}" fill="${partFill(q.part, c)}" stroke="#16161a" stroke-width=".08"/>`).join('');
   };
   tOrder.forEach(k2 => {
     if (ly > PH - M - 48) return;
