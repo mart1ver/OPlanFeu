@@ -420,7 +420,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .plhint { color: var(--muted); font-size: 11.5px; margin-top: 8px; white-space: normal; }
 .planwrap #planPages { flex: 1; min-width: 0; overflow: auto; align-items: flex-start; }
 .plstate { font-size: 12px; color: var(--muted); }
-#planPages .plab { cursor: move; } #planPages .plab:hover rect { stroke: #e8a317; }
+#planPages .plab { cursor: move; } #planPages.zdraw svg, #planPages.zdraw .plab { cursor: crosshair; } .plzone input[type=number] { width: 5.5em; } .plzone small { color: var(--muted); } #planPages .plab:hover rect { stroke: #e8a317; }
 #planPages .pfx, #planPages .pst { cursor: pointer; }
 @media print { .planwrap { display: block; } }
 .vbar { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 3px 8px; border: 1px dashed var(--line); border-radius: 9px; }
@@ -732,7 +732,7 @@ const I18N = {
     dYes: 'oui', dNo: 'non', dEmpty: '—',
     tabPlan: 'Plan', plView: 'Vue', vTop: 'Plan (vu de dessus)', vFront: 'Face (vu de la salle)', vSide: 'Côté (vu de jardin)', plPoint: 'Points', plAll: 'Tous', plColor: 'Couleur par', cType: 'Type', cLayer: 'Calque', cPos: 'Position', cUniv: 'Univers', cCirc: 'Ligne élec.', cDmx: 'Ligne DMX',
     plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
-    plOrient: 'Page', or_landscape: 'paysage', or_portrait: 'portrait', plLegEdit: 'Modifier…', lgTitle: 'Légende du plan', lgHint: 'Les réglages valent pour toutes les vues du plan de ce dossier. Décocher pour masquer une entrée, renommer en tapant, flèches pour l’ordre.', lgName: 'Titre de la légende', lgCounts: 'Afficher les quantités', lgMode: 'Afficher le mode', lgCh: 'Afficher le nombre de canaux', lgTypes: 'Types de projecteurs', lgVals: 'Regroupement de couleur', lgExtra: 'Entrées libres', lgExtraTitle: 'Titre des entrées libres', lgAdd: 'Ajouter une entrée', lgNotes: 'Notes sous la légende', lgReset: 'Revenir à la légende automatique', lgNoVals: 'La couleur des projecteurs est celle du type : choisir un autre regroupement (calque, position, univers…) dans les réglages du plan pour en avoir la liste ici.', lgSym_rect: 'carré', lgSym_circle: 'rond', lgSym_line: 'trait', lgSym_dash: 'pointillé', lgUp: 'Monter', lgDown: 'Descendre', pvBase: 'Vues de départ', pvMine: 'Mes vues', pvNew: 'Nouvelle vue', pvFrom: v => `à partir de : ${v}`, pvAuto: 'enregistrée au fil des modifications', pvInDos: 'dans le dossier', pvBaseHint: 'Vue de départ : ses réglages ne sont pas gardés. « Nouvelle vue » crée une vue personnalisée à partir d’elle (réglages, éléments masqués, étiquettes), à afficher ou non dans le dossier complet.', vwInDosShort: 'dans le dossier', plScaleSel: 'Échelle', plScaleAuto: 'normalisée (auto)', plScaleFit: 'ajustée à la page', plRot: 'Rotation', plRulers: 'Règles', plFitScale: s => `Ajusté à la page (≈ 1:${s})`, plFitHint: 'pas à l’échelle : mesurer avec les règles', plOver: 'le dessin dépasse du cadre à cette échelle', plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
+    plOrient: 'Page', or_landscape: 'paysage', or_portrait: 'portrait', plLegEdit: 'Modifier…', lgTitle: 'Légende du plan', lgHint: 'Les réglages valent pour toutes les vues du plan de ce dossier. Décocher pour masquer une entrée, renommer en tapant, flèches pour l’ordre.', lgName: 'Titre de la légende', lgCounts: 'Afficher les quantités', lgMode: 'Afficher le mode', lgCh: 'Afficher le nombre de canaux', lgTypes: 'Types de projecteurs', lgVals: 'Regroupement de couleur', lgExtra: 'Entrées libres', lgExtraTitle: 'Titre des entrées libres', lgAdd: 'Ajouter une entrée', lgNotes: 'Notes sous la légende', lgReset: 'Revenir à la légende automatique', lgNoVals: 'La couleur des projecteurs est celle du type : choisir un autre regroupement (calque, position, univers…) dans les réglages du plan pour en avoir la liste ici.', lgSym_rect: 'carré', lgSym_circle: 'rond', lgSym_line: 'trait', lgSym_dash: 'pointillé', lgUp: 'Monter', lgDown: 'Descendre', zoneDraw: 'Zone à afficher', zoneDrawing: 'Tracer la zone sur le plan…', zoneDrawT: 'Cliquer-glisser sur le plan pour ne montrer qu’une zone (la scène, par exemple)', zoneTitle: 'Zone affichée', zFrom: 'de', zTo: 'à', zX: 'Jardin → cour', zY: 'Salle → lointain', zZ: 'Hauteur', zW: 'Largeur', zH: 'Hauteur de la zone', zoneClear: 'Tout le plan', zoneHint: 'mètres dans les axes de la vue (0 : axe, nez de scène, sol) ; « Zone à afficher » pour la retracer', pvBase: 'Vues de départ', pvMine: 'Mes vues', pvNew: 'Nouvelle vue', pvFrom: v => `à partir de : ${v}`, pvAuto: 'enregistrée au fil des modifications', pvInDos: 'dans le dossier', pvBaseHint: 'Vue de départ : ses réglages ne sont pas gardés. « Nouvelle vue » crée une vue personnalisée à partir d’elle (réglages, éléments masqués, étiquettes), à afficher ou non dans le dossier complet.', vwInDosShort: 'dans le dossier', plScaleSel: 'Échelle', plScaleAuto: 'normalisée (auto)', plScaleFit: 'ajustée à la page', plRot: 'Rotation', plRulers: 'Règles', plFitScale: s => `Ajusté à la page (≈ 1:${s})`, plFitHint: 'pas à l’échelle : mesurer avec les règles', plOver: 'le dessin dépasse du cadre à cette échelle', plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
     plHint: "Plan coté à l’échelle, tiré du MVR : chaque projecteur est dessiné d’après sa forme (GDTF ou famille) vue depuis la vue choisie, avec son orientation, et les structures d’après leurs modèles. L’échelle est la plus grande échelle usuelle qui tient sur la page : imprimer en taille réelle, marges Aucune. Survoler un projecteur pour ses détails.",
     plTitle: v => ({ top: 'Plan feu', bottom: 'Plan feu — vu de dessous', front: 'Plan feu — face', back: 'Plan feu — vu du lointain', cour: 'Plan feu — vu de cour', side: 'Plan feu — vu de cour', jardin: 'Plan feu — vu de jardin' })[v] || 'Plan feu', pv_top: 'Dessus', pv_bottom: 'Dessous', pv_front: 'Face (vu de la salle)', pv_back: 'Lointain (vu de derrière)', pv_jardin: 'Jardin (vu de gauche)', pv_cour: 'Cour (vu de droite)', plJardin: 'JARDIN', plCour: 'COUR', plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Clic droit sur une étiquette : rotation de 45° (Maj + clic droit : dans l’autre sens). Double-clic sur un projecteur ou une structure pour le masquer.', plLabRot: 'Rotation', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
     nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
@@ -857,7 +857,7 @@ const I18N = {
     dYes: 'yes', dNo: 'no', dEmpty: '—',
     tabPlan: 'Plot', plView: 'View', vTop: 'Plan (top view)', vFront: 'Front (from the house)', vSide: 'Side (from stage left)', plPoint: 'Points', plAll: 'All', plColor: 'Colour by', cType: 'Type', cLayer: 'Layer', cPos: 'Position', cUniv: 'Universe', cCirc: 'Power line', cDmx: 'DMX line',
     plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
-    plOrient: 'Page', or_landscape: 'landscape', or_portrait: 'portrait', plLegEdit: 'Edit…', lgTitle: 'Plot legend', lgHint: 'These settings apply to every plot view of this dossier. Untick to hide an entry, type to rename, arrows to reorder.', lgName: 'Legend title', lgCounts: 'Show quantities', lgMode: 'Show the mode', lgCh: 'Show the channel count', lgTypes: 'Fixture types', lgVals: 'Colour grouping', lgExtra: 'Free entries', lgExtraTitle: 'Free entries title', lgAdd: 'Add an entry', lgNotes: 'Notes under the legend', lgReset: 'Back to the automatic legend', lgNoVals: 'Fixtures are coloured by type: pick another grouping (layer, position, universe…) in the plot settings to list it here.', lgSym_rect: 'square', lgSym_circle: 'dot', lgSym_line: 'line', lgSym_dash: 'dashed', lgUp: 'Up', lgDown: 'Down', pvBase: 'Starting views', pvMine: 'My views', pvNew: 'New view', pvFrom: v => `from: ${v}`, pvAuto: 'saved as you edit', pvInDos: 'in the dossier', pvBaseHint: 'Starting view: its settings are not kept. “New view” creates a custom view from it (settings, hidden elements, labels), to show or not in the full dossier.', vwInDosShort: 'in the dossier', plScaleSel: 'Scale', plScaleAuto: 'standard (auto)', plScaleFit: 'fit to page', plRot: 'Rotation', plRulers: 'Rulers', plFitScale: s => `Fit to page (≈ 1:${s})`, plFitHint: 'not to scale: measure with the rulers', plOver: 'the drawing overflows the frame at this scale', plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
+    plOrient: 'Page', or_landscape: 'landscape', or_portrait: 'portrait', plLegEdit: 'Edit…', lgTitle: 'Plot legend', lgHint: 'These settings apply to every plot view of this dossier. Untick to hide an entry, type to rename, arrows to reorder.', lgName: 'Legend title', lgCounts: 'Show quantities', lgMode: 'Show the mode', lgCh: 'Show the channel count', lgTypes: 'Fixture types', lgVals: 'Colour grouping', lgExtra: 'Free entries', lgExtraTitle: 'Free entries title', lgAdd: 'Add an entry', lgNotes: 'Notes under the legend', lgReset: 'Back to the automatic legend', lgNoVals: 'Fixtures are coloured by type: pick another grouping (layer, position, universe…) in the plot settings to list it here.', lgSym_rect: 'square', lgSym_circle: 'dot', lgSym_line: 'line', lgSym_dash: 'dashed', lgUp: 'Up', lgDown: 'Down', zoneDraw: 'Area to show', zoneDrawing: 'Draw the area on the plot…', zoneDrawT: 'Click and drag on the plot to show only one area (the stage, for instance)', zoneTitle: 'Shown area', zFrom: 'from', zTo: 'to', zX: 'Stage right → left', zY: 'House → upstage', zZ: 'Height', zW: 'Width', zH: 'Area height', zoneClear: 'Whole plot', zoneHint: 'metres in the view axes (0: centre line, stage edge, floor); “Area to show” to redraw it', pvBase: 'Starting views', pvMine: 'My views', pvNew: 'New view', pvFrom: v => `from: ${v}`, pvAuto: 'saved as you edit', pvInDos: 'in the dossier', pvBaseHint: 'Starting view: its settings are not kept. “New view” creates a custom view from it (settings, hidden elements, labels), to show or not in the full dossier.', vwInDosShort: 'in the dossier', plScaleSel: 'Scale', plScaleAuto: 'standard (auto)', plScaleFit: 'fit to page', plRot: 'Rotation', plRulers: 'Rulers', plFitScale: s => `Fit to page (≈ 1:${s})`, plFitHint: 'not to scale: measure with the rulers', plOver: 'the drawing overflows the frame at this scale', plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
     plHint: 'Scaled plot from the MVR: each fixture is drawn from its shape (GDTF or family) seen from the chosen view, with its orientation, and structures from their models. The scale is the largest usual scale that fits the page: print at actual size, margins None. Hover a fixture for its details.',
     plTitle: v => ({ top: 'Lighting plot', bottom: 'Lighting plot — from below', front: 'Lighting plot — front', back: 'Lighting plot — from upstage', cour: 'Lighting plot — from stage left', side: 'Lighting plot — from stage left', jardin: 'Lighting plot — from stage right' })[v] || 'Lighting plot', pv_top: 'Top', pv_bottom: 'Bottom', pv_front: 'Front (from the house)', pv_back: 'Back (from upstage)', pv_jardin: 'Stage right (from the left)', pv_cour: 'Stage left (from the right)', plJardin: 'STAGE RIGHT', plCour: 'STAGE LEFT', plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Right-click a label: 45° rotation (Shift + right-click: the other way). Double-click a fixture or a structure to hide it.', plLabRot: 'Rotation', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
     nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
@@ -2407,7 +2407,13 @@ function renderPlan(forPrint) {
   const ext = [];
   fx.forEach(f => { const ps = fpoly.get(f.uid); if (ps) ps.forEach(q => q.poly.forEach(v => ext.push(v))); else { const a = at(f); ext.push([a[0], a[1]]); } });
   spoly.forEach(s2 => { if (s2.polys.length) s2.polys.forEach(q => q.poly.forEach(v => ext.push(v))); else { const w = R(projW(VW, [s2.o.x, s2.o.y, s2.o.z])); ext.push([w[0], w[1]]); } });
+  // zone à afficher : seule cette partie du plan est cadrée (les projecteurs hors zone ne sont ni dessinés ni comptés)
+  const Z = P.zone && hasXY && [P.zone.x0, P.zone.x1, P.zone.y0, P.zone.y1].every(Number.isFinite) && P.zone.x1 > P.zone.x0 && P.zone.y1 > P.zone.y0 ? P.zone : null;
+  let zr = null;
+  if (Z) { const cs = [[Z.x0, Z.y0], [Z.x1, Z.y0], [Z.x0, Z.y1], [Z.x1, Z.y1]].map(R); zr = [Math.min(...cs.map(c => c[0])), Math.max(...cs.map(c => c[0])), Math.min(...cs.map(c => c[1])), Math.max(...cs.map(c => c[1]))];
+    fx = fx.filter(f => { const a = at(f); return a[0] >= zr[0] && a[0] <= zr[1] && a[1] >= zr[2] && a[1] <= zr[3]; }); }
   let x0 = Math.min(...ext.map(q => q[0])) - .6, x1 = Math.max(...ext.map(q => q[0])) + .6, y0 = Math.min(...ext.map(q => q[1])) - .6, y1 = Math.max(...ext.map(q => q[1])) + .6;
+  if (zr) [x0, x1, y0, y1] = zr;
   const need = Math.max((x1 - x0) * 1000 / AW, (y1 - y0) * 1000 / AH);
   const scale = fit ? need : +P.scale > 0 ? +P.scale : SCALES.find(v => v >= need) || Math.ceil(need / 100) * 100, k = 1000 / scale;
   const over = !fit && scale < need - 1e-6;   // échelle choisie trop grande : le dessin déborde, il est coupé au cadre
@@ -2511,7 +2517,8 @@ function renderPlan(forPrint) {
     }
     // dans le cadre du dessin, quoi qu'il arrive (une étiquette glissée dehors redevient attrapable)
     { const rad = ang * Math.PI / 180, hw = (Math.abs(Math.cos(rad)) * lw + Math.abs(Math.sin(rad)) * lh) / 2, hh = (Math.abs(Math.sin(rad)) * lw + Math.abs(Math.cos(rad)) * lh) / 2;
-      lx = Math.min(Math.max(lx, FX0 + RB + hw + .3), FX1 - hw - .3); ly = Math.min(Math.max(ly, FY0 + RB + hh + .3), FY1 - hh - .3); }
+      const cb = zr ? [Math.max(FX0 + RB, X(x0)), Math.max(FY0 + RB, Y(y1)), Math.min(FX1, X(x1)), Math.min(FY1, Y(y0))] : [FX0 + RB, FY0 + RB, FX1, FY1];
+      lx = Math.min(Math.max(lx, cb[0] + hw + .3), cb[2] - hw - .3); ly = Math.min(Math.max(ly, cb[1] + hh + .3), cb[3] - hh - .3); }
     const box = [lx - lw / 2, ly - lh / 2, lx + lw / 2, ly + lh / 2]; placed.push(box);
     const far = Math.max(Math.abs(lx - cx) - lw / 2 - rw, Math.abs(ly - cy) - lh / 2 - rh) > 1.2;
     if (far) { const ex = Math.max(box[0], Math.min(cx, box[2])), ey = Math.max(box[1], Math.min(cy, box[3])); labs += `<line x1="${cx.toFixed(2)}" y1="${cy.toFixed(2)}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="#16161a" stroke-width=".12"/>`; }
@@ -2584,7 +2591,7 @@ function renderPlan(forPrint) {
 <text x="${lx0 + 3}" y="${cy0 + 37}" font-size="2.6">${fx.length} ${esc(t('plFix'))} · ${esc(d.meta.auteur || '')} · ${esc(today)}</text>`;
   const clipId = 'plc' + Math.random().toString(36).slice(2, 9);
   const head = `<text x="${M}" y="${M + 6}" font-size="6" font-weight="700">${esc(t('plTitle', P.view))}${P.point ? ' — ' + esc(P.point) : ''}</text>`;
-  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}" data-pw="${PW}" data-k="${k}"><rect width="${PW}" height="${PH}" fill="#fff"/>${head}<defs><clipPath id="${clipId}"><rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${FY1 - FY0}"/></clipPath></defs><g clip-path="url(#${clipId})">${g}${labs}</g>${rul}<rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${FY1 - FY0}" fill="none" stroke="#111" stroke-width=".4"/>${hasXY ? sb : ''}${leg}</svg></div>` +
+  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}" data-pw="${PW}" data-k="${k}" data-ox="${ox.toFixed(3)}" data-oy="${oy.toFixed(3)}" data-x0="${x0.toFixed(4)}" data-y1="${y1.toFixed(4)}" data-rot="${rot}"><rect width="${PW}" height="${PH}" fill="#fff"/>${head}<defs><clipPath id="${clipId}">${zr ? `<rect x="${Math.max(FX0, X(x0)).toFixed(2)}" y="${Math.max(FY0, Y(y1)).toFixed(2)}" width="${(Math.min(FX1, X(x1)) - Math.max(FX0, X(x0))).toFixed(2)}" height="${(Math.min(FY1, Y(y0)) - Math.max(FY0, Y(y1))).toFixed(2)}"/>` : `<rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${FY1 - FY0}"/>`}</clipPath></defs><g clip-path="url(#${clipId})">${g}${labs}</g>${rul}<rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${FY1 - FY0}" fill="none" stroke="#111" stroke-width=".4"/>${hasXY ? sb : ''}${leg}</svg></div>` +
     (hasXY || forPrint ? '' : `<p class="hint noprint">${esc(t('plSchem'))}</p>`);
 }
 // panneau d'affichage du plan (mêmes principes que la 3D)
@@ -2696,7 +2703,7 @@ document.getElementById('view').addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('[data-pvbase],[data-pvsel],[data-pvnew],[data-pvren],[data-pvdup],[data-pvdel]'); if (!b || !state.d) return;
   const d = state.d; d.views = d.views || [];
   const cur = views('plan').find(v => v.id === state.planViewId);
-  if (b.dataset.pvbase) { planLeaveView(); state.plan.view = b.dataset.pvbase; state.plan.rot = 0; store.set('plan', state.plan); }
+  if (b.dataset.pvbase) { planLeaveView(); if (state.plan.view !== b.dataset.pvbase) state.plan.zone = null; state.plan.view = b.dataset.pvbase; state.plan.rot = 0; store.set('plan', state.plan); }
   else if (b.dataset.pvsel) { const v = views('plan').find(x => x.id === b.dataset.pvsel); if (v) planEnterView(v); }
   else if (b.dataset.pvnew || b.dataset.pvdup) {
     const from = t('pv_' + (state.plan.view === 'side' ? 'cour' : state.plan.view)).replace(/ \(.*\)$/, ''), n = views('plan').length + 1;
@@ -2713,6 +2720,18 @@ document.getElementById('view').addEventListener('change', e => {
   if (!e.target.dataset || !e.target.dataset.pvdos || !state.d) return;
   const v = views('plan').find(x => x.id === state.planViewId); if (v) { v.inDossier = e.target.checked; touch(); renderPlanView(); }
 });
+// réglage précis de la zone : bords en mètres dans les axes de la vue, largeur et hauteur
+const ZONE_AX = { top: ['zX', 'zY'], bottom: ['zX', 'zY'], front: ['zX', 'zZ'], back: ['zX', 'zZ'], cour: ['zY', 'zZ'], jardin: ['zY', 'zZ'], side: ['zY', 'zZ'] };
+function zoneEditor() {
+  const Z = state.plan.zone; if (!Z) return '';
+  const x = esc, ax = ZONE_AX[state.plan.view] || ZONE_AX.top, n = v => (Math.round(v * 100) / 100).toString();
+  const f = (k, v) => `<input type="number" step="0.1" data-zone="${k}" value="${n(v)}">`;
+  return `<div class="plopts noprint plzone"><b>${x(t('zoneTitle'))}</b>
+<label>${x(t(ax[0]))} ${x(t('zFrom'))} ${f('x0', Z.x0)} ${x(t('zTo'))} ${f('x1', Z.x1)} m</label>
+<label>${x(t(ax[1]))} ${x(t('zFrom'))} ${f('y0', Z.y0)} ${x(t('zTo'))} ${f('y1', Z.y1)} m</label>
+<label>${x(t('zW'))} ${f('w', Z.x1 - Z.x0)} m</label><label>${x(t('zH'))} ${f('h', Z.y1 - Z.y0)} m</label>
+<button type="button" class="minibtn x" id="plZoneClear">${x(t('zoneClear'))}</button><small>${x(t('zoneHint'))}</small></div>`;
+}
 function renderPlanView() {
   const P = state.plan, o = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab(v))}</option>`).join('');
   const pts = [...new Set(state.d.fixtures.map(f => f.position).filter(Boolean))].sort(natCmp);
@@ -2729,8 +2748,10 @@ ${planViewStrip()}
 <label>${esc(t('plScaleSel'))} <select data-pl="scaleSel">${o(['auto', ...SCALES.map(String), 'fit'], P.fit === 'fit' ? 'fit' : P.scale ? String(P.scale) : 'auto', v => v === 'auto' ? t('plScaleAuto') : v === 'fit' ? t('plScaleFit') : '1:' + v)}</select></label>
 <label>${esc(t('plRot'))} <select data-pl="rot">${o(['0', '90', '180', '270'], String(planRot(P)), v => v + '°')}</select></label>
 <label><input type="checkbox" data-pl="rulers"${P.rulers !== false ? ' checked' : ''}> ${esc(t('plRulers'))}</label>
+<button type="button" class="minibtn${state.planZoneDraw ? ' primary' : ''}" id="plZoneDraw" title="${esc(t('zoneDrawT'))}">${esc(t(state.planZoneDraw ? 'zoneDrawing' : 'zoneDraw'))}</button>
 <span class="spacer"></span><span class="plstate">${geoOk ? '' : esc(t('v3Shaping'))}</span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="160" value="${P.zoom}"></label></div>
-<div class="planwrap">${planPanel()}<div id="planPages">${renderPlan()}</div></div>`;
+${zoneEditor()}
+<div class="planwrap">${planPanel()}<div id="planPages"${state.planZoneDraw ? ' class="zdraw"' : ''}>${renderPlan()}</div></div>`;
   planViewSync();
   $('#pagesize').textContent = `@page { size: ${P.fmt} ${P.orient === 'portrait' ? 'portrait' : 'landscape'}; margin: 0; }`;
   document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = P.zoom / 100; });
@@ -2764,6 +2785,43 @@ document.getElementById('view').addEventListener('dblclick', e => {
   const g2 = e.target.closest && e.target.closest('#planPages [data-k]'); if (!g2 || !state.d) return;
   const H = planHide(); H.objs = [...new Set([...H.objs, g2.dataset.k])]; touch(); renderPlanView();
 });
+document.getElementById('view').addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('#plZoneDraw, #plZoneClear'); if (!b || !state.d) return;
+  if (b.id === 'plZoneDraw') state.planZoneDraw = !state.planZoneDraw;
+  else { state.plan.zone = null; store.set('plan', state.plan); }
+  renderPlanView();
+});
+document.getElementById('view').addEventListener('change', e => {
+  const el = e.target.closest && e.target.closest('[data-zone]'); if (!el || !state.d || !state.plan.zone) return;
+  const Z = { ...state.plan.zone }, v = parseFloat(String(el.value).replace(',', '.')); if (!Number.isFinite(v)) return renderPlanView();
+  const k = el.dataset.zone;
+  if (k === 'w') { if (v > .1) Z.x1 = Z.x0 + v; } else if (k === 'h') { if (v > .1) Z.y1 = Z.y0 + v; } else Z[k] = v;
+  if (Z.x1 - Z.x0 < .1 || Z.y1 - Z.y0 < .1) return renderPlanView();
+  state.plan.zone = Z; store.set('plan', state.plan); renderPlanView();
+});
+document.getElementById('view').addEventListener('pointerdown', e => {
+  if (!state.planZoneDraw || e.button !== 0) return;
+  const svg = e.target.closest && e.target.closest('#planPages svg'); if (!svg || !state.d) return;
+  e.preventDefault(); e.stopPropagation();
+  const r = svg.getBoundingClientRect(), mm = +svg.dataset.pw / r.width, at = ev => [(ev.clientX - r.left) * mm, (ev.clientY - r.top) * mm], a = at(e);
+  const NS = 'http://www.w3.org/2000/svg', box = document.createElementNS(NS, 'rect');
+  box.setAttribute('fill', 'rgba(232,163,23,.15)'); box.setAttribute('stroke', '#e8a317'); box.setAttribute('stroke-width', '.5'); box.setAttribute('stroke-dasharray', '2 1'); svg.appendChild(box);
+  let b2 = a;
+  const draw = () => { box.setAttribute('x', Math.min(a[0], b2[0])); box.setAttribute('y', Math.min(a[1], b2[1])); box.setAttribute('width', Math.abs(b2[0] - a[0])); box.setAttribute('height', Math.abs(b2[1] - a[1])); };
+  const mv = ev => { b2 = at(ev); draw(); };
+  const up = () => {
+    window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
+    state.planZoneDraw = false;
+    if (Math.abs(b2[0] - a[0]) < 3 || Math.abs(b2[1] - a[1]) < 3) return renderPlanView();
+    // du papier (mm) au dessin (m), puis rotation inverse vers les axes de la vue
+    const k = +svg.dataset.k, ox = +svg.dataset.ox, oy = +svg.dataset.oy, x0 = +svg.dataset.x0, y1 = +svg.dataset.y1, rot = +svg.dataset.rot;
+    const toW = ([px, py]) => { const h = x0 + (px - ox) / k, v = y1 - (py - oy) / k; return rot === 90 ? [-v, h] : rot === 180 ? [-h, -v] : rot === 270 ? [v, -h] : [h, v]; };
+    const c = [a, b2, [a[0], b2[1]], [b2[0], a[1]]].map(toW), r2 = v => Math.round(v * 10) / 10;
+    state.plan.zone = { x0: r2(Math.min(...c.map(q => q[0]))), x1: r2(Math.max(...c.map(q => q[0]))), y0: r2(Math.min(...c.map(q => q[1]))), y1: r2(Math.max(...c.map(q => q[1]))) };
+    store.set('plan', state.plan); renderPlanView();
+  };
+  window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+}, true);
 // clic droit sur une étiquette : quart de tour… par pas de 45° (Maj : dans l'autre sens)
 document.getElementById('view').addEventListener('contextmenu', e => {
   const lab = e.target.closest && e.target.closest('#planPages .plab'); if (!lab || !state.d) return;
@@ -2789,7 +2847,7 @@ document.getElementById('view').addEventListener('pointerdown', e => {
   window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
 });
 // ───────────── vues enregistrées (plan et 3D), à reprendre dans le dossier complet ─────────────
-const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'labRot', 'struct', 'points', 'grid', 'fmt', 'orient', 'fit', 'scale', 'rot', 'rulers'];
+const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'labRot', 'struct', 'points', 'grid', 'fmt', 'orient', 'fit', 'scale', 'rot', 'rulers', 'zone'];
 const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid'];
 const clone = o => JSON.parse(JSON.stringify(o ?? null));
 const views = kind => (state.d.views || []).filter(v => v.kind === kind);

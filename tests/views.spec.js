@@ -257,3 +257,35 @@ test('vues du plan : vues de départ, vues personnalisées enregistrées au fil 
   await page.check('#view [data-dosv]:near(:text("Face régie"))');
   await expect(page.locator('#dosPages')).toContainText('Face régie');
 });
+
+test('plan : zone à afficher, tracée à la souris puis réglée au décimètre', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.click('#plZoneDraw');
+  // tracer autour de la perche du lointain seulement (projecteurs 101 à 106)
+  const box = async uid => page.locator(`#planPages .pfx[data-k="f:${uid}"]`).boundingBox();
+  const a = await box('u-1'), b = await box('u-6');
+  await page.mouse.move(a.x - 15, a.y - 25); await page.mouse.down();
+  await page.mouse.move(b.x + b.width + 15, b.y + b.height + 25, { steps: 5 }); await page.mouse.up();
+  await expect(page.locator('#view .plzone')).toBeVisible();
+  await expect(page.locator('#planPages .plab')).toHaveCount(6);
+  const z = await page.evaluate(() => state.plan.zone);
+  expect(z.x0).toBeLessThan(-2.5); expect(z.x1).toBeGreaterThan(2.5); expect(z.y0).toBeGreaterThan(3); expect(z.y1).toBeLessThan(7);
+  // réglage précis : la zone descend jusqu'à la face (y = -5)
+  await page.fill('#view [data-zone=x0]', '-5'); await page.locator('#view [data-zone=x0]').press('Enter');
+  await page.fill('#view [data-zone=x1]', '5'); await page.locator('#view [data-zone=x1]').press('Enter');
+  await page.fill('#view [data-zone=y0]', '-5'); await page.locator('#view [data-zone=y0]').press('Enter');
+  await expect(page.locator('#planPages .plab')).toHaveCount(20);   // lointain, milieu et face ; pas le sol (y = 6)
+  await page.fill('#view [data-zone=w]', '2'); await page.locator('#view [data-zone=w]').press('Enter');
+  expect(await page.evaluate(() => Math.round((state.plan.zone.x1 - state.plan.zone.x0) * 10) / 10)).toBe(2);
+  await page.click('#plZoneClear');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  // avec le plan tourné, la zone tracée reste juste
+  await page.selectOption('[data-pl=rot]', '90');
+  await page.click('#plZoneDraw');
+  const a2 = await box('u-1'), b2 = await box('u-6');
+  await page.mouse.move(Math.min(a2.x, b2.x) - 25, Math.min(a2.y, b2.y) - 15); await page.mouse.down();
+  await page.mouse.move(Math.max(a2.x, b2.x) + 25, Math.max(a2.y, b2.y) + 25, { steps: 5 }); await page.mouse.up();
+  await expect(page.locator('#planPages .plab')).toHaveCount(6);
+});
