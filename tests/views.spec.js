@@ -123,3 +123,25 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
   const nm = page.locator('#view input[data-o=devices][data-f=name]').nth(2); await nm.fill('Merger régie'); await nm.press('Enter');
   expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => l.dest + '|' + l.src).join(' '))).toBe('Merger régie|MA3 Merger régie|Avo P1 Lointain|Merger régie');
 });
+
+test('plan : échelle choisie, ajustée à la page avec règles, rotation', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const cart = () => page.locator('#planPages svg').first().textContent();
+  await page.selectOption('[data-pl=scaleSel]', '20');
+  expect(await cart()).toContain('Échelle 1:20');
+  expect(await cart()).toContain('dépasse');
+  await page.selectOption('[data-pl=scaleSel]', 'fit');
+  expect(await cart()).toMatch(/Ajusté à la page \(≈ 1:\d+\)/);
+  // règles graduées (des nombres le long du cadre)
+  expect(await page.locator('#planPages svg text[font-size="2"]').count()).toBeGreaterThan(5);
+  // un quart de tour : la perche du lointain (horizontale) devient verticale
+  const span = async () => page.evaluate(() => { const els = state.d.fixtures.filter(f => f.position === 'P1 Lointain').map(f => document.querySelector(`#planPages .pfx[data-k="f:${f.uid}"]`).getBBox()); const xs = els.map(b => b.x), ys = els.map(b => b.y); return [Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)]; });
+  const [w0, h0] = await span(); expect(w0).toBeGreaterThan(h0);
+  await page.selectOption('[data-pl=rot]', '90');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  const [w1, h1] = await span(); expect(h1).toBeGreaterThan(w1);
+  await page.uncheck('[data-pl=rulers]');
+  expect(await page.locator('#planPages svg text[font-size="2"]').count()).toBe(0);
+});
