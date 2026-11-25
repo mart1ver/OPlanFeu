@@ -144,7 +144,7 @@ td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; b
 .w-unit2 input { width: 5.5em; } .w-fid input { width: 5.5em; } .w-unit input { width: 3.6em; } .w-patch input { width: 5.6em; } .w-sm input { width: 9em; } .w-md input { width: 12.5em; }
 table.grid td input.box { border-color: var(--line); background: var(--bg); }
 table.grid td input.box:focus { background: var(--panel); }
-.view .gridwrap { overflow-x: auto; }
+.view .gridwrap { overflow-x: auto; overflow-y: hidden; padding-bottom: 14px; }
 .tfilter { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; } .tfilter .tfq { font: inherit; font-size: 13px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); width: 240px; } .tfilter .tfn { font-size: 12px; color: var(--muted); }
 table.grid th.tsort { cursor: pointer; user-select: none; } table.grid th.tsort:hover { color: var(--ink); } table.grid th.tsort.asc::after { content: ' ▲'; font-size: 9px; } table.grid th.tsort.desc::after { content: ' ▼'; font-size: 9px; }
 .dvtab td.lks { min-width: 220px; max-width: 520px; white-space: normal; } .ptab select, .lktab select { max-width: 240px; } .ptab td:nth-child(3) select { max-width: 300px; } .lk { display: inline-block; margin: 1px 6px 1px 0; padding: 1px 6px; border-radius: 4px; background: var(--panel); font-size: 12px; white-space: nowrap; } .lk.out, .lk.in { box-shadow: inset 2px 0 0 #4363d8; }
@@ -784,7 +784,7 @@ const I18N = {
     setProto: 'Protocole', setArtBase: 'Décalage Art-Net', setNet: 'Réseau', setMask: 'Masque', setGw: 'Passerelle',
     dmxHint: "Tous les câbles : Ethernet et fibre entre deux ports d’appareils (switch, node, console…), DMX d’une sortie vers une position (ligne de projecteurs) ou vers l’entrée d’un autre appareil (merger, splitter…). Les mêmes câbles se règlent port par port dans la fiche de chaque appareil (onglet Appareils). Les projecteurs se raccrochent à une ligne DMX dans l’onglet Patch (colonne « Ligne DMX ») ou avec « Répartir automatiquement » : même univers et même position. Le chaînage suit l’ordre en x.",
     dlName: 'Ligne', dlSrc: 'Source', dlPort: 'Port', dlU: 'Univers', dlDest: 'Arrivée', dlDestPts: 'Points d’accroche', dlDestDev: 'Merger ou splitter', mg_htp: 'fusion HTP', mg_ltp: 'fusion LTP', mg_backup: 'secours (bascule)', nsIn: n => `entrée ${n}`, dlLen: 'Long. (m)', dlChain: 'Chaînage (ordre en x)', dlN: 'Proj.', dlNotes: 'Notes',
-    addDmx: 'Ajouter une ligne DMX', dmxSeries: 'Créer une série de lignes DMX', srPort: 'premier port', srU: 'premier univers', srUStep: 'univers', srUSame: 'le même', srUInc: '+1 par ligne', srPortInc: 'port +1 par ligne',
+    addDmx: 'Ajouter une ligne DMX', srPort: 'premier port', srU: 'premier univers', srUStep: 'univers', srUSame: 'le même', srUInc: '+1 par ligne', srPortInc: 'port +1 par ligne',
     autoDmx: 'Répartir automatiquement', autoDone: (n, m) => `${n} projecteur(s) raccroché(s) à une ligne DMX, ${m} sans ligne possible.`, delDmxAsk: n => `Supprimer la ligne DMX « ${n} » ?`,
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nom, ce qui y est branché (Ethernet, fibre, DMX), câble, longueur, VLAN des ports de switch, univers des sorties DMX. Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
@@ -917,7 +917,7 @@ const I18N = {
     setProto: 'Protocol', setArtBase: 'Art-Net offset', setNet: 'Network', setMask: 'Mask', setGw: 'Gateway',
     dmxHint: 'Every cable: Ethernet and fibre between two device ports (switch, node, console…), DMX from an output to a position (fixture line) or to another device’s input (merger, splitter…). The same cables can be set port by port in each device sheet (Devices tab). Fixtures join a DMX line in the Patch tab (“DMX line” column) or with “Auto-assign”: same universe and position. The daisy chain follows the x order.',
     dlName: 'Line', dlSrc: 'Source', dlPort: 'Port', dlU: 'Universe', dlDest: 'Lands at', dlDestPts: 'Rigging points', dlDestDev: 'Merger or splitter', mg_htp: 'HTP merge', mg_ltp: 'LTP merge', mg_backup: 'backup (failover)', nsIn: n => `input ${n}`, dlLen: 'Length (m)', dlChain: 'Daisy chain (x order)', dlN: 'Fix.', dlNotes: 'Notes',
-    addDmx: 'Add a DMX line', dmxSeries: 'Create a series of DMX lines', srPort: 'first port', srU: 'first universe', srUStep: 'universe', srUSame: 'same', srUInc: '+1 per line', srPortInc: 'port +1 per line',
+    addDmx: 'Add a DMX line', srPort: 'first port', srU: 'first universe', srUStep: 'universe', srUSame: 'same', srUInc: '+1 per line', srPortInc: 'port +1 per line',
     autoDmx: 'Auto-assign', autoDone: (n, m) => `${n} fixture(s) attached to a DMX line, ${m} with no possible line.`, delDmxAsk: n => `Delete the DMX line “${n}”?`,
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: name, what is plugged in (Ethernet, fibre, DMX), cable, length, switch port VLAN, DMX output universe. Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
@@ -1300,7 +1300,7 @@ function checkDossier(d) {
 }
 
 // ───────────── état ─────────────
-const state = { synView: store.get('synView', 'elec'), patchView: store.get('patchView', 'table'), labView: store.get('labView', 'fx'), planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, netsyno: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), dmxSeries: null, dmxSeriesOpen: false, labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
+const state = { synView: store.get('synView', 'elec'), patchView: store.get('patchView', 'table'), labView: store.get('labView', 'fx'), planViewId: null, v3ViewId: null, invView: store.get('invView', 'inv'), v3: { color: 'type', shapes: true, labels: true, beams: true, beamZoom: 'mid', beamI: 100, beamCol: 'cct', pools: true, struct: true, points: true, grid: true, ...store.get('v3', {}) }, dos: { cover: true, plan: true, patch: true, loads: true, heads: false, elec: true, syno: true, dmx: true, netsyno: true, inv: true, ecart: true, ...store.get('dos', {}) }, plan: { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, struct: true, points: true, grid: true, fmt: 'A3', zoom: 60, ...store.get('plan', {}) }, rigView: store.get('rigView', 'points'), headFmt: store.get('headFmt', 'A5'), headSol: false, headZoom: store.get('headZoom', 60), netView: store.get('netView', 'univ'), labEnds: true, labJar: false, elecView: store.get('elecView', 'lines'), series: null, seriesOpen: false, d: null, fileName: '', tab: store.get('tab', 'fixtures') === 'positions' ? 'rigging' : store.get('tab', 'fixtures'), sort: store.get('sort', { k: 'fid', dir: 1 }), sel: new Set(), q: '', fPos: '', fType: '' };
 let saveTimer = null;
 // ───────────── sauvegarde ─────────────
 // 1. navigateur (IndexedDB) : chaque dossier ouvert est gardé, avec un historique de versions ; localStorage en secours
@@ -2412,7 +2412,6 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
     body = title('nvUniv') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('unHint'))}</p>` + setRow +
       `<div class="gridwrap"><table class="grid"><thead><tr>${['unU', 'unSacn', 'unArt', 'unFix', 'unUsed', 'unMax', 'unLines', 'unSrc'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
   } else if (nv === 'dmx') {
-    const S = state.dmxSeries || (state.dmxSeries = { prefix: 'DMX ', from: 1, to: 8, digits: 0, src: srcNames[0] || '', port: 1, portInc: '1', u: 1, uInc: '1', dest: '' });
     const LF = ['all', 'net', 'dmx'].includes(state.linkFilter) ? state.linkFilter : 'all', iss = netIssues(), links = allLinks();
     const devNames = L.devices.map(d => d.name).sort(natCmp);
     const plCache = new Map(), plist = n => { if (!plCache.has(n)) { const dv = devByName(n); plCache.set(n, dv ? devPortList(dv, links).list : []); } return plCache.get(n); };
@@ -2444,14 +2443,6 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
     body = title('nvDmx') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dmxHint'))}</p>` +
       `<div class="settings noprint"><span class="seg">${['all', 'net', 'dmx'].map(lfb).join('')}</span><button type="button" class="minibtn" id="addNetLink">${esc(t('addNetLink'))}</button><button type="button" class="minibtn" id="addDmx">${esc(t('addDmx'))}</button><button type="button" class="minibtn primary" id="autoDmx">${esc(t('autoDmx'))}</button>
 <span style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
-<details class="series noprint"${state.dmxSeriesOpen ? ' open' : ''} data-ser="dmx"><summary>${esc(t('dmxSeries'))}</summary><div class="row">
-<label>${esc(t('srPrefix'))} <input id="ds_prefix" value="${esc(S.prefix)}"></label><label>${esc(t('srFrom'))} <input id="ds_from" inputmode="numeric" value="${esc(S.from)}"></label><label>${esc(t('srTo'))} <input id="ds_to" inputmode="numeric" value="${esc(S.to)}"></label>
-<label>${esc(t('srDigits'))} <input id="ds_digits" inputmode="numeric" value="${esc(S.digits || '')}" placeholder="—"></label>
-<label>${esc(t('dlSrc'))} <select id="ds_src"><option value=""></option>${opt(srcNames, S.src)}</select></label>
-<label>${esc(t('srPort'))} <input id="ds_port" inputmode="numeric" value="${esc(S.port)}"></label><label><select id="ds_portInc">${opt(['1', '0'], S.portInc, v => v === '1' ? t('srPortInc') : '—')}</select></label>
-<label>${esc(t('srU'))} <input id="ds_u" inputmode="numeric" value="${esc(S.u)}"></label><label>${esc(t('srUStep'))} <select id="ds_uInc">${opt(['1', '0'], S.uInc, v => v === '1' ? t('srUInc') : t('srUSame'))}</select></label>
-<label>${esc(t('dlDest'))} <select id="ds_dest">${destOpts(S.dest)}</select></label>
-<button type="button" class="minibtn primary" id="dsCreate">${esc(t('srCreate'))}</button></div></details>
 <div class="gridwrap"><table class="grid lktab"><thead><tr>${['lkRef', 'lkKind', 'lkFrom', 'dlPort', 'lkTo', 'dlPort', 'lkUV', 'dlLen', 'dlN', 'dlChain', 'dlNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead>
 <tbody>${netRows}${netRows && dmxRows ? '<tr class="lksep"><td colspan="12"></td></tr>' : ''}${dmxRows}</tbody></table></div>${netRows || dmxRows ? '' : `<p class="hint2">${esc(t('lkNone'))}</p>`}`;
   } else if (nv === 'net') {
@@ -4388,7 +4379,6 @@ view.addEventListener('change', e => {
   if (e.target.id === 'headFmt') { state.headFmt = e.target.value; store.set('headFmt', state.headFmt); render(); return; }
   if (e.target.id === 'headSol') { state.headSol = e.target.checked; render(); return; }
   if (e.target.id === 'labEnds' || e.target.id === 'labJar') { state[e.target.id] = e.target.checked; render(); return; }
-  if (e.target.id && e.target.id.startsWith('ds_')) { state.dmxSeries[e.target.id.slice(3)] = e.target.value; return; }
   // fiche d'un appareil : port branché, nom et VLAN d'un port, nombre de ports
   const pk = e.target.closest('[data-pconn],[data-pname],[data-pvlan],[data-dport]');
   if (pk) {
@@ -4523,7 +4513,7 @@ view.addEventListener('keydown', e => {
   const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
   if (next) { next.focus(); next.select(); }
 });
-view.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('series')) { if (e.target.dataset.ser === 'dmx') state.dmxSeriesOpen = e.target.open; else state.seriesOpen = e.target.open; } }, true);
+view.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('series')) { state.seriesOpen = e.target.open; } }, true);
 view.addEventListener('click', async e => {
   if (!state.d) return;
   const b = e.target.closest('button'); if (!b) return;
@@ -4550,17 +4540,6 @@ view.addEventListener('click', async e => {
     return;
   }
   if (b.id === 'autoDmx') { const [n, m] = autoDmx(); touch(); render(); alert(t('autoDone', n, m)); return; }
-  if (b.id === 'dsCreate') {
-    const S = state.dmxSeries; ['prefix', 'from', 'to', 'digits', 'src', 'port', 'portInc', 'u', 'uInc', 'dest'].forEach(k => { const el = $('#ds_' + k); if (el) S[k] = el.value; });
-    const a = parseInt(S.from, 10), z = parseInt(S.to, 10), dg = parseInt(S.digits, 10) || 0; if (isNaN(a) || isNaN(z) || z < a || z - a > 500) return;
-    let made = 0, port = parseInt(S.port, 10) || null, u = parseInt(S.u, 10) || null;
-    for (let i = a; i <= z; i++) {
-      const name = S.prefix + String(i).padStart(dg, '0');
-      if (!state.d.lieu.dmxLines.some(x => x.name === name)) { state.d.lieu.dmxLines.push({ id: uid(), name, src: S.src, port, universe: u, dest: S.dest, length: null, notes: '' }); made++; }
-      if (port && S.portInc === '1') port++; if (u && S.uInc === '1') u++;
-    }
-    state.dmxSeriesOpen = true; touch(); render(); alert(t('srDone', made)); return;
-  }
   if (b.id === 'addConsole') {
     let i = state.d.lieu.consoles.length + 1, n; do n = t('newConsole') + ' ' + i++; while (state.d.lieu.consoles.some(x => x.name === n));
     state.d.lieu.consoles.push({ id: uid(), name: n, role: state.d.lieu.consoles.length ? 'backup' : 'main', model: '', params: null, ext: '', extCount: null, extParams: null, universes: null, dmxPorts: null, protocols: [], version: '', device: '', showfile: '', notes: '' });
