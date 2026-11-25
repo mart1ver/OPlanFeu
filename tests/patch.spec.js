@@ -68,3 +68,13 @@ test('nom de machine : saisi dans le tableau, repris sur la feuille de patch et 
   await page.selectOption('[data-pl=l2]', 'name');
   await expect(page.locator('#planPages .plab[data-u="u-1"]')).toContainText('Lyre contre jardin');
 });
+
+test('numéroter les noms d’une sélection, dans l’ordre du tableau', async ({ page }) => {
+  await loadSynthetic(page);
+  expect(await page.evaluate(() => [nameSeries('Lyre 1', 3), nameSeries('Face 09', 3), nameSeries('Contre # jardin', 2), nameSeries('Douche', 2), nameSeries('L##', 2)]))
+    .toEqual([['Lyre 1', 'Lyre 2', 'Lyre 3'], ['Face 09', 'Face 10', 'Face 11'], ['Contre 1 jardin', 'Contre 2 jardin'], ['Douche 1', 'Douche 2'], ['L01', 'L02']]);
+  await page.evaluate(() => { state.d.fixtures.filter(f => ['101', '102', '103'].includes(f.fid)).forEach(f => state.sel.add(f.uid)); render(); });
+  await page.evaluate(() => { window.prompt = () => 'Spot 01'; });
+  await page.click('#bRename');
+  expect(await page.evaluate(() => ['101', '102', '103'].map(id => state.d.fixtures.find(x => x.fid === id).name))).toEqual(['Spot 01', 'Spot 02', 'Spot 03']);
+});

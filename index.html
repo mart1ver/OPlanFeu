@@ -644,6 +644,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
       <datalist id="bList"></datalist>
       <button type="button" class="primary" id="bApply" data-i18n="bApply">Appliquer</button>
       <button type="button" id="bRenum" data-i18n="bRenum">Numéroter…</button>
+      <button type="button" id="bRename" data-i18n="bRename">Numéroter les noms…</button>
       <button type="button" id="bLines" data-i18n="bLines">Lignes à la suite…</button>
       <button type="button" class="danger" id="bDelete" data-i18n="bDelete">Supprimer</button>
       <button type="button" id="bNone" data-i18n="bNone">Désélectionner</button>
@@ -816,7 +817,7 @@ const I18N = {
     invHint: "La forme 3D se devine d’après le nom du type ; les GDTF de WYSIWYG ne contiennent qu’un modèle générique, un GDTF de fabricant (GDTF Share) donne la vraie forme. Chaque type garde son fichier GDTF (modes, canaux, poids, puissance) : il vient du MVR, ou s’ajoute avec « Ajouter… » ou en déposant un fichier .gdtf sur la page. Renseigne aussi le stock du lieu, le poids et la puissance quand le GDTF ne les donne pas.",
     allPos: 'Toutes les positions', allTypes: 'Tous les types', noPos: '(sans position)',
     count: (n, m) => n === m ? `${n} projecteurs` : `${n} / ${m} projecteurs`,
-    selCount: n => `${n} sélectionné${n > 1 ? 's' : ''}`, bApply: 'Appliquer', bRenum: 'Numéroter…', bDelete: 'Supprimer', bNone: 'Désélectionner',
+    selCount: n => `${n} sélectionné${n > 1 ? 's' : ''}`, bApply: 'Appliquer', bRenum: 'Numéroter…', bRename: 'Numéroter les noms…', renameAsk: 'Premier nom (les projecteurs sélectionnés suivent dans l’ordre du tableau). Le nombre à la fin s’incrémente (Lyre 1, Lyre 2… ; Face 01, Face 02…) ; # marque sa place ailleurs (Contre # jardin). Sans nombre, il est ajouté.', bDelete: 'Supprimer', bNone: 'Désélectionner',
     bApplyTo: n => `Appliquer à ${n} projecteur${n > 1 ? 's' : ''}`,
     renumAsk: 'Premier Fix ID (les projecteurs sélectionnés sont numérotés dans l’ordre du tableau) :', delAsk: n => `Supprimer ${n} projecteur${n > 1 ? 's' : ''} du dossier ?`,
     emptyTitle: 'Aucun dossier ouvert', emptyMsg: 'Importe un MVR exporté de WYSIWYG (ou de Capture, Vectorworks, grandMA3), un CSV de patch, ou ouvre un dossier OPlanFeu enregistré.',
@@ -943,7 +944,7 @@ const I18N = {
     invHint: 'The 3D shape is guessed from the type name; WYSIWYG GDTFs only hold a generic model, a manufacturer GDTF (GDTF Share) gives the real shape. Each type keeps its GDTF file (modes, channels, weight, power): it comes from the MVR, or is added with “Add…” or by dropping a .gdtf file on the page. Also fill in the venue stock, and the weight and power when the GDTF does not give them.',
     allPos: 'All positions', allTypes: 'All types', noPos: '(no position)',
     count: (n, m) => n === m ? `${n} fixtures` : `${n} / ${m} fixtures`,
-    selCount: n => `${n} selected`, bApply: 'Apply', bRenum: 'Number…', bDelete: 'Delete', bNone: 'Clear selection',
+    selCount: n => `${n} selected`, bApply: 'Apply', bRenum: 'Number…', bRename: 'Number names…', renameAsk: 'First name (selected fixtures follow in table order). The trailing number counts up (Spot 1, Spot 2…; Front 01, Front 02…); # marks its place elsewhere (Back # left). Without a number, one is added.', bDelete: 'Delete', bNone: 'Clear selection',
     bApplyTo: n => `Apply to ${n} fixture${n > 1 ? 's' : ''}`,
     renumAsk: 'First Fix ID (selected fixtures are numbered in table order):', delAsk: n => `Delete ${n} fixture${n > 1 ? 's' : ''} from the dossier?`,
     emptyTitle: 'No dossier open', emptyMsg: 'Import an MVR exported from WYSIWYG (or Capture, Vectorworks, grandMA3), a patch CSV, or open a saved OPlanFeu dossier.',
@@ -4030,6 +4031,19 @@ $('#bLines').addEventListener('click', () => {
   const L = sortedLines(), v = prompt(t('linesAsk'), s[0].circuit || (L[0] && L[0].name) || ''); if (v === null) return;
   let i = L.findIndex(l => l.name === v.trim()); if (i < 0) { alert(t('lineUnknown', v)); return; }
   s.forEach(f => { f.circuit = L[i] ? L[i].name : ''; i++; }); touch(); render();
+});
+// noms en série : « Lyre 1 » → Lyre 1, Lyre 2… ; « Face 01 » garde les zéros ; « Contre # jardin » numérote à la place du # ; sans nombre : « Lyre » → Lyre 1…
+function nameSeries(first, n) {
+  const v = first.trim(), hash = /#+/.exec(v);
+  let pre, num, post, width;
+  if (hash) { pre = v.slice(0, hash.index); post = v.slice(hash.index + hash[0].length); num = 1; width = hash[0].length; }
+  else { const m = /^(.*?)(\d+)(\D*)$/.exec(v); if (m) { pre = m[1]; num = parseInt(m[2], 10); width = m[2].length; post = m[3]; } else { pre = v ? v + ' ' : ''; num = 1; width = 1; post = ''; } }
+  return Array.from({ length: n }, (_, i) => pre + String(num + i).padStart(width, '0') + post);
+}
+$('#bRename').addEventListener('click', () => {
+  const s = selected(); if (!s.length) return;
+  const v = prompt(t('renameAsk'), s[0].name || (typeName(s[0].type) + ' 1')); if (v === null || !v.trim()) return;
+  const names = nameSeries(v, s.length); s.forEach((f, i) => { f.name = names[i]; }); touch(); render();
 });
 $('#bRenum').addEventListener('click', () => {
   const s = selected(); if (!s.length) return;
