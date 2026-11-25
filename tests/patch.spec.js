@@ -55,3 +55,16 @@ test('feuille de patch : patch par position', async ({ page }) => {
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(1);
   await expect(page.locator('#view [data-dck=optPos]')).toHaveCount(0);
 });
+
+test('nom de machine : saisi dans le tableau, repris sur la feuille de patch et le plan', async ({ page }) => {
+  await loadSynthetic(page);
+  const cell = page.locator('#view tbody tr').first().locator('input.c[data-k=name]');
+  await expect(cell).toHaveAttribute('placeholder', 'Lyre Test');
+  await cell.fill('Lyre contre jardin'); await cell.press('Enter');
+  await expect.poll(() => page.evaluate(() => state.d.fixtures.find(f => f.fid === '101').name)).toBe('Lyre contre jardin');
+  await page.click('#view [data-pv=sheet]');
+  await expect(page.locator('#docPages')).toContainText('Lyre contre jardin');
+  await page.click('#tabs button[data-v=plan]');
+  await page.selectOption('[data-pl=l2]', 'name');
+  await expect(page.locator('#planPages .plab[data-u="u-1"]')).toContainText('Lyre contre jardin');
+});
