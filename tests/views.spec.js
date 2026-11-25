@@ -535,6 +535,13 @@ test('les consoles figurent dans les appareils du réseau', async ({ page }) => 
   await expect(names).toHaveCount(3);
   await expect(names.nth(2)).toHaveValue('Pupitre plateau');
   await expect(page.locator('#view [data-deldev]')).toHaveCount(0);    // se suppriment avec leur console
+  // pas de modèle d'appareil pour une console : il se choisit dans l'onglet Console
+  await expect(page.locator('#view select[data-o=devices][data-f=model]')).toHaveCount(0);
+  await page.locator('#view .dvtab button[data-nv=console]').first().click();
+  await expect(page.locator('#view [data-nv=console]')).toHaveClass(/on/);
+  await page.click('#view [data-nv=models]'); await page.click('#addModel');
+  await expect(page.locator('#view select[data-o=models][data-f=kind] option[value=console]')).toHaveCount(0);
+  await page.click('#view [data-nv=net]');
   await page.click('#view [data-nv=console]');
   await page.locator('#view [data-delcon]').nth(2).click();
   await page.click('#view [data-nv=net]');
