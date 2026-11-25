@@ -2453,7 +2453,8 @@ function renderPlan(forPrint) {
     if (polys.length) g += `<g class="pst" data-k="${esc(key)}"><title>${tip}</title>${polys.map(q => `<path d="${path(q.poly)}" fill="#ededea" fill-opacity=".85" stroke="#8c8c88" stroke-width=".14" stroke-linejoin="round"/>`).join('')}</g>`;
     else { const w = R(projW(VW, [o.x, o.y, o.z])); g += `<rect class="pst" data-k="${esc(key)}" x="${(X(w[0]) - .6).toFixed(2)}" y="${(Y(w[1]) - .6).toFixed(2)}" width="1.2" height="1.2" fill="#d5d5d2" stroke="#9a9a9a" stroke-width=".12"><title>${tip}</title></rect>`; }
   }
-  // perches : trait et nom
+  // perches : trait et nom (gardés comme obstacles pour les étiquettes)
+  const obstP = [];
   if (P.points) {
     const byP = new Map(); fx.forEach(f => { if (f.position) { if (!byP.has(f.position)) byP.set(f.position, []); byP.get(f.position).push(f); } });
     for (const [name, gg] of byP) {
@@ -2465,9 +2466,13 @@ function renderPlan(forPrint) {
       const lineOn = !spoly.some(s2 => s2.polys.length);
       if (!vert) {
         if (lineOn) g += `<line x1="${(X(a0) - 2.5).toFixed(2)}" y1="${Y(b).toFixed(2)}" x2="${(X(a1) + 2.5).toFixed(2)}" y2="${Y(b).toFixed(2)}" stroke="#555" stroke-width=".7" stroke-linecap="round"/>`;
+        if (lineOn) obstP.push([X(a0) - 2.5, Y(b) - .4, X(a1) + 2.5, Y(b) + .4]);
+        { const tw = name.length * fs * 1.05 * .56; obstP.push([X(a0) - 4 - tw, Y(b) + .9 - fs * 1.05 * .8, X(a0) - 4, Y(b) + .9 + .3]); }
         g += `<text x="${(X(a0) - 4).toFixed(2)}" y="${(Y(b) + .9).toFixed(2)}" font-size="${(fs * 1.05).toFixed(2)}" font-weight="700" text-anchor="end" fill="#333">${esc(name)}</text>`;
       } else {
         if (lineOn) g += `<line x1="${X(b).toFixed(2)}" y1="${(Y(a1) - 2.5).toFixed(2)}" x2="${X(b).toFixed(2)}" y2="${(Y(a0) + 2.5).toFixed(2)}" stroke="#555" stroke-width=".7" stroke-linecap="round"/>`;
+        if (lineOn) obstP.push([X(b) - .4, Y(a1) - 2.5, X(b) + .4, Y(a0) + 2.5]);
+        { const tw = name.length * fs * 1.05 * .56; obstP.push([X(b) - tw / 2, Y(a1) - 4 - fs * 1.05 * .8, X(b) + tw / 2, Y(a1) - 4 + .3]); }
         g += `<text x="${X(b).toFixed(2)}" y="${(Y(a1) - 4).toFixed(2)}" font-size="${(fs * 1.05).toFixed(2)}" font-weight="700" text-anchor="middle" fill="#333">${esc(name)}</text>`;
       }
     }
@@ -2495,76 +2500,83 @@ function renderPlan(forPrint) {
   // étiquettes : placement automatique (évite les formes et les autres étiquettes), ou position posée à la main
   const l2 = f => ({ patch: patchText(f), circuit: f.circuit, dmx: f.dmxLine, gel: f.gel, type: typeName(f.type), unit: f.unit })[P.l2] || '';
   const man = ((d.planLab2 || {})[planLabKey()]) || {};
-  const placed = [], overlap = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+  const overlap = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
   let labs = '', leads = '';   // les traits de rappel d'abord, les étiquettes par-dessus
   const labDim = f => { const lines = [f.fid || '?', l2(f)].filter(Boolean); return { lines, lw: Math.max(...lines.map((v, i) => String(v).length * (i ? fs * .8 : fs) * .58)) + 1.2, lh: fs * 1.05 + (lines.length > 1 ? fs * .9 : 0) + .6 }; };
-  // projecteurs superposés dans cette vue (alignés dans l'axe du regard) : étiquettes en colonnes, une par type, reliées à la pile
-  const stackAt = new Map();
+  // place libre : dans le cadre (ou la zone), sans toucher une autre étiquette, un projecteur, une perche ou son nom
+  const cb = zr ? [Math.max(FX0 + RB, X(x0)), Math.max(FY0 + RB, Y(y1)), Math.min(FX1, X(x1)), Math.min(FY1, Y(y0))] : [FX0 + RB, FY0 + RB, FX1, FY1];
+  const obst = [...sym.map(q => q.bb), ...obstP], placed = [];
+  const hits = (b, q, pad) => b[0] < q[2] + pad && b[2] > q[0] - pad && b[1] < q[3] + pad && b[3] > q[1] - pad;
+  const freeRect = (b, skip) => b[0] >= cb[0] + .3 && b[2] <= cb[2] - .3 && b[1] >= cb[1] + .3 && b[3] <= cb[3] - .3 && !placed.some(q => hits(b, q, .9)) && !obst.some(q => q !== skip && hits(b, q, .5));
+  const angOf = f => { const m0 = man[f.uid]; return (((m0 && m0[2] !== undefined && m0[2] !== null ? m0[2] : +P.labRot || 0) % 360) + 360) % 360; };
+  const extent = (lw, lh, ang) => { const rad = ang * Math.PI / 180; return [Math.abs(Math.cos(rad)) * lw + Math.abs(Math.sin(rad)) * lh, Math.abs(Math.sin(rad)) * lw + Math.abs(Math.cos(rad)) * lh]; };
+  const manual = f => { const m0 = man[f.uid]; return m0 && m0[0] !== null && m0[0] !== undefined ? m0 : null; };
+  const lpos = new Map();   // uid → [lx, ly]
   if (P.labels !== false) {
+    // 1. étiquettes posées à la main : à leur place, les autres les évitent
+    for (const s2 of sym) { const mo = manual(s2.f); if (!mo) continue; const { lw, lh } = labDim(s2.f), [ew, eh] = extent(lw, lh, angOf(s2.f)), cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2;
+      let lx = Math.min(Math.max(cx + mo[0] * k, cb[0] + ew / 2 + .3), cb[2] - ew / 2 - .3), ly = Math.min(Math.max(cy - mo[1] * k, cb[1] + eh / 2 + .3), cb[3] - eh / 2 - .3);
+      lpos.set(s2.f.uid, [lx, ly]); placed.push([lx - ew / 2, ly - eh / 2, lx + ew / 2, ly + eh / 2]); }
+    // 2. projecteurs superposés dans cette vue : un bloc de colonnes (une par type), à la place libre la plus proche au-dessus de la pile
     const near = (a, b) => { const sa = Math.min(a.bb[2] - a.bb[0], a.bb[3] - a.bb[1]), sb = Math.min(b.bb[2] - b.bb[0], b.bb[3] - b.bb[1]); return Math.hypot(a.x - b.x, a.y - b.y) < Math.max(.8, .4 * Math.min(sa, sb)); };
     const par = sym.map((_, i) => i), find = i => par[i] === i ? i : (par[i] = find(par[i]));
     const order = sym.map((q, i) => i).sort((i, j) => sym[i].x - sym[j].x);
     for (let a = 0; a < order.length; a++) for (let b = a + 1; b < order.length && sym[order[b]].x - sym[order[a]].x < 3; b++) if (near(sym[order[a]], sym[order[b]])) par[find(order[a])] = find(order[b]);
     const groups = new Map(); sym.forEach((q, i) => { const r0 = find(i); if (!groups.has(r0)) groups.set(r0, []); groups.get(r0).push(q); });
-    const blocks = [];
-    for (const g2 of [...groups.values()].sort((a, b) => Math.min(...a.map(q => q.x)) - Math.min(...b.map(q => q.x)))) {
-      if (g2.length < 2) continue;
-      const cx = g2.reduce((a, q) => a + q.x, 0) / g2.length, top = Math.min(...g2.map(q => q.bb[1])), bot = Math.max(...g2.map(q => q.bb[3])), right = Math.max(...g2.map(q => q.bb[2]));
+    const stacks = [...groups.values()].map(g2 => g2.filter(q => !manual(q.f))).filter(g2 => g2.length >= 2 && groups.size).sort((a, b) => b.length - a.length);
+    for (const g2 of stacks) {
+      const cx = g2.reduce((a, q) => a + q.x, 0) / g2.length, top = Math.min(...g2.map(q => q.bb[1])), bot = Math.max(...g2.map(q => q.bb[3]));
       const byT = new Map(); g2.forEach(q => { if (!byT.has(q.f.type)) byT.set(q.f.type, []); byT.get(q.f.type).push(q); });
       const cols = [...byT.values()].map(c => c.sort((a, b) => cmpKey(numKey(a.f.fid), numKey(b.f.fid))).map(q => ({ q, ...labDim(q.f) })));
-      const gapY = .7;
-      // bloc des colonnes centré au-dessus de la pile ; s'il mord sur un bloc déjà posé, il monte au-dessus (ou descend sous la pile s'il n'y a plus de place en haut)
-      const cws = cols.map(c => Math.max(...c.map(e => e.lw))), tots = cols.map(c => c.reduce((a, e) => a + e.lh + gapY, 0) - gapY);
-      const W = cws.reduce((a, v) => a + v, 0) + 1.2 * (cols.length - 1), Hh = Math.max(...tots);
-      const clampX = v => Math.min(Math.max(v, FX0 + RB + .5), FX1 - W - .5);
-      const free = (x, yt, ybot) => yt >= FY0 + RB + .3 && ybot <= FY1 - .3 && !blocks.some(q => x < q[2] + .8 && x + W > q[0] - .8 && yt < q[3] + .6 && ybot > q[1] - .6);
-      // place libre la plus proche : au-dessus de la pile de préférence, en se décalant peu de côté, sinon en montant, sinon en dessous
+      const gapY = .9, gapX = 1.4, cws = cols.map(c => Math.max(...c.map(e => e.lw))), tots = cols.map(c => c.reduce((a, e) => a + e.lh + gapY, 0) - gapY);
+      const W = cws.reduce((a, v) => a + v, 0) + gapX * (cols.length - 1), Hh = Math.max(...tots);
       let best = null;
-      for (const dir of [-1, 1]) for (let dy = 0; dy < 160; dy += 2.5) for (let n = 0; n <= 16; n++) for (const sg of n ? [1, -1] : [1]) {
-        const x = clampX(cx - W / 2 + sg * n * (W + 1) * .35), yb = dir < 0 ? top - 2 - dy : bot + 2 + dy;
-        const cost = Math.abs(x + W / 2 - cx) * 1.2 + dy * 2 + (dir > 0 ? 25 : 0);
+      for (const dir of [-1, 1]) for (let dy = 0; dy < 200; dy += 1.5) for (let n = 0; n <= 24; n++) for (const sg of n ? [1, -1] : [1]) {
+        const xL = cx - W / 2 + sg * n * 1.5, yb = dir < 0 ? top - 2 - dy : bot + 2 + dy, cost = Math.abs(sg * n * 1.5) * 1.1 + dy * 1.6 + (dir > 0 ? 18 : 0);
         if (best && cost >= best.cost) continue;
-        if (free(x, dir < 0 ? yb - Hh : yb, dir < 0 ? yb : yb + Hh)) best = { x, yb, dir, cost };
+        if (freeRect([xL, dir < 0 ? yb - Hh : yb, xL + W, dir < 0 ? yb : yb + Hh])) best = { xL, yb, dir, cost };
       }
-      if (!best) best = { x: clampX(cx - W / 2), yb: Math.max(top - 2, FY0 + RB + Hh + .3), dir: -1 };
-      let xL = best.x, yb = best.yb, dir = best.dir;
-      blocks.push([xL, dir < 0 ? yb - Hh : yb, xL + W, dir < 0 ? yb : yb + Hh]);
-      let x = xL;
+      if (!best) best = { xL: Math.min(Math.max(cx - W / 2, cb[0] + .5), cb[2] - W - .5), yb: Math.max(top - 2, cb[1] + Hh + .3), dir: -1 };
+      const { yb, dir } = best; let x = best.xL;
+      placed.push([x, dir < 0 ? yb - Hh : yb, x + W, dir < 0 ? yb : yb + Hh]);
       cols.forEach((c, ci) => {
         const cw = cws[ci]; let y = yb;
-        // le premier Fix ID en haut de la colonne
-        (dir < 0 ? [...c].reverse() : c).forEach(e => { stackAt.set(e.q.f.uid, [x + cw / 2, dir < 0 ? y - e.lh / 2 : y + e.lh / 2]); y += dir < 0 ? -(e.lh + gapY) : e.lh + gapY; });
-        x += cw + 1.2;
+        (dir < 0 ? [...c].reverse() : c).forEach(e => { lpos.set(e.q.f.uid, [x + cw / 2, dir < 0 ? y - e.lh / 2 : y + e.lh / 2]); y += dir < 0 ? -(e.lh + gapY) : e.lh + gapY; });
+        x += cw + gapX;
       });
+      g2.forEach(q => q.stacked = true);
     }
+    // 3. les autres : la place libre la plus proche autour du projecteur (en commençant par les endroits les plus encombrés)
+    const rest = sym.filter(q => !lpos.has(q.f.uid));
+    const crowd = q => sym.reduce((a, o) => a + (Math.abs(o.x - q.x) < 12 && Math.abs(o.y - q.y) < 12 ? 1 : 0), 0);
+    rest.map(q => [q, crowd(q)]).sort((a, b) => b[1] - a[1]).forEach(([s2]) => {
+      const { lw, lh } = labDim(s2.f), [ew, eh] = extent(lw, lh, angOf(s2.f));
+      const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2;
+      const dirs = [[0, -1], [0, 1], [1, 0], [-1, 0], [1, -1], [-1, -1], [1, 1], [-1, 1], [.5, -1], [-.5, -1], [.5, 1], [-.5, 1], [1, -.5], [-1, -.5], [1, .5], [-1, .5]];
+      let got = null;
+      for (let r = 0; r <= 60 && !got; r += r < 6 ? .8 : 1.6) {
+        for (const [ux, uy] of dirs) {
+          const lx = cx + ux * (rw + ew / 2 + .6 + r), ly = cy + uy * (rh + eh / 2 + .6 + r);
+          if (freeRect([lx - ew / 2, ly - eh / 2, lx + ew / 2, ly + eh / 2], s2.bb)) { got = [lx, ly]; break; }
+        }
+      }
+      if (!got) {   // pas de place libre : le moins mauvais endroit
+        let bs = Infinity;
+        for (const [ux, uy] of dirs) for (const m2 of [1, 2, 3]) {
+          const lx = cx + ux * (rw + ew / 2 + .6) * m2, ly = cy + uy * (rh + eh / 2 + .6) * m2, bx = [lx - ew / 2, ly - eh / 2, lx + ew / 2, ly + eh / 2];
+          let sc = m2; for (const q of placed) sc += overlap(bx, q) * 3; for (const q of obst) sc += overlap(bx, q) * 2;
+          if (sc < bs) { bs = sc; got = [lx, ly]; }
+        }
+        got = [Math.min(Math.max(got[0], cb[0] + ew / 2 + .3), cb[2] - ew / 2 - .3), Math.min(Math.max(got[1], cb[1] + eh / 2 + .3), cb[3] - eh / 2 - .3)];
+      }
+      lpos.set(s2.f.uid, got); placed.push([got[0] - ew / 2, got[1] - eh / 2, got[0] + ew / 2, got[1] + eh / 2]);
+    });
   }
-  if (P.labels !== false) for (const s2 of [...sym].sort((a, b) => (stackAt.has(b.f.uid) - stackAt.has(a.f.uid)) || a.x - b.x)) {
-    const { lines, lw, lh } = labDim(s2.f);
-    const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2, gap = .5;
-    let lx, ly;
-    const mo0 = man[s2.f.uid], mo = mo0 && mo0[0] !== null && mo0[0] !== undefined ? mo0 : null, ang = (((mo0 && mo0[2] !== undefined && mo0[2] !== null ? mo0[2] : +P.labRot || 0) % 360) + 360) % 360;
-    if (mo) { lx = cx + mo[0] * k; ly = cy - mo[1] * k; }
-    else if (stackAt.has(s2.f.uid)) [lx, ly] = stackAt.get(s2.f.uid);
-    else {
-      const cands = [[0, -(rh + gap + lh / 2)], [0, rh + gap + lh / 2], [rw + gap + lw / 2, 0], [-(rw + gap + lw / 2), 0],
-        [rw + lw / 2, -(rh + lh / 2)], [-(rw + lw / 2), -(rh + lh / 2)], [rw + lw / 2, rh + lh / 2], [-(rw + lw / 2), rh + lh / 2]];
-      for (const m2 of [1.8, 2.8]) cands.push([0, -(rh + gap + lh / 2) * m2], [0, (rh + gap + lh / 2) * m2], [(rw + gap + lw / 2) * m2, 0], [-(rw + gap + lw / 2) * m2, 0]);
-      let best = null, bs = Infinity;
-      cands.forEach(([dx, dy], i) => {
-        const bx = [cx + dx - lw / 2, cy + dy - lh / 2, cx + dx + lw / 2, cy + dy + lh / 2];
-        let sc = i * .02 + Math.hypot(dx, dy) * .01;
-        for (const q of placed) sc += overlap(bx, q) * 3;
-        for (const q of sym) sc += overlap(bx, q.bb) * (q === s2 ? 6 : 2);
-        if (sc < bs) { bs = sc; best = [cx + dx, cy + dy]; }
-      });
-      [lx, ly] = best;
-    }
-    // dans le cadre du dessin, quoi qu'il arrive (une étiquette glissée dehors redevient attrapable)
-    { const rad = ang * Math.PI / 180, hw = (Math.abs(Math.cos(rad)) * lw + Math.abs(Math.sin(rad)) * lh) / 2, hh = (Math.abs(Math.sin(rad)) * lw + Math.abs(Math.cos(rad)) * lh) / 2;
-      const cb = zr ? [Math.max(FX0 + RB, X(x0)), Math.max(FY0 + RB, Y(y1)), Math.min(FX1, X(x1)), Math.min(FY1, Y(y0))] : [FX0 + RB, FY0 + RB, FX1, FY1];
-      lx = Math.min(Math.max(lx, cb[0] + hw + .3), cb[2] - hw - .3); ly = Math.min(Math.max(ly, cb[1] + hh + .3), cb[3] - hh - .3); }
-    const box = [lx - lw / 2, ly - lh / 2, lx + lw / 2, ly + lh / 2]; placed.push(box);
-    const far = stackAt.has(s2.f.uid) || Math.max(Math.abs(lx - cx) - lw / 2 - rw, Math.abs(ly - cy) - lh / 2 - rh) > 1.2;
+  if (P.labels !== false) for (const s2 of sym) {
+    const { lines, lw, lh } = labDim(s2.f), ang = angOf(s2.f), mo0 = man[s2.f.uid];
+    const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2;
+    const [lx, ly] = lpos.get(s2.f.uid), [ew, eh] = extent(lw, lh, ang), box = [lx - ew / 2, ly - eh / 2, lx + ew / 2, ly + eh / 2];
+    const far = s2.stacked || Math.max(Math.abs(lx - cx) - ew / 2 - rw, Math.abs(ly - cy) - eh / 2 - rh) > 1.2;
     if (far) { const ex = Math.max(box[0], Math.min(cx, box[2])), ey = Math.max(box[1], Math.min(cy, box[3])); leads += `<line x1="${cx.toFixed(2)}" y1="${cy.toFixed(2)}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="#16161a" stroke-width=".12"/>`; }
     labs += `<g class="plab" data-u="${esc(s2.f.uid)}" data-cx="${cx.toFixed(2)}" data-cy="${cy.toFixed(2)}" data-r="${ang}" transform="translate(${lx.toFixed(2)},${ly.toFixed(2)})${ang ? ` rotate(${ang})` : ''}"><rect x="${(-lw / 2).toFixed(2)}" y="${(-lh / 2).toFixed(2)}" width="${lw.toFixed(2)}" height="${lh.toFixed(2)}" rx=".5" fill="#fff" fill-opacity=".95" stroke="${colOf.get(ckey(s2.f)) || '#999'}" stroke-width=".32"/>${mo0 ? `<circle cx="${(lw / 2 - .25).toFixed(2)}" cy="${(-lh / 2 + .25).toFixed(2)}" r=".42" fill="#e8a317"/>` : ''}
 <text y="${(lines.length > 1 ? -lh / 2 + fs * .95 : fs * .36).toFixed(2)}" font-size="${fs}" font-weight="700" text-anchor="middle">${esc(lines[0])}</text>${lines[1] ? `<text y="${(lh / 2 - .45).toFixed(2)}" font-size="${(fs * .8).toFixed(2)}" text-anchor="middle" fill="#444">${esc(lines[1])}</text>` : ''}</g>`;

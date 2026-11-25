@@ -353,3 +353,18 @@ test('plan : colonnes d’étiquettes au-dessus des projecteurs superposés (vue
   });
   for (const o of r) { expect(o.above, o.pos).toBe(true); expect(o.dx, o.pos).toBeLessThan(o.w * 2.5); }
 });
+
+test('plan : aucune étiquette ne chevauche une autre étiquette ni un projecteur, dans les six vues', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  for (const v of ['top', 'bottom', 'front', 'back', 'jardin', 'cour']) {
+    await page.click(`#view [data-pvbase=${v}]`);
+    const st = await page.evaluate(() => {
+      const L = [...document.querySelectorAll('#planPages .plab rect')].map(r => r.getBoundingClientRect()), S = [...document.querySelectorAll('#planPages .pfx')].map(r => r.getBoundingClientRect());
+      const ov = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > .5 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > .5;
+      let n = 0; for (let i = 0; i < L.length; i++) { for (let j = i + 1; j < L.length; j++) if (ov(L[i], L[j])) n++; for (const s of S) if (ov(L[i], s)) n++; } return n;
+    });
+    expect(st, v).toBe(0);
+  }
+});
