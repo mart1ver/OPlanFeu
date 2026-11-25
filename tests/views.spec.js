@@ -381,7 +381,7 @@ test('plan : masquer ou afficher des machines, par type ou une à une', async ({
   await expect(page.locator('#planPages .plab')).toHaveCount(24);
   // une machine seule : déplier le type et décocher 101
   await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
-  await page.uncheck('.plpanel [data-plfx="u-1"]');
+  await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-plfx="u-1"]').uncheck();
   await expect(page.locator('#planPages .plab')).toHaveCount(23);
   await expect(page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary small')).toHaveText('5/6');
   await page.click('.plpanel [data-plall=types]');
@@ -400,9 +400,31 @@ test('3D : masquer ou afficher des machines par type ou une à une, projecteurs 
   await expect.poll(shown).toBe(16);
   await page.check('#v3 [data-v3h=type][data-k="Test@PC"]');
   await page.locator('#v3 details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
-  await page.uncheck('#v3 [data-v3fx="u-1"]');
+  await page.locator('#v3 details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-v3fx="u-1"]').uncheck();
   await expect.poll(shown).toBe(23);
   await page.click('#v3 [data-v3all=types]');
   await expect.poll(shown).toBe(24);
-  await expect(page.locator('#v3 [data-v3fx="u-1"]')).toBeChecked();
+  await expect(page.locator('#v3 [data-v3fx="u-1"]').first()).toBeChecked();
+});
+
+test('projecteurs par position : machine par machine, plan et 3D', async ({ page }) => {
+  test.setTimeout(90_000);
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const posRow = sel => page.locator(`${sel} details.ly`, { has: page.locator('[data-k="P2 Milieu"]') });
+  await posRow('.plpanel').locator('summary .tw').click();
+  await posRow('.plpanel').locator('[data-plfx="u-7"]').uncheck();
+  await expect(page.locator('#planPages .plab')).toHaveCount(23);
+  await expect(posRow('.plpanel').locator('summary small')).toHaveText('7/8');
+  // même machine décochée dans la liste par type
+  await expect(page.locator('.plpanel [data-plfx="u-7"]').first()).not.toBeChecked();
+  await page.click('.plpanel [data-plall=pos]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await page.click('#tabs button[data-v=v3d]');
+  await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
+  await posRow('#v3').locator('summary .tw').click();
+  await posRow('#v3').locator('[data-v3fx="u-7"]').uncheck();
+  await expect.poll(() => page.evaluate(() => V3.items.filter(it => it.f && it.o.visible).length)).toBe(23);
+  await expect(page.locator('#v3 [data-v3fx="u-7"]').first()).not.toBeChecked();
 });

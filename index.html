@@ -2663,7 +2663,8 @@ function planPanel() {
     const shown = list.filter(f => !hidO.has('f:' + f.uid)).length;
     return `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-plh="type" data-k="${x(k2)}"${(H.types || []).includes(k2) ? '' : ' checked'}> ${x(typeName(k2))} <small>${shown < list.length ? shown + '/' : ''}${list.length}</small></summary><div>${list.sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => `<label><input type="checkbox" data-plfx="${x(f.uid)}"${hidO.has('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || f.position || '')}</small></label>`).join('')}</div></details>`;
   }).join('');
-  const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k2, c]) => `<label><input type="checkbox" data-plh="pos" data-k="${x(k2)}"${H.pos.includes(k2) ? '' : ' checked'}> ${x(k2 === '—' ? t('noPos') : k2)} <small>${c}</small></label>`).join('');
+  const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k2, c]) => { const list = d.fixtures.filter(f => (f.position || '—') === k2).sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))), shown = list.filter(f => !hidO.has('f:' + f.uid)).length;
+    return `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-plh="pos" data-k="${x(k2)}"${H.pos.includes(k2) ? '' : ' checked'}> ${x(k2 === '—' ? t('noPos') : k2)} <small>${shown < c ? shown + '/' : ''}${c}</small></summary><div>${list.map(f => `<label><input type="checkbox" data-plfx="${x(f.uid)}"${hidO.has('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || typeName(f.type))}</small></label>`).join('')}</div></details>`; }).join('');
   const ck = (k2, lab) => `<label><input type="checkbox" data-pl="${k2}"${P[k2] !== false ? ' checked' : ''}> ${x(t(lab))}</label>`;
   return `<details class="plpanel noprint" open><summary>${x(t('v3Elems'))}</summary>
 <div class="grp">${x(t('plFixT'))}<button type="button" data-plall="types">${x(t('v3All'))}</button><button type="button" data-plnone="types">${x(t('v3None'))}</button></div>${tys}
@@ -2849,7 +2850,7 @@ document.getElementById('view').addEventListener('click', e => {
   else if (b.dataset.plall || b.dataset.plnone) {
     const k = b.dataset.plall || b.dataset.plnone, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : k === 'types' ? [...new Set(state.d.fixtures.map(f => f.type))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
     H[k] = b.dataset.plnone ? all : []; if (k === 'layers' && b.dataset.plall) H.names = [];
-    if (k === 'types' && b.dataset.plall) H.objs = H.objs.filter(v => !v.startsWith('f:'));
+    if ((k === 'types' || k === 'pos') && b.dataset.plall) H.objs = H.objs.filter(v => !v.startsWith('f:'));
     touch(); renderPlanView();
   } else if (b.id === 'plLabReset') { if (state.d.planLab2) delete state.d.planLab2[planLabKey()]; touch(); replan(); }
 });
@@ -3380,7 +3381,7 @@ function v3Panel() {
   const byT = new Map(); d.fixtures.forEach(f => { if (!byT.has(f.type)) byT.set(f.type, []); byT.get(f.type).push(f); });
   const tys = [...byT].sort((a, b) => b[1].length - a[1].length || typeName(a[0]).localeCompare(typeName(b[0]))).map(([k2, list]) =>
     `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="type" data-k="${x(k2)}"${(H.types || []).includes(k2) ? '' : ' checked'}> ${x(typeName(k2))} <small>${list.length}</small></summary><div>${[...list].sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => `<label><input type="checkbox" data-v3fx="${x(f.uid)}"${H.objs.includes('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || f.position || '')}</small></label>`).join('')}</div></details>`).join('');
-  const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k, c]) => `<label><input type="checkbox" data-v3h="pos" data-k="${x(k)}"${H.pos.includes(k) ? '' : ' checked'}> ${x(k === '—' ? t('noPos') : k)} <small>${c}</small></label>`).join('');
+  const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k, c]) => `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="pos" data-k="${x(k)}"${H.pos.includes(k) ? '' : ' checked'}> ${x(k === '—' ? t('noPos') : k)} <small>${c}</small></summary><div>${d.fixtures.filter(f => (f.position || '—') === k).sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => `<label><input type="checkbox" data-v3fx="${x(f.uid)}"${H.objs.includes('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || typeName(f.type))}</small></label>`).join('')}</div></details>`).join('');
   return `<details class="v3panel" ${state.v3PanelOpen === false ? '' : 'open'}><summary>${x(t('v3Elems'))}</summary>
 <div class="grp">${x(t('plFixT'))}<button type="button" data-v3all="types">${x(t('v3All'))}</button><button type="button" data-v3none="types">${x(t('v3None'))}</button></div>${tys}
 <div class="grp">${x(t('v3Fix'))}<button type="button" data-v3all="pos">${x(t('v3All'))}</button><button type="button" data-v3none="pos">${x(t('v3None'))}</button></div>${ps}
@@ -3588,7 +3589,7 @@ document.getElementById('view').addEventListener('click', e => {
     else {
       const k = b.dataset.v3all || b.dataset.v3none, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : k === 'types' ? [...new Set(state.d.fixtures.map(f => f.type))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
       H[k] = b.dataset.v3none ? all : []; if (k === 'layers' && b.dataset.v3all) H.names = [];
-      if (k === 'types' && b.dataset.v3all) H.objs = H.objs.filter(v => !v.startsWith('f:'));
+      if ((k === 'types' || k === 'pos') && b.dataset.v3all) H.objs = H.objs.filter(v => !v.startsWith('f:'));
       document.querySelectorAll(`#v3 [data-v3h="${{ layers: 'layer', types: 'type', pos: 'pos' }[k]}"]`).forEach(c => { c.checked = !!b.dataset.v3all; });
       if (k === 'layers' && b.dataset.v3all) document.querySelectorAll('#v3 [data-v3h="name"]').forEach(c => { c.checked = true; });
     }
