@@ -306,3 +306,16 @@ test('plan : choisir une vue de départ remet tout à zéro', async ({ page }) =
   expect([P.view, P.rot, P.orient, P.color, P.fit, P.grid, P.zone, P.hide.pos.length, Object.keys(P.labs).length]).toEqual(['front', 0, 'landscape', 'type', 'scale', true, null, 0, 0]);
   await expect(page.locator('#planPages .plab')).toHaveCount(24);
 });
+
+test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en tête du panneau', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const grps = await page.locator('.plpanel .grp').allTextContents();
+  expect(grps[0]).toContain('Projecteurs par position');
+  // A3 paysage, 1:50 : le cadre utile fait environ 324 × 261 mm, soit 16,2 × 13 m
+  await page.evaluate(() => { Object.assign(state.plan, { zone: { x0: -8, x1: 8, y0: -6, y1: 6.9 }, fit: 'scale', scale: 50 }); renderPlanView(); });
+  expect(await page.locator('#planPages svg').first().textContent()).not.toContain('dépasse');
+  await page.evaluate(() => { state.plan.zone = { x0: -9, x1: 9, y0: -6, y1: 8 }; renderPlanView(); });
+  expect(await page.locator('#planPages svg').first().textContent()).toContain('la zone dépasse du cadre à cette échelle (tient au 1:75)');
+});
