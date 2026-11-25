@@ -787,6 +787,7 @@ const I18N = {
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nom, ce qui y est branché (Ethernet, fibre, DMX), câble, longueur, VLAN des ports de switch, univers des sorties DMX. Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
+    nsNoSrc: 'source inconnue', nsNoDest: 'arrivée ?', nsFx0: 'aucun projecteur', nsDmxLeg: 'DMX (couleur de l’univers)', nsExtra: 'autre câble',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `sortie ${n}`, ptIn: n => `entrée ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'Sortie DMX', pt_in: 'Entrée DMX',
     ptPort: 'Port', ptName: 'Nom du port', ptTo: 'Branché à', ptCable: 'Câble', ptRef: 'Repère', ptVlan: 'VLAN', lk_eth: 'Ethernet', lk_fiber: 'Fibre', lk_dmx5: 'DMX 5 br.', lk_dmx3: 'DMX 3 br.',
     lkRef: 'Repère', lkKind: 'Liaison', lkFrom: 'De', lkTo: 'Vers', lkUV: 'Univers / VLAN', lkNone: 'Aucune liaison. Ajoutez un câble ici, ou branchez les ports dans la fiche des appareils.', lf_all: 'Toutes', lf_net: 'Ethernet et fibre', lf_dmx: 'DMX', addNetLink: 'Ajouter un câble Ethernet',
@@ -918,6 +919,7 @@ const I18N = {
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: name, what is plugged in (Ethernet, fibre, DMX), cable, length, switch port VLAN, DMX output universe. Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
+    nsNoSrc: 'unknown source', nsNoDest: 'lands ?', nsFx0: 'no fixture', nsDmxLeg: 'DMX (universe colour)', nsExtra: 'other cable',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `out ${n}`, ptIn: n => `in ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'DMX out', pt_in: 'DMX in',
     ptPort: 'Port', ptName: 'Port name', ptTo: 'Plugged into', ptCable: 'Cable', ptRef: 'Label', ptVlan: 'VLAN', lk_eth: 'Ethernet', lk_fiber: 'Fibre', lk_dmx5: 'DMX 5-pin', lk_dmx3: 'DMX 3-pin',
     lkRef: 'Label', lkKind: 'Link', lkFrom: 'From', lkTo: 'To', lkUV: 'Universe / VLAN', lkNone: 'No link yet. Add a cable here, or plug ports in the device sheets.', lf_all: 'All', lf_net: 'Ethernet and fibre', lf_dmx: 'DMX', addNetLink: 'Add an Ethernet cable',
@@ -1865,17 +1867,23 @@ function renderNetSyno() {
   if (!L.devices.length && !L.dmxLines.length) return `<p class="hint" style="margin-top:16px">${x(t('nsEmpty'))}</p>`;
   const iss = netIssues(), N = [], byName = new Map();
   const node = o => { o.kids = []; N.push(o); return o; };
-  // appareils du réseau, et consoles qui n'y figurent pas
+  const attach = (c, p, e) => { c.parent = p; c.edge = e; p.kids.push(c); };
+  const detach = c => { if (c.parent) c.parent.kids = c.parent.kids.filter(k => k !== c); c.parent = null; c.edge = null; };
+  // boîtes : les appareils (et les consoles qui n'y figurent pas), puis les positions où arrivent les lignes DMX
   L.devices.forEach(d => { const n = node({ t: 'dev', d, name: d.name || '?', kind: d.kind || 'other' }); if (d.name && !byName.has(d.name)) byName.set(d.name, n); });
   L.consoles.forEach(c => {
     const host = c.device && byName.get(c.device);
     if (host) { host.cons = (host.cons || []).concat(c); if (c.name && !byName.has(c.name)) byName.set(c.name, host); }
     else if (c.name && !byName.has(c.name)) byName.set(c.name, node({ t: 'dev', d: { name: c.name, kind: 'console' }, name: c.name, kind: 'console', cons: [c], virtual: true }));
   });
-  // raccordement Ethernet : arbre parcouru depuis les switches les plus reliés ; les câbles en plus (boucle, double attache) sont tracés à part
-  const adj = new Map(), ethNames = new Set(), treeL = new Set(), ethExtra = [];
+  const pl = (n, k) => n && n.d && n.d.id ? portLabel(n.d, k) : k ? k.slice(1) : '';
+  // Ethernet : arbre parcouru depuis les switches les plus reliés ; les câbles en plus (boucle, double attache) sont tracés à part
+  const adj = new Map(), ethNames = new Set(), treeL = new Set(), extra = [];
   const ethL = (L.netLinks || []).filter(l => l.a && l.b && l.a !== l.b && byName.get(l.a) && byName.get(l.b));
   ethL.forEach(l => { ethNames.add(l.a); ethNames.add(l.b); [[l.a, l.b, l.ap, l.bp], [l.b, l.a, l.bp, l.ap]].forEach(([p0, q0, pp, qp]) => { if (!adj.has(p0)) adj.set(p0, []); adj.get(p0).push({ to: q0, myP: pp, toP: qp, l }); }); });
+  const ethEdge = (p, c, myP, toP, l) => ({ k: l.kind === 'fiber' ? 'fiber' : 'eth', l, top: [isSet(myP) ? pl(p, 'e' + myP) : '?', isSet(toP) ? pl(c, 'e' + toP) : ''].filter(Boolean).join(' → '),
+    sub: [l.name, l.length ? l.length + ' m' : ''].filter(Boolean).join(' · '),
+    vlan: (p.d.portVlan || {})['e' + myP] || (c.d.portVlan || {})['e' + toP] || null, ord: +myP || 0 });
   {
     const seen = new Set(), devN = N.filter(n => n.t === 'dev');
     devN.sort((a, b) => (b.kind === 'switch') - (a.kind === 'switch') || (adj.get(b.name) || []).length - (adj.get(a.name) || []).length || natCmp(a.name, b.name));
@@ -1886,40 +1894,41 @@ function renderNetSyno() {
         const p = Q.shift();
         for (const e of adj.get(p.name) || []) {
           const c = byName.get(e.to); if (!c || seen.has(c)) continue;
-          seen.add(c); treeL.add(e.l); c.parent = p; p.kids.push(c);
-          c.port = isSet(e.myP) ? portLabel(p.d, 'e' + e.myP) : ''; c.vlan = (p.d.portVlan || {})['e' + e.myP] || (c.d.portVlan || {})['e' + e.toP] || null;
-          Q.push(c);
+          seen.add(c); treeL.add(e.l); attach(c, p, ethEdge(p, c, e.myP, e.toP, e.l)); c.vlan = c.edge.vlan; Q.push(c);
         }
       }
     }
-    ethL.filter(l => !treeL.has(l)).forEach(l => ethExtra.push({ a: byName.get(l.a), b: byName.get(l.b), eth: true, port: isSet(l.ap) ? portLabel(byName.get(l.a).d, 'e' + l.ap) : '' }));
+    ethL.filter(l => !treeL.has(l)).forEach(l => { const a = byName.get(l.a), b = byName.get(l.b); extra.push({ a, b, e: ethEdge(a, b, l.ap, l.bp, l) }); });
   }
-  // lignes DMX : sous leur source ; source inconnue → boîte « source » à part
+  // DMX : une ligne est un trait (couleur de l'univers) de sa sortie vers une position, ou vers l'entrée d'un autre appareil
+  const dmxEdge = (src, l, dest) => ({ k: 'dmx', l, ord: +l.port || 0, top: [isSet(l.port) ? pl(src, 'o' + l.port) : '', l.name].filter(Boolean).join(' · '),
+    sub: [dest && dest.t === 'dev' && isSet(l.destPort) ? pl(dest, 'i' + l.destPort) : '', l.universe ? 'U ' + l.universe : '', l.length ? l.length + ' m' : ''].filter(Boolean).join(' · ') });
+  const ins = new Map();
   for (const l of [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name))) {
     let src = l.src && byName.get(l.src);
-    if (!src) { const k = 'src:' + (l.src || '?'); src = byName.get(k) || node({ t: 'dev', d: { name: l.src || '?' }, name: l.src || '?', kind: 'src', virtual: true }); byName.set(k, src); }
-    const ch = dmxChain(l), ln = node({ t: 'dmx', l, name: l.name, parent: src, port: isSet(l.port) ? (src.d && src.d.id ? portLabel(src.d, 'o' + l.port) : t('nsDmxPort', l.port)) : '', n: ch.length });
-    src.kids.push(ln);
+    if (!src) { const k = 'src:' + (l.src || '?'); src = byName.get(k) || node({ t: 'dev', d: { name: l.src || '?' }, name: l.src || t('nsNoSrc'), kind: 'src', virtual: true }); byName.set(k, src); }
     const dd = l.dest && byName.get(l.dest);
-    if (dd && dd.t === 'dev' && !dd.virtual) { (dd.ins = dd.ins || []).push(ln); ln.toDev = dd; }
-    else if (l.dest) { const pn = node({ t: 'pos', name: l.dest, parent: ln, n: state.d.fixtures.filter(f => f.position === l.dest && f.dmxLine === l.name).length }); ln.kids.push(pn); }
+    if (dd && dd.t === 'dev' && !dd.virtual && dd !== src) { if (!ins.has(dd)) ins.set(dd, []); ins.get(dd).push({ src, l }); continue; }
+    const n = state.d.fixtures.filter(f => f.position === l.dest && f.dmxLine === l.name).length;
+    const pn = node({ t: 'pos', name: l.dest || t('nsNoDest'), l, n, noDest: !l.dest });
+    attach(pn, src, dmxEdge(src, l, pn));
   }
-  // un merger se range derrière sa première entrée DMX ; ses autres entrées (et son raccordement Ethernet) deviennent des liaisons à part
-  const extra = [...ethExtra];
+  // un appareil alimenté en DMX (merger, splitter…) se range derrière sa première entrée ; ses autres entrées et son câble Ethernet sont tracés à part
   const isAnc = (a, n) => { for (let p = n; p; p = p.parent) if (p === a) return true; return false; };
-  for (const m of N.filter(n => n.ins && n.ins.length)) {
-    const first = m.ins.find(l => !isAnc(m, l));
+  for (const [m, list] of ins) {
+    list.sort((a, b) => (+a.l.destPort || 99) - (+b.l.destPort || 99));
+    const first = list.find(q => !isAnc(m, q.src));
     if (first) {
-      if (m.parent) { m.parent.kids = m.parent.kids.filter(k => k !== m); extra.push({ a: m.parent, b: m, eth: true, port: m.port }); }
-      m.parent = first; m.port = undefined; first.kids.push(m);
+      if (m.parent && m.edge) extra.push({ a: m.parent, b: m, e: m.edge });
+      detach(m); attach(m, first.src, dmxEdge(first.src, first.l, m));
     }
-    m.ins.forEach((l, i) => { const nIn = isSet(l.l.destPort) ? portLabel(m.d, 'i' + l.l.destPort) : t('nsIn', i + 1); if (l !== first) extra.push({ a: l, b: m, n: nIn }); else m.inN = nIn; });
+    list.forEach(q => { if (q !== first) extra.push({ a: q.src, b: m, e: dmxEdge(q.src, q.l, m) }); });
   }
-  // ordre : switches, consoles, nodes, puis le reste ; enfants dans l'ordre des ports
-  const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, splitter: 3, src: 4 }[n.kind] ?? 5);
-  const cmp = (a, b) => rank(a) - rank(b) || natCmp(String(a.port ?? ''), String(b.port ?? '')) || natCmp(a.name, b.name);
-  const roots = N.filter(n => !n.parent).sort(cmp);
-  const CW = 240, BW = 176, BH = 50, RH = 60, PAD = 18, TOP = 70;
+  // ordre : switches, consoles, nodes…, puis les positions ; enfants dans l'ordre des ports
+  const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, merger: 3, splitter: 3, src: 4 }[n.kind] ?? 5);
+  const cmp = (a, b) => (a.edge && b.edge ? (a.edge.k === 'dmx') - (b.edge.k === 'dmx') || a.edge.ord - b.edge.ord : 0) || rank(a) - rank(b) || natCmp(a.name, b.name);
+  const roots = N.filter(n => !n.parent).sort((a, b) => (b.kids.length > 0) - (a.kids.length > 0) || rank(a) - rank(b) || natCmp(a.name, b.name));
+  const CW = 330, BW = 180, BH = 50, PH = 36, RH = 64, PAD = 18, TOP = 76, GAP = CW - BW;
   let row = 0, maxD = 0;
   const place = (n, dep) => {
     n.dep = dep; maxD = Math.max(maxD, dep); n.kids.sort(cmp);
@@ -1927,55 +1936,63 @@ function renderNetSyno() {
     n.kids.forEach(k => place(k, dep + 1));
     n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2;
   };
-  roots.forEach((r, i) => { if (i && r.kids.length) row += .35; place(r, 0); });
-  const W = PAD * 2 + (maxD + 1) * CW - (CW - BW), H = TOP + row * RH + 30;
+  roots.forEach((r, i) => { if (i && (r.kids.length || roots[i - 1].kids.length)) row += .3; place(r, 0); });
+  const W = PAD * 2 + (maxD + 1) * CW - GAP, H = TOP + row * RH + 24;
   const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
   const ucol = u => u ? pal[(+u - 1) % pal.length] : '#888';
-  const X = n => PAD + n.dep * CW, Y = n => TOP + n.y;
-  let edges = '', boxes = '';
+  const X = n => PAD + n.dep * CW, hOf = n => n.t === 'pos' ? PH : BH, Y = n => TOP + n.y + (BH - hOf(n)) / 2, CY = n => TOP + n.y + BH / 2;
+  const fit = (s2, w, fs = 10) => { const m = Math.floor(w / (fs * .56)); return s2.length > m ? s2.slice(0, m - 1) + '…' : s2; };
+  const style = e => e.k === 'dmx' ? `stroke="${ucol(e.l.universe)}" stroke-width="2.6"` : e.k === 'fiber' ? 'stroke="#7a5cc8" stroke-width="2"' : 'stroke="var(--ink)" stroke-width="1.5"';
+  // texte d'un câble : au-dessus (ports, nom de ligne) et au-dessous (univers, VLAN, longueur) du dernier tronçon
+  const label = (e, xa, xb, y) => { const w = xb - xa, cx = (xa + xb) / 2;
+    return `<text x="${cx}" y="${y - 5}" font-size="10" text-anchor="middle" font-weight="${e.k === 'dmx' ? 700 : 400}"${e.k === 'dmx' ? ` style="fill:${ucol(e.l.universe)}"` : ' class="mut"'}>${x(fit(e.top, w))}</text>`
+      + (e.sub ? `<text x="${cx}" y="${y + 12}" font-size="9.5" text-anchor="middle" class="mut">${x(fit(e.sub, w, 9.5))}</text>` : ''); };
+  let edges = '', labels = '', boxes = '';
   for (const n of N) {
-    const bx = X(n), by = Y(n), bad = n.d && n.d.id && iss.has(n.d.id);
-    if (n.parent) {
-      const p = n.parent, x1 = X(p) + BW, y1 = Y(p) + BH / 2, x2 = bx, y2 = by + BH / 2, xm = x1 + (x2 - x1) * .45;
-      const dmx = n.t === 'dmx', pos = n.t === 'pos', col = dmx ? ucol(n.l.universe) : pos ? ucol(p.l.universe) : 'var(--ink)';
-      edges += `<path d="M${x1} ${y1} H${xm} V${y2} H${x2}" fill="none" stroke="${col}" stroke-width="${dmx ? 2.6 : pos ? 1.6 : 1.6}"${pos ? ' stroke-dasharray="5 4"' : ''}/>`;
-      if (n.port !== undefined && n.port !== null && n.port !== '') edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(n.port)}</text>`;
-      else if (n.inN && n.ins.length > 1) edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(n.inN)}</text>`;
+    if (n.parent && n.edge) {
+      const p = n.parent, x1 = X(p) + BW, y1 = CY(p), x2 = X(n), y2 = CY(n), xm = x1 + 14;
+      edges += `<path d="M${x1} ${y1} H${xm} V${y2} H${x2}" fill="none" ${style(n.edge)}${n.t === 'pos' ? ' stroke-linecap="round"' : ''}/>`;
+      labels += label(n.edge, xm + 4, x2 - 4, y2);
     }
-    let l1 = n.name, l2 = '', l3 = '', stripe = '', cls = 'box';
-    if (n.t === 'dev') {
-      const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
-      l2 = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), n.kind === 'merger' ? t('mg_' + (n.d.merge || 'htp')) : '', n.d && n.d.model ? n.d.model : m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean).join(' · ');
-      l3 = [n.d.ip || (n.virtual ? t('nsNoIp') : ''), n.vlan ? 'VLAN ' + n.vlan : ''].filter(Boolean).join(' · ');
-      stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'merger' ? '#b5651d' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
-      if (n.virtual || (n.kind === 'merger' || n.kind === 'splitter') && !n.parent && !ethNames.has(n.name) || (n.kind !== 'switch' && !n.parent && !ethNames.has(n.name) && L.devices.some(d => d.kind === 'switch'))) cls += ' loose';
-    } else if (n.t === 'dmx') {
-      l2 = [n.l.universe ? 'U ' + n.l.universe + (st.proto === 'sacn' ? '' : ' · ' + artAddr(n.l.universe)) : '', n.l.length ? n.l.length + ' m' : ''].filter(Boolean).join(' · ');
-      l3 = n.n ? t('nsFx', n.n) : ''; stripe = ucol(n.l.universe);
-    } else { l2 = n.n ? t('nsFx', n.n) : ''; stripe = '#c9c9c4'; cls += ' pos'; }
-    boxes += `<g${bad ? ' class="bad"' : ''}><rect class="${cls}" x="${bx}" y="${by}" width="${BW}" height="${BH}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${BH}" rx="2" fill="${stripe}"/>
-<text x="${bx + 13}" y="${by + 17}" font-size="13" font-weight="700">${x(l1.length > 24 ? l1.slice(0, 23) + '…' : l1)}</text>
-<text x="${bx + 13}" y="${by + 31}" font-size="10.5" class="mut">${x(l2.length > 30 ? l2.slice(0, 29) + '…' : l2)}</text><text x="${bx + 13}" y="${by + 44}" font-size="10.5"${n.t === 'dev' ? ` style="font-family:'IBM Plex Mono',monospace"` : ''}>${x(l3)}</text></g>`;
+    const bx = X(n), by = Y(n), h = hOf(n), bad = (n.d && n.d.id && iss.has(n.d.id)) || (n.l && iss.has(n.l.id));
+    if (n.t === 'pos') {
+      const col = ucol(n.l.universe);
+      boxes += `<g${bad ? ' class="bad"' : ''}><rect class="box pos${n.noDest ? ' loose' : ''}" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="${h / 2}"/><circle cx="${bx + 14}" cy="${by + h / 2}" r="4.5" fill="${col}"/>
+<text x="${bx + 26}" y="${by + 15}" font-size="12" font-weight="700">${x(fit(n.name, BW - 34))}</text><text x="${bx + 26}" y="${by + 28}" font-size="10" class="mut">${x(n.n ? t('nsFx', n.n) : t('nsFx0'))}</text></g>`;
+      continue;
+    }
+    const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
+    const l2 = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), n.kind === 'merger' ? t('mg_' + (n.d.merge || 'htp')) : '', n.d && n.d.model ? n.d.model : m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean).join(' · ');
+    const l3 = [n.d.ip || (n.virtual ? t('nsNoIp') : ''), n.vlan ? 'VLAN ' + n.vlan : ''].filter(Boolean).join(' · ');
+    const stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'merger' ? '#b5651d' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
+    const loose = n.virtual || (!n.parent && !ethNames.has(n.name) && n.kind !== 'switch' && L.devices.some(d => d.kind === 'switch') && !ins.has(n));
+    boxes += `<g${bad ? ' class="bad"' : ''}><rect class="box${loose ? ' loose' : ''}" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${h}" rx="2" fill="${stripe}"/>
+<text x="${bx + 13}" y="${by + 17}" font-size="13" font-weight="700">${x(fit(n.name, BW - 20))}</text>
+<text x="${bx + 13}" y="${by + 31}" font-size="10.5" class="mut">${x(fit(l2, BW - 20))}</text><text x="${bx + 13}" y="${by + 44}" font-size="10.5" style="font-family:'IBM Plex Mono',monospace">${x(l3)}</text></g>`;
   }
-  // entrées supplémentaires des mergers, raccordement Ethernet d'un merger rangé derrière ses entrées
-  let k2 = new Map();
-  for (const e of extra) {
-    const kk = (k2.get(e.b) || 0) + (e.eth ? 0 : 1); if (!e.eth) k2.set(e.b, kk);
-    const x1 = X(e.a) + BW, y1 = Y(e.a) + BH / 2, x2 = X(e.b), y2 = e.eth ? Y(e.b) + BH - 7 : Y(e.b) + BH / 2 + Math.min(kk, 2) * 12;
-    const col = e.eth ? '#9a9a9a' : ucol(e.a.l.universe), w = e.eth ? 1.2 : 2.6;
-    // tracé à angles droits ; si la cible n'est pas plus à droite, on passe par-dessus sa boîte
-    const d = x2 - x1 > 28 ? `M${x1} ${y1} H${x2 - 14} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 12} V${Y(e.b) - 8} H${x2 - 14} V${y2} H${x2}`;
-    edges += `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}"${e.eth ? ' stroke-dasharray="2 3"' : ''}/>`
-      + `<text x="${x2 - 16}" y="${y2 + 3.5}" font-size="10" text-anchor="end" class="mut">${x(e.eth ? (e.port || '?') + ' · eth.' : e.n)}</text>`;
+  // câbles hors de l'arbre : autres entrées d'un merger, double attache Ethernet ; arrivée sur le bord gauche de la boîte, un peu décalée
+  const slot = new Map();
+  for (const q of extra) {
+    if (!q.a || !q.b || q.a.dep === undefined || q.b.dep === undefined) continue;
+    const k = (slot.get(q.b) || 0) + 1; slot.set(q.b, k);
+    const x1 = X(q.a) + BW, y1 = CY(q.a) + (q.a.kids.length ? 8 : 0), x2 = X(q.b), y2 = Y(q.b) + Math.min(hOf(q.b) - 6, 8 + k * 11);
+    const d = x2 - x1 > 40 ? `M${x1} ${y1} H${x2 - 22} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 10} V${Math.min(Y(q.a), Y(q.b)) - 10} H${x2 - 22} V${y2} H${x2}`;
+    edges += `<path d="${d}" fill="none" ${style(q.e)} stroke-dasharray="${q.e.k === 'dmx' ? '7 3' : '3 3'}" opacity=".85"/>`;
+    // texte au départ du câble (après le bus de l'appareil), pour ne pas s'empiler à l'arrivée
+    const lw = Math.max(110, Math.min(GAP - 26, x2 - x1 - 40)), lx = x1 + 20;
+    labels += `<text x="${lx}" y="${y1 - 4}" font-size="9.5"${q.e.k === 'dmx' ? ` style="fill:${ucol(q.e.l.universe)}" font-weight="700"` : ' class="mut"'}>${x(fit(q.e.top, lw))}</text>`
+      + `<text x="${lx}" y="${y1 + 10}" font-size="9" class="mut">${x(fit('→ ' + q.b.name + (q.e.sub ? ' · ' + q.e.sub : ''), lw + 30, 9))}</text>`;
   }
+  // légende alignée à droite, chaque entrée à la largeur de son texte
+  const LGI = [['stroke="var(--ink)" stroke-width="1.5"', 'Ethernet'], ['stroke="#7a5cc8" stroke-width="2"', t('lk_fiber')], ['stroke="#4363d8" stroke-width="2.6"', t('nsDmxLeg')], ['stroke="#888" stroke-width="1.5" stroke-dasharray="3 3"', t('nsExtra')]];
+  let lgx = Math.max(W, 760) - PAD, lgs = '';
+  for (const [a, txt] of [...LGI].reverse()) { const w = 32 + txt.length * 5.9; lgx -= w + 16; lgs = `<line x1="${lgx}" y1="22" x2="${lgx + 26}" y2="22" ${a}/><text x="${lgx + 32}" y="26">${x(txt)}</text>` + lgs; }
   const head = `<text x="${PAD}" y="26" font-size="17" font-weight="700">${x(t('nsTitle'))}</text>
 <text x="${PAD}" y="46" font-size="12" class="mut">${x([st.proto === 'sacn' ? 'sACN' : 'Art-Net', st.net ? `${t('setNet')} ${st.net} / ${st.mask || ''}` : '', st.gw ? `${t('setGw')} ${st.gw}` : ''].filter(Boolean).join(' · '))}</text>
-<g font-size="10.5" class="mut"><line x1="${W - 330}" y1="22" x2="${W - 300}" y2="22" stroke="var(--ink)" stroke-width="1.6"/><text x="${W - 294}" y="26">Ethernet</text>
-<line x1="${W - 230}" y1="22" x2="${W - 200}" y2="22" stroke="#4363d8" stroke-width="2.6"/><text x="${W - 194}" y="26">DMX</text>
-<line x1="${W - 150}" y1="22" x2="${W - 120}" y2="22" stroke="#888" stroke-width="1.6" stroke-dasharray="5 4"/><text x="${W - 114}" y="26">${x(t('nsLands'))}</text></g>`;
+<g font-size="10.5" class="mut">${lgs}</g>`;
   return `<h1 class="ptitle">${x(t('nsTitle'))} — ${x(state.d.meta.titre || '')} — ${x(state.d.meta.date || '')}</h1>
 <p class="hint noprint" style="margin:12px 0 0">${x(t('nsHint'))}</p>
-<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 700)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${boxes}</svg></div>`;
+<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${boxes}${labels}</svg></div>`;
 }
 const SYN_VIEWS = ['elec', 'net'];
 function renderSynoView() {

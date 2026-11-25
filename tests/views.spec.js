@@ -121,6 +121,8 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
   await page.click('#tabs button[data-v=syno]'); await page.click('#view [data-sv=net]');
   const svg = page.locator('#view .nsyn svg');
   for (const txt of ['Merger 1', 'fusion LTP', 'IN A', 'IN B', 'OUT', 'entrée 2', 'P1 Lointain']) await expect(svg).toContainText(txt);
+  // les lignes DMX sont des traits, pas des boîtes : 2 consoles, le merger et la position d'arrivée
+  await expect(svg.locator('rect.box')).toHaveCount(4);
   // renommer le merger suit dans les lignes
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
   const nm = page.locator('#view input[data-o=devices][data-f=name]').nth(2); await nm.fill('Merger régie'); await nm.press('Enter');
