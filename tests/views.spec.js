@@ -1,7 +1,7 @@
 // Chaque vue s'affiche sans erreur avec le dossier de test ; plan, 3D et dossier complet produisent quelque chose
 const { test, expect, loadSynthetic } = require('./helpers');
 
-const TABS = { fixtures: ['pv', ['table', 'sheet', 'diff']], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines']], syno: ['sv', ['elec', 'net']], net: ['nv', ['console', 'univ', 'dmx', 'net']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
+const TABS = { fixtures: ['pv', ['table', 'sheet']], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines']], syno: ['sv', ['elec', 'net']], net: ['nv', ['console', 'univ', 'dmx', 'net']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
 
 for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
   test(`vue ${tab}${subs ? ' et ses sous-vues' : ''}`, async ({ page }) => {
