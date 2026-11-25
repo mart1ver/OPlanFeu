@@ -2497,12 +2497,45 @@ function renderPlan(forPrint) {
   const man = ((d.planLab2 || {})[planLabKey()]) || {};
   const placed = [], overlap = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
   let labs = '';
-  if (P.labels !== false) for (const s2 of [...sym].sort((a, b) => a.x - b.x)) {
-    const lines = [s2.f.fid || '?', l2(s2.f)].filter(Boolean), lw = Math.max(...lines.map((v, i) => String(v).length * (i ? fs * .8 : fs) * .58)) + 1.2, lh = fs * 1.05 + (lines.length > 1 ? fs * .9 : 0) + .6;
+  const labDim = f => { const lines = [f.fid || '?', l2(f)].filter(Boolean); return { lines, lw: Math.max(...lines.map((v, i) => String(v).length * (i ? fs * .8 : fs) * .58)) + 1.2, lh: fs * 1.05 + (lines.length > 1 ? fs * .9 : 0) + .6 }; };
+  // projecteurs superposés dans cette vue (alignés dans l'axe du regard) : étiquettes en colonnes, une par type, reliées à la pile
+  const stackAt = new Map();
+  if (P.labels !== false) {
+    const near = (a, b) => { const sa = Math.min(a.bb[2] - a.bb[0], a.bb[3] - a.bb[1]), sb = Math.min(b.bb[2] - b.bb[0], b.bb[3] - b.bb[1]); return Math.hypot(a.x - b.x, a.y - b.y) < Math.max(.8, .4 * Math.min(sa, sb)); };
+    const par = sym.map((_, i) => i), find = i => par[i] === i ? i : (par[i] = find(par[i]));
+    const order = sym.map((q, i) => i).sort((i, j) => sym[i].x - sym[j].x);
+    for (let a = 0; a < order.length; a++) for (let b = a + 1; b < order.length && sym[order[b]].x - sym[order[a]].x < 3; b++) if (near(sym[order[a]], sym[order[b]])) par[find(order[a])] = find(order[b]);
+    const groups = new Map(); sym.forEach((q, i) => { const r0 = find(i); if (!groups.has(r0)) groups.set(r0, []); groups.get(r0).push(q); });
+    const blocks = [];
+    for (const g2 of [...groups.values()].sort((a, b) => Math.min(...a.map(q => q.x)) - Math.min(...b.map(q => q.x)))) {
+      if (g2.length < 2) continue;
+      const cx = g2.reduce((a, q) => a + q.x, 0) / g2.length, top = Math.min(...g2.map(q => q.bb[1])), bot = Math.max(...g2.map(q => q.bb[3])), right = Math.max(...g2.map(q => q.bb[2]));
+      const byT = new Map(); g2.forEach(q => { if (!byT.has(q.f.type)) byT.set(q.f.type, []); byT.get(q.f.type).push(q); });
+      const cols = [...byT.values()].map(c => c.sort((a, b) => cmpKey(numKey(a.f.fid), numKey(b.f.fid))).map(q => ({ q, ...labDim(q.f) })));
+      const gapY = .7;
+      let x = right + 1.5;
+      for (const c of cols) {
+        const cw = Math.max(...c.map(e => e.lw)), tot = c.reduce((a, e) => a + e.lh + gapY, 0);
+        // au-dessus de la pile si la place le permet, sinon en dessous ; décalée à droite tant qu'elle mord sur une autre colonne
+        const goUp = top - 2 - tot > FY0 + RB, y0b = goUp ? top - 2 - tot : bot + 2;
+        for (let n = 0; n < 60; n++) {
+          const hit = blocks.find(q => x < q[2] + .8 && x + cw > q[0] - .8 && y0b < q[3] + .5 && y0b + tot > q[1] - .5);
+          if (!hit) break; x = hit[2] + .8;
+        }
+        blocks.push([x, y0b, x + cw, y0b + tot]);
+        let y = goUp ? top - 2 : bot + 2;
+        (goUp ? [...c].reverse() : c).forEach(e => { const ly = goUp ? y - e.lh / 2 : y + e.lh / 2; stackAt.set(e.q.f.uid, [x + cw / 2, ly]); y += goUp ? -(e.lh + gapY) : e.lh + gapY; });
+        x += cw + 1.2;
+      }
+    }
+  }
+  if (P.labels !== false) for (const s2 of [...sym].sort((a, b) => (stackAt.has(b.f.uid) - stackAt.has(a.f.uid)) || a.x - b.x)) {
+    const { lines, lw, lh } = labDim(s2.f);
     const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2, gap = .5;
     let lx, ly;
     const mo0 = man[s2.f.uid], mo = mo0 && mo0[0] !== null && mo0[0] !== undefined ? mo0 : null, ang = (((mo0 && mo0[2] !== undefined && mo0[2] !== null ? mo0[2] : +P.labRot || 0) % 360) + 360) % 360;
     if (mo) { lx = cx + mo[0] * k; ly = cy - mo[1] * k; }
+    else if (stackAt.has(s2.f.uid)) [lx, ly] = stackAt.get(s2.f.uid);
     else {
       const cands = [[0, -(rh + gap + lh / 2)], [0, rh + gap + lh / 2], [rw + gap + lw / 2, 0], [-(rw + gap + lw / 2), 0],
         [rw + lw / 2, -(rh + lh / 2)], [-(rw + lw / 2), -(rh + lh / 2)], [rw + lw / 2, rh + lh / 2], [-(rw + lw / 2), rh + lh / 2]];
@@ -2522,7 +2555,7 @@ function renderPlan(forPrint) {
       const cb = zr ? [Math.max(FX0 + RB, X(x0)), Math.max(FY0 + RB, Y(y1)), Math.min(FX1, X(x1)), Math.min(FY1, Y(y0))] : [FX0 + RB, FY0 + RB, FX1, FY1];
       lx = Math.min(Math.max(lx, cb[0] + hw + .3), cb[2] - hw - .3); ly = Math.min(Math.max(ly, cb[1] + hh + .3), cb[3] - hh - .3); }
     const box = [lx - lw / 2, ly - lh / 2, lx + lw / 2, ly + lh / 2]; placed.push(box);
-    const far = Math.max(Math.abs(lx - cx) - lw / 2 - rw, Math.abs(ly - cy) - lh / 2 - rh) > 1.2;
+    const far = stackAt.has(s2.f.uid) || Math.max(Math.abs(lx - cx) - lw / 2 - rw, Math.abs(ly - cy) - lh / 2 - rh) > 1.2;
     if (far) { const ex = Math.max(box[0], Math.min(cx, box[2])), ey = Math.max(box[1], Math.min(cy, box[3])); labs += `<line x1="${cx.toFixed(2)}" y1="${cy.toFixed(2)}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="#16161a" stroke-width=".12"/>`; }
     labs += `<g class="plab" data-u="${esc(s2.f.uid)}" data-cx="${cx.toFixed(2)}" data-cy="${cy.toFixed(2)}" data-r="${ang}" transform="translate(${lx.toFixed(2)},${ly.toFixed(2)})${ang ? ` rotate(${ang})` : ''}"><rect x="${(-lw / 2).toFixed(2)}" y="${(-lh / 2).toFixed(2)}" width="${lw.toFixed(2)}" height="${lh.toFixed(2)}" rx=".5" fill="#fff" fill-opacity="${mo0 ? .95 : .8}" stroke="${mo0 ? '#e8a317' : 'none'}" stroke-width=".15"/>
 <text y="${(lines.length > 1 ? -lh / 2 + fs * .95 : fs * .36).toFixed(2)}" font-size="${fs}" font-weight="700" text-anchor="middle">${esc(lines[0])}</text>${lines[1] ? `<text y="${(lh / 2 - .45).toFixed(2)}" font-size="${(fs * .8).toFixed(2)}" text-anchor="middle" fill="#444">${esc(lines[1])}</text>` : ''}</g>`;

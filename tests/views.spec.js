@@ -319,3 +319,18 @@ test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en têt
   await page.evaluate(() => { state.plan.zone = { x0: -9, x1: 9, y0: -6, y1: 8 }; renderPlanView(); });
   expect(await page.locator('#planPages svg').first().textContent()).toContain('la zone dépasse du cadre à cette échelle (tient au 1:75)');
 });
+
+test('plan : projecteurs superposés, étiquettes en colonnes par type, sans chevauchement', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.click('#view [data-pvbase=front]');   // de face, le lointain et le milieu (même hauteur) se cachent l'un l'autre
+  const boxes = await page.evaluate(() => [...document.querySelectorAll('#planPages .plab')].map(g => { const r = g.getBoundingClientRect(); return [g.dataset.u, r.left, r.top, r.right, r.bottom]; }));
+  let overlaps = 0;
+  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) { const a = boxes[i], b = boxes[j]; if (Math.min(a[3], b[3]) - Math.max(a[1], b[1]) > 1 && Math.min(a[4], b[4]) - Math.max(a[2], b[2]) > 1) overlaps++; }
+  expect(overlaps).toBe(0);
+  // 101 (lyre) et 202 (PC) sont au même endroit vus de face : deux colonnes côte à côte
+  const by = Object.fromEntries(boxes.map(b => [b[0], b]));
+  const lyre = by['u-1'], pc = by['u-8'];
+  expect(Math.abs(lyre[1] - pc[1])).toBeGreaterThan(5);
+});
