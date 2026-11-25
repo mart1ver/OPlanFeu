@@ -312,7 +312,7 @@ test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en têt
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
   const grps = await page.locator('.plpanel .grp').allTextContents();
-  expect(grps[0]).toContain('Projecteurs par position');
+  expect(grps[0]).toContain('Projecteurs par type');
   // A3 paysage, 1:50 : le cadre utile fait environ 324 × 261 mm, soit 16,2 × 13 m
   await page.evaluate(() => { Object.assign(state.plan, { zone: { x0: -8, x1: 8, y0: -6, y1: 6.9 }, fit: 'scale', scale: 50 }); renderPlanView(); });
   expect(await page.locator('#planPages svg').first().textContent()).not.toContain('dépasse');
@@ -367,4 +367,23 @@ test('plan : aucune étiquette ne chevauche une autre étiquette ni un projecteu
     });
     expect(st, v).toBe(0);
   }
+});
+
+test('plan : masquer ou afficher des machines, par type ou une à une', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const grps = await page.locator('.plpanel .grp').allTextContents();
+  expect(grps[0]).toContain('Projecteurs par type');
+  await page.uncheck('.plpanel [data-plh=type][data-k="Test@PC"]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(16);
+  await page.check('.plpanel [data-plh=type][data-k="Test@PC"]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  // une machine seule : déplier le type et décocher 101
+  await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
+  await page.uncheck('.plpanel [data-plfx="u-1"]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(23);
+  await expect(page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary small')).toHaveText('5/6');
+  await page.click('.plpanel [data-plall=types]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
 });
