@@ -434,14 +434,42 @@ test('plan : déplacer le nom d’un point d’accroche', async ({ page }) => {
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab')).toHaveCount(27, { timeout: 15000 });   // 24 projecteurs + 3 perches
   const tag = page.locator('#planPages .ptag[data-u="p:P2 Milieu"]');
-  const b = await tag.boundingBox();
-  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down();
-  await page.mouse.move(b.x + b.width / 2 + 60, b.y + b.height / 2 + 40, { steps: 5 }); await page.mouse.up();
-  const b2 = await tag.boundingBox();
-  expect(b2.x - b.x).toBeGreaterThan(40); expect(b2.y - b.y).toBeGreaterThan(25);
+  // le plan peut encore se redessiner juste après l'ouverture (formes GDTF) : on refait le geste tant qu'il n'a pas pris
+  await expect(async () => {
+    await page.evaluate(() => { const L = (state.d.planLab2 || {})[planLabKey()]; if (L) delete L['p:P2 Milieu']; replan(); });
+    const b = await tag.boundingBox();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2 + 60, b.y + b.height / 2 + 40, { steps: 5 }); await page.mouse.up();
+    const b2 = await tag.boundingBox();
+    expect(b2.x - b.x).toBeGreaterThan(40); expect(b2.y - b.y).toBeGreaterThan(25);
+  }).toPass({ timeout: 15000 });
   expect(await page.evaluate(() => !!state.d.planLab2[planLabKey()]['p:P2 Milieu'])).toBe(true);
   await tag.click({ button: 'right' });
   await expect(tag).toHaveAttribute('transform', /rotate\(45\)/);
   await page.click('#plLabReset');
   await expect(tag).not.toHaveAttribute('transform', /rotate/);
+});
+
+test('plan : étiquettes tournées à 45°, le trait de rappel touche toujours le cadre', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
+  for (const v of ['front', 'cour']) {
+    await page.click(`#view [data-pvbase=${v}]`);
+    await page.evaluate(() => { state.plan.labRot = 45; replan(); });
+    const r = await page.evaluate(() => {
+      const svg = document.querySelector('#planPages svg'), labs = [...svg.querySelectorAll('.plab:not(.ptag)')];
+      const lines = [...svg.querySelectorAll('line[stroke-width=".12"]')];
+      return { n: lines.length, bad: lines.filter(l => {
+        const p = svg.createSVGPoint(); p.x = +l.getAttribute('x2'); p.y = +l.getAttribute('y2');
+        return !labs.some(g => {
+          const q = p.matrixTransform(g.getCTM().inverse().multiply(svg.getCTM())), rc = g.querySelector('rect');
+          const x0 = +rc.getAttribute('x'), y0 = +rc.getAttribute('y'), w = +rc.getAttribute('width'), h = +rc.getAttribute('height');
+          return q.x >= x0 - .05 && q.x <= x0 + w + .05 && q.y >= y0 - .05 && q.y <= y0 + h + .05;
+        });
+      }).length };
+    });
+    expect(r.n, v).toBeGreaterThan(0);
+    expect(r.bad, v).toBe(0);
+  }
 });

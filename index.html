@@ -2608,7 +2608,11 @@ function renderPlan(forPrint) {
     const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2;
     const [lx, ly] = lpos.get(s2.f.uid), [ew, eh] = extent(lw, lh, ang), box = [lx - ew / 2, ly - eh / 2, lx + ew / 2, ly + eh / 2];
     const far = s2.stacked || Math.max(Math.abs(lx - cx) - ew / 2 - rw, Math.abs(ly - cy) - eh / 2 - rh) > 1.2;
-    if (far) { const ex = Math.max(box[0], Math.min(cx, box[2])), ey = Math.max(box[1], Math.min(cy, box[3])); leads += `<line x1="${cx.toFixed(2)}" y1="${cy.toFixed(2)}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="#16161a" stroke-width=".12"/>`; }
+    if (far) {
+      // point de l'étiquette (tournée) le plus proche du projecteur : le trait touche toujours le bord du cadre
+      const ra = ang * Math.PI / 180, co = Math.cos(ra), si = Math.sin(ra), px = cx - lx, py = cy - ly;
+      const ux = Math.max(-lw / 2, Math.min(lw / 2, px * co + py * si)), uy = Math.max(-lh / 2, Math.min(lh / 2, -px * si + py * co));
+      const ex = lx + ux * co - uy * si, ey = ly + ux * si + uy * co; leads += `<line x1="${cx.toFixed(2)}" y1="${cy.toFixed(2)}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="#16161a" stroke-width=".12"/>`; }
     labs += `<g class="plab" data-u="${esc(s2.f.uid)}" data-cx="${cx.toFixed(2)}" data-cy="${cy.toFixed(2)}" data-r="${ang}" transform="translate(${lx.toFixed(2)},${ly.toFixed(2)})${ang ? ` rotate(${ang})` : ''}"><rect x="${(-lw / 2).toFixed(2)}" y="${(-lh / 2).toFixed(2)}" width="${lw.toFixed(2)}" height="${lh.toFixed(2)}" rx=".5" fill="#fff" fill-opacity=".95" stroke="${colOf.get(ckey(s2.f)) || '#999'}" stroke-width=".32"/>${mo0 ? `<circle cx="${(lw / 2 - .25).toFixed(2)}" cy="${(-lh / 2 + .25).toFixed(2)}" r=".42" fill="#e8a317"/>` : ''}
 <text y="${(lines.length > 1 ? -lh / 2 + fs * .95 : fs * .36).toFixed(2)}" font-size="${fs}" font-weight="700" text-anchor="middle">${esc(lines[0])}</text>${lines[1] ? `<text y="${(lh / 2 - .45).toFixed(2)}" font-size="${(fs * .8).toFixed(2)}" text-anchor="middle" fill="#444">${esc(lines[1])}</text>` : ''}</g>`;
   }
