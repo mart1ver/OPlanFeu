@@ -289,3 +289,20 @@ test('plan : zone à afficher, tracée à la souris puis réglée au décimètre
   await page.mouse.move(Math.max(a2.x, b2.x) + 25, Math.max(a2.y, b2.y) + 25, { steps: 5 }); await page.mouse.up();
   await expect(page.locator('#planPages .plab')).toHaveCount(6);
 });
+
+test('plan : choisir une vue de départ remet tout à zéro', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.selectOption('[data-pl=rot]', '90');
+  await page.selectOption('[data-pl=orient]', 'portrait');
+  await page.selectOption('[data-pl=color]', 'layer');
+  await page.selectOption('[data-pl=scaleSel]', 'fit');
+  await page.uncheck('[data-pl=grid]');
+  await page.evaluate(() => { state.plan.zone = { x0: -1, x1: 1, y0: 4, y1: 6 }; planHide().pos.push('P2 Milieu'); renderPlanView(); });
+  await page.locator('#planPages .plab').first().click({ button: 'right' });
+  await page.click('#view [data-pvbase=front]');
+  const P = await page.evaluate(() => ({ ...state.plan, hide: planHide(), labs: (state.d.planLab2 || {})[planLabKey()] || {} }));
+  expect([P.view, P.rot, P.orient, P.color, P.fit, P.grid, P.zone, P.hide.pos.length, Object.keys(P.labs).length]).toEqual(['front', 0, 'landscape', 'type', 'scale', true, null, 0, 0]);
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+});
