@@ -561,46 +561,47 @@ test('les consoles figurent dans les appareils du réseau', async ({ page }) => 
   await expect(names).toHaveCount(2);
 });
 
-test('liaisons : brancher les ports depuis la fiche d’un appareil, et les retrouver dans la liste', async ({ page }) => {
+test('appareils : ports réglés dans la fiche, univers des sorties de console et de splitter', async ({ page }) => {
   await loadSynthetic(page, d => {
-    d.lieu = { points: [], boards: [], lines: [], consoles: [], dmxLines: [], netLinks: [],
+    d.lieu = { points: [], boards: [], lines: [], netLinks: [{ id: 'l1', kind: 'eth', a: 'SW régie', ap: 5, b: 'Node 1', bp: 1 }],
       models: [{ id: 'm', name: 'Switch 8', kind: 'switch', eth: 6, sfp: 2, poe: 4 }],
-      devices: [{ id: 'sr', name: 'SW régie', kind: 'switch', model: 'Switch 8' }, { id: 'ss', name: 'SW scène', kind: 'switch', model: 'Switch 8' },
-        { id: 'n', name: 'Node 1', kind: 'node', poe: true, ports: { eth: 2, out: 4 } }, { id: 'mg', name: 'Merger', kind: 'merger' }] };
+      consoles: [{ id: 'k', name: 'MA3', device: 'MA3' }],
+      devices: [{ id: 'c', name: 'MA3', kind: 'console' }, { id: 'sr', name: 'SW régie', kind: 'switch', model: 'Switch 8' }, { id: 'n', name: 'Node 1', kind: 'node', poe: true }, { id: 'sp', name: 'Split', kind: 'splitter', ports: { in: 1, out: 4 } }],
+      dmxLines: [{ id: 'a', name: 'DMX A', src: 'MA3', port: 2, universe: null, dest: 'Split', destPort: 1 }, { id: 'b', name: 'DMX B', src: 'Split', port: 1, dest: 'P1 Lointain' }, { id: 'c2', name: 'DMX C', src: 'Split', port: 3, dest: 'P2 Milieu' }] };
   });
-  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
+  // console : nombres de ports et univers de chaque sortie, dans l'onglet Console
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=console]');
+  const cf = f => page.locator(`#view input[data-o=consoles][data-f=${f}]`);
+  await cf('ethPorts').fill('2'); await cf('ethPorts').press('Tab');
+  await cf('dmxIn').fill('1'); await cf('dmxIn').press('Tab');
+  await cf('dmxPorts').fill('4'); await cf('dmxPorts').press('Tab');
+  await page.locator('#view input[data-puniv=o2][data-id=c]').fill('7'); await page.locator('#view input[data-puniv=o2][data-id=c]').press('Tab');
+  // la ligne qui part de la sortie 2, et celles qui sortent du splitter, prennent l'univers 7
+  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => `${l.name}:${l.universe}`))).toEqual(['DMX A:7', 'DMX B:7', 'DMX C:7']);
+  // une sortie de splitter réglée à part
+  await page.click('#view [data-nv=net]');
+  await page.click('#view [data-devtog=sp]');
+  await expect(page.locator('#view input[data-puniv=o1][data-id=sp]')).toHaveAttribute('placeholder', '7');
+  await page.locator('#view input[data-puniv=o3][data-id=sp]').fill('8'); await page.locator('#view input[data-puniv=o3][data-id=sp]').press('Tab');
+  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => `${l.name}:${l.universe}`))).toEqual(['DMX A:7', 'DMX B:7', 'DMX C:8']);
+  // fiche de la console : nombres de ports repris de l'onglet Console, pas de réglage ici
+  await page.click('#view [data-devtog=c]');
+  await expect(page.locator('#view input[data-dport][data-id=c]')).toHaveCount(0);
+  await expect(page.locator('#view tr.devsheet .ptab').first().locator('tbody tr')).toHaveCount(7);   // 2 Ethernet, 1 entrée, 4 sorties
+  // switch : pas de branchement dans la fiche, mais nom et VLAN des ports ; le câble s'y lit
   await page.click('#view [data-devtog=sr]');
-  const conn = k => page.locator(`#view select[data-pconn="${k}"][data-id=sr]`);
-  await expect(page.locator('#view tr.devsheet .ptab tbody tr')).toHaveCount(8);      // 6 cuivre + 2 SFP
-  // SFP 7 du switch régie → SFP 7 du switch scène : câble fibre
-  await conn('e7').selectOption({ label: 'SW scène · SFP 7' });
-  // port 5 (sans PoE) → Node 1 port 1 : le node veut du PoE
-  await conn('e5').selectOption({ label: 'Node 1 · port 1' });
-  let L = await page.evaluate(() => state.d.lieu.netLinks.map(l => `${l.kind}:${l.a}#${l.ap}-${l.b}#${l.bp}`));
-  expect(L).toEqual(['fiber:SW régie#7-SW scène#7', 'eth:SW régie#5-Node 1#1']);
-  expect(await page.evaluate(() => (netIssues().get('n') || []))).toEqual(['poeNo']);
-  await conn('e5').selectOption({ label: 'Node 1 · port 1' }).catch(() => {});
+  await expect(page.locator('#view select[data-pconn]')).toHaveCount(0);
   await page.locator('#view input[data-pvlan=e5][data-id=sr]').fill('10'); await page.locator('#view input[data-pvlan=e5][data-id=sr]').press('Tab');
   await page.locator('#view input[data-pname=e7][data-id=sr]').fill('Uplink scène'); await page.locator('#view input[data-pname=e7][data-id=sr]').press('Tab');
-  expect(await page.evaluate(() => [state.d.lieu.devices[0].portVlan, state.d.lieu.devices[0].portNames])).toEqual([{ e5: 10 }, { e7: 'Uplink scène' }]);
-  // Node 1 : sortie 2 → entrée 1 du merger, sortie 1 → P1 Lointain
-  await page.click('#view [data-devtog=n]');
-  await page.locator('#view select[data-pconn=o2][data-id=n]').selectOption({ label: 'Merger · entrée 1' });
-  await page.locator('#view select[data-pconn=o1][data-id=n]').selectOption({ label: 'P1 Lointain' });
-  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => `${l.name}:${l.src}#${l.port}>${l.dest}#${l.destPort ?? ''}`))).toEqual(['DMX 1:Node 1#2>Merger#1', 'DMX 2:Node 1#1>P1 Lointain#']);
-  // la même chose dans la liste des liaisons, et le changement y revient dans la fiche
+  expect(await page.evaluate(() => { const v = state.d.lieu.devices.find(x => x.id === 'sr'); return [v.portVlan, v.portNames]; })).toEqual([{ e5: 10 }, { e7: 'Uplink scène' }]);
+  const swRows = page.locator('#view tr.devsheet', { has: page.locator('[data-pvlan][data-id=sr]') }).locator('.ptab tbody tr');
+  await expect(swRows.nth(4)).toContainText('Node 1 · port 1');
+  expect(await page.evaluate(() => netIssues().get('n') || [])).toEqual(['poeNo']);    // port 5 sans PoE (4 ports PoE)
+  // dans Liaisons, changer l'univers d'une ligne règle aussi la sortie de la console
   await page.click('#view [data-nv=dmx]');
-  await expect(page.locator('#view .lktab tbody tr:not(.lksep)')).toHaveCount(4);
-  await page.click('#view [data-lf=net]'); await expect(page.locator('#view .lktab tbody tr')).toHaveCount(2);
-  await expect(page.locator('#view .lktab')).toContainText('VLAN 10');
-  await page.click('#view [data-lf=all]');
-  await page.locator('#view select[data-o=netLinks][data-f=bp]').nth(0).selectOption({ label: 'port 2' });
-  await page.click('#view [data-nv=net]');
-  await expect(page.locator('#view select[data-pconn=e5][data-id=sr] option:checked')).toHaveText(/Node 1 · port 2/);
-  // le synoptique suit les câbles
-  await page.click('#tabs button[data-v=syno]'); await page.click('#view [data-sv=net]');
-  const svg = page.locator('#view .nsyn svg');
-  for (const txt of ['SW régie', 'SW scène', 'Uplink scène', 'port 5', 'VLAN', 'DMX 1', 'Merger']) await expect(svg).toContainText(txt);
+  const u = page.locator('#view input[data-o=dmxLines][data-f=universe][data-id=a]');
+  await u.fill('9'); await u.press('Tab');
+  expect(await page.evaluate(() => [state.d.lieu.devices[0].portUniv, state.d.lieu.dmxLines.map(l => l.universe)])).toEqual([{ o2: 9 }, [9, 9, 8]]);
 });
 
 test('tableaux : tri par colonne et filtre des lignes, dans toutes les vues', async ({ page }) => {
