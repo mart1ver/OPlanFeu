@@ -3352,17 +3352,18 @@ async function buildV3(fx) {
   buildV3Scene(fx);
 }
 // ── affichage des éléments : calques et objets des structures, positions des projecteurs, objets masqués d'un double-clic
-const v3Hide = () => { const d = state.d; d.v3hide = { layers: [], names: [], objs: [], pos: [], ...(d.v3hide || {}) }; return d.v3hide; };
+const v3Hide = () => { const d = state.d; d.v3hide = { layers: [], names: [], objs: [], pos: [], types: [], ...(d.v3hide || {}) }; return d.v3hide; };
 const stKey = o => (o.layer || '—') + '\u0001' + (o.name || o.kind);
 function applyV3Vis() {
-  const H = v3Hide(), L = new Set(H.layers), N = new Set(H.names), O = new Set(H.objs), P = new Set(H.pos);
+  const H = v3Hide(), L = new Set(H.layers), N = new Set(H.names), O = new Set(H.objs), P = new Set(H.pos), TY = new Set(H.types || []);
   for (const it of V3.items || []) {
     let v = true;
     if (it.st) v = !L.has(it.st.layer || '—') && !N.has(stKey(it.st)) && !O.has('s:' + (it.st.uid || it.st.name));
-    else if (it.f) v = !P.has(it.f.position || '—') && !O.has('f:' + it.f.uid);
+    else if (it.f) v = !P.has(it.f.position || '—') && !TY.has(it.f.type) && !O.has('f:' + it.f.uid);
     else if (it.bar) v = !P.has(it.bar);
     it.o.visible = v; if (it.label) it.label.visible = v; (it.extra || []).forEach(o => { o.visible = v; });
   }
+  document.querySelectorAll('#v3 [data-v3fx]').forEach(c => { c.checked = !O.has('f:' + c.dataset.v3fx); });
   const info = document.querySelector('#v3 .v3hid'); if (info) { info.hidden = !H.objs.length; info.querySelector('b').textContent = H.objs.length; }
 }
 const isShown = o => { for (let x = o; x; x = x.parent) if (!x.visible) return false; return true; };
@@ -3375,10 +3376,15 @@ function v3Panel() {
     return `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="layer" data-k="${x(l)}"${H.layers.includes(l) ? '' : ' checked'}> ${x(l)} <small>${cnt.get(l)}</small></summary><div>${names.map(([n, c]) =>
       `<label><input type="checkbox" data-v3h="name" data-k="${x(l + '\u0001' + n)}"${H.names.includes(l + '\u0001' + n) ? '' : ' checked'}> ${x(n)} <small>${c}</small></label>`).join('')}</div></details>`;
   }).join('');
+  // projecteurs par type, dépliables pour cocher machine par machine
+  const byT = new Map(); d.fixtures.forEach(f => { if (!byT.has(f.type)) byT.set(f.type, []); byT.get(f.type).push(f); });
+  const tys = [...byT].sort((a, b) => b[1].length - a[1].length || typeName(a[0]).localeCompare(typeName(b[0]))).map(([k2, list]) =>
+    `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="type" data-k="${x(k2)}"${(H.types || []).includes(k2) ? '' : ' checked'}> ${x(typeName(k2))} <small>${list.length}</small></summary><div>${[...list].sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => `<label><input type="checkbox" data-v3fx="${x(f.uid)}"${H.objs.includes('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || f.position || '')}</small></label>`).join('')}</div></details>`).join('');
   const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k, c]) => `<label><input type="checkbox" data-v3h="pos" data-k="${x(k)}"${H.pos.includes(k) ? '' : ' checked'}> ${x(k === '—' ? t('noPos') : k)} <small>${c}</small></label>`).join('');
   return `<details class="v3panel" ${state.v3PanelOpen === false ? '' : 'open'}><summary>${x(t('v3Elems'))}</summary>
-<div class="grp">${x(t('v3Struct'))}<button type="button" data-v3all="layers">${x(t('v3All'))}</button><button type="button" data-v3none="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}
+<div class="grp">${x(t('plFixT'))}<button type="button" data-v3all="types">${x(t('v3All'))}</button><button type="button" data-v3none="types">${x(t('v3None'))}</button></div>${tys}
 <div class="grp">${x(t('v3Fix'))}<button type="button" data-v3all="pos">${x(t('v3All'))}</button><button type="button" data-v3none="pos">${x(t('v3None'))}</button></div>${ps}
+<div class="grp">${x(t('v3Struct'))}<button type="button" data-v3all="layers">${x(t('v3All'))}</button><button type="button" data-v3none="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}
 <div class="grp v3hid"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-v3unhide="1">${x(t('unhideAll'))}</button></div>
 <div style="color:#9a9aa2;font-size:11px;margin-top:6px;white-space:normal">${x(t('v3DblHint'))}</div></details>`;
 }
@@ -3558,9 +3564,11 @@ function buildV3Scene(fx) {
   loop();
 }
 document.getElementById('view').addEventListener('change', e => {
+  const fxc = e.target.closest && e.target.closest('[data-v3fx]');
+  if (fxc && state.d) { const H = v3Hide(), k = 'f:' + fxc.dataset.v3fx; H.objs = fxc.checked ? H.objs.filter(v => v !== k) : [...new Set([...H.objs, k])]; touch(); applyV3Vis(); return; }
   const h = e.target.closest && e.target.closest('[data-v3h]');
   if (h && state.d) {
-    const H = v3Hide(), key = { layer: 'layers', name: 'names', pos: 'pos' }[h.dataset.v3h], k = h.dataset.k;
+    const H = v3Hide(), key = { layer: 'layers', name: 'names', pos: 'pos', type: 'types' }[h.dataset.v3h], k = h.dataset.k;
     H[key] = h.checked ? H[key].filter(v => v !== k) : [...new Set([...H[key], k])];
     touch(); applyV3Vis(); return;
   }
@@ -3578,9 +3586,10 @@ document.getElementById('view').addEventListener('click', e => {
     const H = v3Hide();
     if (b.dataset.v3unhide) H.objs = [];
     else {
-      const k = b.dataset.v3all || b.dataset.v3none, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
+      const k = b.dataset.v3all || b.dataset.v3none, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : k === 'types' ? [...new Set(state.d.fixtures.map(f => f.type))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
       H[k] = b.dataset.v3none ? all : []; if (k === 'layers' && b.dataset.v3all) H.names = [];
-      document.querySelectorAll(`#v3 [data-v3h="${k === 'layers' ? 'layer' : 'pos'}"]`).forEach(c => { c.checked = !!b.dataset.v3all; });
+      if (k === 'types' && b.dataset.v3all) H.objs = H.objs.filter(v => !v.startsWith('f:'));
+      document.querySelectorAll(`#v3 [data-v3h="${{ layers: 'layer', types: 'type', pos: 'pos' }[k]}"]`).forEach(c => { c.checked = !!b.dataset.v3all; });
       if (k === 'layers' && b.dataset.v3all) document.querySelectorAll('#v3 [data-v3h="name"]').forEach(c => { c.checked = true; });
     }
     touch(); applyV3Vis();

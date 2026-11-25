@@ -387,3 +387,22 @@ test('plan : masquer ou afficher des machines, par type ou une à une', async ({
   await page.click('.plpanel [data-plall=types]');
   await expect(page.locator('#planPages .plab')).toHaveCount(24);
 });
+
+test('3D : masquer ou afficher des machines par type ou une à une, projecteurs en tête', async ({ page }) => {
+  test.setTimeout(90_000);
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=v3d]');
+  await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
+  const grps = await page.locator('#v3 .v3panel .grp').allTextContents();
+  expect(grps[0]).toContain('Projecteurs par type');
+  const shown = () => page.evaluate(() => V3.items.filter(it => it.f && it.o.visible).length);
+  await page.uncheck('#v3 [data-v3h=type][data-k="Test@PC"]');
+  await expect.poll(shown).toBe(16);
+  await page.check('#v3 [data-v3h=type][data-k="Test@PC"]');
+  await page.locator('#v3 details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
+  await page.uncheck('#v3 [data-v3fx="u-1"]');
+  await expect.poll(shown).toBe(23);
+  await page.click('#v3 [data-v3all=types]');
+  await expect.poll(shown).toBe(24);
+  await expect(page.locator('#v3 [data-v3fx="u-1"]')).toBeChecked();
+});
