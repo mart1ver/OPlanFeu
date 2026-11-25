@@ -473,3 +473,43 @@ test('plan : étiquettes tournées à 45°, le trait de rappel touche toujours l
     expect(r.bad, v).toBe(0);
   }
 });
+
+test('modèles d’appareils : ports des switches et des nodes vérifiés', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 'n1', name: 'Node 1', kind: 'node', sw: 'SW1', port: '3', poe: true }, { id: 'n2', name: 'Node 2', kind: 'node', sw: 'SW1', port: '12' }],
+      dmxLines: [{ id: 'a', name: 'DMX A', src: 'Node 1', port: 1, universe: 1 }, { id: 'b', name: 'DMX B', src: 'Node 1', port: 5, universe: 2 }] };
+  });
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=models]');
+  await expect(page.locator('#view')).toContainText('Aucun modèle');
+  // deux modèles : un switch 8 ports dont 2 PoE, un node 4 sorties
+  await page.click('#addModel'); await page.click('#addModel');
+  const cell = (i, f) => page.locator(`#view input[data-o=models][data-f=${f}]`).nth(i);
+  await cell(0, 'name').fill('GigaCore 10'); await cell(0, 'name').press('Enter');
+  await cell(0, 'eth').fill('8'); await cell(0, 'eth').press('Enter');
+  await cell(0, 'poe').fill('2'); await cell(0, 'poe').press('Enter');
+  await cell(0, 'sfp').fill('2'); await cell(0, 'sfp').press('Enter');
+  await page.locator('#view select[data-o=models][data-f=kind]').nth(1).selectOption('node');
+  await cell(1, 'name').fill('Node 4'); await cell(1, 'name').press('Enter');
+  await cell(1, 'dmxOut').fill('4'); await cell(1, 'dmxOut').press('Enter');
+  expect(await page.evaluate(() => state.d.lieu.models.map(m => [m.name, m.kind, m.eth, m.poe, m.sfp, m.dmxOut]))).toEqual([['GigaCore 10', 'switch', 8, 2, 2, null], ['Node 4', 'node', 8, null, null, 4]]);
+  // rattacher les appareils
+  await page.click('#view [data-nv=net]');
+  const model = i => page.locator('#view select[data-o=devices][data-f=model]').nth(i);
+  await model(0).selectOption('GigaCore 10'); await model(1).selectOption('Node 4');
+  const iss = await page.evaluate(() => Object.fromEntries([...netIssues()].map(([id, v]) => [id, v])));
+  expect(iss).toEqual({ n1: ['poeNo'], n2: ['portOver'] });      // port 3 sans PoE ; port 12 > 8 + 2
+  await expect(page.locator('#view .pmdev')).toHaveCount(2);
+  const blk = n => page.locator('#view .pmdev').filter({ has: page.locator('.pmh b', { hasText: new RegExp('^' + n + '$') }) }), sw = blk('SW1'), nd = blk('Node 1');
+  await expect(sw.locator('.pm')).toHaveCount(11);   // 10 ports, puis le 12, en trop
+  await expect(sw.locator('.pm.bad')).toHaveCount(2);  // port 3 sans PoE, port 12 inexistant
+  await expect(nd.locator('.pm')).toHaveCount(5); await expect(nd.locator('.pm.bad')).toHaveCount(1);
+  // sortie DMX 5 sur un node à 4 sorties
+  await page.click('#view [data-nv=dmx]');
+  await expect(page.locator('#view')).toContainText('le node n’a que 4 sortie(s) DMX');
+  // renommer le modèle suit dans les appareils, et le lieu l'emporte
+  await page.click('#view [data-nv=models]');
+  await cell(1, 'name').fill('LumiNode 4'); await cell(1, 'name').press('Enter');
+  expect(await page.evaluate(() => state.d.lieu.devices.find(d => d.id === 'n1').model)).toBe('LumiNode 4');
+  await expect(page.locator('#view tbody tr').nth(1).locator('td.num')).toHaveText('1');
+});
