@@ -728,7 +728,7 @@ const I18N = {
     plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
     plOrient: 'Page', or_landscape: 'paysage', or_portrait: 'portrait', plLegEdit: 'Modifier…', lgTitle: 'Légende du plan', lgHint: 'Les réglages valent pour toutes les vues du plan de ce dossier. Décocher pour masquer une entrée, renommer en tapant, flèches pour l’ordre.', lgName: 'Titre de la légende', lgCounts: 'Afficher les quantités', lgMode: 'Afficher le mode', lgCh: 'Afficher le nombre de canaux', lgTypes: 'Types de projecteurs', lgVals: 'Regroupement de couleur', lgExtra: 'Entrées libres', lgExtraTitle: 'Titre des entrées libres', lgAdd: 'Ajouter une entrée', lgNotes: 'Notes sous la légende', lgReset: 'Revenir à la légende automatique', lgNoVals: 'La couleur des projecteurs est celle du type : choisir un autre regroupement (calque, position, univers…) dans les réglages du plan pour en avoir la liste ici.', lgSym_rect: 'carré', lgSym_circle: 'rond', lgSym_line: 'trait', lgSym_dash: 'pointillé', lgUp: 'Monter', lgDown: 'Descendre', plScaleSel: 'Échelle', plScaleAuto: 'normalisée (auto)', plScaleFit: 'ajustée à la page', plRot: 'Rotation', plRulers: 'Règles', plFitScale: s => `Ajusté à la page (≈ 1:${s})`, plFitHint: 'pas à l’échelle : mesurer avec les règles', plOver: 'le dessin dépasse du cadre à cette échelle', plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
     plHint: "Plan coté à l’échelle, tiré du MVR : chaque projecteur est dessiné d’après sa forme (GDTF ou famille) vue depuis la vue choisie, avec son orientation, et les structures d’après leurs modèles. L’échelle est la plus grande échelle usuelle qui tient sur la page : imprimer en taille réelle, marges Aucune. Survoler un projecteur pour ses détails.",
-    plTitle: v => ({ top: 'Plan feu', bottom: 'Plan feu — vu de dessous', front: 'Plan feu — face', back: 'Plan feu — vu du lointain', cour: 'Plan feu — vu de cour', side: 'Plan feu — vu de cour', jardin: 'Plan feu — vu de jardin' })[v] || 'Plan feu', pv_top: 'Dessus', pv_bottom: 'Dessous', pv_front: 'Face (vu de la salle)', pv_back: 'Lointain (vu de derrière)', pv_jardin: 'Jardin (vu de gauche)', pv_cour: 'Cour (vu de droite)', plJardin: 'JARDIN', plCour: 'COUR', plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Double-clic sur un projecteur ou une structure pour le masquer.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
+    plTitle: v => ({ top: 'Plan feu', bottom: 'Plan feu — vu de dessous', front: 'Plan feu — face', back: 'Plan feu — vu du lointain', cour: 'Plan feu — vu de cour', side: 'Plan feu — vu de cour', jardin: 'Plan feu — vu de jardin' })[v] || 'Plan feu', pv_top: 'Dessus', pv_bottom: 'Dessous', pv_front: 'Face (vu de la salle)', pv_back: 'Lointain (vu de derrière)', pv_jardin: 'Jardin (vu de gauche)', pv_cour: 'Cour (vu de droite)', plJardin: 'JARDIN', plCour: 'COUR', plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Clic droit sur une étiquette : rotation de 45° (Maj + clic droit : dans l’autre sens). Double-clic sur un projecteur ou une structure pour le masquer.', plLabRot: 'Rotation', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
     nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
     addConsole: 'Ajouter une console', newConsole: 'Console', delConsoleAsk: n => `Supprimer la console « ${n} » ?`,
     cnName: 'Nom', cnRole: 'Rôle', rMain: 'Principale', rBackup: 'Secours', rOnpc: 'onPC / préparation', rViz: 'Visualisation', rOther: 'Autre', cnModel: 'Modèle', cnParams: 'Paramètres de la console', cnExt: 'Extension', cnExtN: 'Nombre d’extensions', cnExtP: 'Paramètres par extension',
@@ -853,7 +853,7 @@ const I18N = {
     plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
     plOrient: 'Page', or_landscape: 'landscape', or_portrait: 'portrait', plLegEdit: 'Edit…', lgTitle: 'Plot legend', lgHint: 'These settings apply to every plot view of this dossier. Untick to hide an entry, type to rename, arrows to reorder.', lgName: 'Legend title', lgCounts: 'Show quantities', lgMode: 'Show the mode', lgCh: 'Show the channel count', lgTypes: 'Fixture types', lgVals: 'Colour grouping', lgExtra: 'Free entries', lgExtraTitle: 'Free entries title', lgAdd: 'Add an entry', lgNotes: 'Notes under the legend', lgReset: 'Back to the automatic legend', lgNoVals: 'Fixtures are coloured by type: pick another grouping (layer, position, universe…) in the plot settings to list it here.', lgSym_rect: 'square', lgSym_circle: 'dot', lgSym_line: 'line', lgSym_dash: 'dashed', lgUp: 'Up', lgDown: 'Down', plScaleSel: 'Scale', plScaleAuto: 'standard (auto)', plScaleFit: 'fit to page', plRot: 'Rotation', plRulers: 'Rulers', plFitScale: s => `Fit to page (≈ 1:${s})`, plFitHint: 'not to scale: measure with the rulers', plOver: 'the drawing overflows the frame at this scale', plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
     plHint: 'Scaled plot from the MVR: each fixture is drawn from its shape (GDTF or family) seen from the chosen view, with its orientation, and structures from their models. The scale is the largest usual scale that fits the page: print at actual size, margins None. Hover a fixture for its details.',
-    plTitle: v => ({ top: 'Lighting plot', bottom: 'Lighting plot — from below', front: 'Lighting plot — front', back: 'Lighting plot — from upstage', cour: 'Lighting plot — from stage left', side: 'Lighting plot — from stage left', jardin: 'Lighting plot — from stage right' })[v] || 'Lighting plot', pv_top: 'Top', pv_bottom: 'Bottom', pv_front: 'Front (from the house)', pv_back: 'Back (from upstage)', pv_jardin: 'Stage right (from the left)', pv_cour: 'Stage left (from the right)', plJardin: 'STAGE RIGHT', plCour: 'STAGE LEFT', plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Double-click a fixture or a structure to hide it.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
+    plTitle: v => ({ top: 'Lighting plot', bottom: 'Lighting plot — from below', front: 'Lighting plot — front', back: 'Lighting plot — from upstage', cour: 'Lighting plot — from stage left', side: 'Lighting plot — from stage left', jardin: 'Lighting plot — from stage right' })[v] || 'Lighting plot', pv_top: 'Top', pv_bottom: 'Bottom', pv_front: 'Front (from the house)', pv_back: 'Back (from upstage)', pv_jardin: 'Stage right (from the left)', pv_cour: 'Stage left (from the right)', plJardin: 'STAGE RIGHT', plCour: 'STAGE LEFT', plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Right-click a label: 45° rotation (Shift + right-click: the other way). Double-click a fixture or a structure to hide it.', plLabRot: 'Rotation', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
     nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
     addConsole: 'Add a console', newConsole: 'Console', delConsoleAsk: n => `Delete the console “${n}”?`,
     cnName: 'Name', cnRole: 'Role', rMain: 'Main', rBackup: 'Backup', rOnpc: 'onPC / programming', rViz: 'Visualiser', rOther: 'Other', cnModel: 'Model', cnParams: 'Console parameters', cnExt: 'Extension', cnExtN: 'Number of extensions', cnExtP: 'Parameters per extension',
@@ -2336,7 +2336,8 @@ function projPolys(parts, m, unitMM, V) {
 const partCmp = (a, b, sg) => sg > 0 ? (a.bot >= b.top - 1e-6 ? 1 : b.bot >= a.top - 1e-6 ? -1 : a.depth - b.depth) : (a.top <= b.bot + 1e-6 ? 1 : b.top <= a.bot + 1e-6 ? -1 : b.depth - a.depth);
 const planHide = () => { const d = state.d; d.planHide = { layers: [], names: [], objs: [], pos: [], ...(d.planHide || {}) }; return d.planHide; };
 const planRot = P => (((+P.rot || 0) % 360) + 360) % 360;
-const planLabKey = () => state.plan.view + '|' + (state.plan.point || '') + (planRot(state.plan) ? '|r' + planRot(state.plan) : '');
+const planLabKeyOf = S => (S.view || 'top') + '|' + (S.point || '') + (planRot(S) ? '|r' + planRot(S) : '');
+const planLabKey = () => planLabKeyOf(state.plan);
 // réglages de la légende du plan (gardés avec le dossier) : titre, entrées masquées ou renommées, ordre, entrées libres, notes
 function planLegend(d) { const L = d.planLegend || (d.planLegend = {}); for (const [k, v] of Object.entries({ title: '', hide: [], names: {}, order: [], extra: [], notes: '', counts: true, showMode: false, showCh: false })) if (L[k] === undefined) L[k] = v; return L; }
 const legNotesH = LG => LG.notes ? Math.min(10, LG.notes.split('\n').length) * 3.4 + 2 : 0;
@@ -2486,7 +2487,7 @@ function renderPlan(forPrint) {
     const lines = [s2.f.fid || '?', l2(s2.f)].filter(Boolean), lw = Math.max(...lines.map((v, i) => String(v).length * (i ? fs * .8 : fs) * .58)) + 1.2, lh = fs * 1.05 + (lines.length > 1 ? fs * .9 : 0) + .6;
     const cx = (s2.bb[0] + s2.bb[2]) / 2, cy = (s2.bb[1] + s2.bb[3]) / 2, rw = (s2.bb[2] - s2.bb[0]) / 2, rh = (s2.bb[3] - s2.bb[1]) / 2, gap = .5;
     let lx, ly;
-    const mo = man[s2.f.uid];
+    const mo0 = man[s2.f.uid], mo = mo0 && mo0[0] !== null && mo0[0] !== undefined ? mo0 : null, ang = (((mo0 && mo0[2] !== undefined && mo0[2] !== null ? mo0[2] : +P.labRot || 0) % 360) + 360) % 360;
     if (mo) { lx = cx + mo[0] * k; ly = cy - mo[1] * k; }
     else {
       const cands = [[0, -(rh + gap + lh / 2)], [0, rh + gap + lh / 2], [rw + gap + lw / 2, 0], [-(rw + gap + lw / 2), 0],
@@ -2502,10 +2503,13 @@ function renderPlan(forPrint) {
       });
       [lx, ly] = best;
     }
+    // dans le cadre du dessin, quoi qu'il arrive (une étiquette glissée dehors redevient attrapable)
+    { const rad = ang * Math.PI / 180, hw = (Math.abs(Math.cos(rad)) * lw + Math.abs(Math.sin(rad)) * lh) / 2, hh = (Math.abs(Math.sin(rad)) * lw + Math.abs(Math.cos(rad)) * lh) / 2;
+      lx = Math.min(Math.max(lx, FX0 + RB + hw + .3), FX1 - hw - .3); ly = Math.min(Math.max(ly, FY0 + RB + hh + .3), FY1 - hh - .3); }
     const box = [lx - lw / 2, ly - lh / 2, lx + lw / 2, ly + lh / 2]; placed.push(box);
     const far = Math.max(Math.abs(lx - cx) - lw / 2 - rw, Math.abs(ly - cy) - lh / 2 - rh) > 1.2;
     if (far) { const ex = Math.max(box[0], Math.min(cx, box[2])), ey = Math.max(box[1], Math.min(cy, box[3])); labs += `<line x1="${cx.toFixed(2)}" y1="${cy.toFixed(2)}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="#16161a" stroke-width=".12"/>`; }
-    labs += `<g class="plab" data-u="${esc(s2.f.uid)}" data-cx="${cx.toFixed(2)}" data-cy="${cy.toFixed(2)}" transform="translate(${lx.toFixed(2)},${ly.toFixed(2)})"><rect x="${(-lw / 2).toFixed(2)}" y="${(-lh / 2).toFixed(2)}" width="${lw.toFixed(2)}" height="${lh.toFixed(2)}" rx=".5" fill="#fff" fill-opacity="${mo ? .95 : .8}" stroke="${mo ? '#e8a317' : 'none'}" stroke-width=".15"/>
+    labs += `<g class="plab" data-u="${esc(s2.f.uid)}" data-cx="${cx.toFixed(2)}" data-cy="${cy.toFixed(2)}" data-r="${ang}" transform="translate(${lx.toFixed(2)},${ly.toFixed(2)})${ang ? ` rotate(${ang})` : ''}"><rect x="${(-lw / 2).toFixed(2)}" y="${(-lh / 2).toFixed(2)}" width="${lw.toFixed(2)}" height="${lh.toFixed(2)}" rx=".5" fill="#fff" fill-opacity="${mo0 ? .95 : .8}" stroke="${mo0 ? '#e8a317' : 'none'}" stroke-width=".15"/>
 <text y="${(lines.length > 1 ? -lh / 2 + fs * .95 : fs * .36).toFixed(2)}" font-size="${fs}" font-weight="700" text-anchor="middle">${esc(lines[0])}</text>${lines[1] ? `<text y="${(lh / 2 - .45).toFixed(2)}" font-size="${(fs * .8).toFixed(2)}" text-anchor="middle" fill="#444">${esc(lines[1])}</text>` : ''}</g>`;
   }
   // échelle graphique, légende (formes des types vues de face… ou de la vue choisie), cartouche
@@ -2593,6 +2597,7 @@ function planPanel() {
 <div class="grp"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-plunhide="1">${x(t('unhideAll'))}</button></div>
 <div class="grp">${x(t('plLegend'))}<button type="button" id="plLegEdit">${x(t('plLegEdit'))}</button></div>
 <div class="grp">${x(t('plLabs'))}<button type="button" id="plLabReset">${x(t('plLabReset'))}</button></div>
+<label>${x(t('plLabRot'))} <select data-pl="labRot">${[0, 45, 90, 135, 180, 225, 270, 315].map(v => `<option value="${v}"${(+P.labRot || 0) === v ? ' selected' : ''}>${v}°</option>`).join('')}</select></label>
 <label>${x(t('plLabSize'))} <input type="range" data-pl="labSize" min="40" max="300" step="10" value="${+P.labSize || 100}" style="flex:1;min-width:0"> <small id="plLabSizeV">${+P.labSize || 100} %</small></label>
 <div class="plhint">${x(t('plDragHint'))}</div></details>`;
 }
@@ -2684,8 +2689,9 @@ document.getElementById('view').addEventListener('change', e => {
   if (el.dataset.pl === 'scaleSel') { state.plan.fit = el.value === 'fit' ? 'fit' : 'scale'; state.plan.scale = /^\d+$/.test(el.value) ? +el.value : null; store.set('plan', state.plan); renderPlanView(); return; }
   state.plan[el.dataset.pl] = el.type === 'checkbox' ? el.checked : el.value; store.set('plan', state.plan);
   if (el.dataset.pl === 'rot') state.plan.rot = +el.value;
+  if (el.dataset.pl === 'labRot') state.plan.labRot = +el.value;
   if (el.dataset.pl === 'labSize') state.plan.labSize = +el.value;
-  if (['labels', 'points', 'struct', 'grid', 'labSize', 'rulers'].includes(el.dataset.pl)) replan(); else renderPlanView();
+  if (['labels', 'points', 'struct', 'grid', 'labSize', 'rulers', 'labRot'].includes(el.dataset.pl)) replan(); else renderPlanView();
 });
 document.getElementById('view').addEventListener('input', e => { if (e.target.dataset && e.target.dataset.pl === 'labSize') { const v = $('#plLabSizeV'); if (v) v.textContent = e.target.value + ' %'; } if (e.target.id === 'plZoom') { state.plan.zoom = +e.target.value; store.set('plan', state.plan); document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = state.plan.zoom / 100; }); } });
 document.getElementById('view').addEventListener('click', e => {
@@ -2703,23 +2709,32 @@ document.getElementById('view').addEventListener('dblclick', e => {
   const g2 = e.target.closest && e.target.closest('#planPages [data-k]'); if (!g2 || !state.d) return;
   const H = planHide(); H.objs = [...new Set([...H.objs, g2.dataset.k])]; touch(); renderPlanView();
 });
-document.getElementById('view').addEventListener('pointerdown', e => {
+// clic droit sur une étiquette : quart de tour… par pas de 45° (Maj : dans l'autre sens)
+document.getElementById('view').addEventListener('contextmenu', e => {
   const lab = e.target.closest && e.target.closest('#planPages .plab'); if (!lab || !state.d) return;
+  e.preventDefault();
+  const d = state.d; d.planLab2 = d.planLab2 || {}; const L2 = d.planLab2[planLabKey()] = d.planLab2[planLabKey()] || {};
+  const o = L2[lab.dataset.u] || [null, null], r = ((+lab.dataset.r || 0) + (e.shiftKey ? -45 : 45) + 360) % 360;
+  L2[lab.dataset.u] = [o[0] ?? null, o[1] ?? null, r]; touch(); replan();
+});
+document.getElementById('view').addEventListener('pointerdown', e => {
+  const lab = e.target.closest && e.target.closest('#planPages .plab'); if (!lab || !state.d || e.button !== 0) return;
   e.preventDefault();
   const svg = lab.ownerSVGElement, rect = svg.getBoundingClientRect(), mm = +svg.dataset.pw / rect.width;
   const m = /translate\(([-\d.]+),([-\d.]+)\)/.exec(lab.getAttribute('transform')), x0 = +m[1], y0 = +m[2], sx = e.clientX, sy = e.clientY;
-  let nx = x0, ny = y0;
-  const mv = ev => { nx = x0 + (ev.clientX - sx) * mm; ny = y0 + (ev.clientY - sy) * mm; lab.setAttribute('transform', `translate(${nx.toFixed(2)},${ny.toFixed(2)})`); };
+  let nx = x0, ny = y0; const rr = +lab.dataset.r || 0;
+  const mv = ev => { nx = x0 + (ev.clientX - sx) * mm; ny = y0 + (ev.clientY - sy) * mm; lab.setAttribute('transform', `translate(${nx.toFixed(2)},${ny.toFixed(2)})${rr ? ` rotate(${rr})` : ''}`); };
   const up = () => {
     window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
     if (Math.hypot(nx - x0, ny - y0) < .3) return;
     const d = state.d, kk = +svg.dataset.k || 1; d.planLab2 = d.planLab2 || {}; const L2 = d.planLab2[planLabKey()] = d.planLab2[planLabKey()] || {};
-    L2[lab.dataset.u] = [+((nx - +lab.dataset.cx) / kk).toFixed(3), +(-(ny - +lab.dataset.cy) / kk).toFixed(3)]; touch(); replan();
+    const old = L2[lab.dataset.u];
+    L2[lab.dataset.u] = [+((nx - +lab.dataset.cx) / kk).toFixed(3), +(-(ny - +lab.dataset.cy) / kk).toFixed(3), ...(old && old[2] !== undefined && old[2] !== null ? [old[2]] : [])]; touch(); replan();
   };
   window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
 });
 // ───────────── vues enregistrées (plan et 3D), à reprendre dans le dossier complet ─────────────
-const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'struct', 'points', 'grid', 'fmt', 'orient', 'fit', 'scale', 'rot', 'rulers'];
+const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'labRot', 'struct', 'points', 'grid', 'fmt', 'orient', 'fit', 'scale', 'rot', 'rulers'];
 const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid'];
 const clone = o => JSON.parse(JSON.stringify(o ?? null));
 const views = kind => (state.d.views || []).filter(v => v.kind === kind);
@@ -2747,7 +2762,7 @@ function viewApply(kind, v) {
   const d = state.d;
   if (kind === 'plan') {
     Object.assign(state.plan, clone(v.settings)); store.set('plan', state.plan); d.planHide = clone(v.hide);
-    d.planLab2 = d.planLab2 || {}; d.planLab2[(v.settings.view || 'top') + '|' + (v.settings.point || '')] = clone(v.labs || {});
+    d.planLab2 = d.planLab2 || {}; d.planLab2[planLabKeyOf(v.settings)] = clone(v.labs || {});
   } else { Object.assign(state.v3, clone(v.settings)); store.set('v3', state.v3); d.v3hide = clone(v.hide); V3.pendingCam = v.cam; }
 }
 document.getElementById('view').addEventListener('change', e => {
@@ -2785,7 +2800,7 @@ function dossierPages() {
   // vues enregistrées : plans redessinés avec leurs réglages, vues 3D en image
   for (const v of (d.views || []).filter(x => x.inDossier)) {
     if (v.kind === 'plan') {
-      const key = (v.settings.view || 'top') + '|' + (v.settings.point || ''), oldH = d.planHide, oldL = d.planLab2;
+      const key = planLabKeyOf(v.settings), oldH = d.planHide, oldL = d.planLab2;
       d.planHide = clone(v.hide); d.planLab2 = { [key]: clone(v.labs || {}) };
       let html; try { html = withTemp(state.plan, { ...v.settings, fmt: 'A4', orient: 'landscape' }, () => renderPlan(true)); } finally { d.planHide = oldH; d.planLab2 = oldL; }
       html = html.replace(/<p class="hint[^]*$/, '').replace(/(<text x="10" y="16" font-size="6" font-weight="700">)[^<]*/, `$1${esc(v.name)}`);

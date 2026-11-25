@@ -201,3 +201,28 @@ test('légende : mode et nombre de canaux des types', async ({ page }) => {
   await page.uncheck('#legDlg input[data-lg=showMode]');
   await expect(sheet.locator('text[font-size="2.1"]', { hasText: /^1 can\.$/ })).toHaveCount(1);
 });
+
+test('étiquettes du plan : rotation par 45°, jamais perdues hors du cadre', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const lab = () => page.locator(`#planPages .plab[data-u="u-1"]`);
+  await lab().click({ button: 'right' });
+  await expect(lab()).toHaveAttribute('transform', /rotate\(45\)/);
+  await lab().click({ button: 'right' });
+  await expect(lab()).toHaveAttribute('transform', /rotate\(90\)/);
+  await lab().click({ button: 'right', modifiers: ['Shift'] });
+  await expect(lab()).toHaveAttribute('transform', /rotate\(45\)/);
+  // glissée loin hors de la feuille : elle revient dans le cadre et reste attrapable
+  const b = await lab().boundingBox();
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down();
+  await page.mouse.move(b.x - 3000, b.y - 3000, { steps: 4 }); await page.mouse.up();
+  await expect(lab()).toHaveAttribute('transform', /rotate\(45\)/);
+  const inside = await page.evaluate(() => { const g = document.querySelector('#planPages .plab[data-u="u-1"]'), r = g.getBoundingClientRect(), s = g.ownerSVGElement.getBoundingClientRect(); return r.left >= s.left && r.top >= s.top; });
+  expect(inside).toBe(true);
+  await lab().click({ button: 'right' });
+  await expect(lab()).toHaveAttribute('transform', /rotate\(90\)/);
+  // rotation de toutes les étiquettes
+  await page.selectOption('[data-pl=labRot]', '90');
+  await expect(page.locator('#planPages .plab[data-u="u-2"]')).toHaveAttribute('transform', /rotate\(90\)/);
+});
