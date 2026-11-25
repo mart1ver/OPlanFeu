@@ -591,3 +591,43 @@ test('liaisons : brancher les ports depuis la fiche d’un appareil, et les retr
   const svg = page.locator('#view .nsyn svg');
   for (const txt of ['SW régie', 'SW scène', 'Uplink scène', 'port 5', 'VLAN', 'DMX 1', 'Merger']) await expect(svg).toContainText(txt);
 });
+
+test('tableaux : tri par colonne et filtre des lignes, dans toutes les vues', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [], netLinks: [{ id: 'k1', kind: 'eth', a: 'SW1', ap: 2, b: 'Node B', bp: 1 }, { id: 'k2', kind: 'eth', a: 'SW1', ap: 1, b: 'Node A', bp: 1 }],
+      dmxLines: [{ id: 'x1', name: 'DMX 2', src: 'Node A', port: 1, universe: 2 }, { id: 'x2', name: 'DMX 10', src: 'Node A', port: 2, universe: 1 }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 'a', name: 'Node A', kind: 'node' }, { id: 'b', name: 'Node B', kind: 'node' }] };
+  });
+  // accroches : le filtre ne garde que les lignes qui contiennent tous les mots, le total reste
+  await page.click('#tabs button[data-v=rigging]');
+  const rg = page.locator('#view table.grid').first(), rows = rg.locator('tbody tr:not([hidden])');
+  await expect(rows).toHaveCount(5);                     // 4 points + total
+  await page.locator('#view .tfq').first().fill('lointain');
+  await expect(rows).toHaveCount(2); await expect(rows.last()).toHaveClass(/ttot/);
+  await expect(page.locator('#view .tfn').first()).toHaveText('1 ligne(s) sur 4');
+  await page.locator('#view .tfreset').first().click();
+  await expect(rows).toHaveCount(5);
+  // DMX et réseau : appareils triés par nom décroissant, la fiche ouverte suit sa ligne
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
+  await page.click('#view [data-devtog=a]');
+  const th = page.locator('#view .dvtab th.tsort', { hasText: 'Appareil' });
+  await th.click(); await th.click();
+  await expect(th).toHaveClass(/desc/);
+  const names = () => page.evaluate(() => [...document.querySelectorAll('#view .dvtab > tbody > tr')].map(r => r.classList.contains('devsheet') ? '[fiche]' : r.querySelector('input[data-f=name]').value));
+  expect(await names()).toEqual(['SW1', 'Node B', 'Node A', '[fiche]']);
+  // le tri tient après une modification (le tableau est redessiné)
+  await page.locator('#view input[data-o=devices][data-f=name][data-id=b]').fill('Node Z'); await page.locator('#view input[data-o=devices][data-f=name][data-id=b]').press('Tab');
+  await expect.poll(names).toEqual(['SW1', 'Node Z', 'Node A', '[fiche]']);
+  await th.click(); await expect(th).not.toHaveClass(/asc|desc/);
+  // liaisons : câbles et lignes DMX triés chacun dans leur groupe (ordre naturel : DMX 2 avant DMX 10)
+  await page.click('#view [data-nv=dmx]');
+  await page.locator('#view .lktab th.tsort', { hasText: 'Repère' }).click();
+  const refs = await page.evaluate(() => [...document.querySelectorAll('#view .lktab tbody tr')].map(r => r.classList.contains('lksep') ? '|' : r.querySelector('input[data-f=name]').value || r.querySelector('select[data-f=a]').value));
+  expect(refs.slice(2)).toEqual(['|', 'DMX 2', 'DMX 10']);
+  await page.locator('#view .lktab th.tsort', { hasText: 'Univers' }).click();
+  expect(await page.evaluate(() => [...document.querySelectorAll('#view .lktab tbody tr')].filter(r => r.querySelector('[data-o=dmxLines]')).map(r => r.querySelector('input[data-f=name]').value))).toEqual(['DMX 10', 'DMX 2']);
+  // types et inventaire : filtre
+  await page.click('#tabs button[data-v=inventory]');
+  await page.locator('#view .tfq').first().fill('lyre');
+  await expect(page.locator('#view table.grid').first().locator('tbody tr:not([hidden]):not(.ttot)')).toHaveCount(1);
+});

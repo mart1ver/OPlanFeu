@@ -145,6 +145,8 @@ td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; b
 table.grid td input.box { border-color: var(--line); background: var(--bg); }
 table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; }
+.tfilter { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; } .tfilter .tfq { font: inherit; font-size: 13px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); width: 240px; } .tfilter .tfn { font-size: 12px; color: var(--muted); }
+table.grid th.tsort { cursor: pointer; user-select: none; } table.grid th.tsort:hover { color: var(--ink); } table.grid th.tsort.asc::after { content: ' ▲'; font-size: 9px; } table.grid th.tsort.desc::after { content: ' ▼'; font-size: 9px; }
 .dvtab td.lks { min-width: 220px; max-width: 520px; white-space: normal; } .ptab select, .lktab select { max-width: 240px; } .ptab td:nth-child(3) select { max-width: 300px; } .lk { display: inline-block; margin: 1px 6px 1px 0; padding: 1px 6px; border-radius: 4px; background: var(--panel); font-size: 12px; white-space: nowrap; } .lk.out, .lk.in { box-shadow: inset 2px 0 0 #4363d8; }
 .dvtab tr.devsheet > td { background: var(--panel); padding: 10px 12px 14px; } .dvsheet .cgrid { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 10px; } .dvsheet .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } .dvsheet .cf > span:first-child { color: var(--muted); }
 .ptab { width: auto; } .ptab td, .ptab th { padding: 3px 6px; } .ptab tr.bad td { background: color-mix(in srgb, var(--err) 10%, transparent); } .ptab i.poe { font-style: normal; color: #d49a00; }
@@ -787,6 +789,7 @@ const I18N = {
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nom, ce qui y est branché (Ethernet, fibre, DMX), câble, longueur, VLAN des ports de switch, univers des sorties DMX. Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
+    tsFilter: 'Filtrer les lignes…', tsReset: 'tout afficher, ordre d’origine', tsSortT: 'Trier (clic : croissant, décroissant, ordre d’origine)', tsCount: (n, m) => `${n} ligne(s) sur ${m}`,
     nsNoSrc: 'source inconnue', nsNoDest: 'arrivée ?', nsFx0: 'aucun projecteur', nsDmxLeg: 'DMX (couleur de l’univers)', nsExtra: 'autre câble',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `sortie ${n}`, ptIn: n => `entrée ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'Sortie DMX', pt_in: 'Entrée DMX',
     ptPort: 'Port', ptName: 'Nom du port', ptTo: 'Branché à', ptCable: 'Câble', ptRef: 'Repère', ptVlan: 'VLAN', lk_eth: 'Ethernet', lk_fiber: 'Fibre', lk_dmx5: 'DMX 5 br.', lk_dmx3: 'DMX 3 br.',
@@ -919,6 +922,7 @@ const I18N = {
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: name, what is plugged in (Ethernet, fibre, DMX), cable, length, switch port VLAN, DMX output universe. Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
+    tsFilter: 'Filter rows…', tsReset: 'show all, original order', tsSortT: 'Sort (click: ascending, descending, original order)', tsCount: (n, m) => `${n} of ${m} row(s)`,
     nsNoSrc: 'unknown source', nsNoDest: 'lands ?', nsFx0: 'no fixture', nsDmxLeg: 'DMX (universe colour)', nsExtra: 'other cable',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `out ${n}`, ptIn: n => `in ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'DMX out', pt_in: 'DMX in',
     ptPort: 'Port', ptName: 'Port name', ptTo: 'Plugged into', ptCable: 'Cable', ptRef: 'Label', ptVlan: 'VLAN', lk_eth: 'Ethernet', lk_fiber: 'Fibre', lk_dmx5: 'DMX 5-pin', lk_dmx3: 'DMX 3-pin',
@@ -1475,6 +1479,7 @@ async function bkDialog() {
   $('#bkVers').innerHTML = d ? (vs.length ? `<table class="grid"><thead><tr><th class="nosort">${x(t('bkWhen'))}</th><th class="nosort">${x(t('bkWhy'))}</th><th class="nosort">${x(t('bkFix'))}</th><th class="nosort"></th></tr></thead><tbody>${vs.map(v => `<tr><td>${x(dmy(v.at))}</td><td>${x(reasons[v.reason] || v.reason)}</td><td class="num">${v.nfx}</td><td style="white-space:nowrap;text-align:right"><button type="button" class="minibtn" data-bk="vdl" data-v="${v.vid}">${x(t('bkDlShort'))}</button><button type="button" class="minibtn primary" data-bk="vrest" data-v="${v.vid}">${x(t('bkRestore'))}</button></td></tr>`).join('')}</tbody></table>` : `<p class="hint2">${x(t('bkNoVer'))}</p>`) +
     `<p style="margin:8px 0 0"><button type="button" class="minibtn" data-bk="vnow">${x(t('bkVerNow'))}</button></p>` : '';
   $('#bkDos').innerHTML = ds.length ? `<table class="grid"><thead><tr><th class="nosort">${x(t('mTitre'))}</th><th class="nosort">${x(t('mLieu'))}</th><th class="nosort">${x(t('bkFix'))}</th><th class="nosort">${x(t('bkUpdated'))}</th><th class="nosort"></th></tr></thead><tbody>${ds.sort((a, b) => b.updated - a.updated).map(r => `<tr${d && r.id === d.meta.id ? ' class="cur"' : ''}><td><b>${x(r.titre || t('untitled'))}</b>${d && r.id === d.meta.id ? ` <small>(${x(t('bkCurrent'))})</small>` : ''}</td><td>${x(r.lieu)}</td><td class="num">${r.nfx}</td><td>${x(dmy(r.updated))}</td><td style="white-space:nowrap;text-align:right"><button type="button" class="minibtn" data-bk="ddl" data-id="${x(r.id)}">${x(t('bkDlShort'))}</button>${d && r.id === d.meta.id ? '' : `<button type="button" class="minibtn primary" data-bk="dopen" data-id="${x(r.id)}">${x(t('bkOpen'))}</button><button type="button" class="minibtn x" data-bk="ddel" data-id="${x(r.id)}">×</button>`}</td></tr>`).join('')}</tbody></table>` : `<p class="hint2">${x(t('dEmpty'))}</p>`;
+  tableTools(dlg, 'bk');
   if (!dlg.open) dlg.showModal();
 }
 async function bkExportAll() {
@@ -3950,7 +3955,7 @@ function renderRigging() {
 <span class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="addPoint">${esc(t('addPoint'))}</button>
 <button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
 <div class="gridwrap"><table class="grid"><thead><tr>${heads.map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead>
-<tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td></td><td></td><td></td>
+<tbody>${rows}<tr class="ttot"><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td></td><td></td><td></td>
 <td class="ro num" style="color:var(--ink)"><b>${nAll}</b></td><td></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${fmtNum(totAll)}</b></td><td></td><td></td><td></td><td class="noprint"></td></tr></tbody></table></div>`;
 }
 function renderGdtfView(head) {
@@ -4180,7 +4185,7 @@ ${['barre', 'blinder', 'strobe', 'video', 'fog', 'cube'].includes(ty.shape && ty
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   $('#view').innerHTML = ihead + `<h1 class="ptitle">${esc(state.d.meta.titre || '')} — ${esc(t('tabInventory'))}</h1><p class="hint" style="margin:14px 0 6px">${esc(t('invHint'))}</p>
 <div class="gridwrap"><table class="grid"><thead><tr>${['invType', 'invMaker', 'invModes', 'invQty', 'invStock', 'invMissing', 'invWeight', 'invPower', 'invShape', 'invGdtf'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead>
-<tbody>${rows}<tr><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
+<tbody>${rows}<tr class="ttot"><td class="ro" style="color:var(--ink)"><b>${esc(t('invTotal'))}</b></td><td></td><td></td><td class="ro num" style="color:var(--ink)"><b>${tq}</b></td><td></td>
 <td class="ro num">${tm ? `<span class="missing">${tm}</span>` : ''}</td><td class="ro num">${tw ? fmtNum(tw) + ' kg' : ''}</td><td class="ro num">${tp ? fmtNum(tp) + ' W' : ''}</td><td></td><td></td></tr></tbody></table></div>`;
 }
 const TAB_KEYS = { shows: 'tabShows', syno: 'tabSyno', labels: 'tabLabels', fixtures: 'tabFixtures', plan: 'tabPlan', v3d: 'tab3d', rigging: 'tabRigging', elec: 'tabElec', net: 'tabNet', inventory: 'tabInventory', dossier: 'tabDossier' };
@@ -4206,7 +4211,103 @@ function render() {
   else if (state.tab === 'labels') renderLabels();
   else if (state.tab === 'syno') renderSynoView();
   else renderFixtures();
+  // tous les tableaux, sauf celui du Patch (il a déjà son tri et ses filtres) et les documents à imprimer
+  if (!(state.tab === 'fixtures' && patchView() === 'table') && state.tab !== 'dossier') tableTools();
 }
+// ───────────── tri et filtre des tableaux (Accroches, Électricité, DMX et réseau) ─────────────
+// clic sur un en-tête : tri croissant, décroissant, puis ordre d'origine ; champ « Filtrer » : lignes qui contiennent tous les mots
+// la fiche dépliée d'un appareil suit sa ligne ; la ligne de total reste en bas ; les groupes séparés (câbles / lignes DMX) se trient chacun
+state.tsort = store.get('tsort', {}); state.tfilt = {};
+const cellVal = td => {
+  if (!td) return '';
+  const sel = td.querySelector('select'); if (sel) return sel.selectedIndex >= 0 ? (sel.options[sel.selectedIndex].text || '').trim() : '';
+  const cb = td.querySelector('input[type=checkbox]'); if (cb && !td.querySelector('input:not([type=checkbox])')) return cb.checked ? '✓' : '';
+  const inp = td.querySelector('input'); if (inp) return inp.value.trim();
+  return td.textContent.trim();
+};
+const numOf = v => { const m = /^[-+]?\d+(?:[.,]\d+)?/.exec(v.replace(/\s/g, '')); return m ? parseFloat(m[0].replace(',', '.')) : null; };
+function tableTools(root = $('#view'), prefix) {
+  const sub = { rigging: state.rigView, elec: state.elecView, net: state.netView, inventory: state.invView, labels: state.labView, syno: state.synView }[state.tab] || '';
+  prefix = prefix || `${state.tab}:${sub}`;
+  const tabs = [...root.querySelectorAll('table.grid')].filter(tb => !tb.closest('tr') && !tb.closest('#docPages, .sheet, .dpage') && !tb.classList.contains('ptab') && !tb.classList.contains('lgtab') && tb.tHead && tb.tBodies[0]);
+  tabs.forEach((tb, i) => {
+    const key = `${prefix}:${i}`, ths = [...tb.tHead.rows[0].cells];
+    if (tb.tBodies[0].rows.length < 2) return;
+    tb.dataset.tk = key;
+    // lignes d'origine, groupées : ligne principale + ses lignes de fiche
+    if (!tb._groups) {
+      const G = []; let seg = []; const segs = [seg];
+      [...tb.tBodies[0].rows].forEach(r => {
+        if (r.classList.contains('lksep')) { segs.push({ sep: r }); seg = []; segs.push(seg); return; }
+        if (r.classList.contains('ttot')) { segs.push({ tot: r }); return; }
+        if (r.classList.contains('devsheet') && seg.length) { seg[seg.length - 1].rows.push(r); return; }
+        seg.push({ rows: [r], i: G.length }); G.push(1);
+      });
+      tb._segs = segs;
+    }
+    ths.forEach((th, c) => {
+      if (!th.textContent.trim() || th.classList.contains('noprint')) return;
+      th.classList.add('tsort'); th.dataset.tc = c; th.dataset.tk = key;
+      th.title = t('tsSortT');
+    });
+    const wrap = tb.closest('.gridwrap') || tb;
+    if (!wrap.previousElementSibling || !wrap.previousElementSibling.classList.contains('tfilter')) {
+      wrap.insertAdjacentHTML('beforebegin', `<div class="tfilter noprint"><input type="search" class="tfq" data-tk="${esc(key)}" placeholder="${esc(t('tsFilter'))}" value="${esc(state.tfilt[key] || '')}"><span class="tfn"></span><button type="button" class="linkbtn tfreset" data-tk="${esc(key)}" hidden>${esc(t('tsReset'))}</button></div>`);
+    }
+    tableApply(tb);
+  });
+}
+function tableApply(tb) {
+  const key = tb.dataset.tk, S = state.tsort[key], q = String(state.tfilt[key] || '').split(/\s+/).map(nrm).filter(Boolean), body = tb.tBodies[0];
+  let shown = 0, total = 0;
+  for (const seg of tb._segs) {
+    if (!Array.isArray(seg)) { body.appendChild(seg.sep || seg.tot); continue; }
+    const list = [...seg];
+    if (S) {
+      const v = g => cellVal(g.rows[0].cells[S.c]);
+      list.sort((a, b) => {
+        const va = v(a), vb = v(b);
+        if (!va || !vb) return (!va) - (!vb) || a.i - b.i;            // vides toujours à la fin
+        const na = numOf(va), nb = numOf(vb);
+        return (na !== null && nb !== null && na !== nb ? na - nb : natCmp(va, vb)) * S.dir || a.i - b.i;
+      });
+    }
+    for (const g of list) {
+      total++;
+      const txt = nrm(g.rows[0].querySelectorAll('td').length ? [...g.rows[0].cells].map(cellVal).join(' ') : '');
+      const ok = !q.length || q.every(w => txt.includes(w)); if (ok) shown++;
+      g.rows.forEach(r => { r.hidden = !ok; body.appendChild(r); });
+    }
+  }
+  [...tb.tHead.rows[0].cells].forEach((th, c) => { th.classList.toggle('asc', !!S && S.c === c && S.dir > 0); th.classList.toggle('desc', !!S && S.c === c && S.dir < 0); });
+  const bar = (tb.closest('.gridwrap') || tb).previousElementSibling;
+  if (bar && bar.classList.contains('tfilter')) {
+    bar.querySelector('.tfn').textContent = q.length ? t('tsCount', shown, total) : '';
+    bar.querySelector('.tfreset').hidden = !S && !q.length;
+  }
+}
+document.addEventListener('click', e => {
+  const th = e.target.closest && e.target.closest('th.tsort');
+  if (th) {
+    const key = th.dataset.tk, c = +th.dataset.tc, S = state.tsort[key];
+    state.tsort[key] = !S || S.c !== c ? { c, dir: 1 } : S.dir > 0 ? { c, dir: -1 } : undefined;
+    if (!state.tsort[key]) delete state.tsort[key];
+    store.set('tsort', state.tsort);
+    const tb = document.querySelector(`table[data-tk="${CSS.escape(key)}"]`); if (tb) tableApply(tb);
+    return;
+  }
+  const rb = e.target.closest && e.target.closest('.tfreset');
+  if (rb) {
+    const key = rb.dataset.tk; delete state.tsort[key]; delete state.tfilt[key]; store.set('tsort', state.tsort);
+    const bar = rb.closest('.tfilter'); bar.querySelector('.tfq').value = '';
+    const tb = document.querySelector(`table[data-tk="${CSS.escape(key)}"]`); if (tb) tableApply(tb);
+  }
+});
+document.addEventListener('input', e => {
+  if (!e.target.classList || !e.target.classList.contains('tfq')) return;
+  const key = e.target.dataset.tk; state.tfilt[key] = e.target.value;
+  const tb = document.querySelector(`table[data-tk="${CSS.escape(key)}"]`); if (tb) tableApply(tb);
+});
 
 // ───────────── sélection et édition groupée ─────────────
 const BULK_FIELDS = ['mode', 'name', 'position', 'circuit', 'dmxLine', 'layer', 'gel', 'acc', 'purpose', 'notes', 'unit'];
@@ -4417,7 +4518,8 @@ view.addEventListener('keydown', e => {
   const inp = e.target.closest('input.c'); if (!inp || e.key !== 'Enter') return;
   e.preventDefault(); inp.blur();
   // Entrée : même colonne, ligne suivante
-  const row = inp.closest('tr'), tr = row && row.nextElementSibling;   // hors tableau (fiches console…) : on valide seulement
+  const row = inp.closest('tr'); let tr = row && row.nextElementSibling;   // hors tableau (fiches console…) : on valide seulement
+  while (tr && tr.hidden) tr = tr.nextElementSibling;                     // lignes masquées par le filtre
   const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
   if (next) { next.focus(); next.select(); }
 });
