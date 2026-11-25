@@ -145,6 +145,9 @@ td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; b
 table.grid td input.box { border-color: var(--line); background: var(--bg); }
 table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; overflow-y: hidden; padding-bottom: 14px; }
+.cartedit { margin: 12px 0 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; } .cartedit > summary { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+.cartedit .cgrid { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0; } .cartedit .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } .cartedit .cf > span { color: var(--muted); } .cartedit input, .cartedit select { font: inherit; font-size: 13px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); min-width: 12em; }
+.planwrap.docopts #docPages { flex: 1; min-width: 0; } .plpanel .dhide { display: flex; gap: 6px; margin: 4px 0; } .plpanel .dhide input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 .tfilter { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; } .tfilter .tfq { font: inherit; font-size: 13px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); width: 240px; } .tfilter .tfn { font-size: 12px; color: var(--muted); }
 table.grid th.tsort { cursor: pointer; user-select: none; } table.grid th.tsort:hover { color: var(--ink); } table.grid th.tsort.asc::after { content: ' ▲'; font-size: 9px; } table.grid th.tsort.desc::after { content: ' ▼'; font-size: 9px; }
 .dvtab td.lks { min-width: 220px; max-width: 520px; white-space: normal; } .ptab select, .lktab select { max-width: 240px; } .ptab td:nth-child(3) select { max-width: 300px; } .lk { display: inline-block; margin: 1px 6px 1px 0; padding: 1px 6px; border-radius: 4px; background: var(--panel); font-size: 12px; white-space: nowrap; } .lk.out, .lk.in { box-shadow: inset 2px 0 0 #4363d8; }
@@ -789,6 +792,11 @@ const I18N = {
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nombre, nom, univers de chaque sortie DMX, VLAN des ports de switch (les câbles se branchent dans l’onglet Liaisons). Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
+    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
+    sbHint: 'Feuille de patch à imprimer, en A3 ou A4 paysage. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
+    sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
+    sbCartHint: 'Le cartouche (titre, lieu, date, responsable, lignes de notes) et la langue des feuilles se règlent dans le dossier complet.',
+    cartTitle: 'Cartouche et langue des documents', cartHint: 'Repris en tête de la feuille de patch, dans le cartouche du plan et sur la couverture du dossier.', cartLang: 'Langue des feuilles imprimées',
     tsFilter: 'Filtrer les lignes…', tsReset: 'tout afficher, ordre d’origine', tsSortT: 'Trier (clic : croissant, décroissant, ordre d’origine)', tsCount: (n, m) => `${n} ligne(s) sur ${m}`,
     nsNoSrc: 'source inconnue', nsNoDest: 'arrivée ?', nsFx0: 'aucun projecteur', nsDmxLeg: 'DMX (couleur de l’univers)', nsExtra: 'autre câble',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `sortie ${n}`, ptIn: n => `entrée ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'Sortie DMX', pt_in: 'Entrée DMX',
@@ -923,6 +931,11 @@ const I18N = {
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: count, name, universe of each DMX output, switch port VLAN (cables are plugged in the Links tab). Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
+    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
+    sbHint: 'Printable patch sheet, A3 or A4 landscape. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
+    sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
+    sbCartHint: 'The title block (title, venue, date, person in charge, note lines) and the sheet language are set in the full dossier.',
+    cartTitle: 'Title block and document language', cartHint: 'Used at the top of the patch sheet, in the plot title block and on the dossier cover.', cartLang: 'Language of printed sheets',
     tsFilter: 'Filter rows…', tsReset: 'show all, original order', tsSortT: 'Sort (click: ascending, descending, original order)', tsCount: (n, m) => `${n} of ${m} row(s)`,
     nsNoSrc: 'unknown source', nsNoDest: 'lands ?', nsFx0: 'no fixture', nsDmxLeg: 'DMX (universe colour)', nsExtra: 'other cable',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `out ${n}`, ptIn: n => `in ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'DMX out', pt_in: 'DMX in',
@@ -3321,12 +3334,16 @@ function dossierPages() {
       let html; try { html = withTemp(state, { planViewId: v.id }, () => withTemp(state.plan, { ...v.settings, fmt: 'A4', orient: 'landscape' }, () => renderPlan(true))); } finally { d.planHide = oldH; d.planLab2 = oldL; }
       html = html.replace(/<p class="hint[^]*$/, '').replace(/(<text x="10" y="16" font-size="6" font-weight="700">)[^<]*/, `$1${esc(v.name)}`);
       toc.push(v.name); out.push(html);
+    } else if (v.kind === 'sheet') {
+      const D = ensureDocs(d), oldH = D.hidden; D.hidden = clone(v.hide || []);
+      let pg; try { pg = withTemp(DOC, { fmt: 'A4', group: 'layer', chk: { ...DOC.chk, ...(v.settings.chk || {}) } }, () => sheetPages()); } finally { D.hidden = oldH; }
+      if (pg) { toc.push(v.name); out.push(pg.join('')); }
     } else if (v.img) {
       toc.push(v.name); out.push(`<div class="dpage full v3page"><h2>${esc(v.name)}</h2><img src="${v.img}" alt=""><div class="v3cap">${esc(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + esc(state.d.meta.lieu) : ''} · 3D</div></div>`);
     }
   }
   // feuille de patch (A4)
-  if (S.patch) { const pg = withTemp(DOC, { fmt: 'A4' }, () => sheetPages()); sec('patch', pg ? pg.join('') : ''); }
+  if (S.patch) { const pg = withTemp(DOC, { fmt: 'A4', group: 'layer' }, () => sheetPages()); sec('patch', pg ? pg.join('') : ''); }
   // accroches et charges
   if (S.loads) {
     const rows = [...L.points].sort((a, b) => natCmp(a.name, b.name)).map(p => {
@@ -3387,12 +3404,27 @@ ${nRows.length ? `<h3>${esc(t('dNetLinks'))}</h3>${dtab([t('lkRef'), t('lkKind')
   const sp = '<tr><td><div class="sp"></div></td></tr>';
   return out.map(h => h.replace(/^<div class="dpage">([\s\S]*)<\/div>$/, (m, inner) => `<div class="dpage"><table class="dwrap"><thead>${sp}</thead><tbody><tr><td>${inner}</td></tr></tbody><tfoot>${sp}</tfoot></table></div>`));
 }
+document.getElementById('view').addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('cartedit')) state.cartOpen = e.target.open; }, true);
+document.getElementById('view').addEventListener('change', e => {
+  const el = e.target; if (!state.d || !el.dataset) return;
+  if (el.dataset.cmeta) { state.d.meta[el.dataset.cmeta] = el.value.trim(); fillMeta(); }
+  else if (el.dataset.cnote !== undefined) ensureDocs(state.d).note[+el.dataset.cnote] = el.value;
+  else if (el.dataset.cplang) { DOC.plang = el.value; store.set('docPlang', el.value); }
+  else return;
+  touch(); render();
+});
 function renderDossier() {
   const S = state.dos;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dosHint'))}</p>
+  const D = ensureDocs(state.d), m = state.d.meta, x = esc;
+  const cf = (k, lab, type = 'text') => `<label class="cf"><span>${x(t(lab))}</span><input class="c box" type="${type}" data-cmeta="${k}" value="${x(m[k] || '')}"></label>`;
+  const cart = `<details class="cartedit noprint"${state.cartOpen ? ' open' : ''}><summary>${x(t('cartTitle'))}</summary><p class="hint2">${x(t('cartHint'))}</p>
+<div class="cgrid">${cf('titre', 'mTitre')}${cf('lieu', 'mLieu')}${cf('date', 'mDate', 'date')}${cf('auteur', 'mAuteur')}
+<label class="cf"><span>${x(t('cartLang'))}</span><select class="c" data-cplang="1">${DOC_LANGS.map(([k, n]) => `<option value="${k}"${k === PL() ? ' selected' : ''}>${x(n)}</option>`).join('')}</select></label></div>
+<div class="cgrid">${[0, 1, 2, 3].map(i => `<label class="cf"><span>${x(t('line', i + 1))}</span><input class="c box" data-cnote="${i}" style="width:16em" value="${x(D.note[i] || '')}"></label>`).join('')}</div></details>`;
+  $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dosHint'))}</p>${cart}
 <div class="dosopts noprint">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}</div>
-${(state.d.views || []).length ? `<div class="dosopts noprint"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">${esc(t('vwInDos'))}</b>${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2 noprint" style="margin-top:8px">${esc(t('vwNone'))}</p>`}
+${(state.d.views || []).length ? `<div class="dosopts noprint"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">${esc(t('vwInDos'))}</b>${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : v.kind === 'sheet' ? t('pvw_sheet') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2 noprint" style="margin-top:8px">${esc(t('vwNone'))}</p>`}
 <div class="dosopts noprint">
 <span class="spacer"></span><button type="button" class="minibtn" id="dosMvr">${esc(t('exportMvr'))}</button><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
 <label>${esc(t('zoom'))} <input type="range" id="dosZoom" min="20" max="100" value="${S.zoom || 45}"></label></div>
@@ -4510,7 +4542,8 @@ view.addEventListener('change', e => {
     ty[inp.dataset.f] = v === '' ? null : (isNaN(+v) ? ty[inp.dataset.f] : +v);
     touch(); render(); return;
   }
-  const f = state.d.fixtures.find(x => x.uid === inp.closest('tr').dataset.u); if (!f) return;
+  const trF = inp.closest('tr'); if (!trF) return;              // champs hors tableau (cartouche…) : traités ailleurs
+  const f = state.d.fixtures.find(x => x.uid === trF.dataset.u); if (!f) return;
   const k = inp.dataset.k, v = inp.value.trim();
   if (k === 'patch') {
     const m = /^(\d+)\s*[.:/ ]\s*(\d+)$/.exec(v);
@@ -4941,8 +4974,88 @@ function fitLabels(wmm, hmm) {   // Fix ID et adresse : la plus grande taille qu
   }
 }
 // ── vue Documents ──
+// ───────────── feuille de patch : vues de départ et vues personnalisées, comme le plan ─────────────
+const SHEET_CHK = ['optSumLayer', 'optSumPos', 'optSumUniv', 'optSumType', 'optLayer', 'optPos', 'optUniv', 'optMap', 'optHideUnp'];
+const SHEET_BASES = {
+  full: { optSumLayer: true, optSumPos: true, optSumUniv: true, optSumType: true, optLayer: true, optPos: true, optUniv: true, optMap: true },
+  pos: { optSumPos: true, optSumType: true, optPos: true },
+  layer: { optSumLayer: true, optSumType: true, optLayer: true },
+  univ: { optSumUniv: true, optUniv: true, optMap: true },
+  sum: { optSumLayer: true, optSumPos: true, optSumUniv: true, optSumType: true },
+};
+state.sheetBase = store.get('sheetBase', 'full'); state.sheetViewId = null;
+const sheetPick = () => ({ fmt: DOC.fmt, chk: Object.fromEntries(SHEET_CHK.map(k => [k, !!DOC.chk[k]])) });
+function sheetCapture(v) { v.settings = sheetPick(); v.hide = clone(ensureDocs(state.d).hidden); }
+function sheetApply(v) { DOC.fmt = v.settings.fmt || 'A3'; Object.assign(DOC.chk, v.settings.chk || {}); ensureDocs(state.d).hidden = clone(v.hide || []); }
+function sheetEnter(v) {
+  if (!state.sheetViewId) state.sheetFree = { ...sheetPick(), hide: clone(ensureDocs(state.d).hidden) };
+  state.sheetViewId = v.id; sheetApply(v);
+}
+function sheetLeave() {
+  if (state.sheetViewId && state.sheetFree) { const F = state.sheetFree; DOC.fmt = F.fmt; Object.assign(DOC.chk, F.chk); ensureDocs(state.d).hidden = clone(F.hide); }
+  state.sheetViewId = null;
+}
+function sheetViewSync() {   // la vue personnalisée ouverte suit chaque modification
+  if (!state.sheetViewId || !state.d) return;
+  const v = views('sheet').find(x => x.id === state.sheetViewId); if (!v) { state.sheetViewId = null; return; }
+  const before = JSON.stringify([v.settings, v.hide]); sheetCapture(v);
+  if (JSON.stringify([v.settings, v.hide]) !== before) { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; saveDossier(state.d); }, 400); }
+}
+function sheetViewStrip() {
+  const cur = state.sheetViewId && views('sheet').find(v => v.id === state.sheetViewId), x = esc;
+  if (state.sheetViewId && !cur) state.sheetViewId = null;
+  const base = Object.keys(SHEET_BASES).map(k => `<button type="button" class="pvchip${!cur && state.sheetBase === k ? ' on' : ''}" data-svbase="${k}">${x(t('sb_' + k))}</button>`).join('');
+  const mine = views('sheet').map(v => `<button type="button" class="pvchip mine${cur === v ? ' on' : ''}" data-svsel="${x(v.id)}" title="${x(t('sb_' + (v.base || 'full')))}${v.inDossier ? ' · ' + t('vwInDosShort') : ''}">${v.inDossier ? '' : '<span class="pvoff">◌</span> '}${x(v.name)}</button>`).join('');
+  return `<div class="pvstrip noprint"><div class="pvrow"><span class="pvlab">${x(t('pvBase'))}</span>${base}</div>
+<div class="pvrow"><span class="pvlab">${x(t('pvMine'))}</span>${mine}<button type="button" class="pvchip add" data-svnew="1">+ ${x(t('pvNew'))}</button></div>
+${cur ? `<div class="pvrow pvcur"><span class="pvlab"></span><b>${x(cur.name)}</b><small>${x(t('pvFrom', t('sb_' + (cur.base || 'full'))))} · ${x(t('pvAuto'))}</small>
+<label><input type="checkbox" data-svdos="1"${cur.inDossier ? ' checked' : ''}> ${x(t('pvInDos'))}</label><button type="button" class="minibtn" data-svren="1">${x(t('vwRen'))}</button><button type="button" class="minibtn" data-svdup="1">${x(t('shDup'))}</button><button type="button" class="minibtn x" data-svdel="1">${x(t('vwDel'))}</button></div>`
+      : `<div class="pvrow pvcur"><span class="pvlab"></span><small>${x(t('sbBaseHint'))}</small></div>`}</div>`;
+}
+function renderSheetDoc() {
+  const D = ensureDocs(state.d), c = DOC.chk, x = esc, gw = t('gwLayer');
+  const ck = (id, lab) => `<label><input type="checkbox" data-dck="${id}"${c[id] ? ' checked' : ''}> ${x(lab)}</label>`;
+  const hidden = docFx().filter(f => D.hidden.includes(f.k));
+  const panel = `<details class="plpanel" open><summary>${x(t('sbContent'))}</summary>
+<div class="grp">${x(t('sbSums'))}</div>${ck('optSumLayer', t('optSumG', gw))}${ck('optSumPos', t('optSumPos'))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}
+<div class="grp">${x(t('sbPatch'))}</div>${ck('optLayer', t('optG', gw))}${ck('optPos', t('optPos'))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}
+<div class="grp">${x(t('sbOther'))}</div>${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}
+<div class="grp">${x(t('legHidden'))}${hidden.length > 1 ? `<button type="button" id="dUnhideAll">${x(t('unhideAll'))}</button>` : ''}</div>
+<div class="dhide"><input type="text" id="dHideIn" list="dFxList" placeholder="${x(t('hidePh'))}" autocomplete="off"><button type="button" class="minibtn" id="dHideBtn">${x(t('hideBtn'))}</button></div>
+<datalist id="dFxList">${docFx().filter(f => !D.hidden.includes(f.k)).sort((a, b) => cmpKey(a.key, b.key)).map(f => `<option value="${x(fxLabelD(f))}"></option>`).join('')}</datalist>
+<div class="chips">${hidden.map(f => `<span class="chip" title="${x(fxLabelD(f))}"><span>${x(fxLabelD(f))}</span><button type="button" class="chipx" data-unhide="${x(f.k)}">×</button></span>`).join('')}</div>
+<p class="hint2">${x(t('sbCartHint'))} <button type="button" class="linkbtn" data-gotab="dossier">${x(t('tabDossier'))} →</button></p></details>`;
+  return `<p class="hint noprint" style="margin:12px 0 0">${x(t('sbHint'))}</p>${sheetViewStrip()}
+<div class="plopts noprint docopts"><label>${x(t('doFormat'))} <select data-dopt="fmt">${['A3', 'A4'].map(f => `<option value="${f}"${f === DOC.fmt ? ' selected' : ''}>${x(t('fmt' + f))}</option>`).join('')}</select></label>
+<span class="spacer"></span><span id="docInfo" class="plstate"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><label>${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></label></div>
+<div class="planwrap docopts">${panel}<div id="docPages" dir="${PL() === 'ar' ? 'rtl' : 'ltr'}" lang="${PL()}"></div></div>`;
+}
+document.getElementById('view').addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-svbase],[data-svsel],[data-svnew],[data-svren],[data-svdup],[data-svdel],[data-gotab]'); if (!b || !state.d) return;
+  if (b.dataset.gotab) { state.tab = b.dataset.gotab; store.set('tab', state.tab); return render(); }
+  const d = state.d; d.views = d.views || [];
+  const cur = views('sheet').find(v => v.id === state.sheetViewId);
+  if (b.dataset.svbase) {   // vue de départ : tout est remis à zéro (contenu, format, projecteurs masqués)
+    sheetLeave(); state.sheetBase = b.dataset.svbase; store.set('sheetBase', state.sheetBase);
+    SHEET_CHK.forEach(k => { DOC.chk[k] = !!SHEET_BASES[state.sheetBase][k]; }); DOC.fmt = 'A3'; ensureDocs(d).hidden = [];
+    store.set('docChk', DOC.chk); store.set('docFmt', DOC.fmt);
+  }
+  else if (b.dataset.svsel) { const v = views('sheet').find(x => x.id === b.dataset.svsel); if (v) sheetEnter(v); }
+  else if (b.dataset.svnew || b.dataset.svdup) {
+    const name = prompt(t('vwName'), b.dataset.svdup && cur ? t('shCopyOf', cur.name) : `${t('sb_' + (cur ? cur.base || 'full' : state.sheetBase))} ${views('sheet').length + 1}`); if (!name) return;
+    const v = { id: uid(), kind: 'sheet', name: name.trim(), inDossier: true, base: cur ? cur.base : state.sheetBase }; sheetCapture(v); d.views.push(v); sheetEnter(v);
+  }
+  else if (b.dataset.svren && cur) { const name = prompt(t('vwName'), cur.name); if (name) cur.name = name.trim(); }
+  else if (b.dataset.svdel && cur) { if (!confirm(t('vwDelAsk', cur.name))) return; d.views = d.views.filter(x => x !== cur); sheetLeave(); }
+  touch(); render();
+});
+document.getElementById('view').addEventListener('change', e => {
+  if (!e.target.dataset || !state.d) return;
+  if (e.target.dataset.svdos) { const v = views('sheet').find(x => x.id === state.sheetViewId); if (v) { v.inDossier = e.target.checked; touch(); render(); } }
+});
 function renderDocs(nv) {
   ensureDocs(state.d);
+  if (nv === 'sheet') return renderSheetDoc();
   const D = state.d.docs, c = DOC.chk, x = esc;
   const ck = (id, lab) => `<label class="dchk"><input type="checkbox" data-dck="${id}"${c[id] ? ' checked' : ''}> <span>${x(lab)}</span></label>`;
   const gw = t(DOC.group === 'position' ? 'gwPos' : 'gwLayer');
@@ -4988,7 +5101,8 @@ function renderDocPages() {
     el.innerHTML = pages ? pages.join('') : `<div class="empty"><div>${esc(t('noLabels'))}</div></div>`;
     if (pages) { applyDocZoom(); fitLabels(L.G.w, L.G.h); if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(() => fitLabels(L.G.w, L.G.h)); }
   } else {
-    pages = sheetPages();
+    pages = withTemp(DOC, { group: 'layer' }, () => sheetPages());
+    sheetViewSync();
     el.innerHTML = pages ? pages.join('') : `<div class="empty"><div>${esc(t('noPatched'))}</div></div>`;
     info.textContent = pages ? t('pageInfo', pages.length, DOC.fmt) : '';
   }
@@ -5004,6 +5118,7 @@ view.addEventListener('change', e => {
   if (!state.d || !e.target.closest('.docopts')) return;
   const el = e.target;
   if (el.dataset.dck) { DOC.chk[el.dataset.dck] = el.checked; docSaveChk(); return render(); }
+  if (el.dataset.dopt === 'fmt') { DOC.fmt = el.value; store.set('docFmt', DOC.fmt); return render(); }
   if (el.dataset.dopt === 'plang') { DOC.plang = el.value; store.set('docPlang', el.value); return renderDocPages(); }
   if (el.dataset.dopt === 'lbSize') { DOC.lbSize = el.value; store.set('docLbSize', el.value); return render(); }
   if (el.dataset.loff !== undefined) { const D = state.d.docs, l = el.dataset.loff; D.lbOff = el.checked ? D.lbOff.filter(y => y !== l) : [...D.lbOff, l]; touch(); return render(); }

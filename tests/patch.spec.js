@@ -37,10 +37,10 @@ test('feuille de patch : récapitulatif par position', async ({ page }) => {
   await expect(pages).toContainText('Récapitulatif par position');
   await expect(pages).toContainText('6 × Lyre Test');
   for (const p of ['P1 Lointain', 'P2 Milieu', 'P3 Face', 'Sol']) await expect(pages).toContainText(p);
-  // regroupé par position : un seul récapitulatif par position
-  await page.click('#view [data-dgroup=position]');
-  await expect(pages.locator('h2', { hasText: 'Récapitulatif par position' })).toHaveCount(1);
-  await expect(page.locator('#view [data-dck=optSumPos]')).toHaveCount(0);
+  // plus de « regrouper par », de langue ni de cartouche à ce niveau
+  await expect(page.locator('#view [data-dgroup]')).toHaveCount(0);
+  await expect(page.locator('#view [data-dopt=plang]')).toHaveCount(0);
+  await expect(page.locator('#view [data-dnote]')).toHaveCount(0);
 });
 
 test('feuille de patch : patch par position', async ({ page }) => {
@@ -51,9 +51,43 @@ test('feuille de patch : patch par position', async ({ page }) => {
   await page.click('#view [data-dck=optPos]');
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(0);
   await page.click('#view [data-dck=optPos]');
-  await page.click('#view [data-dgroup=position]');
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(1);
-  await expect(page.locator('#view [data-dck=optPos]')).toHaveCount(0);
+});
+
+test('feuille de patch : vues de départ, vue personnalisée reprise dans le dossier, cartouche du dossier complet', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#view [data-pv=sheet]');
+  const pages = page.locator('#docPages');
+  // vue de départ « Par univers » : seulement les univers
+  await page.click('#view [data-svbase=univ]');
+  await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(0);
+  await expect(page.locator('#view [data-dck=optUniv]')).toBeChecked();
+  await expect(page.locator('#view [data-dck=optPos]')).not.toBeChecked();
+  // vue personnalisée : partie de « Par position », en A4, retenue au fil des modifications
+  await page.click('#view [data-svbase=pos]');
+  await page.evaluate(() => { window.prompt = () => 'Patch jardin'; });
+  await page.click('#view [data-svnew]');
+  await page.selectOption('#view select[data-dopt=fmt]', 'A4');
+  await page.click('#view [data-dck=optSumType]');
+  const v = await page.evaluate(() => state.d.views.find(x => x.kind === 'sheet'));
+  expect([v.name, v.base, v.inDossier, v.settings.fmt, v.settings.chk.optPos, v.settings.chk.optSumType, v.settings.chk.optUniv]).toEqual(['Patch jardin', 'pos', true, 'A4', true, false, false]);
+  // revenir à une vue de départ remet tout à zéro ; rouvrir la vue rend ses réglages
+  await page.click('#view [data-svbase=full]');
+  expect(await page.evaluate(() => [DOC.fmt, DOC.chk.optUniv])).toEqual(['A3', true]);
+  await page.click(`#view [data-svsel="${v.id}"]`);
+  expect(await page.evaluate(() => [DOC.fmt, DOC.chk.optUniv, DOC.chk.optSumType])).toEqual(['A4', false, false]);
+  // dossier complet : la vue y figure ; le cartouche s'y édite et revient sur la feuille
+  await page.click('#tabs button[data-v=dossier]');
+  await expect(page.locator('#view [data-dosv]')).toHaveCount(1);
+  await page.click('#view .cartedit summary');
+  await page.locator('#view input[data-cnote="0"]').fill('Version 3 — régie lumière'); await page.locator('#view input[data-cnote="0"]').press('Tab');
+  await page.locator('#view input[data-cmeta=auteur]').fill('Martin'); await page.locator('#view input[data-cmeta=auteur]').press('Tab');
+  await page.selectOption('#view select[data-cplang]', 'en');
+  expect(await page.evaluate(() => [state.d.docs.note[0], state.d.meta.auteur, DOC.plang])).toEqual(['Version 3 — régie lumière', 'Martin', 'en']);
+  await expect(page.locator('#dosPages')).toContainText('Version 3 — régie lumière');
+  await page.click('#tabs button[data-v=fixtures]'); await page.click('#view [data-pv=sheet]');
+  await expect(pages).toContainText('Version 3 — régie lumière');
+  await expect(pages).toContainText('Patch by position');
 });
 
 test('nom de machine : saisi dans le tableau, repris sur la feuille de patch et le plan', async ({ page }) => {
