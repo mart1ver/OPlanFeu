@@ -334,3 +334,22 @@ test('plan : projecteurs superposés, étiquettes en colonnes par type, sans che
   const lyre = by['u-1'], pc = by['u-8'];
   expect(Math.abs(lyre[1] - pc[1])).toBeGreaterThan(5);
 });
+
+test('plan : colonnes d’étiquettes au-dessus des projecteurs superposés (vue de côté)', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.click('#view [data-pvbase=cour]');   // de côté, chaque perche se réduit à une pile
+  const r = await page.evaluate(() => {
+    const out = [];
+    for (const pos of ['P1 Lointain', 'P2 Milieu', 'P3 Face']) {
+      const fs = state.d.fixtures.filter(f => f.position === pos);
+      const sym = fs.map(f => document.querySelector(`#planPages .pfx[data-k="f:${f.uid}"]`).getBoundingClientRect());
+      const lab = fs.map(f => document.querySelector(`#planPages .plab[data-u="${f.uid}"]`).getBoundingClientRect());
+      const sx = sym[0].left + sym[0].width / 2, top = Math.min(...sym.map(b => b.top));
+      out.push({ pos, dx: Math.max(...lab.map(b => Math.abs(b.left + b.width / 2 - sx))), above: lab.every(b => b.bottom <= top + 1), w: lab[0].width });
+    }
+    return out;
+  });
+  for (const o of r) { expect(o.above, o.pos).toBe(true); expect(o.dx, o.pos).toBeLessThan(o.w * 2.5); }
+});

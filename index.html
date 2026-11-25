@@ -2513,20 +2513,29 @@ function renderPlan(forPrint) {
       const byT = new Map(); g2.forEach(q => { if (!byT.has(q.f.type)) byT.set(q.f.type, []); byT.get(q.f.type).push(q); });
       const cols = [...byT.values()].map(c => c.sort((a, b) => cmpKey(numKey(a.f.fid), numKey(b.f.fid))).map(q => ({ q, ...labDim(q.f) })));
       const gapY = .7;
-      let x = right + 1.5;
-      for (const c of cols) {
-        const cw = Math.max(...c.map(e => e.lw)), tot = c.reduce((a, e) => a + e.lh + gapY, 0);
-        // au-dessus de la pile si la place le permet, sinon en dessous ; décalée à droite tant qu'elle mord sur une autre colonne
-        const goUp = top - 2 - tot > FY0 + RB, y0b = goUp ? top - 2 - tot : bot + 2;
-        for (let n = 0; n < 60; n++) {
-          const hit = blocks.find(q => x < q[2] + .8 && x + cw > q[0] - .8 && y0b < q[3] + .5 && y0b + tot > q[1] - .5);
-          if (!hit) break; x = hit[2] + .8;
-        }
-        blocks.push([x, y0b, x + cw, y0b + tot]);
-        let y = goUp ? top - 2 : bot + 2;
-        (goUp ? [...c].reverse() : c).forEach(e => { const ly = goUp ? y - e.lh / 2 : y + e.lh / 2; stackAt.set(e.q.f.uid, [x + cw / 2, ly]); y += goUp ? -(e.lh + gapY) : e.lh + gapY; });
-        x += cw + 1.2;
+      // bloc des colonnes centré au-dessus de la pile ; s'il mord sur un bloc déjà posé, il monte au-dessus (ou descend sous la pile s'il n'y a plus de place en haut)
+      const cws = cols.map(c => Math.max(...c.map(e => e.lw))), tots = cols.map(c => c.reduce((a, e) => a + e.lh + gapY, 0) - gapY);
+      const W = cws.reduce((a, v) => a + v, 0) + 1.2 * (cols.length - 1), Hh = Math.max(...tots);
+      const clampX = v => Math.min(Math.max(v, FX0 + RB + .5), FX1 - W - .5);
+      const free = (x, yt, ybot) => yt >= FY0 + RB + .3 && ybot <= FY1 - .3 && !blocks.some(q => x < q[2] + .8 && x + W > q[0] - .8 && yt < q[3] + .6 && ybot > q[1] - .6);
+      // place libre la plus proche : au-dessus de la pile de préférence, en se décalant peu de côté, sinon en montant, sinon en dessous
+      let best = null;
+      for (const dir of [-1, 1]) for (let dy = 0; dy < 160; dy += 2.5) for (let n = 0; n <= 16; n++) for (const sg of n ? [1, -1] : [1]) {
+        const x = clampX(cx - W / 2 + sg * n * (W + 1) * .35), yb = dir < 0 ? top - 2 - dy : bot + 2 + dy;
+        const cost = Math.abs(x + W / 2 - cx) * 1.2 + dy * 2 + (dir > 0 ? 25 : 0);
+        if (best && cost >= best.cost) continue;
+        if (free(x, dir < 0 ? yb - Hh : yb, dir < 0 ? yb : yb + Hh)) best = { x, yb, dir, cost };
       }
+      if (!best) best = { x: clampX(cx - W / 2), yb: Math.max(top - 2, FY0 + RB + Hh + .3), dir: -1 };
+      let xL = best.x, yb = best.yb, dir = best.dir;
+      blocks.push([xL, dir < 0 ? yb - Hh : yb, xL + W, dir < 0 ? yb : yb + Hh]);
+      let x = xL;
+      cols.forEach((c, ci) => {
+        const cw = cws[ci]; let y = yb;
+        // le premier Fix ID en haut de la colonne
+        (dir < 0 ? [...c].reverse() : c).forEach(e => { stackAt.set(e.q.f.uid, [x + cw / 2, dir < 0 ? y - e.lh / 2 : y + e.lh / 2]); y += dir < 0 ? -(e.lh + gapY) : e.lh + gapY; });
+        x += cw + 1.2;
+      });
     }
   }
   if (P.labels !== false) for (const s2 of [...sym].sort((a, b) => (stackAt.has(b.f.uid) - stackAt.has(a.f.uid)) || a.x - b.x)) {
