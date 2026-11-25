@@ -185,3 +185,19 @@ test('plan : éditeur de légende (masquer, renommer, ordre, entrée libre, note
   // gardé avec le dossier
   expect(await page.evaluate(() => [state.d.planLegend.title, state.d.planLegend.hide.length, state.d.planLegend.extra.length])).toEqual(['Matériel', 1, 1]);
 });
+
+test('légende : mode et nombre de canaux des types', async ({ page }) => {
+  await loadSynthetic(page, d => { d.types['Test@Lyre'].modes = { Std: 20, Basic: 12 }; d.fixtures[0].mode = 'Basic'; d.fixtures[0].nch = 12; });
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  const sheet = page.locator('#planPages svg').first();
+  await expect(sheet.locator('text[font-size="2.1"]')).toHaveCount(0);
+  await page.click('#plLegEdit');
+  await page.check('#legDlg input[data-lg=showMode]');
+  await expect(sheet.locator('text[font-size="2.1"]', { hasText: 'Std (5) / Basic (1)' })).toHaveCount(1);
+  await page.check('#legDlg input[data-lg=showCh]');
+  await expect(sheet.locator('text[font-size="2.1"]', { hasText: 'Std · 20 can. (5) / Basic · 12 can. (1)' })).toHaveCount(1);
+  await expect(sheet.locator('text[font-size="2.1"]', { hasText: '8ch · 8 can.' })).toHaveCount(1);
+  await page.uncheck('#legDlg input[data-lg=showMode]');
+  await expect(sheet.locator('text[font-size="2.1"]', { hasText: /^1 can\.$/ })).toHaveCount(1);
+});
