@@ -67,7 +67,7 @@ test('plan : les six vues (dessus, dessous, face, lointain, jardin, cour)', asyn
   await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
   const firstX = {};
   for (const v of ['top', 'bottom', 'front', 'back', 'jardin', 'cour']) {
-    await page.selectOption('[data-pl=view]', v);
+    await page.click(`#view [data-pvbase=${v}]`);
     await expect(page.locator('#planPages .plab')).toHaveCount(24);
     // le projecteur 101 (le plus à jardin de la perche du lointain) : à gauche vu de dessus et de face, à droite vu de dessous et du lointain
     firstX[v] = await page.evaluate(() => { const b = document.querySelector(`#planPages .pfx[data-k="f:${state.d.fixtures[0].uid}"]`).getBBox(); return b.x + b.width / 2; });
@@ -225,4 +225,35 @@ test('étiquettes du plan : rotation par 45°, jamais perdues hors du cadre', as
   // rotation de toutes les étiquettes
   await page.selectOption('[data-pl=labRot]', '90');
   await expect(page.locator('#planPages .plab[data-u="u-2"]')).toHaveAttribute('transform', /rotate\(90\)/);
+});
+
+test('vues du plan : vues de départ, vues personnalisées enregistrées au fil des modifications, choix dans le dossier', async ({ page }) => {
+  page.removeAllListeners('dialog');
+  let answer = 'Face régie'; page.on('dialog', d => d.type() === 'prompt' ? d.accept(answer) : d.accept());
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.click('#view [data-pvbase=front]');
+  await expect(page.locator('#view [data-pvbase=front]')).toHaveClass(/on/);
+  await page.click('#view [data-pvnew]');
+  await expect(page.locator('#view .pvchip.mine.on')).toHaveText('Face régie');
+  // modifications gardées dans la vue sans bouton « mettre à jour »
+  await page.selectOption('[data-pl=rot]', '90');
+  await page.locator('#planPages .plab[data-u="u-1"]').click({ button: 'right' });
+  const v = () => page.evaluate(() => { const v = state.d.views.find(x => x.name === 'Face régie'); return [v.settings.view, v.settings.rot, (v.labs['u-1'] || [])[2]]; });
+  await expect.poll(v).toEqual(['front', 90, 45]);
+  // retour à une vue de départ : rien n'est changé dans la vue personnalisée
+  await page.click('#view [data-pvbase=top]');
+  await page.selectOption('[data-pl=rot]', '180');
+  await expect.poll(v).toEqual(['front', 90, 45]);
+  // une deuxième vue, puis le choix dans le dossier complet
+  answer = 'Dessus perso';
+  await page.click('#view [data-pvnew]');
+  await page.click('#view [data-pvsel]:has-text("Face régie")');
+  await page.uncheck('#view [data-pvdos]');
+  await page.click('#tabs button[data-v=dossier]');
+  const toc = await page.locator('#dosPages').textContent();
+  expect(toc).toContain('Dessus perso'); expect(toc).not.toContain('Face régie');
+  await page.check('#view [data-dosv]:near(:text("Face régie"))');
+  await expect(page.locator('#dosPages')).toContainText('Face régie');
 });
