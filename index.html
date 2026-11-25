@@ -2476,6 +2476,21 @@ ${dev && +c.dmxPorts > 0 ? `<div class="protos"><span style="color:var(--muted)"
   }
   $('#view').innerHTML = head + body;
 }
+// projecteurs et lignes DMX, d'après le patch : un projecteur va sur la ligne qui porte son univers jusqu'à sa position ;
+// s'il est sur une ligne d'un autre univers, il la quitte (pour la bonne, s'il y en a une). Une ligne cohérente n'est jamais changée.
+function syncDmxFixtures(d = state.d) {
+  const D = d.lieu.dmxLines, byName = new Map(D.map(l => [l.name, l])); let n = 0;
+  const cand = f => { const c = D.filter(x => x.universe && x.universe === f.univ && x.dest && x.dest === f.position); return c.length === 1 ? c[0] : null; };
+  for (const f of d.fixtures) {
+    const cur = f.dmxLine && byName.get(f.dmxLine);
+    if (f.dmxLine && !cur) continue;                                             // ligne inconnue : signalée dans les alertes, laissée telle quelle
+    if (cur && (!cur.universe || !f.univ || cur.universe === f.univ)) continue;  // ligne cohérente, ou univers inconnu
+    const c = f.univ ? cand(f) : null;
+    if (c) { if (c.name !== f.dmxLine) { f.dmxLine = c.name; n++; } }
+    else if (cur) { f.dmxLine = ''; n++; }
+  }
+  return n;
+}
 function autoDmx() {
   const D = state.d.lieu.dmxLines; let n = 0, m = 0;
   state.d.fixtures.forEach(f => {
@@ -4320,6 +4335,7 @@ $('#bApply').addEventListener('click', () => {
   const k = $('#bField').value, v = $('#bValue').value;
   if (k === 'mode') { const s = selected(), ko = s.filter(f => !setMode(f, v)); if (ko.length) alert(t('modeNotIn', v, [...new Set(ko.map(f => typeName(f.type)))].join(', '))); }
   else selected().forEach(f => { f[k] = v; });
+  if (k === 'position') syncDmxFixtures();
   touch(); render();
 });
 $('#bValue').addEventListener('keydown', e => { if (e.key === 'Enter') $('#bApply').click(); });
@@ -4386,8 +4402,8 @@ view.addEventListener('change', e => {
     const setIn = (o, k, val) => { const r = { ...(d[o] || {}) }; if (val === null || val === '') delete r[k]; else r[k] = val; if (Object.keys(r).length) d[o] = r; else delete d[o]; };
     if (pk.dataset.puniv) {
       setIn('portUniv', pk.dataset.puniv, num());
-      // sans réglage, la ligne garde son univers (ou reprend celui de l'entrée d'un splitter)
-      syncUniverses(state.d.lieu);
+      // sans réglage, la ligne garde son univers (ou reprend celui de l'entrée d'un splitter) ; les projecteurs suivent
+      syncUniverses(state.d.lieu); syncDmxFixtures();
     } else if (pk.dataset.pname) setIn('portNames', pk.dataset.pname, v);
     else if (pk.dataset.pvlan) setIn('portVlan', pk.dataset.pvlan, num());
     else setIn('ports', pk.dataset.dport, num());
@@ -4427,7 +4443,7 @@ view.addEventListener('change', e => {
     if (go.dataset.o === 'netLinks' && (k === 'a' || k === 'b')) x[k === 'a' ? 'ap' : 'bp'] = null;
     if (go.dataset.o === 'dmxLines' && k === 'src') x.port = null;
     if (go.dataset.o === 'dmxLines' && k === 'universe') { const sd = devByName(x.src); if (sd && isSet(x.port)) { const r = { ...(sd.portUniv || {}) }; if (isSet(x.universe)) r['o' + x.port] = x.universe; else delete r['o' + x.port]; sd.portUniv = r; } }
-    if (go.dataset.o === 'dmxLines' && ['src', 'port', 'universe', 'dest'].includes(k)) syncUniverses(state.d.lieu);
+    if (go.dataset.o === 'dmxLines' && ['src', 'port', 'universe', 'dest'].includes(k)) { syncUniverses(state.d.lieu); syncDmxFixtures(); }
     if (go.dataset.o === 'consoles' && k === 'ext') { const e2 = CONSOLE_EXT.find(y => y[0] === x.ext); x.extParams = e2 ? e2[2] : null; x.extCount = x.ext ? (x.extCount || 1) : null; }
     touch(); render(); return;
   }
@@ -4505,8 +4521,10 @@ view.addEventListener('change', e => {
   } else if (k === 'nch') { f.nch = parseInt(v, 10) || 0; }
   else if (k === 'mode') { setMode(f, v); }
   else f[k] = v;
+  // patch ou position changés : la ligne DMX du projecteur suit
+  const moved = (k === 'patch' || k === 'position') && syncDmxFixtures();
   touch();
-  if (k === 'fid') render(); else refreshSide();
+  if (k === 'fid' || moved) render(); else refreshSide();
 });
 view.addEventListener('keydown', e => {
   const inp = e.target.closest('input.c'); if (!inp || e.key !== 'Enter') return;

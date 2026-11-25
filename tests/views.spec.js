@@ -643,3 +643,29 @@ test('tableaux : tri par colonne et filtre des lignes, dans toutes les vues', as
   await page.locator('#view .tfq').first().fill('lyre');
   await expect(page.locator('#view table.grid').first().locator('tbody tr:not([hidden]):not(.ttot)')).toHaveCount(1);
 });
+
+test('univers d’une sortie de node : les projecteurs du patch se raccrochent à la ligne', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [], netLinks: [],
+      devices: [{ id: 'n', name: 'Node 1', kind: 'node', ports: { out: 2 } }],
+      dmxLines: [{ id: 'a', name: 'DMX A', src: 'Node 1', port: 1, dest: 'P1 Lointain' }, { id: 'b', name: 'DMX B', src: 'Node 1', port: 2, dest: 'P1 Lointain' }] };
+  });
+  const u1 = await page.evaluate(() => state.d.fixtures.find(f => f.position === 'P1 Lointain').univ);
+  const onLine = () => page.evaluate(() => state.d.fixtures.filter(f => f.position === 'P1 Lointain').map(f => f.dmxLine || '-').join(' '));
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
+  await page.click('#view [data-devtog=n]');
+  const port = k => page.locator(`#view input[data-puniv=${k}][data-id=n]`);
+  await port('o1').fill(String(u1)); await port('o1').press('Tab');
+  expect(await onLine()).toBe('DMX A DMX A DMX A DMX A DMX A DMX A');
+  // l'autre sortie prend le même univers : deux lignes possibles, les projecteurs restent où ils sont
+  await port('o2').fill(String(u1)); await port('o2').press('Tab');
+  expect(await onLine()).toBe('DMX A DMX A DMX A DMX A DMX A DMX A');
+  // la sortie 1 change d'univers : les projecteurs passent sur la ligne qui porte encore le leur
+  await port('o1').fill(String(u1 + 5)); await port('o1').press('Tab');
+  expect(await onLine()).toBe('DMX B DMX B DMX B DMX B DMX B DMX B');
+  // dans le patch, un projecteur change d'univers : il quitte la ligne
+  await page.click('#tabs button[data-v=fixtures]');
+  const cell = page.locator('#view tbody tr').filter({ has: page.locator('input[data-k=fid][value="101"]') }).locator('input[data-k=patch]');
+  await cell.fill(`${u1 + 9}.1`); await cell.press('Tab');
+  expect(await onLine()).toBe('- DMX B DMX B DMX B DMX B DMX B');
+});
