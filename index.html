@@ -363,6 +363,8 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .bkline { display: flex; gap: 9px; align-items: flex-start; font-size: 12.5px; margin: 0 0 10px; } .bkline span { color: var(--muted); } .bkline small { color: var(--muted); font-size: 11px; } .bkline small.bad { color: var(--err); }
 .bkline i { flex: none; width: 9px; height: 9px; border-radius: 50%; margin-top: 4px; background: var(--line); } .bkline i.ok { background: var(--ok); } .bkline i.warn { background: #e8a317; } .bkline i.bad { background: var(--err); }
 .bkbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+dialog#legDlg { max-height: 88vh; overflow: auto; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 720px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); } dialog#legDlg::backdrop { background: rgba(0,0,0,.45); }
+#legBody h3 { margin: 16px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); } .lgrow { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 13px; } .lgrow label { display: flex; gap: 8px; align-items: center; } .lgtab td { padding: 3px 6px; } .lgtab input.c { width: 100%; }
 dialog#bkDlg { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; max-width: 860px; width: calc(100% - 32px); background: var(--panel); color: var(--ink); } dialog#bkDlg::backdrop { background: rgba(0,0,0,.45); }
 .bkdlg h2 { margin: 0; font-size: 17px; } .bkdlg h3 { margin: 16px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); } .bkhead { display: flex; justify-content: space-between; align-items: center; }
 #bkVers, #bkDos { max-height: 34vh; overflow: auto; } #bkVers td, #bkDos td { padding: 5px 8px; } #bkDos tr.cur td { background: color-mix(in srgb, var(--accent, #e8a317) 12%, transparent); }
@@ -647,6 +649,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
     <div class="mapbtns"><button type="button" class="btn ghost" id="gdtfCancel" data-i18n="mapCancel">Annuler</button><button type="submit" class="btn" data-i18n="gdApply">Rattacher</button></div>
   </form>
 </dialog>
+<dialog id="legDlg"><div class="bkdlg"><div class="bkhead"><h2 data-i18n="lgTitle">Légende du plan</h2><button type="button" class="iconbtn" id="lgClose">✕</button></div><div id="legBody"></div></div></dialog>
 <dialog id="bkDlg">
   <div class="bkdlg">
     <div class="bkhead"><h2 data-i18n="bkTitle">Sauvegarde</h2><button type="button" class="iconbtn" data-bk="close">✕</button></div>
@@ -723,7 +726,7 @@ const I18N = {
     dYes: 'oui', dNo: 'non', dEmpty: '—',
     tabPlan: 'Plan', plView: 'Vue', vTop: 'Plan (vu de dessus)', vFront: 'Face (vu de la salle)', vSide: 'Côté (vu de jardin)', plPoint: 'Points', plAll: 'Tous', plColor: 'Couleur par', cType: 'Type', cLayer: 'Calque', cPos: 'Position', cUniv: 'Univers', cCirc: 'Ligne élec.', cDmx: 'Ligne DMX',
     plLabel2: 'Sous le Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Ligne élec.', l2dmx: 'Ligne DMX', l2gel: 'Gélatine', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures et décors', plPoints: 'Points d’accroche', plGrid: 'Grille 1 m',
-    plScaleSel: 'Échelle', plScaleAuto: 'normalisée (auto)', plScaleFit: 'ajustée à la page', plRot: 'Rotation', plRulers: 'Règles', plFitScale: s => `Ajusté à la page (≈ 1:${s})`, plFitHint: 'pas à l’échelle : mesurer avec les règles', plOver: 'le dessin dépasse du cadre à cette échelle', plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
+    plOrient: 'Page', or_landscape: 'paysage', or_portrait: 'portrait', plLegEdit: 'Modifier…', lgTitle: 'Légende du plan', lgHint: 'Les réglages valent pour toutes les vues du plan de ce dossier. Décocher pour masquer une entrée, renommer en tapant, flèches pour l’ordre.', lgName: 'Titre de la légende', lgCounts: 'Afficher les quantités', lgTypes: 'Types de projecteurs', lgVals: 'Regroupement de couleur', lgExtra: 'Entrées libres', lgExtraTitle: 'Titre des entrées libres', lgAdd: 'Ajouter une entrée', lgNotes: 'Notes sous la légende', lgReset: 'Revenir à la légende automatique', lgNoVals: 'La couleur des projecteurs est celle du type : choisir un autre regroupement (calque, position, univers…) dans les réglages du plan pour en avoir la liste ici.', lgSym_rect: 'carré', lgSym_circle: 'rond', lgSym_line: 'trait', lgSym_dash: 'pointillé', lgUp: 'Monter', lgDown: 'Descendre', plScaleSel: 'Échelle', plScaleAuto: 'normalisée (auto)', plScaleFit: 'ajustée à la page', plRot: 'Rotation', plRulers: 'Règles', plFitScale: s => `Ajusté à la page (≈ 1:${s})`, plFitHint: 'pas à l’échelle : mesurer avec les règles', plOver: 'le dessin dépasse du cadre à cette échelle', plScale: s => `Échelle 1:${s}`, plScaleHint: f => `à imprimer en ${f} paysage, taille réelle`, plLegend: 'Légende', plFix: 'projecteurs', plSchem: 'Les projecteurs n’ont pas de coordonnées (import CSV) : plan schématique, un rang par position.',
     plHint: "Plan coté à l’échelle, tiré du MVR : chaque projecteur est dessiné d’après sa forme (GDTF ou famille) vue depuis la vue choisie, avec son orientation, et les structures d’après leurs modèles. L’échelle est la plus grande échelle usuelle qui tient sur la page : imprimer en taille réelle, marges Aucune. Survoler un projecteur pour ses détails.",
     plTitle: v => ({ top: 'Plan feu', bottom: 'Plan feu — vu de dessous', front: 'Plan feu — face', back: 'Plan feu — vu du lointain', cour: 'Plan feu — vu de cour', side: 'Plan feu — vu de cour', jardin: 'Plan feu — vu de jardin' })[v] || 'Plan feu', pv_top: 'Dessus', pv_bottom: 'Dessous', pv_front: 'Face (vu de la salle)', pv_back: 'Lointain (vu de derrière)', pv_jardin: 'Jardin (vu de gauche)', pv_cour: 'Cour (vu de droite)', plJardin: 'JARDIN', plCour: 'COUR', plNone: 'Aucun projecteur à dessiner.', plShow: 'Afficher', plLabels: 'Étiquettes des projecteurs', plLabs: 'Étiquettes', plLabSize: 'Taille', plLabReset: 'replacer automatiquement', plDragHint: 'Glisser une étiquette pour la déplacer (elle reste à sa place, cadre orange). Double-clic sur un projecteur ou une structure pour le masquer.', plOrigin: '0 plateau', plUp: 'LOINTAIN', plDown: 'SALLE', plFloor: 'sol',
     nvConsole: 'Console', conHint: "La ou les consoles du lieu (ou du spectacle) : modèle, nombre de paramètres de la licence, univers et ports, protocoles. OPlanFeu compare au patch du dossier. Les nombres de paramètres proposés sont ceux du manuel MA Lighting ; vérifie ceux de ta licence.",
@@ -848,7 +851,7 @@ const I18N = {
     dYes: 'yes', dNo: 'no', dEmpty: '—',
     tabPlan: 'Plot', plView: 'View', vTop: 'Plan (top view)', vFront: 'Front (from the house)', vSide: 'Side (from stage left)', plPoint: 'Points', plAll: 'All', plColor: 'Colour by', cType: 'Type', cLayer: 'Layer', cPos: 'Position', cUniv: 'Universe', cCirc: 'Power line', cDmx: 'DMX line',
     plLabel2: 'Under the Fix ID', l2none: '—', l2patch: 'Patch', l2circuit: 'Power line', l2dmx: 'DMX line', l2gel: 'Gel', l2type: 'Type', l2unit: 'Unit', plStruct: 'Structures and set', plPoints: 'Rigging points', plGrid: '1 m grid',
-    plScaleSel: 'Scale', plScaleAuto: 'standard (auto)', plScaleFit: 'fit to page', plRot: 'Rotation', plRulers: 'Rulers', plFitScale: s => `Fit to page (≈ 1:${s})`, plFitHint: 'not to scale: measure with the rulers', plOver: 'the drawing overflows the frame at this scale', plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
+    plOrient: 'Page', or_landscape: 'landscape', or_portrait: 'portrait', plLegEdit: 'Edit…', lgTitle: 'Plot legend', lgHint: 'These settings apply to every plot view of this dossier. Untick to hide an entry, type to rename, arrows to reorder.', lgName: 'Legend title', lgCounts: 'Show quantities', lgTypes: 'Fixture types', lgVals: 'Colour grouping', lgExtra: 'Free entries', lgExtraTitle: 'Free entries title', lgAdd: 'Add an entry', lgNotes: 'Notes under the legend', lgReset: 'Back to the automatic legend', lgNoVals: 'Fixtures are coloured by type: pick another grouping (layer, position, universe…) in the plot settings to list it here.', lgSym_rect: 'square', lgSym_circle: 'dot', lgSym_line: 'line', lgSym_dash: 'dashed', lgUp: 'Up', lgDown: 'Down', plScaleSel: 'Scale', plScaleAuto: 'standard (auto)', plScaleFit: 'fit to page', plRot: 'Rotation', plRulers: 'Rulers', plFitScale: s => `Fit to page (≈ 1:${s})`, plFitHint: 'not to scale: measure with the rulers', plOver: 'the drawing overflows the frame at this scale', plScale: s => `Scale 1:${s}`, plScaleHint: f => `print on ${f} landscape, actual size`, plLegend: 'Legend', plFix: 'fixtures', plSchem: 'The fixtures have no coordinates (CSV import): schematic plot, one row per position.',
     plHint: 'Scaled plot from the MVR: each fixture is drawn from its shape (GDTF or family) seen from the chosen view, with its orientation, and structures from their models. The scale is the largest usual scale that fits the page: print at actual size, margins None. Hover a fixture for its details.',
     plTitle: v => ({ top: 'Lighting plot', bottom: 'Lighting plot — from below', front: 'Lighting plot — front', back: 'Lighting plot — from upstage', cour: 'Lighting plot — from stage left', side: 'Lighting plot — from stage left', jardin: 'Lighting plot — from stage right' })[v] || 'Lighting plot', pv_top: 'Top', pv_bottom: 'Bottom', pv_front: 'Front (from the house)', pv_back: 'Back (from upstage)', pv_jardin: 'Stage right (from the left)', pv_cour: 'Stage left (from the right)', plJardin: 'STAGE RIGHT', plCour: 'STAGE LEFT', plNone: 'No fixture to draw.', plShow: 'Show', plLabels: 'Fixture labels', plLabs: 'Labels', plLabSize: 'Size', plLabReset: 'auto-place again', plDragHint: 'Drag a label to move it (it stays there, orange frame). Double-click a fixture or a structure to hide it.', plOrigin: 'stage 0', plUp: 'UPSTAGE', plDown: 'HOUSE', plFloor: 'floor',
     nvConsole: 'Console', conHint: 'The console(s) of the venue (or show): model, licensed parameters, universes and ports, protocols. OPlanFeu compares them with the patch of the dossier. The suggested parameter counts come from the MA Lighting manual; check your own licence.',
@@ -2334,6 +2337,23 @@ const partCmp = (a, b, sg) => sg > 0 ? (a.bot >= b.top - 1e-6 ? 1 : b.bot >= a.t
 const planHide = () => { const d = state.d; d.planHide = { layers: [], names: [], objs: [], pos: [], ...(d.planHide || {}) }; return d.planHide; };
 const planRot = P => (((+P.rot || 0) % 360) + 360) % 360;
 const planLabKey = () => state.plan.view + '|' + (state.plan.point || '') + (planRot(state.plan) ? '|r' + planRot(state.plan) : '');
+// réglages de la légende du plan (gardés avec le dossier) : titre, entrées masquées ou renommées, ordre, entrées libres, notes
+function planLegend(d) { const L = d.planLegend || (d.planLegend = {}); for (const [k, v] of Object.entries({ title: '', hide: [], names: {}, order: [], extra: [], notes: '', counts: true })) if (L[k] === undefined) L[k] = v; return L; }
+const legNotesH = LG => LG.notes ? Math.min(10, LG.notes.split('\n').length) * 3.4 + 2 : 0;
+// entrées dans l'ordre de l'éditeur : types, valeurs du regroupement de couleur, entrées libres
+function legendEntries(LG, tOrder, cvals, P, cnt, colOf) {
+  const hid = new Set(LG.hide), byOrd = keys => { const ix = k => { const i = LG.order.indexOf(k); return i < 0 ? 1e6 : i; }; return keys.map((k, i) => [k, i]).sort((a, b) => ix(a[0]) - ix(b[0]) || a[1] - b[1]).map(a => a[0]); };
+  const out = [];
+  for (const k2 of byOrd(tOrder.map(k => 't:' + k))) { if (hid.has(k2)) continue; const k = k2.slice(2); out.push({ kind: 'type', id: k2, key: k, text: LG.names[k2] || typeName(k), n: cnt.get(k), color: P.color === 'type' ? colOf.get(k) : '#fff' }); }
+  if (P.color !== 'type') {
+    const vals = byOrd(cvals.map(v => 'c:' + v)).filter(k => !hid.has(k));
+    if (vals.length) out.push({ head: true, text: LG.names['h:' + P.color] || t({ layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[P.color]) });
+    vals.forEach(k2 => out.push({ kind: 'val', id: k2, text: LG.names[k2] || k2.slice(2), color: colOf.get(k2.slice(2)) }));
+  }
+  const ex = LG.extra.filter(e => e.text);
+  if (ex.length) { if (LG.extraTitle) out.push({ head: true, text: LG.extraTitle }); ex.forEach(e => out.push({ kind: 'extra', text: e.text, color: e.color, sym: e.sym })); }
+  return out;
+}
 function renderPlan(forPrint) {
   const P = state.plan, d = state.d, L = d.lieu, H = planHide(), geo = PLAN_GEO.ready && PLAN_GEO.key === planGeoKey();
   const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
@@ -2345,8 +2365,9 @@ function renderPlan(forPrint) {
   const hidP = new Set(H.pos), hidO = new Set(H.objs), hidL = new Set(H.layers), hidN = new Set(H.names);
   let fx = d.fixtures.filter(f => (!P.point || f.position === P.point) && !hidP.has(f.position || '—') && !hidO.has('f:' + f.uid));
   const hasXY = fx.filter(f => [f.x, f.y, f.z].every(Number.isFinite)).length >= fx.length / 2 && fx.length;
-  const [PW, PH] = P.fmt === 'A4' ? [297, 210] : [420, 297], M = 10, LEG = 64;
-  const AW = PW - 2 * M - LEG - 6 - RB, AH = PH - 2 * M - 16 - RB;
+  const portrait = P.orient === 'portrait', [PW, PH] = (P.fmt === 'A4' ? [297, 210] : [420, 297])[portrait ? 'reverse' : 'slice'](), M = 10, LEG = 64, nNotes = (d.planLegend && d.planLegend.notes) ? Math.min(6, d.planLegend.notes.split('\n').length) : 0, LB = portrait ? 52 + Math.max(0, nNotes - 2) * 3.4 : 0;
+  const FX0 = M, FY0 = M + 10, FX1 = PW - M - (portrait ? 0 : LEG + 4), FY1 = PH - M - (portrait ? LB + 4 : 0);
+  const AW = FX1 - FX0 - 2 - RB, AH = FY1 - FY0 - 6 - RB;
   if (!fx.length) return `<div class="empty"><div>${esc(t('plNone'))}</div></div>`;
   // positions : coordonnées du MVR, ou rangs schématiques sans coordonnées
   const pos = new Map();
@@ -2480,11 +2501,11 @@ function renderPlan(forPrint) {
 <text y="${(lines.length > 1 ? -lh / 2 + fs * .95 : fs * .36).toFixed(2)}" font-size="${fs}" font-weight="700" text-anchor="middle">${esc(lines[0])}</text>${lines[1] ? `<text y="${(lh / 2 - .45).toFixed(2)}" font-size="${(fs * .8).toFixed(2)}" text-anchor="middle" fill="#444">${esc(lines[1])}</text>` : ''}</g>`;
   }
   // échelle graphique, légende (formes des types vues de face… ou de la vue choisie), cartouche
-  const sbm = [1, 2, 5, 10, 20, 50].find(v => v * k >= 18) || 50, sx = M + 2, sy = PH - M - 3;
+  const sbm = [1, 2, 5, 10, 20, 50].find(v => v * k >= 18) || 50, sx = M + 2, sy = FY1 - 3;
   // règles graduées en mètres sur le haut et la gauche du cadre (distances depuis l'axe ou le sol, en valeur absolue)
   let rul = '';
   if (rulers && hasXY) {
-    const FX0 = M, FY0 = M + 10, FX1 = PW - M - LEG - 4, FY1 = PH - M, step = [1, 2, 5, 10, 20, 50].find(v => v * k >= 12) || 50, minor = step >= 5 ? step / 5 : step >= 2 ? 1 : .5;
+    const step = [1, 2, 5, 10, 20, 50].find(v => v * k >= 12) || 50, minor = step >= 5 ? step / 5 : step >= 2 ? 1 : .5;
     rul += `<rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${RB - 1}" fill="#f6f6f4"/><rect x="${FX0}" y="${FY0}" width="${RB - 1}" height="${FY1 - FY0}" fill="#f6f6f4"/>`;
     const vx0 = x0 - (ox - FX0 - RB) / k, vx1 = x0 + (FX1 - ox) / k, vy1 = y1 + (oy - FY0 - RB) / k, vy0 = y1 - (FY1 - oy) / k;
     for (let v = Math.ceil(vx0 / minor) * minor; v <= vx1; v += minor) {
@@ -2501,7 +2522,6 @@ function renderPlan(forPrint) {
   }
   let sb = ''; for (let i = 0; i < sbm; i++) sb += `<rect x="${(sx + i * k).toFixed(2)}" y="${sy - 1.4}" width="${k.toFixed(2)}" height="1.4" fill="${i % 2 ? '#fff' : '#111'}" stroke="#111" stroke-width=".2"/>`;
   sb += `<text x="${sx}" y="${sy - 2.4}" font-size="2.2">0</text><text x="${(sx + sbm * k).toFixed(2)}" y="${sy - 2.4}" font-size="2.2" text-anchor="middle">${sbm} m</text>`;
-  const lx0 = PW - M - LEG; let ly = M + 4, leg = `<text x="${lx0}" y="${ly}" font-size="3.6" font-weight="700">${esc(t('plLegend'))}</text>`; ly += 4;
   const legSym = (k2, cx2, cy2, size, c) => {
     const parts = geo && PLAN_GEO.types.get(k2);
     if (!parts || !parts.length) return symbol(shapeOf.get(k2), cx2, cy2, size * .45, c, '#111');
@@ -2511,15 +2531,30 @@ function renderPlan(forPrint) {
     const tp = poly => 'M' + poly.map(v => `${(cx2 + (v[0] - mx) * sc).toFixed(2)},${(cy2 - (v[1] - my) * sc).toFixed(2)}`).join('L') + 'Z';
     return `<path d="${tp(hull2(all.map(v => [v[0], v[1]])))}" fill="${c}" stroke="#16161a" stroke-width=".18"/>` + [...ps].sort((p1, p2) => partCmp(p1, p2, 1)).map(q => `<path d="${tp(q.poly)}" fill="${partFill(q.part, c)}" stroke="#16161a" stroke-width=".08"/>`).join('');
   };
-  tOrder.forEach(k2 => {
-    if (ly > PH - M - 48) return;
-    const c = P.color === 'type' ? colOf.get(k2) : '#fff';
-    leg += legSym(k2, lx0 + 3, ly + 1.6, 5, c) + `<text x="${lx0 + 7.5}" y="${ly + 2.6}" font-size="2.6">${esc(typeName(k2))}</text><text x="${PW - M}" y="${ly + 2.6}" font-size="2.6" text-anchor="end" font-weight="700">${cnt.get(k2)}</text>`;
-    ly += 6.2;
-  });
-  if (P.color !== 'type') {
-    ly += 2; leg += `<text x="${lx0}" y="${ly}" font-size="2.6" font-weight="700">${esc(t({ layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[P.color]))}</text>`; ly += 4.5;
-    cvals.forEach(v => { if (ly > PH - M - 48) return; leg += `<rect x="${lx0 + .5}" y="${ly - 3}" width="4" height="3.2" fill="${colOf.get(v)}" stroke="#111" stroke-width=".2"/><text x="${lx0 + 6.5}" y="${ly}" font-size="2.5">${esc(v)}</text>`; ly += 4.4; });
+  // légende : entrées des types, des couleurs du regroupement et entrées libres, selon l'éditeur de légende
+  const LG = planLegend(d), lx0 = PW - M - LEG, colW = 62;
+  let lx = portrait ? M : lx0, ly = portrait ? FY1 + 9 : M + 4, leg = `<text x="${lx}" y="${ly}" font-size="3.6" font-weight="700">${esc(LG.title || t('plLegend'))}</text>`, full = false; ly += 4;
+  const yTop = ly, yMax = portrait ? PH - M - 2 : PH - M - 48 - legNotesH(LG), xMax = portrait ? lx0 - 4 : PW - M;
+  const room = h => { if (ly + h <= yMax) return true; if (!portrait) { full = true; return false; } lx += colW; ly = yTop; if (lx + colW > xMax + 2) { full = true; return false; } return true; };
+  const right = () => portrait ? lx + colW - 4 : PW - M;
+  for (const e of legendEntries(LG, tOrder, cvals, P, cnt, colOf)) {
+    if (full) break;
+    if (e.head) { if (!room(8.5)) break; ly += 2; leg += `<text x="${lx}" y="${ly}" font-size="2.6" font-weight="700">${esc(e.text)}</text>`; ly += 4.5; continue; }
+    if (!room(e.kind === 'type' ? 6.2 : 4.4)) break;
+    if (e.kind === 'type') {
+      leg += legSym(e.key, lx + 3, ly + 1.6, 5, e.color) + `<text x="${lx + 7.5}" y="${ly + 2.6}" font-size="2.6">${esc(e.text)}</text>` + (LG.counts !== false ? `<text x="${right()}" y="${ly + 2.6}" font-size="2.6" text-anchor="end" font-weight="700">${e.n}</text>` : '');
+      ly += 6.2;
+    } else {
+      const c = e.color || '#999', sh = e.sym || 'rect';
+      leg += sh === 'line' ? `<line x1="${lx + .3}" y1="${ly - 1.3}" x2="${lx + 4.7}" y2="${ly - 1.3}" stroke="${c}" stroke-width=".9"/>` : sh === 'dash' ? `<line x1="${lx + .3}" y1="${ly - 1.3}" x2="${lx + 4.7}" y2="${ly - 1.3}" stroke="${c}" stroke-width=".7" stroke-dasharray="1.1 .7"/>` : sh === 'circle' ? `<circle cx="${lx + 2.5}" cy="${ly - 1.4}" r="1.7" fill="${c}" stroke="#111" stroke-width=".2"/>` : `<rect x="${lx + .5}" y="${ly - 3}" width="4" height="3.2" fill="${c}" stroke="#111" stroke-width=".2"/>`;
+      leg += `<text x="${lx + 6.5}" y="${ly}" font-size="2.5">${esc(e.text)}</text>` + (e.n !== undefined && LG.counts !== false ? `<text x="${right()}" y="${ly}" font-size="2.5" text-anchor="end">${e.n}</text>` : '');
+      ly += 4.4;
+    }
+  }
+  if (LG.notes) {   // notes libres sous la légende (au-dessus du cartouche en paysage, dans le bandeau en portrait)
+    const lines = LG.notes.split('\n').slice(0, portrait ? 6 : 10);
+    const ny = portrait ? FY1 + 9 : PH - M - 44 - (lines.length - 1) * 3.4, nx = lx0;   // en portrait : au-dessus du cartouche
+    leg += lines.map((l, i) => `<text x="${nx}" y="${(ny + i * 3.4).toFixed(2)}" font-size="2.4" fill="#333">${esc(l)}</text>`).join('');
   }
   const cy0 = PH - M - 40, today = new Date().toLocaleDateString(LANG);
   leg += `<rect x="${lx0}" y="${cy0}" width="${LEG}" height="40" fill="#fff" stroke="#111" stroke-width=".5"/>
@@ -2530,7 +2565,7 @@ function renderPlan(forPrint) {
 <text x="${lx0 + 3}" y="${cy0 + 37}" font-size="2.6">${fx.length} ${esc(t('plFix'))} · ${esc(d.meta.auteur || '')} · ${esc(today)}</text>`;
   const clipId = 'plc' + Math.random().toString(36).slice(2, 9);
   const head = `<text x="${M}" y="${M + 6}" font-size="6" font-weight="700">${esc(t('plTitle', P.view))}${P.point ? ' — ' + esc(P.point) : ''}</text>`;
-  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}" data-pw="${PW}" data-k="${k}"><rect width="${PW}" height="${PH}" fill="#fff"/>${head}<defs><clipPath id="${clipId}"><rect x="${M}" y="${M + 10}" width="${PW - 2 * M - LEG - 4}" height="${PH - 2 * M - 10}"/></clipPath></defs><g clip-path="url(#${clipId})">${g}${labs}</g>${rul}<rect x="${M}" y="${M + 10}" width="${PW - 2 * M - LEG - 4}" height="${PH - 2 * M - 10}" fill="none" stroke="#111" stroke-width=".4"/>${hasXY ? sb : ''}${leg}</svg></div>` +
+  return `<div class="plansheet" style="width:${PW}mm;height:${PH}mm"><svg width="${PW}mm" height="${PH}mm" viewBox="0 0 ${PW} ${PH}" data-pw="${PW}" data-k="${k}"><rect width="${PW}" height="${PH}" fill="#fff"/>${head}<defs><clipPath id="${clipId}"><rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${FY1 - FY0}"/></clipPath></defs><g clip-path="url(#${clipId})">${g}${labs}</g>${rul}<rect x="${FX0}" y="${FY0}" width="${FX1 - FX0}" height="${FY1 - FY0}" fill="none" stroke="#111" stroke-width=".4"/>${hasXY ? sb : ''}${leg}</svg></div>` +
     (hasXY || forPrint ? '' : `<p class="hint noprint">${esc(t('plSchem'))}</p>`);
 }
 // panneau d'affichage du plan (mêmes principes que la 3D)
@@ -2547,10 +2582,70 @@ function planPanel() {
 <div class="grp">${x(t('v3Struct'))}<button type="button" data-plall="layers">${x(t('v3All'))}</button><button type="button" data-plnone="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}
 <div class="grp">${x(t('v3Fix'))}<button type="button" data-plall="pos">${x(t('v3All'))}</button><button type="button" data-plnone="pos">${x(t('v3None'))}</button></div>${ps}
 <div class="grp"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-plunhide="1">${x(t('unhideAll'))}</button></div>
+<div class="grp">${x(t('plLegend'))}<button type="button" id="plLegEdit">${x(t('plLegEdit'))}</button></div>
 <div class="grp">${x(t('plLabs'))}<button type="button" id="plLabReset">${x(t('plLabReset'))}</button></div>
 <label>${x(t('plLabSize'))} <input type="range" data-pl="labSize" min="40" max="300" step="10" value="${+P.labSize || 100}" style="flex:1;min-width:0"> <small id="plLabSizeV">${+P.labSize || 100} %</small></label>
 <div class="plhint">${x(t('plDragHint'))}</div></details>`;
 }
+// ───────────── éditeur de légende du plan ─────────────
+function legSections() {
+  const d = state.d, P = state.plan, LG = planLegend(d), cnt = new Map();
+  d.fixtures.forEach(f => cnt.set(f.type, (cnt.get(f.type) || 0) + 1));
+  const tOrder = [...cnt.keys()].sort((a, b) => cnt.get(b) - cnt.get(a) || typeName(a).localeCompare(typeName(b)));
+  const ckey = f => ({ layer: f.layer, position: f.position, univ: f.univ ? 'U' + f.univ : '', circuit: f.circuit, dmx: f.dmxLine })[P.color] || '—';
+  const cvals = P.color === 'type' ? [] : [...new Set(d.fixtures.map(ckey))].sort(natCmp);
+  const ix = k => { const i = LG.order.indexOf(k); return i < 0 ? 1e6 : i; };
+  const ord = keys => keys.map((k, i) => [k, i]).sort((a, b) => ix(a[0]) - ix(b[0]) || a[1] - b[1]).map(a => a[0]);
+  return { LG, cnt, types: ord(tOrder.map(k => 't:' + k)), vals: ord(cvals.map(v => 'c:' + v)) };
+}
+function legDialog() {
+  const { LG, cnt, types, vals } = legSections(), x = esc, P = state.plan;
+  const row = (k, label, n, sw) => `<tr data-lk="${x(k)}"><td><input type="checkbox" data-lg="show"${LG.hide.includes(k) ? '' : ' checked'}></td><td>${sw}</td>
+<td><input class="c" data-lg="name" value="${x(LG.names[k] || '')}" placeholder="${x(label)}"></td><td class="num">${n ?? ''}</td>
+<td style="white-space:nowrap"><button type="button" class="minibtn" data-lgmove="-1" title="${x(t('lgUp'))}">↑</button><button type="button" class="minibtn" data-lgmove="1" title="${x(t('lgDown'))}">↓</button></td></tr>`;
+  const sw = c => `<span style="display:inline-block;width:14px;height:11px;border:1px solid #333;background:${c || '#fff'}"></span>`;
+  const pal = G_PALETTE, tcol = (k, i) => P.color === 'type' ? pal[i % pal.length] : '#fff';
+  const extra = LG.extra.map((e, i) => `<tr data-lx="${i}"><td><input type="color" data-lgx="color" value="${x(e.color || '#888888')}"></td>
+<td><select data-lgx="sym">${['rect', 'circle', 'line', 'dash'].map(v => `<option value="${v}"${(e.sym || 'rect') === v ? ' selected' : ''}>${x(t('lgSym_' + v))}</option>`).join('')}</select></td>
+<td colspan="2"><input class="c" data-lgx="text" value="${x(e.text || '')}"></td><td><button type="button" class="minibtn x" data-lgxdel="${i}">×</button></td></tr>`).join('');
+  $('#legBody').innerHTML = `<p class="hint2">${x(t('lgHint'))}</p>
+<div class="lgrow"><label>${x(t('lgName'))} <input class="c" data-lg="title" value="${x(LG.title)}" placeholder="${x(t('plLegend'))}"></label><label><input type="checkbox" data-lg="counts"${LG.counts !== false ? ' checked' : ''}> ${x(t('lgCounts'))}</label></div>
+<h3>${x(t('lgTypes'))}</h3><table class="grid lgtab"><tbody>${types.map((k, i) => row(k, typeName(k.slice(2)), cnt.get(k.slice(2)), sw(tcol(k, i)))).join('')}</tbody></table>
+<h3>${x(t('lgVals'))}</h3>${vals.length ? `<table class="grid lgtab"><tbody><tr data-lk="h:${x(P.color)}"><td></td><td></td><td><input class="c" data-lg="name" value="${x(LG.names['h:' + P.color] || '')}" placeholder="${x(t({ layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[P.color]))}" style="font-weight:700"></td><td></td><td></td></tr>${vals.map((k, i) => row(k, k.slice(2), '', sw(pal[i % pal.length]))).join('')}</tbody></table>` : `<p class="hint2">${x(t('lgNoVals'))}</p>`}
+<h3>${x(t('lgExtra'))}</h3><div class="lgrow"><label>${x(t('lgExtraTitle'))} <input class="c" data-lg="extraTitle" value="${x(LG.extraTitle || '')}"></label></div>
+${LG.extra.length ? `<table class="grid lgtab"><tbody>${extra}</tbody></table>` : ''}<p><button type="button" class="minibtn" id="lgAdd">${x(t('lgAdd'))}</button></p>
+<h3>${x(t('lgNotes'))}</h3><textarea data-lg="notes" rows="3" style="width:100%;font:inherit;font-size:13px">${x(LG.notes || '')}</textarea>
+<p style="margin-top:12px"><button type="button" class="minibtn x" id="lgReset">${x(t('lgReset'))}</button></p>`;
+  if (!$('#legDlg').open) $('#legDlg').showModal();
+}
+function legChanged(redraw = true) { touch(); replan(); if (redraw) legDialog(); }
+document.addEventListener('change', e => {
+  const el = e.target; if (!el.closest || !el.closest('#legDlg') || !state.d) return;
+  const LG = planLegend(state.d), tr = el.closest('tr');
+  if (el.dataset.lg === 'show') { const k = tr.dataset.lk; LG.hide = el.checked ? LG.hide.filter(v => v !== k) : [...new Set([...LG.hide, k])]; return legChanged(false); }
+  if (el.dataset.lg === 'name') { const k = tr.dataset.lk, v = el.value.trim(); if (v) LG.names[k] = v; else delete LG.names[k]; return legChanged(false); }
+  if (el.dataset.lg === 'counts') { LG.counts = el.checked; return legChanged(false); }
+  if (['title', 'notes', 'extraTitle'].includes(el.dataset.lg)) { LG[el.dataset.lg] = el.value.replace(/\s+$/, ''); return legChanged(false); }
+  if (el.dataset.lgx) { const ex = LG.extra[+tr.dataset.lx]; if (ex) { ex[el.dataset.lgx] = el.value; legChanged(false); } }
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button'); if (!b || !state.d) return;
+  if (b.id === 'plLegEdit') return legDialog();
+  if (!b.closest('#legDlg')) return;
+  const LG = planLegend(state.d);
+  if (b.id === 'lgClose') return $('#legDlg').close();
+  if (b.id === 'lgAdd') { LG.extra.push({ text: '', color: '#888888', sym: 'rect' }); return legChanged(); }
+  if (b.dataset.lgxdel !== undefined) { LG.extra.splice(+b.dataset.lgxdel, 1); return legChanged(); }
+  if (b.id === 'lgReset') { if (confirm(t('lgReset') + ' ?')) { delete state.d.planLegend; legChanged(); } return; }
+  if (b.dataset.lgmove) {
+    const { types, vals, LG: LG2 } = legSections(), k = b.closest('tr').dataset.lk, list = k.startsWith('t:') ? types : vals, i = list.indexOf(k), j = i + +b.dataset.lgmove;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    const other = k.startsWith('t:') ? vals : types;
+    LG2.order = [...(k.startsWith('t:') ? list : other), ...(k.startsWith('t:') ? other : list)];
+    legChanged();
+  }
+});
 function renderPlanView() {
   const P = state.plan, o = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(lab(v))}</option>`).join('');
   const pts = [...new Set(state.d.fixtures.map(f => f.position).filter(Boolean))].sort(natCmp);
@@ -2562,12 +2657,13 @@ function renderPlanView() {
 <label>${esc(t('plColor'))} <select data-pl="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], P.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
 <label>${esc(t('plLabel2'))} <select data-pl="l2">${o(['none', 'patch', 'circuit', 'dmx', 'gel', 'type', 'unit'], P.l2, v => t('l2' + v))}</select></label>
 <label>${esc(t('doFormat'))} <select data-pl="fmt">${o(['A3', 'A4'], P.fmt, v => v)}</select></label>
+<label>${esc(t('plOrient'))} <select data-pl="orient">${o(['landscape', 'portrait'], P.orient === 'portrait' ? 'portrait' : 'landscape', v => t('or_' + v))}</select></label>
 <label>${esc(t('plScaleSel'))} <select data-pl="scaleSel">${o(['auto', ...SCALES.map(String), 'fit'], P.fit === 'fit' ? 'fit' : P.scale ? String(P.scale) : 'auto', v => v === 'auto' ? t('plScaleAuto') : v === 'fit' ? t('plScaleFit') : '1:' + v)}</select></label>
 <label>${esc(t('plRot'))} <select data-pl="rot">${o(['0', '90', '180', '270'], String(planRot(P)), v => v + '°')}</select></label>
 <label><input type="checkbox" data-pl="rulers"${P.rulers !== false ? ' checked' : ''}> ${esc(t('plRulers'))}</label>
 ${viewBar('plan')}<span class="spacer"></span><span class="plstate">${geoOk ? '' : esc(t('v3Shaping'))}</span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="160" value="${P.zoom}"></label></div>
 <div class="planwrap">${planPanel()}<div id="planPages">${renderPlan()}</div></div>`;
-  $('#pagesize').textContent = `@page { size: ${P.fmt} landscape; margin: 0; }`;
+  $('#pagesize').textContent = `@page { size: ${P.fmt} ${P.orient === 'portrait' ? 'portrait' : 'landscape'}; margin: 0; }`;
   document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = P.zoom / 100; });
   if (!geoOk) ensurePlanGeo().then(ok => { if (ok && state.tab === 'plan' && $('#planPages')) renderPlanView(); else { const s2 = document.querySelector('.plstate'); if (s2) s2.textContent = ''; } });
 }
@@ -2614,7 +2710,7 @@ document.getElementById('view').addEventListener('pointerdown', e => {
   window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
 });
 // ───────────── vues enregistrées (plan et 3D), à reprendre dans le dossier complet ─────────────
-const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'struct', 'points', 'grid', 'fmt', 'fit', 'scale', 'rot', 'rulers'];
+const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'struct', 'points', 'grid', 'fmt', 'orient', 'fit', 'scale', 'rot', 'rulers'];
 const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid'];
 const clone = o => JSON.parse(JSON.stringify(o ?? null));
 const views = kind => (state.d.views || []).filter(v => v.kind === kind);
@@ -2676,13 +2772,13 @@ function dossierPages() {
   const d = state.d, L = d.lieu, S = state.dos, out = [], toc = [];
   const sec = (k, html) => { if (S[k] && html) { toc.push(t('s' + k[0].toUpperCase() + k.slice(1))); out.push(html); } };
   // plan feu (A4)
-  if (S.plan) sec('plan', withTemp(state.plan, { fmt: 'A4', point: '' }, () => renderPlan(true)).replace(/<p class="hint[^]*$/, ''));
+  if (S.plan) sec('plan', withTemp(state.plan, { fmt: 'A4', point: '', orient: 'landscape' }, () => renderPlan(true)).replace(/<p class="hint[^]*$/, ''));
   // vues enregistrées : plans redessinés avec leurs réglages, vues 3D en image
   for (const v of (d.views || []).filter(x => x.inDossier)) {
     if (v.kind === 'plan') {
       const key = (v.settings.view || 'top') + '|' + (v.settings.point || ''), oldH = d.planHide, oldL = d.planLab2;
       d.planHide = clone(v.hide); d.planLab2 = { [key]: clone(v.labs || {}) };
-      let html; try { html = withTemp(state.plan, { ...v.settings, fmt: 'A4' }, () => renderPlan(true)); } finally { d.planHide = oldH; d.planLab2 = oldL; }
+      let html; try { html = withTemp(state.plan, { ...v.settings, fmt: 'A4', orient: 'landscape' }, () => renderPlan(true)); } finally { d.planHide = oldH; d.planLab2 = oldL; }
       html = html.replace(/<p class="hint[^]*$/, '').replace(/(<text x="10" y="16" font-size="6" font-weight="700">)[^<]*/, `$1${esc(v.name)}`);
       toc.push(v.name); out.push(html);
     } else if (v.img) {

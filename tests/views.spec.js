@@ -145,3 +145,43 @@ test('plan : échelle choisie, ajustée à la page avec règles, rotation', asyn
   await page.uncheck('[data-pl=rulers]');
   expect(await page.locator('#planPages svg text[font-size="2"]').count()).toBe(0);
 });
+
+test('plan : page en portrait, légende en bandeau', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.selectOption('[data-pl=orient]', 'portrait');
+  await expect(page.locator('#planPages svg').first()).toHaveAttribute('viewBox', '0 0 297 420');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  expect(await page.locator('#pagesize').textContent()).toContain('A3 portrait');
+});
+
+test('plan : éditeur de légende (masquer, renommer, ordre, entrée libre, notes)', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await page.click('#plLegEdit');
+  const dlg = page.locator('#legDlg');
+  await expect(dlg).toBeVisible();
+  const sheet = page.locator('#planPages svg').first();
+  // renommer le PC, masquer le PAR LED, monter la lyre en tête
+  const row = name => dlg.locator('tr', { has: page.locator(`input[placeholder="${name}"]`) });
+  await row('PC 1kW').locator('input[data-lg=name]').fill('PC 1 kW Juliat'); await row('PC 1kW').locator('input[data-lg=name]').press('Tab');
+  await expect(sheet).toContainText('PC 1 kW Juliat');
+  await row('PAR LED Test').locator('input[data-lg=show]').uncheck();
+  await expect(sheet.locator('text', { hasText: /^PAR LED Test$/ })).toHaveCount(0);
+  await dlg.locator('input[data-lg=title]').fill('Matériel'); await dlg.locator('input[data-lg=title]').press('Tab');
+  await expect(sheet).toContainText('Matériel');
+  await dlg.locator('#lgAdd').click();
+  await dlg.locator('input[data-lgx=text]').fill('Câble DMX 5 broches'); await dlg.locator('input[data-lgx=text]').press('Tab');
+  await expect(sheet).toContainText('Câble DMX 5 broches');
+  await dlg.locator('textarea[data-lg=notes]').fill('Gélatines Lee\nFocus le 12'); await dlg.locator('textarea[data-lg=notes]').press('Tab');
+  await expect(sheet).toContainText('Focus le 12');
+  // ordre : la première entrée descend
+  const first = await dlg.locator('tbody').first().locator('tr').first().locator('input[data-lg=name]').getAttribute('placeholder');
+  await dlg.locator('tbody').first().locator('tr').first().locator('[data-lgmove="1"]').click();
+  await expect(dlg.locator('tbody').first().locator('tr').nth(1).locator('input[data-lg=name]')).toHaveAttribute('placeholder', first);
+  await dlg.locator('#lgClose').click();
+  // gardé avec le dossier
+  expect(await page.evaluate(() => [state.d.planLegend.title, state.d.planLegend.hide.length, state.d.planLegend.extra.length])).toEqual(['Matériel', 1, 1]);
+});
