@@ -786,7 +786,7 @@ const I18N = {
     nvModels: 'Modèles', mdHint: "Les modèles de switches, nodes, mergers… du lieu, avec leurs ports. Chaque appareil de l’onglet Réseau se rattache à un modèle : les ports de switch et de node au-delà du nombre prévu, les univers en trop et les ports PoE manquants sont signalés, et l’occupation des ports s’affiche sous la liste des appareils.",
     mdName: 'Modèle', mdMaker: 'Fabricant', mdKind: 'Type', mdEth: 'Ports Ethernet', mdPoe: 'dont PoE', mdSfp: 'SFP / fibre', mdDmxOut: 'Sorties DMX', mdDmxIn: 'Entrées DMX', mdUniv: 'Univers max', mdRu: 'Hauteur (U)', mdPower: 'Puissance (W)', mdUsed: 'Appareils', mdNotes: 'Notes',
     addModel: 'Ajouter un modèle', newModel: 'Modèle', delModelAsk: (n, k) => `Supprimer le modèle « ${n} » ?` + (k ? ` ${k} appareil(s) n’auront plus de modèle.` : ''), mdDup: 'Dupliquer', mdFromDev: 'Créer les modèles depuis les noms des appareils', mdNone: 'Aucun modèle. Ajoutez vos switches et nodes, avec leurs nombres de ports.',
-    dvModel: 'Modèle', portOver: 'port inexistant sur ce switch', univOver: n => `plus de ${n} univers`, poeNo: 'pas de PoE sur ce port', dlPortOver: n => `le node n’a que ${n} sortie(s) DMX`,
+    dvModel: 'Modèle', dvConLinked: 'Appareil d’une console : il se supprime avec elle, dans l’onglet Console.', portOver: 'port inexistant sur ce switch', univOver: n => `plus de ${n} univers`, poeNo: 'pas de PoE sur ce port', dlPortOver: n => `le node n’a que ${n} sortie(s) DMX`,
     pmTitle: 'Occupation des ports', pmFree: 'libre', pmSfp: 'SFP', pmPoe: 'PoE', pmNoModel: 'sans modèle : nombre de ports inconnu', pmEth: n => `${n} port(s) Ethernet utilisé(s)`, pmDmx: n => `${n} sortie(s) DMX utilisée(s)`, dvPoe: 'PoE',
     addDev: 'Ajouter un appareil', newDev: 'Appareil', delDevAsk: n => `Supprimer l’appareil « ${n} » ?`, ipDup: 'adresse en double', ipOut: 'hors du réseau', portDup: 'port déjà pris',
     labDmxHint: 'Une étiquette à chaque bout de chaque ligne DMX (départ et arrivée), et en option une petite étiquette par projecteur pour les jarretières.', labEnds: 'Départ et arrivée', labJar: 'Jarretières (une par projecteur)', endA: 'départ', endB: 'arrivée',
@@ -913,7 +913,7 @@ const I18N = {
     nvModels: 'Models', mdHint: 'The venue’s switch, node, merger… models, with their ports. Each device of the Network tab is linked to a model: switch and node ports beyond the model’s count, too many universes and missing PoE ports are flagged, and port usage is shown under the device list.',
     mdName: 'Model', mdMaker: 'Maker', mdKind: 'Type', mdEth: 'Ethernet ports', mdPoe: 'of which PoE', mdSfp: 'SFP / fibre', mdDmxOut: 'DMX outputs', mdDmxIn: 'DMX inputs', mdUniv: 'Max universes', mdRu: 'Height (U)', mdPower: 'Power (W)', mdUsed: 'Devices', mdNotes: 'Notes',
     addModel: 'Add a model', newModel: 'Model', delModelAsk: (n, k) => `Delete the model “${n}”?` + (k ? ` ${k} device(s) will have no model.` : ''), mdDup: 'Duplicate', mdFromDev: 'Create models from device names', mdNone: 'No model yet. Add your switches and nodes with their port counts.',
-    dvModel: 'Model', portOver: 'no such port on this switch', univOver: n => `more than ${n} universes`, poeNo: 'no PoE on this port', dlPortOver: n => `the node only has ${n} DMX output(s)`,
+    dvModel: 'Model', dvConLinked: 'A console’s device: it is deleted with the console, in the Console tab.', portOver: 'no such port on this switch', univOver: n => `more than ${n} universes`, poeNo: 'no PoE on this port', dlPortOver: n => `the node only has ${n} DMX output(s)`,
     pmTitle: 'Port usage', pmFree: 'free', pmSfp: 'SFP', pmPoe: 'PoE', pmNoModel: 'no model: port count unknown', pmEth: n => `${n} Ethernet port(s) used`, pmDmx: n => `${n} DMX output(s) used`, dvPoe: 'PoE',
     addDev: 'Add a device', newDev: 'Device', delDevAsk: n => `Delete the device “${n}”?`, ipDup: 'duplicate address', ipOut: 'outside the network', portDup: 'port already used',
     labDmxHint: 'One label at each end of each DMX line (source and landing), and optionally a small label per fixture for the jumpers.', labEnds: 'Source and landing', labJar: 'Jumpers (one per fixture)', endA: 'source', endB: 'landing',
@@ -1236,6 +1236,15 @@ function newDossier({ fixtures, types, structures, source, titre }) {
 const KINDS = ['perche', 'porteuse', 'pont', 'passerelle', 'gril', 'mur', 'verticale', 'sol', 'autre'];
 const KIND_GUESS = [[/^p\s*\d|perche/i, 'perche'], [/porteuse/i, 'porteuse'], [/pont|truss/i, 'pont'], [/passerelle|catwalk/i, 'passerelle'], [/gril|grid/i, 'gril'], [/mur|wall/i, 'mur'], [/verticale|boom|tower/i, 'verticale'], [/^sol|floor/i, 'sol']];
 const round1 = v => Math.round(v * 10) / 10;
+// chaque console figure dans les appareils du réseau : appareil de même nom rattaché, sinon créé
+function syncConsoleDevices(L) {
+  for (const c of L.consoles || []) {
+    if (c.device && L.devices.some(v => v.name === c.device)) continue;
+    let v = c.name && L.devices.find(x => x.name === c.name);
+    if (!v && c.name) { v = { id: uid(), name: c.name, kind: 'console', ip: '', mask: '', vlan: null, sw: '', port: '', mac: '', location: '', notes: '' }; L.devices.push(v); }
+    if (v) c.device = v.name;
+  }
+}
 function ensureLieu(d) {
   d.version = 2;
   d.lieu = d.lieu || {};
@@ -1247,6 +1256,7 @@ function ensureLieu(d) {
   d.lieu.devices = d.lieu.devices || [];
   d.lieu.consoles = d.lieu.consoles || [];
   d.lieu.models = d.lieu.models || [];
+  syncConsoleDevices(d.lieu);
   d.lieu.settings = { proto: 'artnet', artBase: 1, net: '2.0.0.0', mask: '255.0.0.0', gw: '', ...d.lieu.settings };
   const have = new Set(d.lieu.points.map(p => p.name)), byPos = new Map();
   d.fixtures.forEach(f => { if (f.position) { if (!byPos.has(f.position)) byPos.set(f.position, []); byPos.get(f.position).push(f); } });
@@ -2254,7 +2264,7 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
 <td>${inp('devices', d, 'mask', d.mask, 7)}</td><td>${inp('devices', d, 'vlan', d.vlan, 3, 1)}</td>
 <td>${sel('devices', d, 'sw', '<option value=""></option>' + opt(swNames.filter(n => n !== d.name), d.sw))}</td><td>${inp('devices', d, 'port', d.port, 3, 0, pb.some(m => m.startsWith('port') || m === 'poeNo') ? 'ipbad' : '')}${pb.filter(m => m === 'portOver' || m === 'poeNo').map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join('')}</td><td style="text-align:center"><input type="checkbox" data-o="devices" data-id="${esc(d.id)}" data-f="poe"${d.poe ? ' checked' : ''}></td>
 <td>${inp('devices', d, 'mac', d.mac, 9)}</td><td>${inp('devices', d, 'location', d.location, 9)}</td><td class="ro chain">${esc(uu.join(', '))}</td>
-<td>${inp('devices', d, 'notes', d.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-deldev="${esc(d.id)}">×</button></td></tr>`;
+<td>${inp('devices', d, 'notes', d.notes, 9)}</td><td class="noprint">${L.consoles.some(c => c.device === d.name) ? `<span class="mut" title="${esc(t('dvConLinked'))}">🎛</span>` : `<button type="button" class="minibtn x" data-deldev="${esc(d.id)}">×</button>`}</td></tr>`;
     }).join('');
     body = title('nvNet') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('netHint'))}</p>` + setRow +
       `<h2 class="sec" style="margin-top:6px">${esc(t('nvNet'))} <button type="button" class="minibtn noprint" id="addDev" style="margin-inline-start:8px">${esc(t('addDev'))}</button></h2>
@@ -4085,6 +4095,10 @@ view.addEventListener('change', e => {
       if (v && v !== x.name && !col.some(y => y.name === v)) {
         if (go.dataset.o === 'dmxLines') state.d.fixtures.forEach(f => { if (f.dmxLine === x.name) f.dmxLine = v; });
         if (go.dataset.o === 'models') state.d.lieu.devices.forEach(d => { if (d.model === x.name) d.model = v; });
+        if (go.dataset.o === 'consoles') {    // l'appareil de la console, s'il porte son nom, est renommé avec elle
+          const L = state.d.lieu, dv = L.devices.find(y => y.name === x.name && y.name === x.device && y.kind === 'console');
+          if (dv && !L.devices.some(y => y.name === v)) { L.consoles.forEach(c => { if (c.device === dv.name) c.device = v; }); L.dmxLines.forEach(l => { if (l.src === dv.name) l.src = v; if (l.dest === dv.name) l.dest = v; }); L.devices.forEach(y => { if (y.sw === dv.name) y.sw = v; }); dv.name = v; }
+        }
         if (go.dataset.o === 'devices') { state.d.lieu.consoles.forEach(c => { if (c.device === x.name) c.device = v; }); state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; if (l.dest === x.name) l.dest = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
         x.name = v;
       }
@@ -4186,7 +4200,7 @@ view.addEventListener('keydown', e => {
   const inp = e.target.closest('input.c'); if (!inp || e.key !== 'Enter') return;
   e.preventDefault(); inp.blur();
   // Entrée : même colonne, ligne suivante
-  const tr = inp.closest('tr').nextElementSibling;
+  const row = inp.closest('tr'), tr = row && row.nextElementSibling;   // hors tableau (fiches console…) : on valide seulement
   const next = tr && tr.querySelector(`input.c[data-k="${inp.dataset.k}"]`);
   if (next) { next.focus(); next.select(); }
 });
@@ -4230,7 +4244,13 @@ view.addEventListener('click', async e => {
   }
   if (b.dataset.delcon) {
     const x = state.d.lieu.consoles.find(y => y.id === b.dataset.delcon);
-    if (x && confirm(t('delConsoleAsk', x.name))) { state.d.lieu.consoles = state.d.lieu.consoles.filter(y => y !== x); touch(); render(); }
+    if (x && confirm(t('delConsoleAsk', x.name))) {
+      const L = state.d.lieu; L.consoles = L.consoles.filter(y => y !== x);
+      // son appareil réseau part avec elle, s'il n'est pas partagé et qu'aucune ligne DMX n'en part
+      const dv = L.devices.find(y => y.name === x.device && y.kind === 'console');
+      if (dv && !L.consoles.some(c => c.device === dv.name) && !L.dmxLines.some(l => l.src === dv.name || l.dest === dv.name)) L.devices = L.devices.filter(y => y !== dv);
+      touch(); render();
+    }
     return;
   }
   if (b.id === 'addModel' || b.dataset.dupmodel) {

@@ -513,3 +513,26 @@ test('modèles d’appareils : ports des switches et des nodes vérifiés', asyn
   expect(await page.evaluate(() => state.d.lieu.devices.find(d => d.id === 'n1').model)).toBe('LumiNode 4');
   await expect(page.locator('#view tbody tr').nth(1).locator('td.num')).toHaveText('1');
 });
+
+test('les consoles figurent dans les appareils du réseau', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], dmxLines: [], devices: [{ id: 'v', name: 'grandMA3 régie', kind: 'console', ip: '2.0.0.100' }],
+      consoles: [{ id: 'c1', name: 'grandMA3 régie' }, { id: 'c2', name: 'onPC backup' }] };
+  });
+  // la première retrouve son appareil, la seconde en reçoit un
+  expect(await page.evaluate(() => state.d.lieu.devices.map(v => `${v.name}:${v.kind}`))).toEqual(['grandMA3 régie:console', 'onPC backup:console']);
+  expect(await page.evaluate(() => state.d.lieu.consoles.map(c => c.device))).toEqual(['grandMA3 régie', 'onPC backup']);
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=console]');
+  await page.click('#addConsole');
+  const nm = page.locator('#view input[data-o=consoles][data-f=name]').nth(2);
+  await nm.fill('Pupitre plateau'); await nm.press('Enter');
+  await page.click('#view [data-nv=net]');
+  const names = page.locator('#view input[data-o=devices][data-f=name]');
+  await expect(names).toHaveCount(3);
+  await expect(names.nth(2)).toHaveValue('Pupitre plateau');
+  await expect(page.locator('#view [data-deldev]')).toHaveCount(0);    // se suppriment avec leur console
+  await page.click('#view [data-nv=console]');
+  await page.locator('#view [data-delcon]').nth(2).click();
+  await page.click('#view [data-nv=net]');
+  await expect(names).toHaveCount(2);
+});
