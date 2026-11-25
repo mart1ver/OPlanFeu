@@ -20,7 +20,7 @@ test('plan : un projecteur dessiné et une étiquette par projecteur, taille des
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages svg')).toBeVisible();
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const f1 = await page.locator('#planPages .plab text').first().getAttribute('font-size');
   await page.locator('[data-pl=labSize]').fill('200'); await page.locator('[data-pl=labSize]').dispatchEvent('change');
   await expect.poll(async () => +(await page.locator('#planPages .plab text').first().getAttribute('font-size'))).toBeCloseTo(+f1 * 2, 1);
@@ -64,11 +64,11 @@ test('étiquettes : une par projecteur, tête de perche, lignes, réseau', async
 test('plan : les six vues (dessus, dessous, face, lointain, jardin, cour)', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const firstX = {};
   for (const v of ['top', 'bottom', 'front', 'back', 'jardin', 'cour']) {
     await page.click(`#view [data-pvbase=${v}]`);
-    await expect(page.locator('#planPages .plab')).toHaveCount(24);
+    await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
     // le projecteur 101 (le plus à jardin de la perche du lointain) : à gauche vu de dessus et de face, à droite vu de dessous et du lointain
     firstX[v] = await page.evaluate(() => { const b = document.querySelector(`#planPages .pfx[data-k="f:${state.d.fixtures[0].uid}"]`).getBBox(); return b.x + b.width / 2; });
   }
@@ -127,7 +127,7 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
 test('plan : échelle choisie, ajustée à la page avec règles, rotation', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const cart = () => page.locator('#planPages svg').first().textContent();
   await page.selectOption('[data-pl=scaleSel]', '20');
   expect(await cart()).toContain('Échelle 1:20');
@@ -140,7 +140,7 @@ test('plan : échelle choisie, ajustée à la page avec règles, rotation', asyn
   const span = async () => page.evaluate(() => { const els = state.d.fixtures.filter(f => f.position === 'P1 Lointain').map(f => document.querySelector(`#planPages .pfx[data-k="f:${f.uid}"]`).getBBox()); const xs = els.map(b => b.x), ys = els.map(b => b.y); return [Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)]; });
   const [w0, h0] = await span(); expect(w0).toBeGreaterThan(h0);
   await page.selectOption('[data-pl=rot]', '90');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   const [w1, h1] = await span(); expect(h1).toBeGreaterThan(w1);
   await page.uncheck('[data-pl=rulers]');
   expect(await page.locator('#planPages svg text[font-size="2"]').count()).toBe(0);
@@ -149,17 +149,17 @@ test('plan : échelle choisie, ajustée à la page avec règles, rotation', asyn
 test('plan : page en portrait, légende en bandeau', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.selectOption('[data-pl=orient]', 'portrait');
   await expect(page.locator('#planPages svg').first()).toHaveAttribute('viewBox', '0 0 297 420');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   expect(await page.locator('#pagesize').textContent()).toContain('A3 portrait');
 });
 
 test('plan : éditeur de légende (masquer, renommer, ordre, entrée libre, notes)', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#plLegEdit');
   const dlg = page.locator('#legDlg');
   await expect(dlg).toBeVisible();
@@ -189,7 +189,7 @@ test('plan : éditeur de légende (masquer, renommer, ordre, entrée libre, note
 test('légende : mode et nombre de canaux des types', async ({ page }) => {
   await loadSynthetic(page, d => { d.types['Test@Lyre'].modes = { Std: 20, Basic: 12 }; d.fixtures[0].mode = 'Basic'; d.fixtures[0].nch = 12; });
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const sheet = page.locator('#planPages svg').first();
   await expect(sheet.locator('text[font-size="2.1"]')).toHaveCount(0);
   await page.click('#plLegEdit');
@@ -205,7 +205,7 @@ test('légende : mode et nombre de canaux des types', async ({ page }) => {
 test('étiquettes du plan : rotation par 45°, jamais perdues hors du cadre', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const lab = () => page.locator(`#planPages .plab[data-u="u-1"]`);
   await lab().click({ button: 'right' });
   await expect(lab()).toHaveAttribute('transform', /rotate\(45\)/);
@@ -232,7 +232,7 @@ test('vues du plan : vues de départ, vues personnalisées enregistrées au fil 
   let answer = 'Face régie'; page.on('dialog', d => d.type() === 'prompt' ? d.accept(answer) : d.accept());
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#view [data-pvbase=front]');
   await expect(page.locator('#view [data-pvbase=front]')).toHaveClass(/on/);
   await page.click('#view [data-pvnew]');
@@ -261,7 +261,7 @@ test('vues du plan : vues de départ, vues personnalisées enregistrées au fil 
 test('plan : zone à afficher, tracée à la souris puis réglée au décimètre', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#plZoneDraw');
   // tracer autour de la perche du lointain seulement (projecteurs 101 à 106)
   const box = async uid => page.locator(`#planPages .pfx[data-k="f:${uid}"]`).boundingBox();
@@ -269,48 +269,48 @@ test('plan : zone à afficher, tracée à la souris puis réglée au décimètre
   await page.mouse.move(a.x - 15, a.y - 25); await page.mouse.down();
   await page.mouse.move(b.x + b.width + 15, b.y + b.height + 25, { steps: 5 }); await page.mouse.up();
   await expect(page.locator('#view .plzone')).toBeVisible();
-  await expect(page.locator('#planPages .plab')).toHaveCount(6);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(6);
   const z = await page.evaluate(() => state.plan.zone);
   expect(z.x0).toBeLessThan(-2.5); expect(z.x1).toBeGreaterThan(2.5); expect(z.y0).toBeGreaterThan(3); expect(z.y1).toBeLessThan(7);
   // réglage précis : la zone descend jusqu'à la face (y = -5)
   await page.fill('#view [data-zone=x0]', '-5'); await page.locator('#view [data-zone=x0]').press('Enter');
   await page.fill('#view [data-zone=x1]', '5'); await page.locator('#view [data-zone=x1]').press('Enter');
   await page.fill('#view [data-zone=y0]', '-5'); await page.locator('#view [data-zone=y0]').press('Enter');
-  await expect(page.locator('#planPages .plab')).toHaveCount(20);   // lointain, milieu et face ; pas le sol (y = 6)
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(20);   // lointain, milieu et face ; pas le sol (y = 6)
   await page.fill('#view [data-zone=w]', '2'); await page.locator('#view [data-zone=w]').press('Enter');
   expect(await page.evaluate(() => Math.round((state.plan.zone.x1 - state.plan.zone.x0) * 10) / 10)).toBe(2);
   await page.click('#plZoneClear');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   // avec le plan tourné, la zone tracée reste juste
   await page.selectOption('[data-pl=rot]', '90');
   await page.click('#plZoneDraw');
   const a2 = await box('u-1'), b2 = await box('u-6');
   await page.mouse.move(Math.min(a2.x, b2.x) - 25, Math.min(a2.y, b2.y) - 15); await page.mouse.down();
   await page.mouse.move(Math.max(a2.x, b2.x) + 25, Math.max(a2.y, b2.y) + 25, { steps: 5 }); await page.mouse.up();
-  await expect(page.locator('#planPages .plab')).toHaveCount(6);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(6);
 });
 
 test('plan : choisir une vue de départ remet tout à zéro', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.selectOption('[data-pl=rot]', '90');
   await page.selectOption('[data-pl=orient]', 'portrait');
   await page.selectOption('[data-pl=color]', 'layer');
   await page.selectOption('[data-pl=scaleSel]', 'fit');
   await page.uncheck('[data-pl=grid]');
   await page.evaluate(() => { state.plan.zone = { x0: -1, x1: 1, y0: 4, y1: 6 }; planHide().pos.push('P2 Milieu'); renderPlanView(); });
-  await page.locator('#planPages .plab').first().click({ button: 'right' });
+  await page.locator('#planPages .plab:not(.ptag)').first().click({ button: 'right' });
   await page.click('#view [data-pvbase=front]');
   const P = await page.evaluate(() => ({ ...state.plan, hide: planHide(), labs: (state.d.planLab2 || {})[planLabKey()] || {} }));
   expect([P.view, P.rot, P.orient, P.color, P.fit, P.grid, P.zone, P.hide.pos.length, Object.keys(P.labs).length]).toEqual(['front', 0, 'landscape', 'type', 'scale', true, null, 0, 0]);
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
 });
 
 test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en tête du panneau', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const grps = await page.locator('.plpanel .grp').allTextContents();
   expect(grps[0]).toContain('Projecteurs par type');
   // A3 paysage, 1:50 : le cadre utile fait environ 324 × 261 mm, soit 16,2 × 13 m
@@ -323,9 +323,9 @@ test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en têt
 test('plan : projecteurs superposés, étiquettes en colonnes par type, sans chevauchement', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#view [data-pvbase=front]');   // de face, le lointain et le milieu (même hauteur) se cachent l'un l'autre
-  const boxes = await page.evaluate(() => [...document.querySelectorAll('#planPages .plab')].map(g => { const r = g.getBoundingClientRect(); return [g.dataset.u, r.left, r.top, r.right, r.bottom]; }));
+  const boxes = await page.evaluate(() => [...document.querySelectorAll('#planPages .plab:not(.ptag)')].map(g => { const r = g.getBoundingClientRect(); return [g.dataset.u, r.left, r.top, r.right, r.bottom]; }));
   let overlaps = 0;
   for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) { const a = boxes[i], b = boxes[j]; if (Math.min(a[3], b[3]) - Math.max(a[1], b[1]) > 1 && Math.min(a[4], b[4]) - Math.max(a[2], b[2]) > 1) overlaps++; }
   expect(overlaps).toBe(0);
@@ -338,7 +338,7 @@ test('plan : projecteurs superposés, étiquettes en colonnes par type, sans che
 test('plan : colonnes d’étiquettes au-dessus des projecteurs superposés (vue de côté)', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#view [data-pvbase=cour]');   // de côté, chaque perche se réduit à une pile
   const r = await page.evaluate(() => {
     const out = [];
@@ -357,7 +357,7 @@ test('plan : colonnes d’étiquettes au-dessus des projecteurs superposés (vue
 test('plan : aucune étiquette ne chevauche une autre étiquette ni un projecteur, dans les six vues', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   for (const v of ['top', 'bottom', 'front', 'back', 'jardin', 'cour']) {
     await page.click(`#view [data-pvbase=${v}]`);
     const st = await page.evaluate(() => {
@@ -372,20 +372,20 @@ test('plan : aucune étiquette ne chevauche une autre étiquette ni un projecteu
 test('plan : masquer ou afficher des machines, par type ou une à une', async ({ page }) => {
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const grps = await page.locator('.plpanel .grp').allTextContents();
   expect(grps[0]).toContain('Projecteurs par type');
   await page.uncheck('.plpanel [data-plh=type][data-k="Test@PC"]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(16);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(16);
   await page.check('.plpanel [data-plh=type][data-k="Test@PC"]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   // une machine seule : déplier le type et décocher 101
   await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
   await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-plfx="u-1"]').uncheck();
-  await expect(page.locator('#planPages .plab')).toHaveCount(23);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(23);
   await expect(page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary small')).toHaveText('5/6');
   await page.click('.plpanel [data-plall=types]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
 });
 
 test('3D : masquer ou afficher des machines par type ou une à une, projecteurs en tête', async ({ page }) => {
@@ -411,20 +411,37 @@ test('projecteurs par position : machine par machine, plan et 3D', async ({ page
   test.setTimeout(90_000);
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24, { timeout: 15000 });
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const posRow = sel => page.locator(`${sel} details.ly`, { has: page.locator('[data-k="P2 Milieu"]') });
   await posRow('.plpanel').locator('summary .tw').click();
   await posRow('.plpanel').locator('[data-plfx="u-7"]').uncheck();
-  await expect(page.locator('#planPages .plab')).toHaveCount(23);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(23);
   await expect(posRow('.plpanel').locator('summary small')).toHaveText('7/8');
   // même machine décochée dans la liste par type
   await expect(page.locator('.plpanel [data-plfx="u-7"]').first()).not.toBeChecked();
   await page.click('.plpanel [data-plall=pos]');
-  await expect(page.locator('#planPages .plab')).toHaveCount(24);
+  await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   await page.click('#tabs button[data-v=v3d]');
   await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
   await posRow('#v3').locator('summary .tw').click();
   await posRow('#v3').locator('[data-v3fx="u-7"]').uncheck();
   await expect.poll(() => page.evaluate(() => V3.items.filter(it => it.f && it.o.visible).length)).toBe(23);
   await expect(page.locator('#v3 [data-v3fx="u-7"]').first()).not.toBeChecked();
+});
+
+test('plan : déplacer le nom d’un point d’accroche', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=plan]');
+  await expect(page.locator('#planPages .plab')).toHaveCount(27, { timeout: 15000 });   // 24 projecteurs + 3 perches
+  const tag = page.locator('#planPages .ptag[data-u="p:P2 Milieu"]');
+  const b = await tag.boundingBox();
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down();
+  await page.mouse.move(b.x + b.width / 2 + 60, b.y + b.height / 2 + 40, { steps: 5 }); await page.mouse.up();
+  const b2 = await tag.boundingBox();
+  expect(b2.x - b.x).toBeGreaterThan(40); expect(b2.y - b.y).toBeGreaterThan(25);
+  expect(await page.evaluate(() => !!state.d.planLab2[planLabKey()]['p:P2 Milieu'])).toBe(true);
+  await tag.click({ button: 'right' });
+  await expect(tag).toHaveAttribute('transform', /rotate\(45\)/);
+  await page.click('#plLabReset');
+  await expect(tag).not.toHaveAttribute('transform', /rotate/);
 });
