@@ -114,7 +114,10 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=dmx]');
   await expect(page.locator('#view select[data-f=dest]').first()).toHaveValue('Merger 1');
   await page.click('#view [data-nv=net]');
+  await page.click('#view [data-devtog=m]');
   await expect(page.locator('#view select[data-f=merge]')).toHaveValue('ltp');
+  // les deux entrées du merger, numérotées à l'ouverture
+  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => l.destPort ?? null))).toEqual([1, 2, null]);
   await page.click('#tabs button[data-v=syno]'); await page.click('#view [data-sv=net]');
   const svg = page.locator('#view .nsyn svg');
   for (const txt of ['Merger 1', 'fusion LTP', 'IN A', 'IN B', 'OUT', 'entrée 2', 'P1 Lointain']) await expect(svg).toContainText(txt);
@@ -497,16 +500,17 @@ test('modèles d’appareils : ports des switches et des nodes vérifiés', asyn
   await page.click('#view [data-nv=net]');
   const model = i => page.locator('#view select[data-o=devices][data-f=model]').nth(i);
   await model(0).selectOption('GigaCore 10'); await model(1).selectOption('Node 4');
-  const iss = await page.evaluate(() => Object.fromEntries([...netIssues()].map(([id, v]) => [id, v])));
-  expect(iss).toEqual({ n1: ['poeNo'], n2: ['portOver'] });      // port 3 sans PoE ; port 12 > 8 + 2
-  await expect(page.locator('#view .pmdev')).toHaveCount(2);
+  const iss = await page.evaluate(() => { const I = netIssues(); return Object.fromEntries(state.d.lieu.devices.map(d => [d.id, I.get(d.id) || []])); });
+  expect(iss).toEqual({ s: ['portOver'], n1: ['poeNo', 'portOver'], n2: ['portOver'] });      // port 3 sans PoE ; port 12 > 8 + 2 ; sortie DMX 5 sur un node à 4 sorties
+  await expect(page.locator('#view .pmdev')).toHaveCount(3);
   const blk = n => page.locator('#view .pmdev').filter({ has: page.locator('.pmh b', { hasText: new RegExp('^' + n + '$') }) }), sw = blk('SW1'), nd = blk('Node 1');
   await expect(sw.locator('.pm')).toHaveCount(11);   // 10 ports, puis le 12, en trop
   await expect(sw.locator('.pm.bad')).toHaveCount(2);  // port 3 sans PoE, port 12 inexistant
-  await expect(nd.locator('.pm')).toHaveCount(5); await expect(nd.locator('.pm.bad')).toHaveCount(1);
+  await expect(nd.locator('.pm.dmx')).toHaveCount(5); await expect(nd.locator('.pm.dmx.bad')).toHaveCount(1);
   // sortie DMX 5 sur un node à 4 sorties
   await page.click('#view [data-nv=dmx]');
-  await expect(page.locator('#view')).toContainText('le node n’a que 4 sortie(s) DMX');
+  await expect(page.locator('#view .lktab tr.bad')).toHaveCount(3);      // deux câbles Ethernet et la ligne DMX B
+  await expect(page.locator('#view .lktab')).toContainText('port inexistant sur cet appareil');
   // renommer le modèle suit dans les appareils, et le lieu l'emporte
   await page.click('#view [data-nv=models]');
   await cell(1, 'name').fill('LumiNode 4'); await cell(1, 'name').press('Enter');
@@ -535,4 +539,46 @@ test('les consoles figurent dans les appareils du réseau', async ({ page }) => 
   await page.locator('#view [data-delcon]').nth(2).click();
   await page.click('#view [data-nv=net]');
   await expect(names).toHaveCount(2);
+});
+
+test('liaisons : brancher les ports depuis la fiche d’un appareil, et les retrouver dans la liste', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [], dmxLines: [], netLinks: [],
+      models: [{ id: 'm', name: 'Switch 8', kind: 'switch', eth: 6, sfp: 2, poe: 4 }],
+      devices: [{ id: 'sr', name: 'SW régie', kind: 'switch', model: 'Switch 8' }, { id: 'ss', name: 'SW scène', kind: 'switch', model: 'Switch 8' },
+        { id: 'n', name: 'Node 1', kind: 'node', poe: true, ports: { eth: 2, out: 4 } }, { id: 'mg', name: 'Merger', kind: 'merger' }] };
+  });
+  await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
+  await page.click('#view [data-devtog=sr]');
+  const conn = k => page.locator(`#view select[data-pconn="${k}"][data-id=sr]`);
+  await expect(page.locator('#view tr.devsheet .ptab tbody tr')).toHaveCount(8);      // 6 cuivre + 2 SFP
+  // SFP 7 du switch régie → SFP 7 du switch scène : câble fibre
+  await conn('e7').selectOption({ label: 'SW scène · SFP 7' });
+  // port 5 (sans PoE) → Node 1 port 1 : le node veut du PoE
+  await conn('e5').selectOption({ label: 'Node 1 · port 1' });
+  let L = await page.evaluate(() => state.d.lieu.netLinks.map(l => `${l.kind}:${l.a}#${l.ap}-${l.b}#${l.bp}`));
+  expect(L).toEqual(['fiber:SW régie#7-SW scène#7', 'eth:SW régie#5-Node 1#1']);
+  expect(await page.evaluate(() => (netIssues().get('n') || []))).toEqual(['poeNo']);
+  await conn('e5').selectOption({ label: 'Node 1 · port 1' }).catch(() => {});
+  await page.locator('#view input[data-pvlan=e5][data-id=sr]').fill('10'); await page.locator('#view input[data-pvlan=e5][data-id=sr]').press('Tab');
+  await page.locator('#view input[data-pname=e7][data-id=sr]').fill('Uplink scène'); await page.locator('#view input[data-pname=e7][data-id=sr]').press('Tab');
+  expect(await page.evaluate(() => [state.d.lieu.devices[0].portVlan, state.d.lieu.devices[0].portNames])).toEqual([{ e5: 10 }, { e7: 'Uplink scène' }]);
+  // Node 1 : sortie 2 → entrée 1 du merger, sortie 1 → P1 Lointain
+  await page.click('#view [data-devtog=n]');
+  await page.locator('#view select[data-pconn=o2][data-id=n]').selectOption({ label: 'Merger · entrée 1' });
+  await page.locator('#view select[data-pconn=o1][data-id=n]').selectOption({ label: 'P1 Lointain' });
+  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => `${l.name}:${l.src}#${l.port}>${l.dest}#${l.destPort ?? ''}`))).toEqual(['DMX 1:Node 1#2>Merger#1', 'DMX 2:Node 1#1>P1 Lointain#']);
+  // la même chose dans la liste des liaisons, et le changement y revient dans la fiche
+  await page.click('#view [data-nv=dmx]');
+  await expect(page.locator('#view .lktab tbody tr:not(.lksep)')).toHaveCount(4);
+  await page.click('#view [data-lf=net]'); await expect(page.locator('#view .lktab tbody tr')).toHaveCount(2);
+  await expect(page.locator('#view .lktab')).toContainText('VLAN 10');
+  await page.click('#view [data-lf=all]');
+  await page.locator('#view select[data-o=netLinks][data-f=bp]').nth(0).selectOption({ label: 'port 2' });
+  await page.click('#view [data-nv=net]');
+  await expect(page.locator('#view select[data-pconn=e5][data-id=sr] option:checked')).toHaveText(/Node 1 · port 2/);
+  // le synoptique suit les câbles
+  await page.click('#tabs button[data-v=syno]'); await page.click('#view [data-sv=net]');
+  const svg = page.locator('#view .nsyn svg');
+  for (const txt of ['SW régie', 'SW scène', 'Uplink scène', 'port 5', 'VLAN', 'DMX 1', 'Merger']) await expect(svg).toContainText(txt);
 });

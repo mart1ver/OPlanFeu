@@ -145,6 +145,10 @@ td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; b
 table.grid td input.box { border-color: var(--line); background: var(--bg); }
 table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; }
+.dvtab td.lks { min-width: 220px; max-width: 520px; white-space: normal; } .ptab select, .lktab select { max-width: 240px; } .ptab td:nth-child(3) select { max-width: 300px; } .lk { display: inline-block; margin: 1px 6px 1px 0; padding: 1px 6px; border-radius: 4px; background: var(--panel); font-size: 12px; white-space: nowrap; } .lk.out, .lk.in { box-shadow: inset 2px 0 0 #4363d8; }
+.dvtab tr.devsheet > td { background: var(--panel); padding: 10px 12px 14px; } .dvsheet .cgrid { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 10px; } .dvsheet .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } .dvsheet .cf > span:first-child { color: var(--muted); }
+.ptab { width: auto; } .ptab td, .ptab th { padding: 3px 6px; } .ptab tr.bad td { background: color-mix(in srgb, var(--err) 10%, transparent); } .ptab i.poe { font-style: normal; color: #d49a00; }
+.lktab tr.lksep td { padding: 0; height: 6px; background: var(--line); } .lktab tr.bad td { background: color-mix(in srgb, var(--err) 8%, transparent); } .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; } .seg button { border: 0; background: var(--bg); padding: 4px 10px; font: inherit; font-size: 12.5px; color: var(--ink); cursor: pointer; } .seg button.on { background: var(--ink); color: var(--bg); }
 .pmwrap { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; } .pmh { font-size: 13px; margin-bottom: 5px; } .pmh .mut { color: var(--muted); }
 .pmrow { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
 .pm { display: inline-flex; flex-direction: column; align-items: center; min-width: 54px; max-width: 92px; padding: 3px 4px; border: 1px solid var(--line); border-radius: 5px; background: var(--bg); font-size: 11px; line-height: 1.2; }
@@ -712,7 +716,7 @@ const I18N = {
     save: 'Enregistrer le dossier (.json) — Ctrl+S', exportCsv: 'Exporter le patch pour Give Me The Patch (.csv)', openGmtp: 'Ouvrir Give Me The Patch', print: 'Imprimer la vue affichée',
     saveHint: 'Le dossier est aussi gardé dans ce navigateur au fil des modifications.',
     foot: "Tout est lu et calculé dans le navigateur : rien n'est envoyé à un serveur. OPlanFeu, par Mart1ver.",
-    tabSyno: 'Synoptiques', sv_elec: 'Électrique', sv_net: 'Réseau et DMX', sNetsyno: 'Synoptique réseau et DMX', nsTitle: 'Synoptique réseau et DMX', nsHint: 'D’après l’onglet DMX et réseau : chaque appareil est raccordé à son switch (colonnes Switch et Port), les lignes DMX partent de leur source (node, console) et arrivent à leur point d’accroche. En pointillé : appareil non raccordé. En rouge : adresse en double, hors réseau ou port déjà pris.', nsEmpty: 'Aucun appareil ni ligne DMX : renseigne-les dans DMX et réseau.', nsPort: p => `port ${p}`, nsDmxPort: p => `sortie ${p}`, nsFx: n => `${n} projecteur(s)`, nsNoIp: 'pas d’adresse', nsLands: 'arrivée', goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX et réseau → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX et réseau → Réseau.', tabFixtures: 'Patch', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
+    tabSyno: 'Synoptiques', sv_elec: 'Électrique', sv_net: 'Réseau et DMX', sNetsyno: 'Synoptique réseau et DMX', nsTitle: 'Synoptique réseau et DMX', nsHint: 'D’après les liaisons de l’onglet DMX et réseau : chaque appareil pend au switch où il est branché (port et VLAN du port), les câbles DMX partent d’une sortie et arrivent à une position ou à l’entrée d’un autre appareil. En pointillé : appareil non raccordé. En rouge : adresse en double, hors réseau ou port déjà pris.', nsEmpty: 'Aucun appareil ni ligne DMX : renseigne-les dans DMX et réseau.', nsPort: p => `port ${p}`, nsDmxPort: p => `sortie ${p}`, nsFx: n => `${n} projecteur(s)`, nsNoIp: 'pas d’adresse', nsLands: 'arrivée', goLab: 'Étiquettes', tabLabels: 'Étiquettes', lv_fx: 'Projecteurs', lv_heads: 'Têtes de perche', lv_elec: 'Électricité', lv_dmx: 'Lignes DMX', lv_net: 'Réseau', lbNetTitle: 'Étiquettes réseau', lbNetHint: 'Une étiquette par appareil du réseau (onglet DMX et réseau → Réseau) : nom, adresse IP et masque, VLAN, switch et port, emplacement, adresse MAC.', lbNetEmpty: 'Aucun appareil réseau : ajoute-les dans DMX et réseau → Réseau.', tabFixtures: 'Patch', tabInventory: 'Types et inventaire', searchPh: 'Rechercher…',
     vwView: 'Vue', vwFree: '— vue libre —', vwNew: 'Enregistrer comme vue…', vwUpd: 'Mettre à jour', vwRen: 'Renommer…', vwDel: 'Supprimer la vue', vwName: 'Nom de la vue :', vwDelAsk: n => `Supprimer la vue « ${n} » ?`, vwInDos: 'Vues enregistrées', vwUp: 'Monter', vwNone: 'Aucune vue enregistrée : dans Plan ou 3D, règle l’affichage puis « Enregistrer comme vue… » pour l’ajouter ici.',
     tabShows: 'Shows', shCurrent: 'Show ouvert', shLinked: n => `Enregistré dans le fichier ${n}, à chaque modification.`, shNotLinked: 'Gardé dans ce navigateur. « Enregistrer » le met aussi dans un fichier sur le disque, réécrit à chaque modification.', shNoFsa: 'Gardé dans ce navigateur. « Enregistrer » en télécharge une copie (ce navigateur ne peut pas réécrire un fichier).', shSave: 'Enregistrer', shSaveAs: 'Enregistrer sous…', shDownload: 'Télécharger une copie', shDup: 'Dupliquer', shDupShort: 'Dupliquer', shVersions: 'Versions…', shOpenTitle: 'Ouvrir ou créer', shOpenHint: 'Un show enregistré (.oplanfeu.json), ou un nouveau show à partir d’un MVR (WYSIWYG, Capture, grandMA3…), d’un CSV de patch ou de la feuille des plugins grandMA. On peut aussi déposer le fichier n’importe où sur la page.', shOpen: 'Ouvrir un fichier…', shList: 'Shows gardés dans ce navigateur', shFx: n => `${n} projecteur(s)`, shUpdated: d => `modifié le ${d}`, shDelT: 'Supprimer de ce navigateur', shNone: 'Aucun show pour l’instant : ouvre un fichier pour commencer.', shNoMatch: 'Aucun show ne correspond.', shCopyOf: n => `${n} (copie)`, shDupOpen: n => `« ${n} » est créé. L’ouvrir maintenant ?`, navSee: 'Voir', navTech: 'Technique', navOut: 'Matériel et sorties', navToggle: 'Réduire ou agrandir le menu', sideTitle: 'Dossier', sideClose: 'Masquer le panneau du dossier', sideToggle: 'Afficher ou masquer le panneau du dossier',
     undoT: n => `Annuler (Ctrl+Z)${n ? ' — ' + n + ' pas' : ''}`, redoT: n => `Rétablir (Ctrl+Maj+Z)${n ? ' — ' + n + ' pas' : ''}`, bkTitle: 'Sauvegarde', bkBrowser: 'Dans ce navigateur', bkAt: h => `enregistré à ${h}`, bkPersist: 'Stockage protégé : le navigateur ne l’effacera pas pour faire de la place.', bkNotPersist: 'Stockage non protégé : le navigateur peut l’effacer s’il manque de place. Garde aussi une copie sur le disque.', bkBrowserErr: 'enregistrement dans le navigateur impossible', bkFile: 'Fichier sur le disque', bkFileNone: 'Aucun : lie le dossier à un fichier, il sera réécrit à chaque modification (dans un dossier Nextcloud, Dropbox ou Drive, il part aussi hors de l’ordinateur).', bkLink: 'Enregistrer dans un fichier…', bkUnlink: 'Délier', bkResume: 'Reprendre l’enregistrement', bkNeedPerm: 'enregistrement sur le disque en pause : clique pour reprendre', bkDiskErr: 'erreur d’écriture sur le disque', bkSaving: 'enregistrement…', bkOnDisk: (n, h) => `enregistré dans ${n}${h ? ' à ' + h : ''}`, bkInBrowser: h => `gardé dans le navigateur${h ? ' à ' + h : ''}`, bkRemind: 'pas de copie sur le disque depuis 30 min : télécharger', bkDl: 'Copie sur le disque', bkLastDl: d => `dernière copie téléchargée le ${d}`, bkNoDl: 'aucune copie téléchargée', bkNoFsa: 'Ce navigateur ne peut pas réécrire un fichier : télécharge une copie de temps en temps (Ctrl+S), ou utilise Chrome ou Edge pour l’enregistrement automatique sur le disque.', bkDlNow: 'Télécharger une copie', bkDir: 'Dossier de sauvegarde', bkDirNone: 'Aucun : choisis un dossier, une copie datée de chaque dossier OPlanFeu y est écrite tous les quarts d’heure de travail (40 gardées par dossier).', bkDirHint: 'copie datée tous les quarts d’heure de travail, 40 gardées', bkDirPick: 'Choisir un dossier…', bkDirChange: 'Changer…', bkDirNow: 'Copier maintenant', bkHistory: 'Versions et dossiers…', bkAll: 'Tout exporter (.zip)', bkAllIn: 'Restaurer une archive…',
@@ -772,25 +776,29 @@ const I18N = {
     printHintDoc: "Dans la boîte d'impression : marges <b>Aucune</b>, « Graphiques d'arrière-plan » coché.", pageInfo: (n, f) => `${n} page${n > 1 ? 's' : ''} ${f} paysage`,
     lbInfo: (n, p) => `${n} étiquette${n > 1 ? 's' : ''}, ${p} planche${p > 1 ? 's' : ''} A3`, lbInfoAdh: (n, p, nm) => `${n} étiquette${n > 1 ? 's' : ''}, ${p} planche${p > 1 ? 's' : ''} ${nm}`, noLabels: 'Aucun projecteur à étiqueter.', noPatched: 'Aucun projecteur à afficher.',
     legPlugins: 'Plugins pour la console', pluginsHint: "Plugins grandMA2 et grandMA3 de Give Me The Patch : ils sortent le patch de la console en feuille .html, qu'OPlanFeu sait ouvrir.",
-    tabNet: 'DMX et réseau', nvUniv: 'Univers', nvDmx: 'Lignes DMX', nvNet: 'Réseau', nvLabels: 'Étiquettes DMX',
+    tabNet: 'DMX et réseau', nvUniv: 'Univers', nvDmx: 'Liaisons', nvNet: 'Appareils', nvLabels: 'Étiquettes DMX',
     cDmxLine: 'Ligne DMX', unU: 'Univers', unSacn: 'sACN', unArt: 'Art-Net (net:sub:uni)', unFix: 'Projecteurs', unUsed: 'Canaux utilisés', unMax: 'Dernière adresse', unLines: 'Lignes DMX', unSrc: 'Sources',
     unHint: "Univers utilisés par le patch du dossier ou par les lignes DMX. Numéro sACN = numéro d’univers ; Art-Net = univers − décalage (1 par défaut : l’univers 1 du patch est l’univers Art-Net 0:0:0).",
     setProto: 'Protocole', setArtBase: 'Décalage Art-Net', setNet: 'Réseau', setMask: 'Masque', setGw: 'Passerelle',
-    dmxHint: "Une ligne DMX part d’un port de node (ou d’une console, d’un splitter) et porte un univers jusqu’à un point d’accroche. Les projecteurs s’y raccrochent dans l’onglet Projecteurs (colonne « Ligne DMX ») ou avec « Répartir automatiquement » : même univers et même position que la ligne. Le chaînage suit l’ordre en x sur le point.",
+    dmxHint: "Tous les câbles : Ethernet et fibre entre deux ports d’appareils (switch, node, console…), DMX d’une sortie vers une position (ligne de projecteurs) ou vers l’entrée d’un autre appareil (merger, splitter…). Les mêmes câbles se règlent port par port dans la fiche de chaque appareil (onglet Appareils). Les projecteurs se raccrochent à une ligne DMX dans l’onglet Patch (colonne « Ligne DMX ») ou avec « Répartir automatiquement » : même univers et même position. Le chaînage suit l’ordre en x.",
     dlName: 'Ligne', dlSrc: 'Source', dlPort: 'Port', dlU: 'Univers', dlDest: 'Arrivée', dlDestPts: 'Points d’accroche', dlDestDev: 'Merger ou splitter', mg_htp: 'fusion HTP', mg_ltp: 'fusion LTP', mg_backup: 'secours (bascule)', nsIn: n => `entrée ${n}`, dlLen: 'Long. (m)', dlChain: 'Chaînage (ordre en x)', dlN: 'Proj.', dlNotes: 'Notes',
     addDmx: 'Ajouter une ligne DMX', dmxSeries: 'Créer une série de lignes DMX', srPort: 'premier port', srU: 'premier univers', srUStep: 'univers', srUSame: 'le même', srUInc: '+1 par ligne', srPortInc: 'port +1 par ligne',
     autoDmx: 'Répartir automatiquement', autoDone: (n, m) => `${n} projecteur(s) raccroché(s) à une ligne DMX, ${m} sans ligne possible.`, delDmxAsk: n => `Supprimer la ligne DMX « ${n} » ?`,
-    netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, ordinateurs, serveurs média… Les adresses en double, hors du réseau, et les ports de switch occupés deux fois sont signalés.",
+    netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nom, ce qui y est branché (Ethernet, fibre, DMX), câble, longueur, VLAN des ports de switch, univers des sorties DMX. Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
-    nvModels: 'Modèles', mdHint: "Les modèles de switches, nodes, mergers… du lieu, avec leurs ports. Chaque appareil de l’onglet Réseau se rattache à un modèle : les ports de switch et de node au-delà du nombre prévu, les univers en trop et les ports PoE manquants sont signalés, et l’occupation des ports s’affiche sous la liste des appareils.",
+    ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `sortie ${n}`, ptIn: n => `entrée ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'Sortie DMX', pt_in: 'Entrée DMX',
+    ptPort: 'Port', ptName: 'Nom du port', ptTo: 'Branché à', ptCable: 'Câble', ptRef: 'Repère', ptVlan: 'VLAN', lk_eth: 'Ethernet', lk_fiber: 'Fibre', lk_dmx5: 'DMX 5 br.', lk_dmx3: 'DMX 3 br.',
+    lkRef: 'Repère', lkKind: 'Liaison', lkFrom: 'De', lkTo: 'Vers', lkUV: 'Univers / VLAN', lkNone: 'Aucune liaison. Ajoutez un câble ici, ou branchez les ports dans la fiche des appareils.', lf_all: 'Toutes', lf_net: 'Ethernet et fibre', lf_dmx: 'DMX', addNetLink: 'Ajouter un câble Ethernet',
+    dvConn: 'Raccordements', dvNoConn: 'non raccordé', dvSheet: 'Fiche et ports', dvOpenAll: 'Tout déplier', dvCloseAll: 'Tout replier', dvMerge: 'Fusion', dvPoeNeed: 'alimenté par le switch', dvPorts: 'Ports', dvPortsModel: n => `nombres du modèle ${n}, à changer pour cet appareil`, dvPortsDef: 'nombres par défaut : à régler, ou choisir un modèle', dvNoPorts: 'Aucun port.', dNetLinks: 'Liaisons Ethernet et fibre',
+    nvModels: 'Modèles', mdHint: "Les modèles de switches, nodes, mergers… du lieu, avec leurs ports. Chaque appareil de l’onglet Appareils se rattache à un modèle : les ports de switch et de node au-delà du nombre prévu, les univers en trop et les ports PoE manquants sont signalés, et l’occupation des ports s’affiche sous la liste des appareils.",
     mdName: 'Modèle', mdMaker: 'Fabricant', mdKind: 'Type', mdEth: 'Ports Ethernet', mdPoe: 'dont PoE', mdSfp: 'SFP / fibre', mdDmxOut: 'Sorties DMX', mdDmxIn: 'Entrées DMX', mdUniv: 'Univers max', mdRu: 'Hauteur (U)', mdPower: 'Puissance (W)', mdUsed: 'Appareils', mdNotes: 'Notes',
     addModel: 'Ajouter un modèle', newModel: 'Modèle', delModelAsk: (n, k) => `Supprimer le modèle « ${n} » ?` + (k ? ` ${k} appareil(s) n’auront plus de modèle.` : ''), mdDup: 'Dupliquer', mdFromDev: 'Créer les modèles depuis les noms des appareils', mdNone: 'Aucun modèle. Ajoutez vos switches et nodes, avec leurs nombres de ports.',
-    dvModel: 'Modèle', dvConLinked: 'Appareil d’une console : il se supprime avec elle, dans l’onglet Console.', portOver: 'port inexistant sur ce switch', univOver: n => `plus de ${n} univers`, poeNo: 'pas de PoE sur ce port', dlPortOver: n => `le node n’a que ${n} sortie(s) DMX`,
+    dvModel: 'Modèle', dvConLinked: 'Appareil d’une console : il se supprime avec elle, dans l’onglet Console.', portOver: 'port inexistant sur cet appareil', univOver: n => `plus de ${n} univers`, poeNo: 'pas de PoE sur ce port', dlPortOver: n => `le node n’a que ${n} sortie(s) DMX`,
     pmTitle: 'Occupation des ports', pmFree: 'libre', pmSfp: 'SFP', pmPoe: 'PoE', pmNoModel: 'sans modèle : nombre de ports inconnu', pmEth: n => `${n} port(s) Ethernet utilisé(s)`, pmDmx: n => `${n} sortie(s) DMX utilisée(s)`, dvPoe: 'PoE',
     addDev: 'Ajouter un appareil', newDev: 'Appareil', delDevAsk: n => `Supprimer l’appareil « ${n} » ?`, ipDup: 'adresse en double', ipOut: 'hors du réseau', portDup: 'port déjà pris',
     labDmxHint: 'Une étiquette à chaque bout de chaque ligne DMX (départ et arrivée), et en option une petite étiquette par projecteur pour les jarretières.', labEnds: 'Départ et arrivée', labJar: 'Jarretières (une par projecteur)', endA: 'départ', endB: 'arrivée',
-    alDmxU: n => `${n} projecteur(s) sur une ligne DMX d’un autre univers`, alDmx32: n => `${n} ligne(s) DMX de plus de 32 projecteurs`, alNoDmx: n => `${n} projecteur(s) sur une ligne DMX inconnue`, alIp: n => `${n} problème(s) d’adressage réseau`,
+    alDmxU: n => `${n} projecteur(s) sur une ligne DMX d’un autre univers`, alDmx32: n => `${n} ligne(s) DMX de plus de 32 projecteurs`, alNoDmx: n => `${n} projecteur(s) sur une ligne DMX inconnue`, alIp: n => `${n} appareil(s) avec un problème réseau (adresse ou port)`,
     tabElec: 'Électricité', evLines: 'Tableaux et lignes', evSyno: 'Synoptique', evLabels: 'Étiquettes',
     cCircuit: 'Ligne élec.', bLines: 'Lignes à la suite…', linesAsk: 'Première ligne (les projecteurs sélectionnés prennent les lignes suivantes, dans l’ordre du tableau des lignes) :', lineUnknown: n => `Ligne « ${n} » introuvable.`,
     setVolts: 'Tension (V)', setElWarn: 'Alerte à partir de (% calibre)',
@@ -839,7 +847,7 @@ const I18N = {
     save: 'Save the dossier (.json) — Ctrl+S', exportCsv: 'Export the patch for Give Me The Patch (.csv)', openGmtp: 'Open Give Me The Patch', print: 'Print the current view',
     saveHint: 'The dossier is also kept in this browser as you edit.',
     foot: 'Everything is read and computed in the browser: nothing is sent to a server. OPlanFeu, by Mart1ver.',
-    tabSyno: 'Diagrams', sv_elec: 'Electrical', sv_net: 'Network and DMX', sNetsyno: 'Network and DMX diagram', nsTitle: 'Network and DMX diagram', nsHint: 'From the DMX and network tab: each device hangs from its switch (Switch and Port columns), DMX lines leave their source (node, console) and land at their rigging point. Dashed: unconnected device. Red: duplicate address, off-network or port already taken.', nsEmpty: 'No device or DMX line: fill them in DMX and network.', nsPort: p => `port ${p}`, nsDmxPort: p => `out ${p}`, nsFx: n => `${n} fixture(s)`, nsNoIp: 'no address', nsLands: 'lands at', goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX and network → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX and network → Network.', tabFixtures: 'Patch', tabInventory: 'Types and inventory', searchPh: 'Search…',
+    tabSyno: 'Diagrams', sv_elec: 'Electrical', sv_net: 'Network and DMX', sNetsyno: 'Network and DMX diagram', nsTitle: 'Network and DMX diagram', nsHint: 'From the links of the DMX and network tab: each device hangs from the switch it is plugged into (port and port VLAN), DMX cables leave an output and land at a position or another device’s input. Dashed: unconnected device. Red: duplicate address, off-network or port already taken.', nsEmpty: 'No device or DMX line: fill them in DMX and network.', nsPort: p => `port ${p}`, nsDmxPort: p => `out ${p}`, nsFx: n => `${n} fixture(s)`, nsNoIp: 'no address', nsLands: 'lands at', goLab: 'Labels', tabLabels: 'Labels', lv_fx: 'Fixtures', lv_heads: 'Bar heads', lv_elec: 'Electrics', lv_dmx: 'DMX lines', lv_net: 'Network', lbNetTitle: 'Network labels', lbNetHint: 'One label per network device (DMX and network → Network tab): name, IP address and mask, VLAN, switch and port, location, MAC address.', lbNetEmpty: 'No network device: add them in DMX and network → Network.', tabFixtures: 'Patch', tabInventory: 'Types and inventory', searchPh: 'Search…',
     vwView: 'View', vwFree: '— free view —', vwNew: 'Save as view…', vwUpd: 'Update', vwRen: 'Rename…', vwDel: 'Delete the view', vwName: 'View name:', vwDelAsk: n => `Delete the view “${n}”?`, vwInDos: 'Saved views', vwUp: 'Move up', vwNone: 'No saved view: in Plot or 3D, set the display then “Save as view…” to add it here.',
     tabShows: 'Shows', shCurrent: 'Open show', shLinked: n => `Saved to the file ${n}, on every change.`, shNotLinked: 'Kept in this browser. “Save” also puts it in a file on disk, rewritten on every change.', shNoFsa: 'Kept in this browser. “Save” downloads a copy (this browser cannot rewrite a file).', shSave: 'Save', shSaveAs: 'Save as…', shDownload: 'Download a copy', shDup: 'Duplicate', shDupShort: 'Duplicate', shVersions: 'Versions…', shOpenTitle: 'Open or create', shOpenHint: 'A saved show (.oplanfeu.json), or a new show from an MVR (WYSIWYG, Capture, grandMA3…), a patch CSV or the grandMA plugins sheet. You can also drop the file anywhere on the page.', shOpen: 'Open a file…', shList: 'Shows kept in this browser', shFx: n => `${n} fixture(s)`, shUpdated: d => `modified ${d}`, shDelT: 'Delete from this browser', shNone: 'No show yet: open a file to start.', shNoMatch: 'No show matches.', shCopyOf: n => `${n} (copy)`, shDupOpen: n => `“${n}” is created. Open it now?`, navSee: 'View', navTech: 'Technical', navOut: 'Gear and outputs', navToggle: 'Collapse or expand the menu', sideTitle: 'Dossier', sideClose: 'Hide the dossier panel', sideToggle: 'Show or hide the dossier panel',
     undoT: n => `Undo (Ctrl+Z)${n ? ' — ' + n + ' steps' : ''}`, redoT: n => `Redo (Ctrl+Shift+Z)${n ? ' — ' + n + ' steps' : ''}`, bkTitle: 'Backup', bkBrowser: 'In this browser', bkAt: h => `saved at ${h}`, bkPersist: 'Protected storage: the browser will not clear it to free space.', bkNotPersist: 'Unprotected storage: the browser may clear it when short of space. Keep a copy on disk too.', bkBrowserErr: 'cannot save in the browser', bkFile: 'File on disk', bkFileNone: 'None: link the dossier to a file, it is rewritten on every change (in a Nextcloud, Dropbox or Drive folder it also leaves the computer).', bkLink: 'Save to a file…', bkUnlink: 'Unlink', bkResume: 'Resume saving', bkNeedPerm: 'saving to disk paused: click to resume', bkDiskErr: 'disk write error', bkSaving: 'saving…', bkOnDisk: (n, h) => `saved to ${n}${h ? ' at ' + h : ''}`, bkInBrowser: h => `kept in the browser${h ? ' at ' + h : ''}`, bkRemind: 'no copy on disk for 30 min: download', bkDl: 'Copy on disk', bkLastDl: d => `last copy downloaded ${d}`, bkNoDl: 'no copy downloaded', bkNoFsa: 'This browser cannot rewrite a file: download a copy now and then (Ctrl+S), or use Chrome or Edge for automatic saving to disk.', bkDlNow: 'Download a copy', bkDir: 'Backup folder', bkDirNone: 'None: choose a folder, a dated copy of each OPlanFeu dossier is written there every quarter hour of work (40 kept per dossier).', bkDirHint: 'dated copy every quarter hour of work, 40 kept', bkDirPick: 'Choose a folder…', bkDirChange: 'Change…', bkDirNow: 'Copy now', bkHistory: 'Versions and dossiers…', bkAll: 'Export everything (.zip)', bkAllIn: 'Restore an archive…',
@@ -899,25 +907,29 @@ const I18N = {
     printHintDoc: 'In the print dialog: margins <b>None</b>, “Background graphics” ticked.', pageInfo: (n, f) => `${n} page${n > 1 ? 's' : ''} ${f} landscape`,
     lbInfo: (n, p) => `${n} label${n > 1 ? 's' : ''}, ${p} A3 sheet${p > 1 ? 's' : ''}`, lbInfoAdh: (n, p, nm) => `${n} label${n > 1 ? 's' : ''}, ${p} sheet${p > 1 ? 's' : ''} ${nm}`, noLabels: 'No fixture to label.', noPatched: 'No fixture to show.',
     legPlugins: 'Console plugins', pluginsHint: 'Give Me The Patch plugins for grandMA2 and grandMA3: they export the console patch as an .html sheet that OPlanFeu can open.',
-    tabNet: 'DMX and network', nvUniv: 'Universes', nvDmx: 'DMX lines', nvNet: 'Network', nvLabels: 'DMX labels',
+    tabNet: 'DMX and network', nvUniv: 'Universes', nvDmx: 'Links', nvNet: 'Devices', nvLabels: 'DMX labels',
     cDmxLine: 'DMX line', unU: 'Universe', unSacn: 'sACN', unArt: 'Art-Net (net:sub:uni)', unFix: 'Fixtures', unUsed: 'Channels used', unMax: 'Last address', unLines: 'DMX lines', unSrc: 'Sources',
     unHint: 'Universes used by the patch of the dossier or by the DMX lines. sACN number = universe number; Art-Net = universe − offset (1 by default: patch universe 1 is Art-Net universe 0:0:0).',
     setProto: 'Protocol', setArtBase: 'Art-Net offset', setNet: 'Network', setMask: 'Mask', setGw: 'Gateway',
-    dmxHint: 'A DMX line leaves a node port (or a console, a splitter) and carries one universe to a rigging point. Fixtures are attached in the Fixtures tab (“DMX line” column) or with “Auto-assign”: same universe and same position as the line. The daisy chain follows the x order on the point.',
+    dmxHint: 'Every cable: Ethernet and fibre between two device ports (switch, node, console…), DMX from an output to a position (fixture line) or to another device’s input (merger, splitter…). The same cables can be set port by port in each device sheet (Devices tab). Fixtures join a DMX line in the Patch tab (“DMX line” column) or with “Auto-assign”: same universe and position. The daisy chain follows the x order.',
     dlName: 'Line', dlSrc: 'Source', dlPort: 'Port', dlU: 'Universe', dlDest: 'Lands at', dlDestPts: 'Rigging points', dlDestDev: 'Merger or splitter', mg_htp: 'HTP merge', mg_ltp: 'LTP merge', mg_backup: 'backup (failover)', nsIn: n => `input ${n}`, dlLen: 'Length (m)', dlChain: 'Daisy chain (x order)', dlN: 'Fix.', dlNotes: 'Notes',
     addDmx: 'Add a DMX line', dmxSeries: 'Create a series of DMX lines', srPort: 'first port', srU: 'first universe', srUStep: 'universe', srUSame: 'same', srUInc: '+1 per line', srPortInc: 'port +1 per line',
     autoDmx: 'Auto-assign', autoDone: (n, m) => `${n} fixture(s) attached to a DMX line, ${m} with no possible line.`, delDmxAsk: n => `Delete the DMX line “${n}”?`,
-    netHint: 'Every device on the lighting network: consoles, nodes, switches, computers, media servers… Duplicate addresses, addresses outside the network and switch ports used twice are flagged.',
+    netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: name, what is plugged in (Ethernet, fibre, DMX), cable, length, switch port VLAN, DMX output universe. Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
-    nvModels: 'Models', mdHint: 'The venue’s switch, node, merger… models, with their ports. Each device of the Network tab is linked to a model: switch and node ports beyond the model’s count, too many universes and missing PoE ports are flagged, and port usage is shown under the device list.',
+    ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `out ${n}`, ptIn: n => `in ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'DMX out', pt_in: 'DMX in',
+    ptPort: 'Port', ptName: 'Port name', ptTo: 'Plugged into', ptCable: 'Cable', ptRef: 'Label', ptVlan: 'VLAN', lk_eth: 'Ethernet', lk_fiber: 'Fibre', lk_dmx5: 'DMX 5-pin', lk_dmx3: 'DMX 3-pin',
+    lkRef: 'Label', lkKind: 'Link', lkFrom: 'From', lkTo: 'To', lkUV: 'Universe / VLAN', lkNone: 'No link yet. Add a cable here, or plug ports in the device sheets.', lf_all: 'All', lf_net: 'Ethernet and fibre', lf_dmx: 'DMX', addNetLink: 'Add an Ethernet cable',
+    dvConn: 'Connections', dvNoConn: 'not connected', dvSheet: 'Sheet and ports', dvOpenAll: 'Expand all', dvCloseAll: 'Collapse all', dvMerge: 'Merge', dvPoeNeed: 'powered by the switch', dvPorts: 'Ports', dvPortsModel: n => `counts from model ${n}, can be changed for this device`, dvPortsDef: 'default counts: set them, or pick a model', dvNoPorts: 'No port.', dNetLinks: 'Ethernet and fibre links',
+    nvModels: 'Models', mdHint: 'The venue’s switch, node, merger… models, with their ports. Each device of the Devices tab is linked to a model: switch and node ports beyond the model’s count, too many universes and missing PoE ports are flagged, and port usage is shown under the device list.',
     mdName: 'Model', mdMaker: 'Maker', mdKind: 'Type', mdEth: 'Ethernet ports', mdPoe: 'of which PoE', mdSfp: 'SFP / fibre', mdDmxOut: 'DMX outputs', mdDmxIn: 'DMX inputs', mdUniv: 'Max universes', mdRu: 'Height (U)', mdPower: 'Power (W)', mdUsed: 'Devices', mdNotes: 'Notes',
     addModel: 'Add a model', newModel: 'Model', delModelAsk: (n, k) => `Delete the model “${n}”?` + (k ? ` ${k} device(s) will have no model.` : ''), mdDup: 'Duplicate', mdFromDev: 'Create models from device names', mdNone: 'No model yet. Add your switches and nodes with their port counts.',
-    dvModel: 'Model', dvConLinked: 'A console’s device: it is deleted with the console, in the Console tab.', portOver: 'no such port on this switch', univOver: n => `more than ${n} universes`, poeNo: 'no PoE on this port', dlPortOver: n => `the node only has ${n} DMX output(s)`,
+    dvModel: 'Model', dvConLinked: 'A console’s device: it is deleted with the console, in the Console tab.', portOver: 'no such port on this device', univOver: n => `more than ${n} universes`, poeNo: 'no PoE on this port', dlPortOver: n => `the node only has ${n} DMX output(s)`,
     pmTitle: 'Port usage', pmFree: 'free', pmSfp: 'SFP', pmPoe: 'PoE', pmNoModel: 'no model: port count unknown', pmEth: n => `${n} Ethernet port(s) used`, pmDmx: n => `${n} DMX output(s) used`, dvPoe: 'PoE',
     addDev: 'Add a device', newDev: 'Device', delDevAsk: n => `Delete the device “${n}”?`, ipDup: 'duplicate address', ipOut: 'outside the network', portDup: 'port already used',
     labDmxHint: 'One label at each end of each DMX line (source and landing), and optionally a small label per fixture for the jumpers.', labEnds: 'Source and landing', labJar: 'Jumpers (one per fixture)', endA: 'source', endB: 'landing',
-    alDmxU: n => `${n} fixture(s) on a DMX line of another universe`, alDmx32: n => `${n} DMX line(s) with more than 32 fixtures`, alNoDmx: n => `${n} fixture(s) on an unknown DMX line`, alIp: n => `${n} network addressing issue(s)`,
+    alDmxU: n => `${n} fixture(s) on a DMX line of another universe`, alDmx32: n => `${n} DMX line(s) with more than 32 fixtures`, alNoDmx: n => `${n} fixture(s) on an unknown DMX line`, alIp: n => `${n} device(s) with a network issue (address or port)`,
     tabElec: 'Electrics', evLines: 'Boards and lines', evSyno: 'One-line diagram', evLabels: 'Labels',
     cCircuit: 'Power line', bLines: 'Consecutive lines…', linesAsk: 'First line (selected fixtures take the following lines, in the order of the lines table):', lineUnknown: n => `Line “${n}” not found.`,
     setVolts: 'Voltage (V)', setElWarn: 'Warn from (% rating)',
@@ -1256,7 +1268,9 @@ function ensureLieu(d) {
   d.lieu.devices = d.lieu.devices || [];
   d.lieu.consoles = d.lieu.consoles || [];
   d.lieu.models = d.lieu.models || [];
+  d.lieu.netLinks = d.lieu.netLinks || [];
   syncConsoleDevices(d.lieu);
+  migrateNet(d.lieu);
   d.lieu.settings = { proto: 'artnet', artBase: 1, net: '2.0.0.0', mask: '255.0.0.0', gw: '', ...d.lieu.settings };
   const have = new Set(d.lieu.points.map(p => p.name)), byPos = new Map();
   d.fixtures.forEach(f => { if (f.position) { if (!byPos.has(f.position)) byPos.set(f.position, []); byPos.get(f.position).push(f); } });
@@ -1608,7 +1622,8 @@ function refreshSide() {
     }
     if (state.d.lieu.devices.length) {
       const iss = netIssues();
-      if (iss.size) al.push([t('alIp', iss.size), cut([...iss.keys()].map(id => (state.d.lieu.devices.find(d => d.id === id) || {}).name))]);
+      const bd = state.d.lieu.devices.filter(d => iss.has(d.id)).map(d => d.name);
+      if (bd.length) al.push([t('alIp', bd.length), cut(bd)]);
     }
   }
   $('#alerts').innerHTML = al.map(([a, d]) => `<div class="alert"><b>${esc(a)}</b>${d ? '<br>' + esc(d) : ''}</div>`).join('');
@@ -1857,25 +1872,40 @@ function renderNetSyno() {
     if (host) { host.cons = (host.cons || []).concat(c); if (c.name && !byName.has(c.name)) byName.set(c.name, host); }
     else if (c.name && !byName.has(c.name)) byName.set(c.name, node({ t: 'dev', d: { name: c.name, kind: 'console' }, name: c.name, kind: 'console', cons: [c], virtual: true }));
   });
-  // raccordement Ethernet : switch de l'appareil (garde-fou contre les boucles)
-  for (const n of N) {
-    const sw = n.d && n.d.sw && byName.get(n.d.sw);
-    if (!sw || sw === n) continue;
-    let p = sw, loop = false; while (p) { if (p === n) { loop = true; break; } p = p.parent; }
-    if (!loop) { n.parent = sw; n.port = n.d.port; sw.kids.push(n); }
+  // raccordement Ethernet : arbre parcouru depuis les switches les plus reliés ; les câbles en plus (boucle, double attache) sont tracés à part
+  const adj = new Map(), ethNames = new Set(), treeL = new Set(), ethExtra = [];
+  const ethL = (L.netLinks || []).filter(l => l.a && l.b && l.a !== l.b && byName.get(l.a) && byName.get(l.b));
+  ethL.forEach(l => { ethNames.add(l.a); ethNames.add(l.b); [[l.a, l.b, l.ap, l.bp], [l.b, l.a, l.bp, l.ap]].forEach(([p0, q0, pp, qp]) => { if (!adj.has(p0)) adj.set(p0, []); adj.get(p0).push({ to: q0, myP: pp, toP: qp, l }); }); });
+  {
+    const seen = new Set(), devN = N.filter(n => n.t === 'dev');
+    devN.sort((a, b) => (b.kind === 'switch') - (a.kind === 'switch') || (adj.get(b.name) || []).length - (adj.get(a.name) || []).length || natCmp(a.name, b.name));
+    for (const r of devN) {
+      if (seen.has(r)) continue; seen.add(r);
+      const Q = [r];
+      while (Q.length) {
+        const p = Q.shift();
+        for (const e of adj.get(p.name) || []) {
+          const c = byName.get(e.to); if (!c || seen.has(c)) continue;
+          seen.add(c); treeL.add(e.l); c.parent = p; p.kids.push(c);
+          c.port = isSet(e.myP) ? portLabel(p.d, 'e' + e.myP) : ''; c.vlan = (p.d.portVlan || {})['e' + e.myP] || (c.d.portVlan || {})['e' + e.toP] || null;
+          Q.push(c);
+        }
+      }
+    }
+    ethL.filter(l => !treeL.has(l)).forEach(l => ethExtra.push({ a: byName.get(l.a), b: byName.get(l.b), eth: true, port: isSet(l.ap) ? portLabel(byName.get(l.a).d, 'e' + l.ap) : '' }));
   }
   // lignes DMX : sous leur source ; source inconnue → boîte « source » à part
   for (const l of [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name))) {
     let src = l.src && byName.get(l.src);
     if (!src) { const k = 'src:' + (l.src || '?'); src = byName.get(k) || node({ t: 'dev', d: { name: l.src || '?' }, name: l.src || '?', kind: 'src', virtual: true }); byName.set(k, src); }
-    const ch = dmxChain(l), ln = node({ t: 'dmx', l, name: l.name, parent: src, port: l.port, n: ch.length });
+    const ch = dmxChain(l), ln = node({ t: 'dmx', l, name: l.name, parent: src, port: isSet(l.port) ? (src.d && src.d.id ? portLabel(src.d, 'o' + l.port) : t('nsDmxPort', l.port)) : '', n: ch.length });
     src.kids.push(ln);
     const dd = l.dest && byName.get(l.dest);
-    if (dd && dd.t === 'dev' && ['merger', 'splitter'].includes(dd.kind)) { (dd.ins = dd.ins || []).push(ln); ln.toDev = dd; }
+    if (dd && dd.t === 'dev' && !dd.virtual) { (dd.ins = dd.ins || []).push(ln); ln.toDev = dd; }
     else if (l.dest) { const pn = node({ t: 'pos', name: l.dest, parent: ln, n: state.d.fixtures.filter(f => f.position === l.dest && f.dmxLine === l.name).length }); ln.kids.push(pn); }
   }
   // un merger se range derrière sa première entrée DMX ; ses autres entrées (et son raccordement Ethernet) deviennent des liaisons à part
-  const extra = [];
+  const extra = [...ethExtra];
   const isAnc = (a, n) => { for (let p = n; p; p = p.parent) if (p === a) return true; return false; };
   for (const m of N.filter(n => n.ins && n.ins.length)) {
     const first = m.ins.find(l => !isAnc(m, l));
@@ -1883,7 +1913,7 @@ function renderNetSyno() {
       if (m.parent) { m.parent.kids = m.parent.kids.filter(k => k !== m); extra.push({ a: m.parent, b: m, eth: true, port: m.port }); }
       m.parent = first; m.port = undefined; first.kids.push(m);
     }
-    m.ins.forEach((l, i) => { if (l !== first) extra.push({ a: l, b: m, n: i + 1 }); else m.inN = i + 1; });
+    m.ins.forEach((l, i) => { const nIn = isSet(l.l.destPort) ? portLabel(m.d, 'i' + l.l.destPort) : t('nsIn', i + 1); if (l !== first) extra.push({ a: l, b: m, n: nIn }); else m.inN = nIn; });
   }
   // ordre : switches, consoles, nodes, puis le reste ; enfants dans l'ordre des ports
   const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, splitter: 3, src: 4 }[n.kind] ?? 5);
@@ -1909,16 +1939,16 @@ function renderNetSyno() {
       const p = n.parent, x1 = X(p) + BW, y1 = Y(p) + BH / 2, x2 = bx, y2 = by + BH / 2, xm = x1 + (x2 - x1) * .45;
       const dmx = n.t === 'dmx', pos = n.t === 'pos', col = dmx ? ucol(n.l.universe) : pos ? ucol(p.l.universe) : 'var(--ink)';
       edges += `<path d="M${x1} ${y1} H${xm} V${y2} H${x2}" fill="none" stroke="${col}" stroke-width="${dmx ? 2.6 : pos ? 1.6 : 1.6}"${pos ? ' stroke-dasharray="5 4"' : ''}/>`;
-      if (n.port !== undefined && n.port !== null && n.port !== '') edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(dmx ? t('nsDmxPort', n.port) : t('nsPort', n.port))}</text>`;
-      else if (n.inN && n.ins.length > 1) edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(t('nsIn', n.inN))}</text>`;
+      if (n.port !== undefined && n.port !== null && n.port !== '') edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(n.port)}</text>`;
+      else if (n.inN && n.ins.length > 1) edges += `<text x="${x2 - 5}" y="${y2 - 4}" font-size="10" text-anchor="end" class="mut">${x(n.inN)}</text>`;
     }
     let l1 = n.name, l2 = '', l3 = '', stripe = '', cls = 'box';
     if (n.t === 'dev') {
       const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
       l2 = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), n.kind === 'merger' ? t('mg_' + (n.d.merge || 'htp')) : '', n.d && n.d.model ? n.d.model : m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean).join(' · ');
-      l3 = n.d.ip ? n.d.ip + (n.d.vlan ? ' · VLAN ' + n.d.vlan : '') : n.virtual ? t('nsNoIp') : '';
+      l3 = [n.d.ip || (n.virtual ? t('nsNoIp') : ''), n.vlan ? 'VLAN ' + n.vlan : ''].filter(Boolean).join(' · ');
       stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'merger' ? '#b5651d' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
-      if (n.virtual || (n.kind === 'merger' || n.kind === 'splitter') && !n.parent && !n.d.sw || (n.kind !== 'switch' && !n.parent && L.devices.some(d => d.kind === 'switch'))) cls += ' loose';
+      if (n.virtual || (n.kind === 'merger' || n.kind === 'splitter') && !n.parent && !ethNames.has(n.name) || (n.kind !== 'switch' && !n.parent && !ethNames.has(n.name) && L.devices.some(d => d.kind === 'switch'))) cls += ' loose';
     } else if (n.t === 'dmx') {
       l2 = [n.l.universe ? 'U ' + n.l.universe + (st.proto === 'sacn' ? '' : ' · ' + artAddr(n.l.universe)) : '', n.l.length ? n.l.length + ' m' : ''].filter(Boolean).join(' · ');
       l3 = n.n ? t('nsFx', n.n) : ''; stripe = ucol(n.l.universe);
@@ -1936,7 +1966,7 @@ function renderNetSyno() {
     // tracé à angles droits ; si la cible n'est pas plus à droite, on passe par-dessus sa boîte
     const d = x2 - x1 > 28 ? `M${x1} ${y1} H${x2 - 14} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 12} V${Y(e.b) - 8} H${x2 - 14} V${y2} H${x2}`;
     edges += `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}"${e.eth ? ' stroke-dasharray="2 3"' : ''}/>`
-      + `<text x="${x2 - 16}" y="${y2 + 3.5}" font-size="10" text-anchor="end" class="mut">${x(e.eth ? t('nsPort', e.port ?? '?') + ' · eth.' : t('nsIn', e.n))}</text>`;
+      + `<text x="${x2 - 16}" y="${y2 + 3.5}" font-size="10" text-anchor="end" class="mut">${x(e.eth ? (e.port || '?') + ' · eth.' : e.n)}</text>`;
   }
   const head = `<text x="${PAD}" y="26" font-size="17" font-weight="700">${x(t('nsTitle'))}</text>
 <text x="${PAD}" y="46" font-size="12" class="mut">${x([st.proto === 'sacn' ? 'sACN' : 'Art-Net', st.net ? `${t('setNet')} ${st.net} / ${st.mask || ''}` : '', st.gw ? `${t('setGw')} ${st.gw}` : ''].filter(Boolean).join(' · '))}</text>
@@ -2022,9 +2052,9 @@ function labDmx() {
     const ends = state.labEnds !== false, jar = !!state.labJar;
     let labs = '';
     for (const x of [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name))) {
-      const ch = dmxChain(x), src = [x.src, x.port ? 'port ' + x.port : ''].filter(Boolean).join(' · ');
+      const ch = dmxChain(x), sd = devByName(x.src), dd = devByName(x.dest), src = [x.src, isSet(x.port) ? (sd ? portLabel(sd, 'o' + x.port) : 'port ' + x.port) : ''].filter(Boolean).join(' · ');
       const one = end => `<div class="lab dmx"><div class="n">${esc(x.name)}<small><span class="end">${esc(t(end))}</span></small></div>
-<div class="l2">${x.universe ? 'U ' + esc(x.universe) + ' · ' : ''}${esc(src)}</div><div class="l3">→ ${esc(x.dest || '')}${x.length ? ' · ' + esc(x.length) + ' m' : ''}</div><div class="l4">${esc(ch.length > 10 ? `${ch.length} proj. : ${ch[0].fid || '?'} → … → ${ch[ch.length - 1].fid || '?'}` : ch.map(f => f.fid || '?').join(' → '))}</div></div>`;
+<div class="l2">${x.universe ? 'U ' + esc(x.universe) + ' · ' : ''}${esc(src)}</div><div class="l3">→ ${esc(x.dest || '')}${dd && isSet(x.destPort) ? ' · ' + esc(portLabel(dd, 'i' + x.destPort)) : ''}${x.length ? ' · ' + esc(x.length) + ' m' : ''}</div><div class="l4">${esc(ch.length > 10 ? `${ch.length} proj. : ${ch[0].fid || '?'} → … → ${ch[ch.length - 1].fid || '?'}` : ch.map(f => f.fid || '?').join(' → '))}</div></div>`;
       if (ends) labs += one('endA') + one('endB');
       if (jar) ch.forEach((f, i) => { labs += `<div class="lab jar"><div class="n">${esc(x.name)} · ${i + 1}/${ch.length}</div><div class="l4">${esc(f.fid || '?')} · ${esc(patchText(f))}${ch[i + 1] ? ' → ' + esc(ch[i + 1].fid || '?') : ''}</div></div>`; });
     }
@@ -2037,9 +2067,10 @@ ${L.dmxLines.length ? `<div class="labs">${labs}</div>` : `<p class="hint" style
 function labNet() {
   const L = state.d.lieu, x = esc, st = L.settings;
   const devs = [...L.devices].sort((a, b) => natCmp(a.name, b.name));
-  const labs = devs.map(v => `<div class="lab net"><div class="n">${x(v.name || '?')}<small>${x(t('k' + v.kind))}</small></div>
-<div class="l2"><b>${x(v.ip || '')}</b>${v.ip ? ' / ' + x(v.mask || st.mask || '') : ''}${v.vlan ? ' · VLAN ' + x(v.vlan) : ''}</div>
-<div class="l3">${v.sw ? x(v.sw) + (v.port ? ' · port ' + x(v.port) : '') : ''}${v.location ? (v.sw ? ' · ' : '') + x(v.location) : ''}</div><div class="l4">${x(v.mac || '')}${v.u ? (v.mac ? ' · ' : '') + 'U ' + x(v.u) : ''}</div></div>`).join('');
+  const links = allLinks();
+  const labs = devs.map(v => { const up = devUplinks(v, links)[0]; return `<div class="lab net"><div class="n">${x(v.name || '?')}<small>${x(t('k' + v.kind))}</small></div>
+<div class="l2"><b>${x(v.ip || '')}</b>${v.ip ? ' / ' + x(v.mask || st.mask || '') : ''}${up && up.vlan ? ' · VLAN ' + x(up.vlan) : ''}</div>
+<div class="l3">${up ? x(up.text) : ''}${v.location ? (up ? ' · ' : '') + x(v.location) : ''}</div><div class="l4">${x(v.mac || '')}${v.u ? (v.mac ? ' · ' : '') + 'U ' + x(v.u) : ''}</div></div>`; }).join('');
   return `<h1 class="ptitle">${x(t('lbNetTitle'))} — ${x(state.d.meta.titre || '')}</h1><p class="hint noprint" style="margin:12px 0 0">${x(t('lbNetHint'))}</p>
 ${devs.length ? `<div class="labs">${labs}</div>` : `<p class="hint" style="margin-top:16px">${x(t('lbNetEmpty'))}</p>`}`;
 }
@@ -2109,20 +2140,118 @@ const DEV_KINDS = ['console', 'node', 'merger', 'splitter', 'switch', 'pc', 'med
 // modèle d'un appareil (par son nom), et ports qu'il offre : Ethernet (les SFP à la suite), dont PoE les premiers
 const devModel = d => d && d.model ? (state.d.lieu.models || []).find(m => m.name === d.model) || null : null;
 const portNum = p => { const m = /^\s*(?:[a-z]*\s*)?(\d+)\s*$/i.exec(String(p ?? '')); return m ? +m[1] : null; };
-function devPorts(d) {   // occupation : ports Ethernet d'un switch, sorties DMX d'un node / merger / splitter
-  const L = state.d.lieu, m = devModel(d);
-  const eth = L.devices.filter(x => x.sw === d.name && x.port !== '' && x.port !== null && x.port !== undefined).map(x => ({ p: String(x.port), n: portNum(x.port), who: x.name, poe: x.poe }));
-  const dmx = L.dmxLines.filter(x => x.src === d.name && x.port !== '' && x.port !== null && x.port !== undefined).map(x => ({ p: String(x.port), n: portNum(x.port), who: x.name, u: x.universe }));
-  return { m, eth, dmx, nEth: m ? (+m.eth || 0) + (+m.sfp || 0) : 0, nDmx: m ? +m.dmxOut || 0 : 0 };
+const devByName = n => n ? state.d.lieu.devices.find(v => v.name === n) || null : null;
+// nombre de ports d'un appareil : réglé sur l'appareil, sinon son modèle, sinon une valeur par défaut selon le type
+// « sûr » quand le nombre vient de l'appareil ou du modèle : seuls ceux-là font signaler un port en trop
+const DEV_PORT_DEF = { switch: { eth: 8 }, console: { eth: 1, out: 2 }, node: { eth: 1, out: 2 }, merger: { eth: 1, in: 2, out: 1 }, splitter: { in: 1, out: 4 }, pc: { eth: 1 }, media: { eth: 1 }, wifi: { eth: 1 }, other: { eth: 1 } };
+const PORT_FIELDS = [['eth', 'eth'], ['sfp', 'sfp'], ['out', 'dmxOut'], ['in', 'dmxIn'], ['poe', 'poe']];
+const isSet = v => v !== null && v !== undefined && v !== '';
+function devCounts(d) {
+  const m = devModel(d), o = d.ports || {}, def = DEV_PORT_DEF[d.kind] || {}, r = {}, sure = {};
+  const con = d.kind === 'console' && (state.d.lieu.consoles || []).find(c => c.device === d.name);
+  for (const [k, mk] of PORT_FIELDS) {
+    let v = isSet(o[k]) ? o[k] : m && isSet(m[mk]) ? m[mk] : k === 'out' && con && con.dmxPorts ? con.dmxPorts : null;
+    sure[k] = isSet(v) || (!!m && k === 'sfp');
+    r[k] = isSet(v) ? +v || 0 : k === 'sfp' || k === 'poe' ? 0 : def[k] || 0;
+  }
+  return { ...r, sure };
+}
+// ports : « e3 » Ethernet 3 (les SFP à la suite des ports cuivre), « o2 » sortie DMX 2, « i1 » entrée DMX 1
+const portKey = (dir, n) => (dir === 'out' ? 'o' : dir === 'in' ? 'i' : 'e') + n;
+function portLabel(d, key) {
+  if (!key) return '';
+  const nm = d && d.portNames && d.portNames[key]; if (nm) return nm;
+  const n = key.slice(1);
+  if (key[0] === 'o') return t('ptOut', n);
+  if (key[0] === 'i') return t('ptIn', n);
+  const c = d ? devCounts(d) : null; return c && c.sfp && +n > c.eth ? t('ptSfp', n) : t('ptEth', n);
+}
+// toutes les liaisons sous une même forme : Ethernet et fibre (netLinks) ; DMX (dmxLines) d'une sortie vers une position ou l'entrée d'un appareil
+function allLinks() {
+  const L = state.d.lieu, out = [];
+  (L.netLinks || []).forEach(l => out.push({ l, coll: 'netLinks', kind: l.kind || 'eth', a: l.a, ak: isSet(l.ap) ? 'e' + l.ap : null, b: l.b, bk: isSet(l.bp) ? 'e' + l.bp : null }));
+  L.dmxLines.forEach(l => { const dv = devByName(l.dest); out.push({ l, coll: 'dmxLines', kind: 'dmx', a: l.src, ak: isSet(l.port) ? 'o' + l.port : null, b: l.dest, bk: dv && isSet(l.destPort) ? 'i' + l.destPort : null, toPos: !dv }); });
+  return out;
+}
+function portUse(name, links = allLinks()) {   // port → câbles qui y arrivent, avec l'autre bout
+  const m = new Map(), add = (k, v) => m.set(k, [...(m.get(k) || []), v]);
+  for (const x of links) {
+    if (x.a === name && x.ak) add(x.ak, { x, other: x.b, okey: x.bk, toPos: x.toPos });
+    if (x.b === name && x.bk && !x.toPos) add(x.bk, { x, other: x.a, okey: x.ak });
+  }
+  return m;
+}
+function devPortList(d, links) {   // ports à montrer : le nombre prévu, plus ceux qu'un câble occupe au-delà
+  const c = devCounts(d), use = portUse(d.name, links), list = [];
+  const maxUsed = p => Math.max(0, ...[...use.keys()].filter(k => k[0] === p).map(k => +k.slice(1) || 0));
+  const lim = { eth: c.sure.eth || c.sure.sfp ? c.eth + c.sfp : null, out: c.sure.out ? c.out : null, in: c.sure.in ? c.in : null };
+  const push = (dir, n) => { const k = portKey(dir, n), u = use.get(k) || [], over = lim[dir] !== null && n > lim[dir]; if (!over || u.length) list.push({ key: k, dir, n, sfp: dir === 'eth' && c.sfp > 0 && n > c.eth, poe: dir === 'eth' && n <= c.poe, over, use: u }); };
+  for (let i = 1; i <= Math.max(c.eth + c.sfp, maxUsed('e')); i++) push('eth', i);
+  for (let i = 1; i <= Math.max(c.in, maxUsed('i')); i++) push('in', i);
+  for (let i = 1; i <= Math.max(c.out, maxUsed('o')); i++) push('out', i);
+  return { c, list, use };
+}
+// raccordements Ethernet d'un appareil (switch d'abord) : « SW scène · port 3 », VLAN du port
+function devUplinks(d, links) {
+  const out = [];
+  for (const [k, arr] of portUse(d.name, links)) if (k[0] === 'e') for (const u of arr) {
+    const o = devByName(u.other);
+    out.push({ k, other: u.other, okey: u.okey, sw: o && o.kind === 'switch', text: (u.other || '?') + (o && u.okey ? ' · ' + portLabel(o, u.okey) : ''), vlan: (o && o.portVlan && u.okey && o.portVlan[u.okey]) || (d.portVlan && d.portVlan[k]) || null });
+  }
+  return out.sort((a, b) => b.sw - a.sw || natCmp(a.k, b.k));
+}
+// renommer un appareil : consoles, lignes DMX et câbles suivent
+function renameDeviceRefs(L, o, v) {
+  L.consoles.forEach(c => { if (c.device === o) c.device = v; });
+  L.dmxLines.forEach(l => { if (l.src === o) l.src = v; if (l.dest === o) l.dest = v; });
+  (L.netLinks || []).forEach(l => { if (l.a === o) l.a = v; if (l.b === o) l.b = v; });
+}
+// anciens dossiers : colonnes Switch / Port / VLAN de l'appareil → câble Ethernet et VLAN du port de switch ; entrées de merger numérotées
+function migrateNet(L) {
+  for (const v of L.devices) {
+    if (!('sw' in v) && !('port' in v)) continue;
+    if (v.sw) {
+      const bp = portNum(v.port);
+      L.netLinks.push({ id: uid(), kind: 'eth', name: '', a: v.name, ap: 1, b: v.sw, bp, length: null, notes: bp === null && v.port ? 'port ' + v.port : '' });
+      const sw = L.devices.find(y => y.name === v.sw);
+      if (sw && bp !== null && isSet(v.vlan)) { sw.portVlan = { ...(sw.portVlan || {}), ['e' + bp]: v.vlan }; delete v.vlan; }
+    }
+    delete v.sw; delete v.port;
+  }
+  const byDest = new Map();
+  L.dmxLines.forEach(l => { if (L.devices.some(v => v.name === l.dest)) byDest.set(l.dest, [...(byDest.get(l.dest) || []), l]); });
+  for (const ls of byDest.values()) { const taken = new Set(ls.map(l => l.destPort).filter(isSet)); let n = 1; ls.forEach(l => { if (!isSet(l.destPort)) { while (taken.has(n)) n++; l.destPort = n; taken.add(n); } }); }
+}
+function nextDmxName() { const L = state.d.lieu; let i = L.dmxLines.length + 1, n; do n = 'DMX ' + i++; while (L.dmxLines.some(x => x.name === n)); return n; }
+// brancher un port (fiche d'un appareil) : réutilise le câble du port s'il y en a un, sinon en crée un
+function setPortConn(d, key, val) {
+  const L = state.d.lieu, dir = key[0], n = +key.slice(1), cur = (portUse(d.name).get(key) || [])[0], x = cur && cur.x;
+  if (!val) { if (x) L[x.coll] = L[x.coll].filter(l => l !== x.l); return; }
+  const [kind, name, okey] = val.split('\u0001'), on = okey ? +okey.slice(1) : null;
+  if (dir === 'e') {
+    if (x && x.coll === 'netLinks') { if (x.l.a === d.name && 'e' + x.l.ap === key) { x.l.b = name; x.l.bp = on; } else { x.l.a = name; x.l.ap = on; } }
+    else { const c = devCounts(d); L.netLinks.push({ id: uid(), kind: c.sfp && n > c.eth ? 'fiber' : 'eth', name: '', a: d.name, ap: n, b: name, bp: on, length: null, notes: '' }); }
+  } else if (dir === 'o') {
+    const dp = kind === 'd' ? on : null;
+    if (x) { x.l.dest = name; x.l.destPort = dp; }
+    else L.dmxLines.push({ id: uid(), name: nextDmxName(), src: d.name, port: n, universe: null, dest: name, destPort: dp, length: null, notes: '' });
+  } else {
+    if (x) { x.l.src = name; x.l.port = on; }
+    else {
+      const ex = L.dmxLines.find(l => l.src === name && +l.port === on);   // la sortie choisie a déjà un câble : il vient ici
+      if (ex) { ex.dest = d.name; ex.destPort = n; }
+      else L.dmxLines.push({ id: uid(), name: nextDmxName(), src: name, port: on, universe: null, dest: d.name, destPort: n, length: null, notes: '' });
+    }
+  }
 }
 const ipInt = s => { const m = /^\s*(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\s*$/.exec(s || ''); return m && m.slice(1).every(x => +x < 256) ? ((+m[1] << 24) >>> 0) + (+m[2] << 16) + (+m[3] << 8) + +m[4] : null; };
 const artAddr = u => { const a = u - (+state.d.lieu.settings.artBase || 0); return a < 0 ? '—' : `${a >> 8}:${(a >> 4) & 15}:${a & 15}`; };
 function dmxChain(x) {   // projecteurs d'une ligne DMX, dans l'ordre du chaînage (x croissant)
   return state.d.fixtures.filter(f => f.dmxLine && f.dmxLine === x.name).sort((a, b) => (a.x ?? 1e9) - (b.x ?? 1e9) || cmpKey(numKey(a.fid), numKey(b.fid)));
 }
-function netIssues() {   // adresses en double, hors réseau, ports de switch pris deux fois
-  const st = state.d.lieu.settings, D = state.d.lieu.devices, out = new Map(), add = (id, m) => out.set(id, [...(out.get(id) || []), m]);
-  const net = ipInt(st.net), msk = ipInt(st.mask), seen = new Map(), ports = new Map();
+function netIssues() {   // adresses en double ou hors réseau ; ports pris deux fois, inexistants, sans PoE ; univers en trop
+  const L = state.d.lieu, st = L.settings, D = L.devices, out = new Map(), add = (id, m) => { if (id) out.set(id, [...(out.get(id) || []), m]); };
+  const net = ipInt(st.net), msk = ipInt(st.mask), seen = new Map(), links = allLinks();
   D.forEach(d => {
     const ip = ipInt(d.ip);
     if (d.ip && ip === null) add(d.id, 'ipOut');
@@ -2131,16 +2260,16 @@ function netIssues() {   // adresses en double, hors réseau, ports de switch pr
       const m = ipInt(d.mask) ?? msk;
       if (net !== null && m !== null && ((ip & m) >>> 0) !== ((net & m) >>> 0)) add(d.id, 'ipOut');
     }
-    if (d.sw && d.port) { const k = d.sw + '#' + d.port; if (ports.has(k)) { add(d.id, 'portDup'); add(ports.get(k), 'portDup'); } else ports.set(k, d.id); }
-    // le switch a un modèle : le port doit exister, et être PoE si l'appareil en a besoin
-    const sw = d.sw && D.find(x => x.name === d.sw), sm = devModel(sw), pn = portNum(d.port);
-    if (sm && pn !== null) {
-      const n = (+sm.eth || 0) + (+sm.sfp || 0);
-      if (n && (pn < 1 || pn > n)) add(d.id, 'portOver');
-      else if (d.poe && pn > (+sm.poe || 0)) add(d.id, 'poeNo');
+    const P = devPortList(d, links);
+    for (const p of P.list) {
+      const both = m => p.use.forEach(u => { add(u.x.l.id, m); add((devByName(u.other) || {}).id, m); add(d.id, m); });
+      if (p.use.length > 1) both('portDup');
+      if (p.over && p.use.length) both('portOver');
+      // appareil alimenté en PoE sur un port de switch qui n'en fournit pas (nombre de ports PoE connu)
+      if (p.dir === 'eth' && d.kind === 'switch' && (P.c.sure.poe) && !p.poe) p.use.forEach(u => { const o = devByName(u.other); if (o && o.poe) { add(o.id, 'poeNo'); add(u.x.l.id, 'poeNo'); } });
     }
     const m = devModel(d);
-    if (m && +m.univ) { const u = new Set(state.d.lieu.dmxLines.filter(x => x.src === d.name && x.universe).map(x => x.universe)); if (u.size > +m.univ) add(d.id, 'univOver'); }
+    if (m && +m.univ) { const u = new Set(L.dmxLines.filter(x => x.src === d.name && x.universe).map(x => x.universe)); if (u.size > +m.univ) add(d.id, 'univOver'); }
   });
   for (const [k, v] of out) out.set(k, [...new Set(v)]);
   return out;
@@ -2152,44 +2281,73 @@ function universes() {
   state.d.lieu.dmxLines.forEach(x => { if (x.universe) get(x.universe).lines.push(x); });
   return [...U.values()].sort((a, b) => a.u - b.u);
 }
-// occupation des ports : une rangée de cases par switch (ports Ethernet puis SFP) et par node (sorties DMX)
+// occupation des ports : une rangée de cases par appareil (Ethernet, SFP, entrées et sorties DMX)
 function portMaps() {
-  const L = state.d.lieu, x = esc, out = [];
+  const L = state.d.lieu, x = esc, out = [], links = allLinks();
   const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#4363d8'];
   for (const d of [...L.devices].sort((a, b) => (b.kind === 'switch') - (a.kind === 'switch') || natCmp(a.name, b.name))) {
-    const P = devPorts(d), isSw = d.kind === 'switch' || P.eth.length, isDmx = ['node', 'merger', 'splitter', 'console'].includes(d.kind) && (P.dmx.length || P.nDmx);
-    if (!isSw && !isDmx) continue;
-    const row = (list, n, cell, extra) => {
-      const max = Math.max(n, ...list.map(q => q.n || 0));
-      const cells = [];
-      for (let i = 1; i <= max; i++) { const q = list.filter(z => z.n === i); if (i <= n || q.length || !n) cells.push(cell(i, q, i > n && n > 0)); }
-      list.filter(q => q.n === null).forEach(q => cells.push(cell(q.p, [q], false)));
-      return `<div class="pmrow">${cells.join('')}${extra || ''}</div>`;
+    const P = devPortList(d, links), eth = P.list.filter(p => p.dir === 'eth'), dmx = P.list.filter(p => p.dir !== 'eth');
+    if (d.kind !== 'switch' && !dmx.length && eth.length < 3) continue;
+    const cell = p => {
+      const who = p.use.map(u => u.other || '?').join(', '), u0 = p.use[0], uni = u0 && u0.x.coll === 'dmxLines' ? u0.x.l.universe : null;
+      const bad = p.use.length > 1 || (p.over && p.use.length) || (p.dir === 'eth' && d.kind === 'switch' && P.c.sure.poe && !p.poe && p.use.some(u => (devByName(u.other) || {}).poe));
+      return `<span class="pm${p.dir === 'eth' ? '' : ' dmx'}${p.use.length ? ' on' : ''}${bad ? ' bad' : ''}${p.sfp ? ' sfp' : ''}" title="${x(portLabel(d, p.key) + ' : ' + (who || t('pmFree')) + (uni ? ' (U' + uni + ')' : ''))}"${uni ? ` style="--uc:${pal[(+uni - 1) % pal.length]}"` : ''}><b>${x(portLabel(d, p.key))}${p.poe ? '<i>⚡</i>' : ''}</b><small>${x(who)}</small></span>`;
     };
-    let h = '';
-    if (isSw) {
-      const m = P.m, nE = m ? +m.eth || 0 : 0;
-      h += row(P.eth, P.nEth, (i, q, over) => {
-        const sfp = m && typeof i === 'number' && i > nE, poe = m && typeof i === 'number' && i <= (+m.poe || 0), bad = over || q.length > 1 || q.some(z => z.poe && !poe && m);
-        return `<span class="pm${q.length ? ' on' : ''}${bad ? ' bad' : ''}${sfp ? ' sfp' : ''}" title="${x(i + (q.length ? ' : ' + q.map(z => z.who).join(', ') : ' : ' + t('pmFree')))}"><b>${x(i)}${poe ? '<i>⚡</i>' : ''}</b><small>${x(q.map(z => z.who).join(', ') || (sfp ? t('pmSfp') : ''))}</small></span>`;
-      });
-    }
-    if (isDmx) h += row(P.dmx, P.nDmx, (i, q, over) => `<span class="pm dmx${q.length ? ' on' : ''}${over || q.length > 1 ? ' bad' : ''}" title="${x(i + (q.length ? ' : ' + q.map(z => z.who + (z.u ? ' (U' + z.u + ')' : '')).join(', ') : ' : ' + t('pmFree')))}"${q[0] && q[0].u ? ` style="--uc:${pal[(+q[0].u - 1) % pal.length]}"` : ''}><b>${x(i)}</b><small>${x(q.map(z => z.who).join(', '))}</small></span>`);
-    const sub = [P.m ? [P.m.maker, P.m.name].filter(Boolean).join(' ') : t('pmNoModel'), isSw ? t('pmEth', P.eth.length) + (P.nEth ? ' / ' + P.nEth : '') : '', isDmx ? t('pmDmx', P.dmx.length) + (P.nDmx ? ' / ' + P.nDmx : '') : ''].filter(Boolean).join(' · ');
-    out.push(`<div class="pmdev"><div class="pmh"><b>${x(d.name)}</b> <span class="mut">${x(t('k' + d.kind))} · ${x(sub)}</span></div>${h}</div>`);
+    const used = a => a.filter(p => p.use.length).length;
+    const sub = [P.c && devModel(d) ? [devModel(d).maker, devModel(d).name].filter(Boolean).join(' ') : t('pmNoModel'), eth.length ? t('pmEth', used(eth)) + ' / ' + eth.length : '', dmx.length ? t('pmDmx', used(dmx)) + ' / ' + dmx.length : ''].filter(Boolean).join(' · ');
+    out.push(`<div class="pmdev"><div class="pmh"><b>${x(d.name)}</b> <span class="mut">${x(t('k' + d.kind))} · ${x(sub)}</span></div>${eth.length ? `<div class="pmrow">${eth.map(cell).join('')}</div>` : ''}${dmx.length ? `<div class="pmrow">${dmx.map(cell).join('')}</div>` : ''}</div>`);
   }
   return out.length ? `<h2 class="sec" style="margin-top:22px">${x(t('pmTitle'))}</h2><div class="pmwrap">${out.join('')}</div>` : '';
+}
+// fiche d'un appareil : réglages, nombre de ports, et chaque port avec son câble
+function devSheet(d, P) {
+  const L = state.d.lieu, x = esc, m = devModel(d), c = P.c, links = allLinks();
+  const fld = (lab, inner) => `<label class="cf"><span>${x(t(lab))}</span>${inner}</label>`;
+  const inp = (f, v, w) => `<input class="c box" data-o="devices" data-id="${x(d.id)}" data-f="${f}" style="width:${w}em" value="${x(v ?? '')}">`;
+  const cnt = (k, mk, lab) => fld(lab, `<input class="c box" data-dport="${k}" data-id="${x(d.id)}" inputmode="numeric" style="width:3.4em" value="${x(isSet((d.ports || {})[k]) ? d.ports[k] : '')}" placeholder="${x(m && isSet(m[mk]) ? m[mk] : c[k])}">`);
+  const opts = (vals, cur, lab) => vals.map(v => `<option value="${x(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${x(lab ? lab(v) : v)}</option>`).join('');
+  const others = [...L.devices].filter(o => o !== d).sort((a, b) => (b.kind === 'switch') - (a.kind === 'switch') || natCmp(a.name, b.name));
+  const plist = new Map(others.map(o => [o.name, devPortList(o, links).list]));
+  const target = p => {
+    const u = p.use[0], cur = u ? (u.toPos ? 'p\u0001' + u.other : 'd\u0001' + u.other + '\u0001' + (u.okey || '')) : '';
+    const want = p.dir === 'eth' ? 'eth' : p.dir === 'out' ? 'in' : 'out';
+    let h = '<option value=""></option>', found = !cur;
+    if (p.dir === 'out') { const pts = L.points.map(q => q.name).sort(natCmp); if (u && u.toPos && !pts.includes(u.other)) pts.unshift(u.other); h += `<optgroup label="${x(t('dlDestPts'))}">${pts.map(n => { const v = 'p\u0001' + n; if (v === cur) found = true; return `<option value="${x(v)}"${v === cur ? ' selected' : ''}>${x(n)}</option>`; }).join('')}</optgroup>`; }
+    for (const o of others) {
+      const Q = plist.get(o.name).filter(q => q.dir === want); if (!Q.length) continue;
+      h += `<optgroup label="${x(o.name)}">${Q.map(q => { const v = 'd\u0001' + o.name + '\u0001' + q.key; if (v === cur) found = true; const busy = q.use.filter(b => !(b.other === d.name && b.okey === p.key)).map(b => b.other || '?'); return `<option value="${x(v)}"${v === cur ? ' selected' : ''}>${x(o.name + ' · ' + portLabel(o, q.key) + (busy.length ? ' — ' + busy.join(', ') : ''))}</option>`; }).join('')}</optgroup>`;
+    }
+    if (!found) h += `<option value="${x(cur)}" selected>${x(u.other + (u.okey ? ' · ' + u.okey : ''))}</option>`;
+    return `<select class="c" data-pconn="${p.key}" data-id="${x(d.id)}">${h}</select>`;
+  };
+  const rows = P.list.map(p => {
+    const u = p.use[0], l = u && u.x.l, coll = u && u.x.coll, bad = p.use.length > 1 || (p.over && p.use.length);
+    const cable = !l ? '' : coll === 'netLinks' ? `<select class="c" data-o="netLinks" data-id="${x(l.id)}" data-f="kind">${opts(['eth', 'fiber'], l.kind || 'eth', v => t('lk_' + v))}</select>`
+      : `<select class="c" data-o="dmxLines" data-id="${x(l.id)}" data-f="conn">${opts(['5', '3'], l.conn || '5', v => t('lk_dmx' + v))}</select>`;
+    const extra = p.dir === 'eth' && d.kind === 'switch' ? `<input class="c box" data-pvlan="${p.key}" data-id="${x(d.id)}" inputmode="numeric" style="width:3.4em" value="${x((d.portVlan || {})[p.key] ?? '')}" placeholder="VLAN">`
+      : l && coll === 'dmxLines' ? `<input class="c box" data-o="dmxLines" data-id="${x(l.id)}" data-f="universe" inputmode="decimal" style="width:3.4em" value="${x(l.universe ?? '')}" placeholder="U">` : '';
+    return `<tr${bad ? ' class="bad"' : ''}><td class="ro" style="white-space:nowrap"><b>${x(t('pt_' + (p.sfp ? 'sfp' : p.dir)))}</b>${p.poe ? ' <i class="poe">⚡</i>' : ''}</td>
+<td><input class="c box" data-pname="${p.key}" data-id="${x(d.id)}" style="width:7em" value="${x((d.portNames || {})[p.key] || '')}" placeholder="${x(portLabel({ ...d, portNames: {} }, p.key))}"></td>
+<td>${target(p)}${p.use.length > 1 ? `<br><span class="missing" style="font-size:11px">${x(t('portDup'))} : ${x(p.use.map(b => b.other).join(', '))}</span>` : ''}${p.over && p.use.length ? `<br><span class="missing" style="font-size:11px">${x(t('portOver'))}</span>` : ''}</td>
+<td>${cable}</td><td>${l ? `<input class="c box" data-o="${coll}" data-id="${x(l.id)}" data-f="name" style="width:6em" value="${x(l.name || '')}">` : ''}</td>
+<td>${l ? `<input class="c box" data-o="${coll}" data-id="${x(l.id)}" data-f="length" inputmode="decimal" style="width:3.4em" value="${x(l.length ?? '')}">` : ''}</td><td>${extra}</td></tr>`;
+  }).join('');
+  return `<div class="dvsheet"><div class="cgrid">${fld('dvMask', inp('mask', d.mask, 8).replace('value=""', `value="" placeholder="${x(L.settings.mask || '')}"`))}${fld('dvMac', inp('mac', d.mac, 9))}
+${d.kind === 'merger' ? fld('dvMerge', `<select class="c" data-o="devices" data-id="${x(d.id)}" data-f="merge">${opts(['htp', 'ltp', 'backup'], d.merge || 'htp', v => t('mg_' + v))}</select>`) : ''}
+<label class="cf"><span>${x(t('dvPoe'))}</span><span><input type="checkbox" data-o="devices" data-id="${x(d.id)}" data-f="poe"${d.poe ? ' checked' : ''}> ${x(t('dvPoeNeed'))}</span></label>${fld('dvNotes', inp('notes', d.notes, 14))}</div>
+<div class="cgrid"><span class="cf"><span>${x(t('dvPorts'))}</span><small class="mut">${x(m ? t('dvPortsModel', m.name) : t('dvPortsDef'))}</small></span>${cnt('eth', 'eth', 'mdEth')}${d.kind === 'switch' ? cnt('poe', 'poe', 'mdPoe') : ''}${cnt('sfp', 'sfp', 'mdSfp')}${cnt('in', 'dmxIn', 'mdDmxIn')}${cnt('out', 'dmxOut', 'mdDmxOut')}</div>
+${P.list.length ? `<table class="grid ptab"><thead><tr>${['ptPort', 'ptName', 'ptTo', 'ptCable', 'ptRef', 'dlLen', d.kind === 'switch' ? 'ptVlan' : 'dlU'].map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>` : `<p class="hint2">${x(t('dvNoPorts'))}</p>`}</div>`;
 }
 function renderNet() {
   ensureLieu(state.d);
   const L = state.d.lieu, st = L.settings, nv = ['labels', 'fxlabels', 'sheet', 'diff'].includes(state.netView) ? 'univ' : state.netView || 'univ';
   const sb = k => `<button type="button" data-nv="${k}"${k === nv ? ' class="on"' : ''}>${esc(t('nv' + k[0].toUpperCase() + k.slice(1)))}</button>`;
-  const head = `<div class="subtabs">${['console', 'univ', 'dmx', 'net', 'models'].map(sb).join('')}<span class="sep"></span><button type="button" data-gosyn="net">${esc(t('tabSyno'))} →</button><button type="button" data-golab="dmx">${esc(t('goLab'))} →</button></div>`;
+  const head = `<div class="subtabs">${['console', 'univ', 'net', 'dmx', 'models'].map(sb).join('')}<span class="sep"></span><button type="button" data-gosyn="net">${esc(t('tabSyno'))} →</button><button type="button" data-golab="dmx">${esc(t('goLab'))} →</button></div>`;
   const title = k => `<h1 class="ptitle">${esc(t(k))} — ${esc(state.d.meta.titre || '')} — ${esc(state.d.meta.date || '')}</h1>`;
   const opt = (vals, cur, lab) => vals.map(v => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab ? lab(v) : v)}</option>`).join('');
   const inp = (o, x, f, v, w, num, cls) => `<input class="c box${cls ? ' ' + cls : ''}" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : esc(v)}">`;
   const sel = (o, x, f, inner) => `<select class="c" data-o="${o}" data-id="${esc(x.id)}" data-f="${f}">${inner}</select>`;
-  const pointNames = L.points.map(p => p.name).sort(natCmp), srcNames = L.devices.filter(d => ['console', 'node', 'merger', 'splitter'].includes(d.kind)).map(d => d.name), dmxDevNames = L.devices.filter(d => ['merger', 'splitter'].includes(d.kind)).map(d => d.name).sort(natCmp);
+  const pointNames = L.points.map(p => p.name).sort(natCmp), srcNames = L.devices.filter(d => devCounts(d).out > 0 || ['console', 'node', 'merger', 'splitter'].includes(d.kind)).map(d => d.name).sort(natCmp), dmxDevNames = L.devices.filter(d => devCounts(d).in > 0 || ['merger', 'splitter'].includes(d.kind)).map(d => d.name).sort(natCmp);
   const destOpts = cur => '<option value=""></option>' + `<optgroup label="${esc(t('dlDestPts'))}">${opt(pointNames, cur)}</optgroup>` + (dmxDevNames.length ? `<optgroup label="${esc(t('dlDestDev'))}">${opt(dmxDevNames, cur)}</optgroup>` : '') + (cur && !pointNames.includes(cur) && !dmxDevNames.includes(cur) ? opt([cur], cur) : '');
   const setRow = `<div class="settings"><label>${esc(t('setProto'))} <select data-set="proto" style="font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink)">${opt(['artnet', 'sacn'], st.proto, v => v === 'artnet' ? 'Art-Net' : 'sACN (E1.31)')}</select></label>
 <label>${esc(t('setArtBase'))} <input data-set="artBase" inputmode="numeric" value="${esc(st.artBase)}"></label>
@@ -2233,17 +2391,36 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
       `<div class="gridwrap"><table class="grid"><thead><tr>${['unU', 'unSacn', 'unArt', 'unFix', 'unUsed', 'unMax', 'unLines', 'unSrc'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
   } else if (nv === 'dmx') {
     const S = state.dmxSeries || (state.dmxSeries = { prefix: 'DMX ', from: 1, to: 8, digits: 0, src: srcNames[0] || '', port: 1, portInc: '1', u: 1, uInc: '1', dest: '' });
-    const rows = [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name)).map(x => {
-      const ch = dmxChain(x), bad = ch.filter(f => f.univ && x.universe && f.univ !== x.universe).map(f => f.fid);
+    const LF = ['all', 'net', 'dmx'].includes(state.linkFilter) ? state.linkFilter : 'all', iss = netIssues(), links = allLinks();
+    const devNames = L.devices.map(d => d.name).sort(natCmp);
+    const plCache = new Map(), plist = n => { if (!plCache.has(n)) { const dv = devByName(n); plCache.set(n, dv ? devPortList(dv, links).list : []); } return plCache.get(n); };
+    const portSel = (coll, l, f, devName, dir) => {
+      const dv = devByName(devName), Q = plist(devName).filter(q => q.dir === dir), cur = l[f];
+      const o = Q.map(q => [q.n, portLabel(dv, q.key) + (q.use.some(u => u.x.l !== l) ? ' — ' + q.use.filter(u => u.x.l !== l).map(u => u.other || '?').join(', ') : '')]);
+      if (isSet(cur) && !Q.some(q => q.n === +cur)) o.push([cur, String(cur)]);
+      return `<select class="c" data-o="${coll}" data-id="${esc(l.id)}" data-f="${f}"><option value=""></option>${o.map(([v, lab]) => `<option value="${esc(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${esc(lab)}</option>`).join('')}</select>`;
+    };
+    const flag = id => { const pb = iss.get(id) || []; return pb.filter(m => ['portDup', 'portOver', 'poeNo'].includes(m)).map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join(''); };
+    const devSel = (coll, l, f, cur) => sel(coll, l, f, '<option value=""></option>' + opt([...new Set([...devNames, cur].filter(Boolean))], cur));
+    const netRows = LF === 'dmx' ? '' : [...L.netLinks].sort((a, b) => natCmp(a.a || '', b.a || '') || (a.ap || 0) - (b.ap || 0)).map(l => {
+      const A = devByName(l.a), B = devByName(l.b), vl = (B && B.portVlan && B.portVlan['e' + l.bp]) || (A && A.portVlan && A.portVlan['e' + l.ap]);
+      return `<tr${iss.has(l.id) ? ' class="bad"' : ''}><td>${inp('netLinks', l, 'name', l.name, 6)}</td><td>${sel('netLinks', l, 'kind', opt(['eth', 'fiber'], l.kind || 'eth', v => t('lk_' + v)))}</td>
+<td>${devSel('netLinks', l, 'a', l.a)}</td><td>${portSel('netLinks', l, 'ap', l.a, 'eth')}</td><td>${devSel('netLinks', l, 'b', l.b)}</td><td>${portSel('netLinks', l, 'bp', l.b, 'eth')}${flag(l.id)}</td>
+<td class="ro">${vl ? 'VLAN ' + esc(vl) : ''}</td><td>${inp('netLinks', l, 'length', l.length, 3.4, 1)}</td><td class="ro"></td><td class="ro"></td>
+<td>${inp('netLinks', l, 'notes', l.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-delnet="${esc(l.id)}">×</button></td></tr>`;
+    }).join('');
+    const dmxRows = LF === 'net' ? '' : [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name)).map(x => {
+      const ch = dmxChain(x), bad = ch.filter(f => f.univ && x.universe && f.univ !== x.universe).map(f => f.fid), toDev = devByName(x.dest);
       const chain = ch.map(f => (bad.includes(f.fid) ? '⚠' : '') + (f.fid || '?')).join(' → ');
-      return `<tr><td>${inp('dmxLines', x, 'name', x.name, 6)}</td><td>${sel('dmxLines', x, 'src', '<option value=""></option>' + opt([...new Set([...srcNames, x.src].filter(Boolean))], x.src))}</td>
-<td>${(() => { const sm = devModel(L.devices.find(dv => dv.name === x.src)), pn = portNum(x.port), over = sm && +sm.dmxOut && pn !== null && (pn < 1 || pn > +sm.dmxOut); return inp('dmxLines', x, 'port', x.port, 3, 1, over ? 'ipbad' : '') + (over ? `<br><span class="missing" style="font-size:11px">${esc(t('dlPortOver', sm.dmxOut))}</span>` : ''); })()}</td><td>${inp('dmxLines', x, 'universe', x.universe, 3.4, 1)}</td>
-<td>${sel('dmxLines', x, 'dest', destOpts(x.dest))}</td><td>${inp('dmxLines', x, 'length', x.length, 3.4, 1)}</td>
+      return `<tr${iss.has(x.id) ? ' class="bad"' : ''}><td>${inp('dmxLines', x, 'name', x.name, 6)}</td><td>${sel('dmxLines', x, 'conn', opt(['5', '3'], x.conn || '5', v => t('lk_dmx' + v)))}</td>
+<td>${sel('dmxLines', x, 'src', '<option value=""></option>' + opt([...new Set([...srcNames, x.src].filter(Boolean))], x.src))}</td><td>${portSel('dmxLines', x, 'port', x.src, 'out')}</td>
+<td>${sel('dmxLines', x, 'dest', destOpts(x.dest))}</td><td>${toDev ? portSel('dmxLines', x, 'destPort', x.dest, 'in') : ''}${flag(x.id)}</td><td>${inp('dmxLines', x, 'universe', x.universe, 3.4, 1)}</td><td>${inp('dmxLines', x, 'length', x.length, 3.4, 1)}</td>
 <td class="ro num${ch.length > 32 ? ' missing' : ''}" style="color:var(--ink)">${ch.length || ''}</td><td class="ro chain${bad.length ? ' missing' : ''}">${esc(chain)}</td>
 <td>${inp('dmxLines', x, 'notes', x.notes, 9)}</td><td class="noprint"><button type="button" class="minibtn x" data-deldmx="${esc(x.id)}">×</button></td></tr>`;
     }).join('');
+    const lfb = k => `<button type="button" data-lf="${k}"${k === LF ? ' class="on"' : ''}>${esc(t('lf_' + k))}</button>`;
     body = title('nvDmx') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dmxHint'))}</p>` +
-      `<div class="settings noprint"><button type="button" class="minibtn" id="addDmx">${esc(t('addDmx'))}</button><button type="button" class="minibtn primary" id="autoDmx">${esc(t('autoDmx'))}</button>
+      `<div class="settings noprint"><span class="seg">${['all', 'net', 'dmx'].map(lfb).join('')}</span><button type="button" class="minibtn" id="addNetLink">${esc(t('addNetLink'))}</button><button type="button" class="minibtn" id="addDmx">${esc(t('addDmx'))}</button><button type="button" class="minibtn primary" id="autoDmx">${esc(t('autoDmx'))}</button>
 <span style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
 <details class="series noprint"${state.dmxSeriesOpen ? ' open' : ''} data-ser="dmx"><summary>${esc(t('dmxSeries'))}</summary><div class="row">
 <label>${esc(t('srPrefix'))} <input id="ds_prefix" value="${esc(S.prefix)}"></label><label>${esc(t('srFrom'))} <input id="ds_from" inputmode="numeric" value="${esc(S.from)}"></label><label>${esc(t('srTo'))} <input id="ds_to" inputmode="numeric" value="${esc(S.to)}"></label>
@@ -2253,22 +2430,25 @@ ${f('showfile', 'cnShow', inp('consoles', c, 'showfile', c.showfile, 10))}${f('n
 <label>${esc(t('srU'))} <input id="ds_u" inputmode="numeric" value="${esc(S.u)}"></label><label>${esc(t('srUStep'))} <select id="ds_uInc">${opt(['1', '0'], S.uInc, v => v === '1' ? t('srUInc') : t('srUSame'))}</select></label>
 <label>${esc(t('dlDest'))} <select id="ds_dest">${destOpts(S.dest)}</select></label>
 <button type="button" class="minibtn primary" id="dsCreate">${esc(t('srCreate'))}</button></div></details>
-<div class="gridwrap"><table class="grid"><thead><tr>${['dlName', 'dlSrc', 'dlPort', 'dlU', 'dlDest', 'dlLen', 'dlN', 'dlChain', 'dlNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+<div class="gridwrap"><table class="grid lktab"><thead><tr>${['lkRef', 'lkKind', 'lkFrom', 'dlPort', 'lkTo', 'dlPort', 'lkUV', 'dlLen', 'dlN', 'dlChain', 'dlNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead>
+<tbody>${netRows}${netRows && dmxRows ? '<tr class="lksep"><td colspan="12"></td></tr>' : ''}${dmxRows}</tbody></table></div>${netRows || dmxRows ? '' : `<p class="hint2">${esc(t('lkNone'))}</p>`}`;
   } else if (nv === 'net') {
-    const iss = netIssues(), swNames = L.devices.filter(d => d.kind === 'switch').map(d => d.name);
+    const iss = netIssues(), links = allLinks(), open = state.devOpen || (state.devOpen = new Set());
     const rows = L.devices.map(d => {
-      const pb = iss.get(d.id) || [], uu = [...new Set(L.dmxLines.filter(x => x.src === d.name || x.dest === d.name).map(x => x.universe).filter(Boolean))].sort((a, b) => a - b);
-      return `<tr><td>${inp('devices', d, 'name', d.name, 9)}</td><td>${sel('devices', d, 'kind', opt(DEV_KINDS, d.kind, v => t('k' + v)))}${d.kind === 'merger' ? `<br>${sel('devices', d, 'merge', opt(['htp', 'ltp', 'backup'], d.merge || 'htp', v => t('mg_' + v)))}` : ''}</td>
+      const pb = iss.get(d.id) || [], P = devPortList(d, links), isOpen = open.has(d.id), conLinked = L.consoles.some(c => c.device === d.name);
+      const conn = P.list.filter(p => p.use.length).flatMap(p => p.use.map(u => { const o = devByName(u.other); return `<span class="lk ${p.dir}">${esc(portLabel(d, p.key))} → ${esc(u.other || '?')}${o && u.okey ? ' · ' + esc(portLabel(o, u.okey)) : ''}</span>`; })).join('');
+      const msgs = pb.filter(m => m !== 'ipDup' && m !== 'ipOut').map(m => `<span class="missing" style="font-size:11px">${esc(m === 'univOver' ? t('univOver', devModel(d).univ) : t(m))}</span>`).join(' ');
+      return `<tr class="dvrow${isOpen ? ' open' : ''}"><td class="noprint"><button type="button" class="minibtn tog" data-devtog="${esc(d.id)}" title="${esc(t('dvSheet'))}">${isOpen ? '▾' : '▸'}</button></td>
+<td>${inp('devices', d, 'name', d.name, 9)}</td><td>${sel('devices', d, 'kind', opt(DEV_KINDS, d.kind, v => t('k' + v)))}</td>
 <td>${sel('devices', d, 'model', '<option value=""></option>' + opt([...new Set([...L.models.filter(m => !m.kind || m.kind === d.kind || m.name === d.model).map(m => m.name).sort(natCmp), d.model].filter(Boolean))], d.model))}</td>
-<td>${inp('devices', d, 'ip', d.ip, 8, 0, pb.some(m => m.startsWith('ip')) ? 'ipbad' : '')}${pb.filter(m => m.startsWith('ip') || m === 'univOver').map(m => `<br><span class="missing" style="font-size:11px">${esc(m === 'univOver' ? t('univOver', devModel(d).univ) : t(m))}</span>`).join('')}</td>
-<td>${inp('devices', d, 'mask', d.mask, 7)}</td><td>${inp('devices', d, 'vlan', d.vlan, 3, 1)}</td>
-<td>${sel('devices', d, 'sw', '<option value=""></option>' + opt(swNames.filter(n => n !== d.name), d.sw))}</td><td>${inp('devices', d, 'port', d.port, 3, 0, pb.some(m => m.startsWith('port') || m === 'poeNo') ? 'ipbad' : '')}${pb.filter(m => m === 'portOver' || m === 'poeNo').map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join('')}</td><td style="text-align:center"><input type="checkbox" data-o="devices" data-id="${esc(d.id)}" data-f="poe"${d.poe ? ' checked' : ''}></td>
-<td>${inp('devices', d, 'mac', d.mac, 9)}</td><td>${inp('devices', d, 'location', d.location, 9)}</td><td class="ro chain">${esc(uu.join(', '))}</td>
-<td>${inp('devices', d, 'notes', d.notes, 9)}</td><td class="noprint">${L.consoles.some(c => c.device === d.name) ? `<span class="mut" title="${esc(t('dvConLinked'))}">🎛</span>` : `<button type="button" class="minibtn x" data-deldev="${esc(d.id)}">×</button>`}</td></tr>`;
+<td>${inp('devices', d, 'ip', d.ip, 8, 0, pb.some(m => m.startsWith('ip')) ? 'ipbad' : '')}${pb.filter(m => m.startsWith('ip')).map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join('')}</td>
+<td>${inp('devices', d, 'location', d.location, 9)}</td><td class="lks">${conn || `<span class="mut">${esc(t('dvNoConn'))}</span>`}${msgs ? '<br>' + msgs : ''}</td>
+<td class="noprint">${conLinked ? `<span class="mut" title="${esc(t('dvConLinked'))}">🎛</span>` : `<button type="button" class="minibtn x" data-deldev="${esc(d.id)}">×</button>`}</td></tr>`
+        + (isOpen ? `<tr class="devsheet"><td></td><td colspan="7">${devSheet(d, P)}</td></tr>` : '');
     }).join('');
     body = title('nvNet') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('netHint'))}</p>` + setRow +
-      `<h2 class="sec" style="margin-top:6px">${esc(t('nvNet'))} <button type="button" class="minibtn noprint" id="addDev" style="margin-inline-start:8px">${esc(t('addDev'))}</button></h2>
-<div class="gridwrap"><table class="grid"><thead><tr>${['dvName', 'dvKind', 'dvModel', 'dvIp', 'dvMask', 'dvVlan', 'dvSwitch', 'dvPort', 'dvPoe', 'dvMac', 'dvLoc', 'dvU', 'dvNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>` + portMaps();
+      `<h2 class="sec" style="margin-top:6px">${esc(t('nvNet'))} <button type="button" class="minibtn noprint" id="addDev" style="margin-inline-start:8px">${esc(t('addDev'))}</button>${L.devices.length ? `<button type="button" class="minibtn noprint" id="devAll" style="margin-inline-start:6px">${esc(t(open.size ? 'dvCloseAll' : 'dvOpenAll'))}</button>` : ''}</h2>
+<div class="gridwrap"><table class="grid dvtab"><thead><tr><th class="nosort noprint"></th>${['dvName', 'dvKind', 'dvModel', 'dvIp', 'dvLoc', 'dvConn'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>` + portMaps();
   } else if (nv === 'models') {
     const num = (m, f) => inp('models', m, f, m[f], 3.2, 1);
     const rows = L.models.map(m => {
@@ -3142,14 +3322,18 @@ function dossierPages() {
   if (S.dmx) {
     const cRows = L.consoles.map(c => { const C = consoleCheck(c), m = conModel(c); return `<tr>${td(c.name, 'b')}${td(t('r' + (c.role || 'other')[0].toUpperCase() + (c.role || 'other').slice(1)))}${td(m ? (m[1] || t('mOther')) : '')}${td(C.max ? `≈ ${C.U.ch} / ${C.max}` : '', 'n' + (C.overP ? ' bad' : ''))}${td(`${C.U.univ}${c.universes ? ' / ' + c.universes : ''}`, 'n' + (C.overU ? ' bad' : ''))}${td((c.protocols || []).map(k => (CON_PROTOS.find(q => q[0] === k) || [k, k])[1]).join(', '), C.protoOk ? '' : 'bad')}${td(c.version)}${td(c.device)}${td(c.showfile, 'w')}</tr>`; });
     const uRows = universes().map(r => `<tr>${td(r.u, 'b n')}${td(artAddr(r.u))}${td(r.fx.length, 'n')}${td(r.used + ' / 512', 'n')}${td(r.max || '', 'n' + (r.max > 512 ? ' bad' : ''))}${td(r.lines.map(x => x.name).sort(natCmp).join(', '), 'w')}</tr>`);
-    const dRows = [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name)).map(x => { const ch = dmxChain(x); return `<tr>${td(x.name, 'b')}${td(x.src)}${td(x.port, 'n')}${td(x.universe, 'n')}${td(x.dest)}${td(x.length ? x.length + ' m' : '', 'n')}${td(ch.length || '', 'n' + (ch.length > 32 ? ' bad' : ''))}${td(ch.map(f => f.fid || '?').join(' → '), 'w')}</tr>`; });
+    const pl = (n, k) => { const dv = devByName(n); return dv && k ? portLabel(dv, k) : ''; };
+    const dRows = [...L.dmxLines].sort((a, b) => natCmp(a.name, b.name)).map(x => { const ch = dmxChain(x); return `<tr>${td(x.name, 'b')}${td(x.src)}${td(isSet(x.port) ? pl(x.src, 'o' + x.port) || x.port : '')}${td(x.universe, 'n')}${td(x.dest + (devByName(x.dest) && isSet(x.destPort) ? ' · ' + pl(x.dest, 'i' + x.destPort) : ''))}${td(x.length ? x.length + ' m' : '', 'n')}${td(ch.length || '', 'n' + (ch.length > 32 ? ' bad' : ''))}${td(ch.map(f => f.fid || '?').join(' → '), 'w')}</tr>`; });
     const iss = netIssues();
-    const vRows = L.devices.map(v => `<tr>${td(v.name, 'b')}${td(t('k' + v.kind))}${td(v.ip, iss.has(v.id) ? 'bad' : '')}${td(v.mask || L.settings.mask)}${td(v.vlan, 'n')}${td(v.sw)}${td(v.port)}${td(v.mac, 'w')}${td(v.location)}</tr>`);
+    const links = allLinks();
+    const vRows = L.devices.map(v => { const up = devUplinks(v, links); return `<tr>${td(v.name, 'b')}${td(t('k' + v.kind))}${td(v.model || '')}${td(v.ip, iss.has(v.id) ? 'bad' : '')}${td(v.mask || L.settings.mask)}${td(up.map(u => u.text + (u.vlan ? ' (VLAN ' + u.vlan + ')' : '')).join(', '), 'w')}${td(v.mac, 'w')}${td(v.location)}</tr>`; });
+    const nRows = [...(L.netLinks || [])].sort((a, b) => natCmp(a.a || '', b.a || '')).map(l => `<tr>${td(l.name, 'b')}${td(t('lk_' + (l.kind || 'eth')))}${td((l.a || '') + (isSet(l.ap) ? ' · ' + pl(l.a, 'e' + l.ap) : ''))}${td((l.b || '') + (isSet(l.bp) ? ' · ' + pl(l.b, 'e' + l.bp) : ''))}${td(l.length ? l.length + ' m' : '', 'n')}${td(l.notes, 'w')}</tr>`);
     sec('dmx', `<div class="dpage"><h2>${esc(t('dDmxTitle'))}</h2><p style="margin:0 0 3mm">${esc(t('setProto'))} : ${esc(L.settings.proto === 'sacn' ? 'sACN' : 'Art-Net')} · ${esc(t('setNet'))} ${esc(L.settings.net || '')} / ${esc(L.settings.mask || '')}${L.settings.gw ? ' · ' + esc(t('setGw')) + ' ' + esc(L.settings.gw) : ''}</p>
 ${cRows.length ? `<h3>${esc(t('dConsoles'))}</h3>${dtab([t('cnName'), t('cnRole'), t('cnModel'), t('csParams'), t('csUniv'), t('cnProtos'), t('cnVersion'), t('cnDevice'), t('cnShow')], cRows)}` : ''}
 <h3>${esc(t('dUnivs'))}</h3>${dtab([t('unU'), t('unArt'), t('unFix'), t('unUsed'), t('unMax'), t('unLines')], uRows)}
 ${dRows.length ? `<h3>${esc(t('dDmxLines'))}</h3>${dtab([t('dlName'), t('dlSrc'), t('dlPort'), t('dlU'), t('dlDest'), t('dlLen'), t('dlN'), t('dlChain')], dRows)}` : ''}
-${vRows.length ? `<h3>${esc(t('dDevices'))}</h3>${dtab([t('dvName'), t('dvKind'), t('dvIp'), t('dvMask'), t('dvVlan'), t('dvSwitch'), t('dvPort'), t('dvMac'), t('dvLoc')], vRows)}` : ''}</div>`);
+${vRows.length ? `<h3>${esc(t('dDevices'))}</h3>${dtab([t('dvName'), t('dvKind'), t('dvModel'), t('dvIp'), t('dvMask'), t('dvConn'), t('dvMac'), t('dvLoc')], vRows)}` : ''}
+${nRows.length ? `<h3>${esc(t('dNetLinks'))}</h3>${dtab([t('lkRef'), t('lkKind'), t('lkFrom'), t('lkTo'), t('dlLen'), t('dlNotes')], nRows)}` : ''}</div>`);
   }
   if (S.netsyno && (L.devices.length || L.dmxLines.length)) sec('netsyno', `<div class="dpage"><h2>${esc(t('nsTitle'))}</h2>${renderNetSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '').replace(/<p class="hint noprint"[^]*?<\/p>/, '')}</div>`);
   if (S.inv) {
@@ -4087,19 +4271,32 @@ view.addEventListener('change', e => {
   if (e.target.id === 'headSol') { state.headSol = e.target.checked; render(); return; }
   if (e.target.id === 'labEnds' || e.target.id === 'labJar') { state[e.target.id] = e.target.checked; render(); return; }
   if (e.target.id && e.target.id.startsWith('ds_')) { state.dmxSeries[e.target.id.slice(3)] = e.target.value; return; }
+  // fiche d'un appareil : port branché, nom et VLAN d'un port, nombre de ports
+  const pk = e.target.closest('[data-pconn],[data-pname],[data-pvlan],[data-dport]');
+  if (pk) {
+    const d = state.d.lieu.devices.find(y => y.id === pk.dataset.id); if (!d) return;
+    const v = pk.value.trim(), num = () => { const n = parseFloat(v.replace(',', '.')); return v === '' || isNaN(n) || n < 0 ? null : n; };
+    const setIn = (o, k, val) => { const r = { ...(d[o] || {}) }; if (val === null || val === '') delete r[k]; else r[k] = val; if (Object.keys(r).length) d[o] = r; else delete d[o]; };
+    if (pk.dataset.pconn) setPortConn(d, pk.dataset.pconn, pk.value);
+    else if (pk.dataset.pname) setIn('portNames', pk.dataset.pname, v);
+    else if (pk.dataset.pvlan) setIn('portVlan', pk.dataset.pvlan, num());
+    else setIn('ports', pk.dataset.dport, num());
+    touch(); render(); return;
+  }
   const go = e.target.closest('[data-o]');
   if (go) {
     const col = state.d.lieu[go.dataset.o], x = col && col.find(y => y.id === go.dataset.id); if (!x) return;
     const k = go.dataset.f, v = go.value.trim();
-    if (k === 'name') {
+    if (k === 'name' && go.dataset.o === 'netLinks') x.name = v;
+    else if (k === 'name') {
       if (v && v !== x.name && !col.some(y => y.name === v)) {
         if (go.dataset.o === 'dmxLines') state.d.fixtures.forEach(f => { if (f.dmxLine === x.name) f.dmxLine = v; });
         if (go.dataset.o === 'models') state.d.lieu.devices.forEach(d => { if (d.model === x.name) d.model = v; });
         if (go.dataset.o === 'consoles') {    // l'appareil de la console, s'il porte son nom, est renommé avec elle
           const L = state.d.lieu, dv = L.devices.find(y => y.name === x.name && y.name === x.device && y.kind === 'console');
-          if (dv && !L.devices.some(y => y.name === v)) { L.consoles.forEach(c => { if (c.device === dv.name) c.device = v; }); L.dmxLines.forEach(l => { if (l.src === dv.name) l.src = v; if (l.dest === dv.name) l.dest = v; }); L.devices.forEach(y => { if (y.sw === dv.name) y.sw = v; }); dv.name = v; }
+          if (dv && !L.devices.some(y => y.name === v)) { renameDeviceRefs(L, dv.name, v); dv.name = v; }
         }
-        if (go.dataset.o === 'devices') { state.d.lieu.consoles.forEach(c => { if (c.device === x.name) c.device = v; }); state.d.lieu.dmxLines.forEach(l => { if (l.src === x.name) l.src = v; if (l.dest === x.name) l.dest = v; }); state.d.lieu.devices.forEach(d => { if (d.sw === x.name) d.sw = v; }); }
+        if (go.dataset.o === 'devices') renameDeviceRefs(state.d.lieu, x.name, v);
         x.name = v;
       }
     } else if (k === 'poe' && go.type === 'checkbox') { x.poe = go.checked;
@@ -4107,7 +4304,7 @@ view.addEventListener('change', e => {
       const n = parseFloat(v.replace(',', '.')); x[k] = v === '' ? null : isNaN(n) || n < 0 ? x[k] : n;
     } else if (k === 'protocols') {
       const set = new Set(x.protocols || []); if (go.checked) set.add(go.dataset.v); else set.delete(go.dataset.v); x.protocols = CON_PROTOS.map(p => p[0]).filter(p => set.has(p));
-    } else if (['universe', 'port', 'length', 'vlan', 'params', 'extCount', 'extParams', 'universes', 'dmxPorts'].includes(k) && !(go.dataset.o === 'devices' && k === 'port')) {
+    } else if (['universe', 'port', 'length', 'vlan', 'params', 'extCount', 'extParams', 'universes', 'dmxPorts', 'ap', 'bp', 'destPort'].includes(k)) {
       const n = parseFloat(v.replace(',', '.')); x[k] = v === '' ? null : isNaN(n) ? x[k] : n;
     } else x[k] = v;
     if (go.dataset.o === 'consoles' && k === 'model') {     // modèle choisi : paramètres et protocoles proposés
@@ -4116,6 +4313,9 @@ view.addEventListener('change', e => {
       if (m && /^ma3/.test(m[3]) && !(x.protocols || []).length) x.protocols = ['artnet', 'sacn', 'manet3', 'dmx'];
     }
     if (go.dataset.o === 'devices' && k === 'model') { const m = devModel(x); if (m && m.kind) x.kind = m.kind; }
+    if (go.dataset.o === 'dmxLines' && k === 'dest' && !devByName(v)) x.destPort = null;      // arrivée sur une position : pas de port d'entrée
+    if (go.dataset.o === 'netLinks' && (k === 'a' || k === 'b')) x[k === 'a' ? 'ap' : 'bp'] = null;
+    if (go.dataset.o === 'dmxLines' && k === 'src') x.port = null;
     if (go.dataset.o === 'consoles' && k === 'ext') { const e2 = CONSOLE_EXT.find(y => y[0] === x.ext); x.extParams = e2 ? e2[2] : null; x.extCount = x.ext ? (x.extCount || 1) : null; }
     touch(); render(); return;
   }
@@ -4215,6 +4415,11 @@ view.addEventListener('click', async e => {
   if (b.dataset.pv) { state.patchView = b.dataset.pv; store.set('patchView', state.patchView); render(); return; }
   if (b.dataset.lv) { state.labView = b.dataset.lv; store.set('labView', state.labView); render(); return; }
   if (b.dataset.nv) { state.netView = b.dataset.nv; store.set('netView', state.netView); render(); return; }
+  if (b.dataset.lf) { state.linkFilter = b.dataset.lf; render(); return; }
+  if (b.dataset.devtog) { const o = state.devOpen || (state.devOpen = new Set()); if (o.has(b.dataset.devtog)) o.delete(b.dataset.devtog); else o.add(b.dataset.devtog); render(); return; }
+  if (b.id === 'devAll') { const o = state.devOpen || (state.devOpen = new Set()); if (o.size) o.clear(); else state.d.lieu.devices.forEach(d => o.add(d.id)); render(); return; }
+  if (b.id === 'addNetLink') { state.d.lieu.netLinks.push({ id: uid(), kind: 'eth', name: '', a: '', ap: null, b: '', bp: null, length: null, notes: '' }); if (state.linkFilter === 'dmx') state.linkFilter = 'all'; touch(); render(); return; }
+  if (b.dataset.delnet) { state.d.lieu.netLinks = state.d.lieu.netLinks.filter(y => y.id !== b.dataset.delnet); touch(); render(); return; }
   if (b.dataset.rv) { state.rigView = b.dataset.rv; store.set('rigView', state.rigView); render(); return; }
   if (b.id === 'addDmx') {
     let i = state.d.lieu.dmxLines.length + 1, n; do n = 'DMX ' + i++; while (state.d.lieu.dmxLines.some(x => x.name === n));
@@ -4248,7 +4453,7 @@ view.addEventListener('click', async e => {
       const L = state.d.lieu; L.consoles = L.consoles.filter(y => y !== x);
       // son appareil réseau part avec elle, s'il n'est pas partagé et qu'aucune ligne DMX n'en part
       const dv = L.devices.find(y => y.name === x.device && y.kind === 'console');
-      if (dv && !L.consoles.some(c => c.device === dv.name) && !L.dmxLines.some(l => l.src === dv.name || l.dest === dv.name)) L.devices = L.devices.filter(y => y !== dv);
+      if (dv && !L.consoles.some(c => c.device === dv.name) && !L.dmxLines.some(l => l.src === dv.name || l.dest === dv.name)) { L.devices = L.devices.filter(y => y !== dv); L.netLinks = L.netLinks.filter(l => l.a !== dv.name && l.b !== dv.name); }
       touch(); render();
     }
     return;
@@ -4275,11 +4480,11 @@ view.addEventListener('click', async e => {
   }
   if (b.id === 'addDev') {
     let i = state.d.lieu.devices.length + 1, n; do n = t('newDev') + ' ' + i++; while (state.d.lieu.devices.some(x => x.name === n));
-    state.d.lieu.devices.push({ id: uid(), name: n, kind: 'node', ip: '', mask: '', vlan: null, sw: '', port: '', mac: '', location: '', notes: '' }); touch(); render(); return;
+    const v = { id: uid(), name: n, kind: 'node', ip: '', mask: '', mac: '', location: '', notes: '' }; state.d.lieu.devices.push(v); (state.devOpen || (state.devOpen = new Set())).add(v.id); touch(); render(); return;
   }
   if (b.dataset.deldev) {
     const x = state.d.lieu.devices.find(y => y.id === b.dataset.deldev);
-    if (x && confirm(t('delDevAsk', x.name))) { state.d.lieu.devices = state.d.lieu.devices.filter(y => y !== x); touch(); render(); }
+    if (x && confirm(t('delDevAsk', x.name))) { const L = state.d.lieu; L.devices = L.devices.filter(y => y !== x); L.netLinks = L.netLinks.filter(l => l.a !== x.name && l.b !== x.name); touch(); render(); }
     return;
   }
   if (b.id === 'addBoard') {
@@ -4319,7 +4524,7 @@ view.addEventListener('click', async e => {
     const p = state.d.lieu.points.find(x => x.id === b.dataset.delpt);
     if (p && confirm(t('delPointAsk', p.name))) { state.d.lieu.points = state.d.lieu.points.filter(x => x !== p); touch(); render(); }
   } else if (b.id === 'saveLieu') {
-    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, consoles: state.d.lieu.consoles, models: state.d.lieu.models || [], parc: state.d.lieu.parc || [], settings: state.d.lieu.settings };
+    const L = { format: 'oplanfeu-lieu', version: 1, nom: state.d.meta.lieu || state.d.meta.titre || '', saved: new Date().toISOString(), points: state.d.lieu.points, boards: state.d.lieu.boards, lines: state.d.lieu.lines, dmxLines: state.d.lieu.dmxLines, devices: state.d.lieu.devices, consoles: state.d.lieu.consoles, models: state.d.lieu.models || [], netLinks: state.d.lieu.netLinks || [], parc: state.d.lieu.parc || [], settings: state.d.lieu.settings };
     download(slug(L.nom || 'lieu') + '.lieu.json', JSON.stringify(L, null, 1), 'application/json');
   } else if (b.id === 'loadLieu') $('#lieuFile').click();
   else if (b.dataset.gdtfAdd) { state.gdtfTarget = b.dataset.gdtfAdd; $('#gdtfFile').click(); }
@@ -4784,6 +4989,10 @@ $('#lieuFile').addEventListener('change', async e => {
       const p = state.d.lieu[key].find(x => x.name === q.name);
       if (p) Object.assign(p, { ...q, id: p.id }); else state.d.lieu[key].push({ ...q, id: uid() });
     }
+    ensureLieu(state.d);   // anciens fichiers de lieu : colonnes Switch / Port converties en câbles
+    // câbles Ethernet : ceux qui relient déjà les mêmes ports ne sont pas doublés
+    const NL = state.d.lieu.netLinks, same = (l, q) => [[l.a, l.ap, l.b, l.bp], [l.b, l.bp, l.a, l.ap]].some(([a, ap, b2, bp]) => a === q.a && String(ap) === String(q.ap) && b2 === q.b && String(bp) === String(q.bp));
+    for (const q of L.netLinks || []) if (!NL.some(l => same(l, q))) NL.push({ ...q, id: uid() });
     if (Array.isArray(L.parc) && L.parc.length) {     // parc : même nom remplacé, les autres ajoutés ; les équivalences choisies suivent les identifiants
       const P = parcList();
       for (const q of L.parc) { const p = P.find(x => nrm(x.name) === nrm(q.name) && nrm(x.maker) === nrm(q.maker)); if (p) { const id = p.id; Object.assign(p, q); if (id !== q.id) Object.values(state.d.types).forEach(ty => { if (ty.parc === id) ty.parc = q.id; }); } else P.push({ ...q, id: q.id && !P.some(x => x.id === q.id) ? q.id : uid() }); }
