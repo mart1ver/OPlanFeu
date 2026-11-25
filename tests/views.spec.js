@@ -1,6 +1,15 @@
 // Chaque vue s'affiche sans erreur avec le dossier de test ; plan, 3D et dossier complet produisent quelque chose
 const { test, expect, loadSynthetic } = require('./helpers');
 
+// le plan se redessine encore juste après l'ouverture (formes des projecteurs chargées à part) : on attend qu'il ne bouge plus
+async function planStable(page) {
+  let prev = null;
+  await expect.poll(async () => {
+    const h = await page.evaluate(() => { const p = document.querySelector('#planPages svg'); return p ? p.innerHTML.length + ':' + document.querySelectorAll('#planPages .pfx').length : ''; });
+    const same = h && h === prev; prev = h; return same;
+  }, { intervals: [300], timeout: 20000 }).toBe(true);
+}
+
 const TABS = { fixtures: ['pv', ['table', 'sheet']], plan: [], rigging: ['rv', ['points']], elec: ['ev', ['lines']], syno: ['sv', ['elec', 'net']], net: ['nv', ['console', 'univ', 'dmx', 'net']], inventory: ['iv', ['inv', 'gdtf', 'parc', 'ecart']], labels: ['lv', ['fx', 'heads', 'elec', 'dmx', 'net']], dossier: [] };
 
 for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
@@ -267,6 +276,7 @@ test('plan : zone à afficher, tracée à la souris puis réglée au décimètre
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
+  await planStable(page);
   await page.click('#plZoneDraw');
   // tracer autour de la perche du lointain seulement (projecteurs 101 à 106)
   const box = async uid => page.locator(`#planPages .pfx[data-k="f:${uid}"]`).boundingBox();
@@ -417,6 +427,7 @@ test('projecteurs par position : machine par machine, plan et 3D', async ({ page
   await loadSynthetic(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
+  await planStable(page);
   const posRow = sel => page.locator(`${sel} details.ly`, { has: page.locator('[data-k="P2 Milieu"]') });
   await posRow('.plpanel').locator('summary .tw').click();
   await posRow('.plpanel').locator('[data-plfx="u-7"]').uncheck();
