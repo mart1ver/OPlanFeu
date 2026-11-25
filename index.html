@@ -1945,7 +1945,13 @@ function renderNetSyno() {
   const W = PAD * 2 + (maxD + 1) * CW - GAP, H = TOP + row * RH + 24;
   const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
   const ucol = u => u ? pal[(+u - 1) % pal.length] : '#888';
-  const X = n => PAD + n.dep * CW, hOf = n => n.t === 'pos' ? PH : BH, Y = n => TOP + n.y + (BH - hOf(n)) / 2, CY = n => TOP + n.y + BH / 2;
+  // un appareil relié à plusieurs autres s'étire sur leur hauteur : chaque câble part de son bord, droit vers l'appareil branché
+  N.forEach(n => {
+    if (n.y === undefined || !n.kids.length) return;
+    const cys = n.kids.filter(k => k.y !== undefined).map(k => TOP + k.y + BH / 2), a = Math.min(...cys) - 16, b = Math.max(...cys) + 16;
+    if (b - a > BH) { n.bt = a; n.bh = b - a; }
+  });
+  const X = n => PAD + n.dep * CW, hOf = n => n.bh || (n.t === 'pos' ? PH : BH), Y = n => n.bt ?? TOP + n.y + (BH - hOf(n)) / 2, CY = n => TOP + n.y + BH / 2;
   const fit = (s2, w, fs = 10) => { const m = Math.floor(w / (fs * .56)); return s2.length > m ? s2.slice(0, m - 1) + '…' : s2; };
   const style = e => e.k === 'dmx' ? `stroke="${ucol(e.l.universe)}" stroke-width="2.6"` : e.k === 'fiber' ? 'stroke="#7a5cc8" stroke-width="2"' : 'stroke="var(--ink)" stroke-width="1.5"';
   // texte d'un câble : au-dessus (ports, nom de ligne) et au-dessous (univers, VLAN, longueur) du dernier tronçon
@@ -1955,9 +1961,11 @@ function renderNetSyno() {
   let edges = '', labels = '', boxes = '';
   for (const n of N) {
     if (n.parent && n.edge) {
-      const p = n.parent, x1 = X(p) + BW, y1 = CY(p), x2 = X(n), y2 = CY(n), xm = x1 + 14;
-      edges += `<path d="M${x1} ${y1} H${xm} V${y2} H${x2}" fill="none" ${style(n.edge)}${n.t === 'pos' ? ' stroke-linecap="round"' : ''}/>`;
-      labels += label(n.edge, xm + 4, x2 - 4, y2);
+      // départ sur le bord de l'appareil, à la hauteur de l'appareil branché (dans la boîte, étirée s'il le faut)
+      const p = n.parent, x1 = X(p) + BW, x2 = X(n), y2 = CY(n), y1 = Math.min(Math.max(y2, Y(p) + 10), Y(p) + hOf(p) - 10);
+      edges += y1 === y2 ? `<path d="M${x1} ${y2} H${x2}" fill="none" ${style(n.edge)}/>` : `<path d="M${x1} ${y1} H${x1 + 14} V${y2} H${x2}" fill="none" ${style(n.edge)}/>`;
+      edges += `<circle cx="${x1}" cy="${y1}" r="2.6" ${style(n.edge).replace('stroke=', 'fill=').replace(/stroke-width="[^"]*"/, '')}/>`;
+      labels += label(n.edge, x1 + 6, x2 - 4, y2);
     }
     const bx = X(n), by = Y(n), h = hOf(n), bad = (n.d && n.d.id && iss.has(n.d.id)) || (n.l && iss.has(n.l.id));
     if (n.t === 'pos') {
@@ -1980,7 +1988,7 @@ function renderNetSyno() {
   for (const q of extra) {
     if (!q.a || !q.b || q.a.dep === undefined || q.b.dep === undefined) continue;
     const k = (slot.get(q.b) || 0) + 1; slot.set(q.b, k);
-    const x1 = X(q.a) + BW, y1 = CY(q.a) + (q.a.kids.length ? 8 : 0), x2 = X(q.b), y2 = Y(q.b) + Math.min(hOf(q.b) - 6, 8 + k * 11);
+    const x1 = X(q.a) + BW, y1 = q.a.kids.length ? Y(q.a) + hOf(q.a) - 6 : CY(q.a), x2 = X(q.b), y2 = Y(q.b) + Math.min(hOf(q.b) - 6, 8 + k * 11);
     const d = x2 - x1 > 40 ? `M${x1} ${y1} H${x2 - 22} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 10} V${Math.min(Y(q.a), Y(q.b)) - 10} H${x2 - 22} V${y2} H${x2}`;
     edges += `<path d="${d}" fill="none" ${style(q.e)} stroke-dasharray="${q.e.k === 'dmx' ? '7 3' : '3 3'}" opacity=".85"/>`;
     // texte au départ du câble (après le bus de l'appareil), pour ne pas s'empiler à l'arrivée
