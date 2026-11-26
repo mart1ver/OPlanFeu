@@ -1808,7 +1808,7 @@ function ma2FtFromGdtf(doc, mode, lib) {
   // les géométries qui répètent des attributs (pixels) deviennent des instances à part
   const byGeo = new Map(); chans.forEach(ch => { if (!byGeo.has(ch.geo)) byGeo.set(ch.geo, []); byGeo.get(ch.geo).push(ch); });
   // les géométries répétées (même suite d'attributs : pixels, cellules) sont toujours des instances
-  const sig = list => list.map(ch => ch.info.at).join(','), nSig = new Map();
+  const sig = list => list.map(ch => ch.info.at + (ch.offs.length ? '' : '~')).join(','), nSig = new Map();
   for (const list of byGeo.values()) nSig.set(sig(list), (nSig.get(sig(list)) || 0) + 1);
   const main = [], seen = new Set(), subs = [];
   for (const list of byGeo.values()) {
