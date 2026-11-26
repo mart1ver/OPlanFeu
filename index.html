@@ -148,7 +148,7 @@ table.grid td input.box:focus { background: var(--panel); }
 .macols { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 6px 0 10px; } .macols label { display: flex; gap: 6px; align-items: center; padding: 2px 0; } .masub { padding-inline-start: 22px; font-size: 13px; color: var(--muted); }
 #ma2Dlg td.num { text-align: center; } #ma2Dlg .cf input, #ma2Dlg td input { font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); }
 #ma2Dlg .cgrid { display: flex; flex-wrap: wrap; gap: 8px 14px; } #ma2Dlg .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } #ma2Dlg .cf > span { color: var(--muted); }
-.mawarn { margin: 6px 0; padding: 6px 10px; border-radius: 7px; background: color-mix(in srgb, #e8a317 16%, var(--bg)); font-size: 13px; } .mahelp { margin-top: 12px; font-size: 13px; } .mahelp summary { cursor: pointer; font-weight: 600; }
+.maconv { color: #2e8b57; font-size: 11.5px; } small.mawarn { display: inline-block; margin: 3px 0; padding: 2px 6px; font-size: 11.5px; } .mawarn { margin: 6px 0; padding: 6px 10px; border-radius: 7px; background: color-mix(in srgb, #e8a317 16%, var(--bg)); font-size: 13px; } .mahelp { margin-top: 12px; font-size: 13px; } .mahelp summary { cursor: pointer; font-weight: 600; }
 .cartedit { margin: 12px 0 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; } .cartedit > summary { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
 .cartedit .cgrid { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0; } .cartedit .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } .cartedit .cf > span { color: var(--muted); } .cartedit input, .cartedit select { font: inherit; font-size: 13px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); min-width: 12em; }
 .planwrap.docopts #docPages { flex: 1; min-width: 0; } .plpanel .dhide { display: flex; gap: 6px; margin: 4px 0; } .plpanel .dhide input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
@@ -799,8 +799,8 @@ const I18N = {
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
     shConsole: 'Show console', shConsoleHint: 'Créer un show de base pour la console à partir du dossier : patch, positions des machines, groupes, layout et presets.', shMa2: 'grandMA2…', shSoon: 'bientôt',
     maTitle: 'Show de base grandMA2', maHint: 'OPlanFeu prépare un plugin grandMA2 et ses fichiers (calque XML avec le patch et les positions, layout), dans un zip à copier sur une clé USB ou dans le dossier de l’onPC. Le plugin importe les fixture types, le calque, puis crée les groupes, le layout et les presets. Testé sur grandMA2 onPC 3.9.61, à lancer dans un show neuf.',
-    maTypes: 'Fixture types', maTypesHint: 'Pour chaque type et mode, le fichier de la librairie de la console (fabricant@appareil@mode, tel qu’il apparaît dans l’import de fixture types) et son numéro dans le show. Laisser le fichier vide si le type est déjà dans le show à ce numéro. Un show neuf contient déjà le n° 1 (réservé) et le n° 2 « Dimmer » : les projecteurs à 1 canal vont sur ce Dimmer, les autres types sont numérotés à partir de 3. Un numéro déjà occupé dans le show n’est pas réimporté.',
-    maType: 'Type', maMode: 'Mode', maCh: 'Canaux', maQty: 'Nb', maLib: 'Fichier de la librairie MA2', maNo: 'N° dans le show', maDimmer: 'Dimmer de la console',
+    maTypes: 'Fixture types', maTypesHint: 'Pour chaque type et mode, le fichier de la librairie de la console (fabricant@appareil@mode, tel qu’il apparaît dans l’import de fixture types) et son numéro dans le show. Un type qui a un vrai GDTF (pas le profil générique de WYSIWYG) est converti en fixture type grandMA2 et mis dans le zip (dossier library) : rien à remplir. Laisser le fichier vide si le type est déjà dans le show à ce numéro. Un show neuf contient déjà le n° 1 (réservé) et le n° 2 « Dimmer » : les projecteurs à 1 canal vont sur ce Dimmer, les autres types sont numérotés à partir de 3. Un numéro déjà occupé dans le show n’est pas réimporté.',
+    maType: 'Type', maMode: 'Mode', maCh: 'Canaux', maQty: 'Nb', maLib: 'Fichier de la librairie MA2', maNo: 'N° dans le show', maDimmer: 'Dimmer de la console', maConv: n => `auto : GDTF, ${n} canaux`, maConvTag: 'GDTF converti', maConvBad: (n, m) => `le GDTF a ${n} canaux dans ce mode, le patch en compte ${m}`, maConvWait: 'lecture des GDTF…',
     maContent: 'Contenu du show', maLayer: 'Patch et positions 3D (calque)', maUseChid: 'Sélection par Channel ID quand il existe', maGroups: 'Groupes', maGAll: 'tous les projecteurs', maGPos: 'un par position (de jardin à cour)', maGType: 'un par type', maGLayer: 'un par calque',
     maLayout: 'Layout (vue de dessus)', maPresets: 'Presets de base', maPDim: 'intensité 0 / 50 / 100 %', maPCol: '8 couleurs (mélange RVB / CMJ)', maPPos: 'position « Home »',
     maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
@@ -947,8 +947,8 @@ const I18N = {
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
     shConsole: 'Console show', shConsoleHint: 'Build a basic console show from the dossier: patch, fixture positions, groups, layout and presets.', shMa2: 'grandMA2…', shSoon: 'coming',
     maTitle: 'grandMA2 basic show', maHint: 'OPlanFeu prepares a grandMA2 plugin and its files (XML layer with patch and positions, layout) in a zip to copy to a USB key or the onPC folder. The plugin imports the fixture types and the layer, then creates groups, layout and presets. Tested on grandMA2 onPC 3.9.61; run it in a new show.',
-    maTypes: 'Fixture types', maTypesHint: 'For each type and mode, the console library file (manufacturer@fixture@mode, as shown in the fixture type import) and its number in the show. Leave the file empty if the type is already in the show at that number. A new show already holds no. 1 (reserved) and no. 2 “Dimmer”: 1-channel fixtures use that Dimmer, other types are numbered from 3. A number already used in the show is not imported again.',
-    maType: 'Type', maMode: 'Mode', maCh: 'Channels', maQty: 'Qty', maLib: 'MA2 library file', maNo: 'No. in show', maDimmer: 'console Dimmer',
+    maTypes: 'Fixture types', maTypesHint: 'For each type and mode, the console library file (manufacturer@fixture@mode, as shown in the fixture type import) and its number in the show. A type with a real GDTF (not the generic WYSIWYG profile) is converted to a grandMA2 fixture type and put in the zip (library folder): nothing to fill in. Leave the file empty if the type is already in the show at that number. A new show already holds no. 1 (reserved) and no. 2 “Dimmer”: 1-channel fixtures use that Dimmer, other types are numbered from 3. A number already used in the show is not imported again.',
+    maType: 'Type', maMode: 'Mode', maCh: 'Channels', maQty: 'Qty', maLib: 'MA2 library file', maNo: 'No. in show', maDimmer: 'console Dimmer', maConv: n => `auto: GDTF, ${n} channels`, maConvTag: 'GDTF converted', maConvBad: (n, m) => `the GDTF has ${n} channels in this mode, the patch says ${m}`, maConvWait: 'reading the GDTFs…',
     maContent: 'Show content', maLayer: 'Patch and 3D positions (layer)', maUseChid: 'Select by Channel ID when set', maGroups: 'Groups', maGAll: 'all fixtures', maGPos: 'one per position (left to right)', maGType: 'one per type', maGLayer: 'one per layer',
     maLayout: 'Layout (top view)', maPresets: 'Basic presets', maPDim: 'intensity 0 / 50 / 100 %', maPCol: '8 colours (RGB / CMY mixing)', maPPos: '“Home” position',
     maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
@@ -1737,9 +1737,182 @@ function ma2Conf(d = state.d) {
   return d.ma2;
 }
 const ma2Slug = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+// ───────────── GDTF → fixture type grandMA2 (fichier XML de librairie, importé par le plugin) ─────────────
+// correspondance des attributs GDTF → attribut, feature et preset de grandMA2 ($1 = numéro dans le nom GDTF)
+const MA2_ATTRS = [
+  [/^Dimmer$/, 'DIM', 'DIMMER', 'DIMMER'],
+  [/^Pan$/, 'PAN', 'POSITION', 'POSITION'], [/^Tilt$/, 'TILT', 'POSITION', 'POSITION'],
+  [/^(PositionMSpeed|PanTiltMSpeed|PanMSpeed)$/, 'POSITIONMSPEED', 'MSPEED', 'CONTROL'],
+  [/^ColorAdd_R$/, 'COLORRGB1', 'COLORRGB', 'COLOR'], [/^ColorAdd_G$/, 'COLORRGB2', 'COLORRGB', 'COLOR'], [/^ColorAdd_B$/, 'COLORRGB3', 'COLORRGB', 'COLOR'],
+  [/^ColorAdd_(RY|A)$/, 'COLORRGB4', 'COLORRGB', 'COLOR'], [/^ColorAdd_W$/, 'COLORRGB5', 'COLORRGB', 'COLOR'],
+  [/^ColorAdd_WW$/, 'COLORRGB6', 'COLORRGB', 'COLOR'], [/^ColorAdd_CW$/, 'COLORRGB7', 'COLORRGB', 'COLOR'],
+  [/^ColorSub_C$/, 'COLORRGB1', 'COLORRGB', 'COLOR', 1], [/^ColorSub_M$/, 'COLORRGB2', 'COLORRGB', 'COLOR', 1], [/^ColorSub_Y$/, 'COLORRGB3', 'COLORRGB', 'COLOR', 1],
+  [/^Color(\d+)$/, 'COLOR$1', 'COLOR$1', 'COLOR'],
+  [/^CTO$/, 'CTO', 'CTC', 'COLOR'], [/^CTB$/, 'CTB', 'CTC', 'COLOR'], [/^CTC$/, 'CTC', 'CTC', 'COLOR'],
+  [/^ColorMacro1$/, 'COLORMIXER', 'COLORMIX', 'COLOR'],
+  [/^Gobo(\d+)$/, 'GOBO$1', 'GOBO$1', 'GOBO'], [/^Gobo(\d+)Pos(Rotate)?$/, 'GOBO$1_POS', 'GOBO$1', 'GOBO'],
+  [/^Prism(\d+)$/, 'PRISMA$1', 'PRISMA$1', 'BEAM'], [/^Prism(\d+)Pos(Rotate)?$/, 'PRISMA$1_POS', 'PRISMA$1', 'BEAM'],
+  [/^Frost1$/, 'FROST', 'BEAM1', 'BEAM'], [/^Frost(\d+)$/, 'FROST$1', 'BEAM1', 'BEAM'],
+  [/^Iris$/, 'IRIS', 'BEAM1', 'BEAM'],
+  [/^Shutter1$/, 'SHUTTER', 'SHUTTER', 'BEAM'], [/^Shutter1Strobe/, 'SHUTTER', 'SHUTTER', 'BEAM'], [/^Shutter(\d+)$/, 'SHUTTER$1', 'SHUTTER', 'BEAM'],
+  [/^Zoom$/, 'ZOOM', 'FOCUS', 'FOCUS'], [/^Focus1$/, 'FOCUS', 'FOCUS', 'FOCUS'], [/^Focus(\d+)$/, 'FOCUS$1', 'FOCUS', 'FOCUS'],
+  [/^(NoFeature|Dummy)$/, 'DUMMY', 'CONTROL', 'CONTROL'],
+];
+const MA2_SUB = { Shutter1Strobe: 'STROBE', Shutter1StrobeRandom: 'STROBE_RANDOM', Shutter1StrobePulse: 'STROBE_PULSE', Shutter1StrobePulseOpen: 'STROBE_PULSE_OPEN', Shutter1StrobePulseClose: 'STROBE_PULSE_CLOSE' };
+const MA2_PRESET = { Dimmer: 'DIMMER', Position: 'POSITION', Gobo: 'GOBO', Color: 'COLOR', Beam: 'BEAM', Focus: 'FOCUS', Control: 'CONTROL', Shapers: 'SHAPERS', Video: 'VIDEO' };
+const ma2Up = s => String(s || '').toUpperCase().replace(/[^A-Z0-9_]+/g, '').slice(0, 24) || 'DUMMY';
+// CIE xyY (GDTF) → sRGB 0..255
+function ma2Rgb(cie) {
+  const [x, y] = String(cie || '').split(',').map(Number); if (!(y > 0)) return null;
+  const X = x / y, Z = (1 - x - y) / y, g = v => { v = Math.max(0, v); v = v <= .0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - .055; return v; };
+  let c = [3.2406 * X - 1.5372 - .4986 * Z, -.9689 * X + 1.8758 + .0415 * Z, .0557 * X - .204 + 1.057 * Z].map(g);
+  const m = Math.max(...c, 1e-6); return c.map(v => Math.round(Math.min(1, v / m) * 255));
+}
+// doc : description.xml (Document) ; mode : nom du mode du patch ('' = premier). Retourne { xml, name, mode, nch, attrs } ou null
+function ma2FtFromGdtf(doc, mode, lib) {
+  const ft = doc.querySelector('FixtureType'); if (!ft) return null;
+  const modes = [...ft.querySelectorAll('DMXModes > DMXMode')];
+  const mn0 = m => { const n = m.getAttribute('Name') || ''; return n === 'None' ? '' : n; };
+  const M = modes.find(m => mn0(m) === (mode || '')) || (mode ? modes.find(m => nrm(mn0(m)) === nrm(mode)) : null) || (!mode || modes.length === 1 ? modes[0] : null);
+  if (!M) return null;
+  const featOf = new Map([...ft.querySelectorAll('AttributeDefinitions Attributes Attribute')].map(a => [a.getAttribute('Name'), (a.getAttribute('Feature') || '').split('.')[0]]));
+  const map = a => {
+    for (const [re, at, fe, pr, inv] of MA2_ATTRS) { const m = String(a).match(re); if (m) return { at: at.replace('$1', m[1]), fe: fe.replace('$1', m[1]), pr, inv: !!inv }; }
+    const grp = featOf.get(a) || 'Control';
+    return { at: ma2Up(a), fe: grp === 'Control' ? 'CONTROL' : ma2Up(grp), pr: MA2_PRESET[grp] || 'CONTROL', inv: false };
+  };
+  // valeur DMX GDTF « v/n » → valeur sur k octets
+  const dv = (s, k) => { const m = String(s || '').match(/^(\d+)(?:\/(\d+))?$/); if (!m) return null; const v = +m[1], n = +(m[2] || 1); return n === k ? v : n < k ? v * 256 ** (k - n) : Math.floor(v / 256 ** (n - k)); };
+  const wheels = [], wheelIx = new Map(), gw = n => ft.querySelector(`Wheels > Wheel[Name="${CSS.escape(n)}"]`);
+  const chans = [];
+  for (const c of M.querySelectorAll('DMXChannels > DMXChannel')) {
+    const offs = String(c.getAttribute('Offset') || '').split(',').map(v => parseInt(v, 10)).filter(v => v > 0);
+    const lcs = [...c.querySelectorAll('LogicalChannel')]; if (!lcs.length) continue;
+    const lattr = lcs[0].getAttribute('Attribute') || 'NoFeature';
+    if (!offs.length && lattr !== 'Dimmer') continue;
+    chans.push({ c, offs: offs.slice(0, 3), k: Math.min(3, offs.length) || 3, geo: c.getAttribute('Geometry') || '', lattr, lcs, info: map(lattr) });
+  }
+  if (!chans.length) return null;
+  // instances : canaux regroupés par géométrie ; tant qu'aucun attribut ne se répète, tout va dans le module principal,
+  // les géométries qui répètent des attributs (pixels) deviennent des instances à part
+  const byGeo = new Map(); chans.forEach(ch => { if (!byGeo.has(ch.geo)) byGeo.set(ch.geo, []); byGeo.get(ch.geo).push(ch); });
+  // les géométries répétées (même suite d'attributs : pixels, cellules) sont toujours des instances
+  const sig = list => list.map(ch => ch.info.at).join(','), nSig = new Map();
+  for (const list of byGeo.values()) nSig.set(sig(list), (nSig.get(sig(list)) || 0) + 1);
+  const main = [], seen = new Set(), subs = [];
+  for (const list of byGeo.values()) {
+    if (nSig.get(sig(list)) < 2 && list.every(ch => !seen.has(ch.info.at))) { main.push(...list); list.forEach(ch => seen.add(ch.info.at)); } else subs.push(list);
+  }
+  const N = (v, d = 3) => String(Math.round(v * 10 ** d) / 10 ** d);
+  const moduleXml = (list, ind) => {
+    const offAll = list.flatMap(ch => ch.offs), base = offAll.length ? Math.min(...offAll) : 1;
+    const used = new Set(), mainAttrs = new Set(list.map(ch => ch.info.at));
+    const out = list.map(ch => {
+      let at = ch.info.at; for (let i = 2; used.has(at); i++) at = ch.info.at + i; used.add(at);
+      const k = ch.k, max = 256 ** k - 1, sc = 256 ** (3 - k), pct = v => v / max * 100;
+      // fonctions dans l'ordre DMX, sans les chevauchements (fonctions dépendant d'un autre canal : la première gagne)
+      const fns = [];
+      for (const lc of ch.lcs) for (const f of lc.querySelectorAll('ChannelFunction')) {
+        const from = dv(f.getAttribute('DMXFrom') || '0/1', k) ?? 0;
+        if (fns.length && from <= fns[fns.length - 1].from) continue;
+        fns.push({ f, from });
+      }
+      const fx = fns.map((o, i) => {
+        const f = o.f, to = i + 1 < fns.length ? fns[i + 1].from - 1 : max, fa = f.getAttribute('Attribute') || ch.lattr, fm = map(fa);
+        let fat = fm.at === at || fm.at === ch.info.at || !mainAttrs.has(fm.at) ? fm.at : at, ffe = fm.fe, fpr = fm.pr;
+        if (fat === ch.info.at) { fat = at; ffe = ch.info.fe; fpr = ch.info.pr; }
+        const sub = MA2_SUB[fa] || (fat === at && fa === ch.lattr ? at : ma2Up(fa));
+        const pf = parseFloat(f.getAttribute('PhysicalFrom')), pt = parseFloat(f.getAttribute('PhysicalTo'));
+        let lf = pct(o.from), lt = pct(to);
+        if (/^(PAN|TILT)$/.test(at) && fat === at && Number.isFinite(pf) && Number.isFinite(pt) && pf !== pt) { lf = pf; lt = pt; }
+        else if (fns.length === 1) { lf = 0; lt = 100; }
+        if (ch.info.inv && fat === at) [lf, lt] = [100 - lf, 100 - lt];
+        let wheel = '', sets = [];
+        const wn = f.getAttribute('Wheel'), W = wn && gw(wn);
+        if (W && fat === at) {
+          if (!wheelIx.has(wn)) { wheelIx.set(wn, wheels.length + 1); wheels.push({ W, at: fat, fe: ffe, pr: fpr }); }
+          wheel = ` wheel="${wheelIx.get(wn)}"`;
+        }
+        const slots = W ? [...W.querySelectorAll('Slot')] : [];
+        const cs = [...f.querySelectorAll('ChannelSet')].map(s => ({ s, from: dv(s.getAttribute('DMXFrom') || '0/1', k) ?? 0 })).filter(x => x.from >= o.from && x.from <= to);
+        cs.forEach((x, j) => {
+          const sto = j + 1 < cs.length ? cs[j + 1].from - 1 : to, wi = parseInt(x.s.getAttribute('WheelSlotIndex'), 10);
+          const slot = W && wi > 0 && wi <= slots.length ? slots[wi - 1] : null;
+          const nm = x.s.getAttribute('Name') || (slot ? slot.getAttribute('Name') : '');
+          if (!nm) return;
+          sets.push(`\t\t\t\t\t\t<ChannelSet name="${xa(nm)}" from_dmx="${x.from}" to_dmx="${Math.max(x.from, sto)}"${slot ? ` slot_index="${wi - 1}"` : ''} />`);
+        });
+        const phys = Number.isFinite(pf) && Number.isFinite(pt) ? ` physfrom="${N(pf, 4)}" physto="${N(pt, 4)}"` : '';
+        const nmF = f.getAttribute('Name') || '';
+        return `\t\t\t\t\t<ChannelFunction${nmF && fns.length > 1 ? ` name="${xa(nmF)}"` : ''} from="${N(lf)}" to="${N(lt)}" min_dmx_24="${o.from * sc}" max_dmx_24="${(to + 1) * sc - 1}"${phys} subattribute="${sub}" attribute="${fat}" feature="${ffe}" preset="${fpr}"${wheel}>${sets.length ? '\n' + sets.join('\n') + '\n\t\t\t\t\t' : ''}</ChannelFunction>`;
+      });
+      const offs = ch.offs.map(v => v - base + 1);
+      const def = dv(ch.c.getAttribute('Default'), k) ?? (() => { const fn = (ch.c.getAttribute('InitialFunction') || '').split('.').pop(); const f = fns.find(o => o.f.getAttribute('Name') === fn) || fns[0]; return f ? dv(f.f.getAttribute('Default'), k) : null; })();
+      const hl = dv(ch.c.getAttribute('Highlight'), k);
+      const a = [`attribute="${at}"`, `feature="${ch.info.fe}"`, `preset="${ch.info.pr}"`];
+      if (offs[0]) a.push(`coarse="${offs[0]}"`); if (offs[1]) a.push(`fine="${offs[1]}"`); if (offs[2]) a.push(`ultra="${offs[2]}"`);
+      if (def) a.push(`default="${def}"`); if (at === 'DIM') a.push('highlight_value="100"'); else if (hl !== null) a.push(`highlight_value="${N(pct(hl))}"`);
+      return { at, xml: `\t\t\t\t<ChannelType ${a.join(' ')}>\n${fx.join('\n')}\n\t\t\t\t</ChannelType>` };
+    });
+    // mélange de couleurs sans gradateur : gradateur virtuel (comme les LED de la librairie MA)
+    if (out.some(o => /^COLORRGB/.test(o.at)) && !out.some(o => o.at === 'DIM'))
+      out.push({ at: 'DIM', xml: `\t\t\t\t<ChannelType attribute="DIM" feature="DIMMER" preset="DIMMER" highlight_value="100">\n\t\t\t\t\t<ChannelFunction from="0" to="100" min_dmx_24="0" max_dmx_24="16777215" physfrom="0" physto="1" subattribute="DIM" attribute="DIM" feature="DIMMER" preset="DIMMER">\n\t\t\t\t\t\t<ChannelSet name="closed" from_dmx="0" to_dmx="0" />\n\t\t\t\t\t\t<ChannelSet name="open" from_dmx="16777215" to_dmx="16777215" />\n\t\t\t\t\t</ChannelFunction>\n\t\t\t\t</ChannelType>` });
+    return { base, body: out.map(o => o.xml).join('\n'), attrs: out.map(o => o.at) };
+  };
+  const beam = ft.querySelector('Geometries Beam'), has = re => chans.some(ch => re.test(ch.info.at));
+  const cls = has(/^(PAN|TILT)$/) ? 'Headmover' : has(/^COLORRGB/) && !has(/^COLOR\d/) ? 'LED' : 'Conventional';
+  const bt = /spot|rectangle/i.test(beam ? beam.getAttribute('BeamType') || '' : '') ? 'Spot' : 'Wash', ba = beam ? Math.round(parseFloat(beam.getAttribute('BeamAngle')) || 25) : 25;
+  const mods = [], inst = [];
+  for (const [i, list] of (main.length ? [main, ...subs] : subs).entries()) {
+    const m = moduleXml(list, i), key = m.body;
+    let mi = mods.findIndex(x => x.body === key); if (mi < 0) { mi = mods.length; mods.push(m); }
+    inst.push(`\t\t\t<Instance module_index="${mi}" patch="${m.base}"${i === 0 ? ' locked="true"' : ''} />`);
+  }
+  const name = ft.getAttribute('Name') || 'GDTF', mn = M.getAttribute('Name') || '', maker = ft.getAttribute('Manufacturer') || '';
+  const nch = Math.max(0, ...chans.flatMap(ch => ch.offs));
+  const modXml = mods.map((m, i) => `\t\t\t<Module name="${i ? 'Module ' + (i + 1) : 'Main Module'}" class="${cls}" beamtype="${bt}" beam_angle="${ba}" beam_intensity="10000">\n${m.body}\n\t\t\t</Module>`).join('\n');
+  const wXml = wheels.map(w => `\t\t\t<Wheel subattribute="${w.at}" attribute="${w.at}" feature="${w.fe}" preset="${w.pr}">\n${[...w.W.querySelectorAll('Slot')].map(s => {
+    const n = s.getAttribute('Name') || '', rgb = /open/i.test(n) ? null : ma2Rgb(s.getAttribute('Color'));
+    return `\t\t\t\t<Slot media_name="${xa(n)}"${rgb && /^COLOR/.test(w.at) ? ` r="${rgb[0]}" g="${rgb[1]}" b="${rgb[2]}"` : ''} />`;
+  }).join('\n')}\n\t\t\t</Wheel>`).join('\n');
+  const xml = `${MA2_HEAD()}
+\t<FixtureType name="${xa(name)}" mode="${xa(mn)}">
+\t\t<InfoItems>
+\t\t\t<Info type="Revision" date="${new Date().toISOString().slice(0, 10)}">OPlanFeu : converti du GDTF ${xa(maker + ' ' + name)} (mode ${xa(mn || '-')})</Info>
+\t\t</InfoItems>
+\t\t<short_name>${xa((ft.getAttribute('ShortName') || name).slice(0, 12))}</short_name>
+\t\t<manufacturer>${xa(maker)}</manufacturer>
+\t\t<short_manufacturer>${xa(maker.slice(0, 8))}</short_manufacturer>
+\t\t<Modules>\n${modXml}\n\t\t</Modules>
+\t\t<Instances>\n${inst.join('\n')}\n\t\t</Instances>
+\t\t<Wheels>${wXml ? '\n' + wXml + '\n\t\t' : ''}</Wheels>
+\t</FixtureType>
+</MA>
+`;
+  return { xml, name, mode: mn, maker, nch, instances: inst.length, attrs: [...new Set(mods.flatMap(m => m.attrs))] };
+}
 // un fixture type MA2 = un fichier de la librairie de la console (fabricant@appareil@mode). Un show neuf contient déjà
 // le n° 1 « Universal Attributes » (réservé) et le n° 2 « Dimmer 00 » : les gradateurs (1 canal) vont sur le n° 2,
 // les autres types sont numérotés à partir de 3 ; deux types du dossier sur le même fichier partagent le même numéro
+// fixture types convertis des GDTF : calculés à l'ouverture de la fenêtre (asynchrone), gardés en cache par type, mode et fichier
+const MA2_CONV = new Map();
+const ma2ConvKey = (d, type, mode) => { const ty = d.types[type] || {}; return ty.gdtfData ? type + '\u0001' + mode + '\u0001' + ty.gdtfData.length + ty.gdtfData.slice(-40) : null; };
+async function ma2Convert(d = state.d) {
+  let changed = false;
+  const todo = new Map(); d.fixtures.forEach(f => { const k = ma2ConvKey(d, f.type, f.mode || ''); if (k && !MA2_CONV.has(k)) todo.set(k, [f.type, f.mode || '']); });
+  for (const [k, [type, mode]] of todo) {
+    let r = null;
+    try {
+      const g = await unzip(fromB64(d.types[type].gdtfData)), doc = xmlOf(await g.get('description.xml'));
+      // profil générique de WYSIWYG : canaux tous « Dummy », inutilisable sur la console
+      if (!/from WYSIWYG/i.test([...doc.querySelectorAll('Revision')].map(x => x.getAttribute('Text') || '').join(' '))) r = ma2FtFromGdtf(doc, mode);
+      if (r && r.attrs.every(a => a === 'DUMMY')) r = null;
+    } catch { r = null; }
+    MA2_CONV.set(k, r); changed = true;
+  }
+  return changed;
+}
+const ma2ConvOf = (d, type, mode) => { const k = ma2ConvKey(d, type, mode); return k ? MA2_CONV.get(k) || null : null; };
 const MA2_DIMMER = 'generic@dimmer@00', MA2_DIMMER_NO = 2, MA2_FIRST_NO = 3;
 function ma2Types(d = state.d) {
   const C = ma2Conf(d), m = new Map();
@@ -1751,7 +1924,9 @@ function ma2Types(d = state.d) {
     const ty = d.types[r.type] || {}, c = C.types[r.k] || {};
     r.name = ty.name || r.type; r.maker = ty.maker || '';
     r.dimmer = !c.lib && +r.nch === 1;
-    r.lib = c.lib || (r.dimmer ? MA2_DIMMER : '');
+    r.conv = !c.lib && !r.dimmer ? ma2ConvOf(d, r.type, r.mode) : null;
+    if (r.conv) r.convLib = 'oplanfeu@' + [ma2Slug(r.maker || r.conv.maker), ma2Slug(r.name)].filter(Boolean).join('_') + '@' + (ma2Slug(r.mode) || 'defaut');
+    r.lib = c.lib || (r.dimmer ? MA2_DIMMER : r.convLib || '');
     r.libPh = [ma2Slug(r.maker), ma2Slug(r.name), ma2Slug(r.mode)].filter(Boolean).join('@');
     if (isSet(c.no)) r.no = +c.no;
     else if (r.lib && byLib.has(r.lib)) r.no = byLib.get(r.lib);
@@ -1851,7 +2026,7 @@ const luaStr = s => '"' + ma2Ascii(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"'
 function ma2Lua(d = state.d, files) {
   const C = ma2Conf(d), O = C.opts, title = d.meta.titre || 'OPlanFeu', groups = O.groups ? ma2Groups(d) : [];
   const seen = new Set(), types = ma2Types(d).filter(r => r.lib && !seen.has(r.lib) && seen.add(r.lib))
-    .map(r => `  { no = ${r.no}, lib = ${luaStr(r.lib)}, name = ${luaStr(r.name + (r.mode ? ' ' + r.mode : ''))} },`).join('\n');
+    .map(r => `  { no = ${r.no}, lib = ${luaStr(r.lib)}, name = ${luaStr(r.name + (r.mode ? ' ' + r.mode : ''))}${r.conv && r.lib === r.convLib ? ', conv = true' : ''} },`).join('\n');
   const gl = groups.map(g => `  { no = ${g.no}, name = ${luaStr(g.name)}, sel = { ${ma2SelCmds(g.list).map(luaStr).join(', ')} } },`).join('\n');
   const allNo = groups.length && O.gAll ? groups[0].no : null, P = +O.presetStart || 1;
   const first = ma2Fixtures(d).find(o => o.sel), pre = [];
@@ -1958,7 +2133,8 @@ local function run()
   for _, ty in ipairs(TYPES) do
     if ftState(ty.no) ~= 'ok' then
       fail('fixture type ' .. ty.no .. ' introuvable dans la librairie : ' .. ty.lib .. ' (' .. ty.name .. ')')
-      suggest(ty.lib)
+      if ty.conv then log('   converti du GDTF par OPlanFeu : verifier que library/' .. ty.lib .. '.xml a bien ete copie avec le reste du zip')
+      else suggest(ty.lib) end
       if ftState(ty.no) == 'empty' then cmd('Delete ' .. ty.no .. ' /nc') end
       bad[#bad + 1] = ty
     end
@@ -2041,7 +2217,7 @@ Généré le ${new Date().toLocaleString('fr-FR')}
 
 Contenu (à copier à la racine d'une clé USB, ou dans le dossier de l'onPC) :
   gma2/plugins/${base}.xml et ${base}.lua   le plugin (journal : gma2/importexport/oplanfeu_log.txt)
-  gma2/fixture_layers/${base}_layer.xml     le calque : patch, Fix ID / Channel ID, positions 3D${O.layout ? `\n  gma2/importexport/${base}_layout.xml      le layout des projecteurs (vue de dessus)` : ''}
+  gma2/fixture_layers/${base}_layer.xml     le calque : patch, Fix ID / Channel ID, positions 3D${O.layout ? `\n  gma2/importexport/${base}_layout.xml      le layout des projecteurs (vue de dessus)` : ''}${ty.some(r => r.conv && r.lib === r.convLib) ? `\n  gma2/library/oplanfeu@….xml               les fixture types convertis des GDTF (importés par le plugin)` : ''}
 
 Sur l'onPC, le dossier gma2 est : C:\\ProgramData\\MA Lighting Technologies\\grandma\\gma2_V_<version>\\
 
@@ -2059,7 +2235,7 @@ Mode d'emploi (testé sur onPC 3.9.61, à partir d'un show vide) :
      Le détail est dans le System Monitor et, sur l'onPC, dans importexport/oplanfeu_log.txt.
 
 Fixture types (librairie de la console) :
-${ty.map(r => `  n° ${r.no}  ${(r.lib || '— À IMPORTER À LA MAIN —') + '   (' + r.name + (r.mode ? ' · ' + r.mode : '') + ')'}`).join('\n')}
+${ty.map(r => `  n° ${r.no}  ${(r.lib || '— À IMPORTER À LA MAIN —') + '   (' + r.name + (r.mode ? ' · ' + r.mode : '') + ')' + (r.conv && r.lib === r.convLib ? '  converti du GDTF, fichier dans gma2/library' : '')}`).join('\n')}
   (un show neuf contient déjà le n° 1 « Universal Attributes » et le n° 2 « Dimmer 00 » : un numéro occupé n'est pas réimporté)
 
 Si un fixture type est introuvable dans la librairie, le plugin s'arrête avant le calque, sans rien créer d'autre,
@@ -2068,7 +2244,8 @@ Corriger le nom dans OPlanFeu (ou importer le type à la main à ce numéro), pu
 Testé sur grandMA2 onPC 3.9.61.
 `;
 }
-function ma2Download(d = state.d) {
+async function ma2Download(d = state.d) {
+  await ma2Convert(d);
   const base = 'oplanfeu_' + (ma2Slug(d.meta.titre) || 'show').slice(0, 40), O = ma2Conf(d).opts, enc = new TextEncoder();
   const files = { layer: base + '_layer', layout: base + '_layout' };
   const lua = ma2Lua(d, files), list = [
@@ -2077,6 +2254,8 @@ function ma2Download(d = state.d) {
   ];
   if (O.layer) list.push([`gma2/fixture_layers/${files.layer}.xml`, ma2LayerXml(d)]);
   if (O.layout) list.push([`gma2/importexport/${files.layout}.xml`, ma2LayoutXml(d)]);
+  const libs = new Set();
+  for (const r of ma2Types(d)) if (r.conv && r.lib === r.convLib && !libs.has(r.lib)) { libs.add(r.lib); list.push([`gma2/library/${r.lib}.xml`, r.conv.xml]); }
   list.push([`${base}_LISEZMOI.txt`, ma2Readme(d, base)]);
   const blob = zipStore(list.map(([n, s]) => [n, enc.encode(s)]));
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = base + '_grandMA2.zip'; document.body.appendChild(a); a.click();
@@ -2087,10 +2266,12 @@ function ma2Download(d = state.d) {
 function ma2Dialog() {
   const d = state.d, C = ma2Conf(d), O = C.opts, x = esc, ty = ma2Types(d), fx = ma2Fixtures(d);
   const noSel = fx.filter(o => !o.sel).length, unp = d.fixtures.filter(f => !f.univ || !f.addr).length, toDo = ty.filter(r => !r.dimmer && !r.lib).length;
+  if (!ma2Dialog.busy) { ma2Dialog.busy = true; ma2Convert(d).then(ch => { ma2Dialog.busy = false; if (ch && $('#ma2Dlg').open && state.d === d) ma2Dialog(); }, () => { ma2Dialog.busy = false; }); }
+  const wait = ty.some(r => !r.lib && !r.dimmer && (d.types[r.type] || {}).gdtfData && !MA2_CONV.has(ma2ConvKey(d, r.type, r.mode)));
   const ck = (k, lab) => `<label><input type="checkbox" data-ma="${k}"${O[k] ? ' checked' : ''}> ${x(t(lab))}</label>`;
   const num = (k, lab) => `<label class="cf"><span>${x(t(lab))}</span><input class="c box" data-ma="${k}" inputmode="numeric" style="width:4em" value="${x(O[k])}"></label>`;
   const rows = ty.map(r => `<tr data-mak="${x(r.k)}"><td><b>${x(r.name)}</b>${r.maker ? `<br><small class="mut">${x(r.maker)}</small>` : ''}</td><td>${x(r.mode || '—')}</td><td class="num">${x(r.nch ?? '')}</td><td class="num">${r.n}</td>
-<td><input class="c box" data-mat="lib" style="width:19em" value="${x(r.lib)}" placeholder="${x(r.dimmer ? t('maDimmer') : r.libPh)}"></td><td><input class="c box" data-mat="no" inputmode="numeric" style="width:3.6em" value="${x(isSet((C.types[r.k] || {}).no) ? C.types[r.k].no : '')}" placeholder="${r.no}"></td></tr>`).join('');
+<td><input class="c box" data-mat="lib" style="width:19em" value="${x(r.conv && r.lib === r.convLib ? '' : r.lib)}" placeholder="${x(r.dimmer ? t('maDimmer') : r.conv ? t('maConv', r.conv.nch) : r.libPh)}">${r.conv && r.lib === r.convLib ? `<br><small class="maconv" title="${x(r.convLib)}">✓ ${x(t('maConvTag'))} · ${x(r.convLib)}</small>${+r.nch && +r.nch !== r.conv.nch ? `<br><small class="mawarn">⚠ ${x(t('maConvBad', r.conv.nch, r.nch))}</small>` : ''}` : ''}</td><td><input class="c box" data-mat="no" inputmode="numeric" style="width:3.6em" value="${x(isSet((C.types[r.k] || {}).no) ? C.types[r.k].no : '')}" placeholder="${r.no}"></td></tr>`).join('');
   $('#ma2Body').innerHTML = `<p class="hint2">${x(t('maHint'))}</p>
 <h3>${x(t('maTypes'))}</h3><p class="hint2">${x(t('maTypesHint'))}</p>
 <table class="grid"><thead><tr>${['maType', 'maMode', 'maCh', 'maQty', 'maLib', 'maNo'].map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
@@ -2099,7 +2280,7 @@ function ma2Dialog() {
 <div>${ck('groups', 'maGroups')}<div class="masub">${ck('gAll', 'maGAll')}${ck('gPos', 'maGPos')}${ck('gType', 'maGType')}${ck('gLayer', 'maGLayer')}</div></div>
 <div>${ck('layout', 'maLayout')}${ck('presets', 'maPresets')}<div class="masub">${ck('pDim', 'maPDim')}${ck('pCol', 'maPCol')}${ck('pPos', 'maPPos')}</div></div></div>
 <div class="cgrid">${num('layerNo', 'maLayerNo')}${num('groupStart', 'maGroupStart')}${num('layoutNo', 'maLayoutNo')}${num('layoutScale', 'maLayoutScale')}${num('presetStart', 'maPresetStart')}</div>
-${[toDo ? t('maWarnLib', toDo) : '', noSel ? t('maWarnId', noSel) : '', unp ? t('maWarnUnp', unp) : '', O.presets && !O.gAll ? t('maWarnAll') : ''].filter(Boolean).map(w => `<p class="mawarn">⚠ ${x(w)}</p>`).join('')}
+${wait ? `<p class="hint2">${x(t('maConvWait'))}</p>` : ''}${[toDo && !wait ? t('maWarnLib', toDo) : '', noSel ? t('maWarnId', noSel) : '', unp ? t('maWarnUnp', unp) : '', O.presets && !O.gAll ? t('maWarnAll') : ''].filter(Boolean).map(w => `<p class="mawarn">⚠ ${x(w)}</p>`).join('')}
 <p style="margin-top:14px"><button type="button" class="btn primary" id="ma2Dl">${x(t('maDownload'))}</button></p>
 <details class="mahelp"><summary>${x(t('maHowTitle'))}</summary><ol>${t('maHow').map(s => `<li>${x(s)}</li>`).join('')}</ol></details>`;
   if (!$('#ma2Dlg').open) $('#ma2Dlg').showModal();

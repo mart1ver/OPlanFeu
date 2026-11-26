@@ -47,3 +47,83 @@ test('show grandMA2 : correspondance des types, options, zip pour la clé USB', 
   expect(chk.lua).not.toContain("f .. '.xml'");    // nom de librairie sans extension (ancienne erreur)
   expect(chk.lua).toContain("{ no = 12, name = \"P1 Lointain\", sel = { \"Fixture 101 Thru 106\" } }");
 });
+
+// GDTF de test (fabriqués ici) : une lyre LED RGBW 16 bits avec roue de gobos, et une barre de 4 pixels RGB avec gradateur général
+const GDTF_LYRE = `<?xml version="1.0" encoding="UTF-8"?><GDTF DataVersion="1.1"><FixtureType Name="Lyre Test" ShortName="LyreT" Manufacturer="Test" FixtureTypeID="00000000-0000-0000-0000-000000000001">
+<AttributeDefinitions><FeatureGroups><FeatureGroup Name="Position"><Feature Name="PanTilt"/></FeatureGroup><FeatureGroup Name="Control"><Feature Name="Control"/></FeatureGroup></FeatureGroups>
+<Attributes><Attribute Name="Pan" Feature="Position.PanTilt"/><Attribute Name="Tilt" Feature="Position.PanTilt"/><Attribute Name="LampControl" Feature="Control.Control"/></Attributes></AttributeDefinitions>
+<Wheels><Wheel Name="Gobo1"><Slot Name="Open"/><Slot Name="Etoile"/><Slot Name="Points"/></Wheel></Wheels>
+<Geometries><Geometry Name="Base"><Axis Name="Yoke"><Axis Name="Head"><Beam Name="Beam" BeamType="Spot" BeamAngle="14"/></Axis></Axis></Geometry></Geometries>
+<DMXModes><DMXMode Name="Std" Geometry="Base"><DMXChannels>
+<DMXChannel Offset="1,2" Default="32768/2" Geometry="Yoke"><LogicalChannel Attribute="Pan"><ChannelFunction Attribute="Pan" DMXFrom="0/1" PhysicalFrom="-270" PhysicalTo="270"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="3,4" Default="32768/2" Geometry="Head"><LogicalChannel Attribute="Tilt"><ChannelFunction Attribute="Tilt" DMXFrom="0/1" PhysicalFrom="-135" PhysicalTo="135"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="5" Geometry="Beam"><LogicalChannel Attribute="ColorAdd_R"><ChannelFunction Attribute="ColorAdd_R" DMXFrom="0/1"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="6" Geometry="Beam"><LogicalChannel Attribute="ColorAdd_G"><ChannelFunction Attribute="ColorAdd_G" DMXFrom="0/1"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="7" Geometry="Beam"><LogicalChannel Attribute="ColorAdd_B"><ChannelFunction Attribute="ColorAdd_B" DMXFrom="0/1"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="8" Geometry="Beam"><LogicalChannel Attribute="ColorAdd_W"><ChannelFunction Attribute="ColorAdd_W" DMXFrom="0/1"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="9" Geometry="Beam"><LogicalChannel Attribute="Gobo1"><ChannelFunction Attribute="Gobo1" DMXFrom="0/1" Wheel="Gobo1"><ChannelSet Name="Open" DMXFrom="0/1" WheelSlotIndex="1"/><ChannelSet Name="" DMXFrom="10/1" WheelSlotIndex="2"/><ChannelSet Name="Points" DMXFrom="20/1" WheelSlotIndex="3"/></ChannelFunction>
+<ChannelFunction Attribute="Gobo1WheelSpin" Name="Spin" DMXFrom="128/1"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="10" Geometry="Beam" Highlight="20/1"><LogicalChannel Attribute="Shutter1"><ChannelFunction Attribute="Shutter1" Name="Open" DMXFrom="0/1"/><ChannelFunction Attribute="Shutter1Strobe" Name="Strobe" DMXFrom="64/1" PhysicalFrom="1" PhysicalTo="20"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="11,12" Geometry="Beam"><LogicalChannel Attribute="Dimmer"><ChannelFunction Attribute="Dimmer" DMXFrom="0/1"/></LogicalChannel></DMXChannel>
+<DMXChannel Offset="13" Geometry="Base"><LogicalChannel Attribute="LampControl"><ChannelFunction Attribute="LampControl" Name="Reset" DMXFrom="0/1"/></LogicalChannel></DMXChannel>
+</DMXChannels></DMXMode></DMXModes></FixtureType></GDTF>`;
+const px = i => ['R', 'G', 'B'].map((c, j) => `<DMXChannel Offset="${2 + i * 3 + j}" Geometry="Pixel${i + 1}"><LogicalChannel Attribute="ColorAdd_${c}"><ChannelFunction Attribute="ColorAdd_${c}" DMXFrom="0/1"/></LogicalChannel></DMXChannel>`).join('');
+const GDTF_BAR = `<?xml version="1.0" encoding="UTF-8"?><GDTF DataVersion="1.1"><FixtureType Name="Barre Test" ShortName="Barre" Manufacturer="Test"><AttributeDefinitions><Attributes/></AttributeDefinitions>
+<Geometries><Geometry Name="Body"/></Geometries><DMXModes><DMXMode Name="13ch" Geometry="Body"><DMXChannels>
+<DMXChannel Offset="1" Geometry="Body"><LogicalChannel Attribute="Dimmer"><ChannelFunction Attribute="Dimmer" DMXFrom="0/1"/></LogicalChannel></DMXChannel>${[0, 1, 2, 3].map(px).join('')}
+</DMXChannels></DMXMode></DMXModes></FixtureType></GDTF>`;
+
+test('show grandMA2 : les GDTF sont convertis en fixture types MA2 dans le zip', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.fixtures.filter(f => f.type === 'Test@Lyre').forEach(f => { f.nch = 13; });
+    d.types['Test@Lyre'].modes = { Std: 13 };
+    d.fixtures.filter(f => f.position === 'Sol').forEach(f => { f.type = 'Test@Barre'; f.mode = '13ch'; f.nch = 13; });
+    d.types['Test@Barre'] = { name: 'Barre Test', maker: 'Test', gdtf: 'barre.gdtf', modes: { '13ch': 13 } };
+  });
+  await page.evaluate(([a, b]) => {
+    const g = s => new Response(zipStore([['description.xml', new TextEncoder().encode(s)]])).arrayBuffer().then(buf => toB64(new Uint8Array(buf)));
+    return Promise.all([g(a), g(b)]).then(([x, y]) => { state.d.types['Test@Lyre'].gdtfData = x; state.d.types['Test@Barre'].gdtfData = y; });
+  }, [GDTF_LYRE, GDTF_BAR]);
+  await page.click('#tabs button[data-v=shows]');
+  await page.click('#view [data-sh=ma2]');
+  const dlg = page.locator('#ma2Dlg');
+  const lyre = dlg.locator('tbody tr').filter({ hasText: 'Lyre Test' });
+  await expect(lyre.locator('.maconv')).toContainText('oplanfeu@test_lyre_test@std');
+  await expect(lyre.locator('input[data-mat=lib]')).toHaveAttribute('placeholder', /GDTF, 13/);
+  await expect(dlg.locator('tbody tr').filter({ hasText: 'Barre Test' }).locator('.maconv')).toBeVisible();
+  // il ne reste que le PAR LED sans GDTF à importer à la main
+  await expect(dlg.locator('.mawarn').first()).toContainText('1 type(s) sans fichier');
+  const [dl] = await Promise.all([page.waitForEvent('download'), dlg.locator('#ma2Dl').click()]);
+  const zip = fs.readFileSync(await dl.path()).toString('latin1');
+  expect(zip).toContain('gma2/library/oplanfeu@test_lyre_test@std.xml');
+  expect(zip).toContain('gma2/library/oplanfeu@test_barre_test@13ch.xml');
+  const r = await page.evaluate(() => {
+    const T = ma2Types(), ly = T.find(x => x.type === 'Test@Lyre'), ba = T.find(x => x.type === 'Test@Barre');
+    const doc = s => new DOMParser().parseFromString(s, 'application/xml'), A = (el, a) => el.getAttribute(a);
+    const L = doc(ly.conv.xml), B = doc(ba.conv.xml);
+    const ct = [...L.getElementsByTagName('ChannelType')].map(c => [A(c, 'attribute'), A(c, 'coarse'), A(c, 'fine')].filter(Boolean).join(':'));
+    const gobo = [...L.getElementsByTagName('ChannelType')].find(c => A(c, 'attribute') === 'GOBO1');
+    const shut = [...L.getElementsByTagName('ChannelType')].find(c => A(c, 'attribute') === 'SHUTTER');
+    return { ok: !L.querySelector('parsererror') && !B.querySelector('parsererror'), ct, cls: A(L.getElementsByTagName('Module')[0], 'class'),
+      pan: [...L.getElementsByTagName('ChannelFunction')].filter(f => A(f, 'attribute') === 'PAN').map(f => [A(f, 'from'), A(f, 'to')]),
+      sets: [...gobo.getElementsByTagName('ChannelSet')].map(s => `${A(s, 'name')}:${A(s, 'from_dmx')}-${A(s, 'to_dmx')}:${A(s, 'slot_index')}`),
+      wheel: [...L.getElementsByTagName('Slot')].map(s => A(s, 'media_name')), strobe: [...shut.getElementsByTagName('ChannelFunction')].map(f => A(f, 'subattribute')),
+      hl: A(shut, 'highlight_value'), def: A([...L.getElementsByTagName('ChannelType')][0], 'default'),
+      inst: [...B.getElementsByTagName('Instance')].map(i => `${A(i, 'module_index')}@${A(i, 'patch')}`), mods: B.getElementsByTagName('Module').length,
+      barMod2: [...B.getElementsByTagName('Module')[1].getElementsByTagName('ChannelType')].map(c => [A(c, 'attribute'), A(c, 'coarse')].filter(Boolean).join(':')),
+      lua: ma2Lua(state.d, { layer: 'a', layout: 'b' }), no: ly.no };
+  });
+  expect(r.ok).toBe(true);
+  expect(r.ct).toEqual(['PAN:1:2', 'TILT:3:4', 'COLORRGB1:5', 'COLORRGB2:6', 'COLORRGB3:7', 'COLORRGB5:8', 'GOBO1:9', 'SHUTTER:10', 'DIM:11:12', 'LAMPCONTROL:13']);
+  expect(r.cls).toBe('Headmover');
+  expect(r.pan).toEqual([['-270', '270']]);
+  expect(r.sets).toEqual(['Open:0-9:0', 'Etoile:10-19:1', 'Points:20-127:2']);   // nom pris sur la roue si le ChannelSet n'en a pas
+  expect(r.wheel).toEqual(['Open', 'Etoile', 'Points']);
+  expect(r.strobe).toEqual(['SHUTTER', 'STROBE']);
+  expect([r.hl, r.def]).toEqual(['7.843', '32768']);
+  // barre : module principal (gradateur) + 4 instances d'un même module pixel (RGB + gradateur virtuel)
+  expect(r.mods).toBe(2);
+  expect(r.inst).toEqual(['0@1', '1@2', '1@5', '1@8', '1@11']);
+  expect(r.barMod2).toEqual(['COLORRGB1:1', 'COLORRGB2:2', 'COLORRGB3:3', 'DIM']);
+  expect(r.lua).toContain(`{ no = ${r.no}, lib = "oplanfeu@test_lyre_test@std", name = "Lyre Test Std", conv = true }`);
+});
