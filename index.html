@@ -805,7 +805,7 @@ const I18N = {
     maLayout: 'Layout (vue de dessus)', maPresets: 'Presets de base', maPDim: 'intensité 0 / 50 / 100 %', maPCol: '8 couleurs (mélange RVB / CMJ)', maPPos: 'position « Home »',
     maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
     maWarnLib: n => `${n} type(s) sans fichier de librairie : à importer à la main au numéro indiqué avant de lancer le plugin.`, maWarnId: n => `${n} projecteur(s) sans Fix ID ni Channel ID numérique : laissés de côté.`, maWarnUnp: n => `${n} projecteur(s) sans adresse : créés sans patch.`, maWarnAll: 'Les presets se font sur le groupe « Tous » : cochez-le.',
-    maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show neuf ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Pool des plugins : Edit sur une case vide, Import, choisir le plugin « oplanfeu_… ».', 'Lancer le plugin et confirmer ; le détail des commandes est dans le System Monitor.', 'Si un fixture type est introuvable, le plugin s’arrête sans rien créer et donne des noms proches de la librairie (System Monitor, et importexport/oplanfeu_log.txt sur l’onPC) : corriger le nom ici, retélécharger, relancer.'],
+    maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show vide (NewShow) ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Importer le plugin dans une case vide du pool, pas la case 1 (un show neuf y a le plugin de démonstration de MA) : cd Plugin, puis Import "oplanfeu_…" At 2, puis cd /.', 'Lancer : Plugin 2. Dans un show vide, il ne demande rien ; le détail est dans le System Monitor et dans importexport/oplanfeu_log.txt (onPC).', 'Si un fixture type est introuvable, le plugin s’arrête sans rien créer et donne des noms proches de la librairie (System Monitor, et importexport/oplanfeu_log.txt sur l’onPC) : corriger le nom ici, retélécharger, relancer.'],
     sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
     sbHint: 'Feuille de patch à imprimer, en A3 ou A4 paysage. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
@@ -953,7 +953,7 @@ const I18N = {
     maLayout: 'Layout (top view)', maPresets: 'Basic presets', maPDim: 'intensity 0 / 50 / 100 %', maPCol: '8 colours (RGB / CMY mixing)', maPPos: '“Home” position',
     maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
     maWarnLib: n => `${n} type(s) without library file: import them by hand at the given number before running the plugin.`, maWarnId: n => `${n} fixture(s) without a numeric Fix ID or Channel ID: skipped.`, maWarnUnp: n => `${n} fixture(s) without address: created unpatched.`, maWarnAll: 'Presets are stored on the “All” group: tick it.',
-    maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open a new show; if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Plugin pool: Edit an empty cell, Import, pick the “oplanfeu_…” plugin.', 'Run the plugin and confirm; the commands are listed in the System Monitor.', 'If a fixture type is not found, the plugin stops without creating anything and lists close library names (System Monitor, and importexport/oplanfeu_log.txt on onPC): fix the name here, download again, run again.'],
+    maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open an empty show (NewShow); if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Import the plugin into an empty pool cell, not cell 1 (a new show holds MA’s demo plugin there): cd Plugin, then Import "oplanfeu_…" At 2, then cd /.', 'Run: Plugin 2. In an empty show it asks nothing; details are in the System Monitor and importexport/oplanfeu_log.txt (onPC).', 'If a fixture type is not found, the plugin stops without creating anything and lists close library names (System Monitor, and importexport/oplanfeu_log.txt on onPC): fix the name here, download again, run again.'],
     sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
     sbHint: 'Printable patch sheet, A3 or A4 landscape. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
@@ -1935,7 +1935,9 @@ local function suggest(lib)
 end
 
 local function run()
-  if not gma.gui.confirm('OPlanFeu', 'Creer le show de base "' .. TITLE .. '" ?\\n' .. #TYPES .. ' fixture type(s), ' .. #GROUPS .. ' groupe(s), ' .. #PRESETS .. ' preset(s).\\nA faire dans un show neuf : les numeros existants seront ecrases.') then return end
+  -- show vide : rien a ecraser, on y va ; sinon (projecteurs ou groupes deja la) on demande
+  local busy = (FIRST_SEL ~= '' and exists(FIRST_SEL)) or (#GROUPS > 0 and exists('Group ' .. GROUPS[1].no))
+  if busy and not gma.gui.confirm('OPlanFeu', 'Ce show contient deja des projecteurs ou des groupes.\\nCreer quand meme le show de base "' .. TITLE .. '" ? Les numeros existants seront ecrases.') then return end
   local dir = gma2dir()
   if dir then logf = io.open(dir .. 'importexport\\\\oplanfeu_log.txt', 'w') end
   log('show de base : ' .. TITLE .. ' (grandMA2 ' .. tostring(gma.show.getvar('VERSION')) .. ')')
@@ -2043,11 +2045,18 @@ Contenu (à copier à la racine d'une clé USB, ou dans le dossier de l'onPC) :
 
 Sur l'onPC, le dossier gma2 est : C:\\ProgramData\\MA Lighting Technologies\\grandma\\gma2_V_<version>\\
 
-Mode d'emploi :
-  1. Nouveau show (ou show de travail).
+Mode d'emploi (testé sur onPC 3.9.61, à partir d'un show vide) :
+  1. Nouveau show :  NewShow "mon_show"
   2. Si les fichiers sont sur une clé : Backup > choisir le lecteur USB (ou commande SelectDrive).
-  3. Pool des plugins : Edit sur une case vide > Import > « ${base} ».
-  4. Lancer le plugin et confirmer. Les commandes passées s'affichent dans le System Monitor.
+  3. Importer le plugin dans une case VIDE du pool des plugins, pas la case 1 (un show neuf y a déjà le plugin
+     de démonstration de MA, « LUA 1») ; en ligne de commande :
+        cd Plugin
+        Import "${base}" At 2
+        cd /
+     (ou : pool des plugins, Edit sur la case 2 > Import > « ${base} »)
+  4. Lancer :  Plugin 2
+     Dans un show vide, le plugin ne demande rien ; s'il trouve déjà des projecteurs ou des groupes, il demande confirmation.
+     Le détail est dans le System Monitor et, sur l'onPC, dans importexport/oplanfeu_log.txt.
 
 Fixture types (librairie de la console) :
 ${ty.map(r => `  n° ${r.no}  ${(r.lib || '— À IMPORTER À LA MAIN —') + '   (' + r.name + (r.mode ? ' · ' + r.mode : '') + ')'}`).join('\n')}
