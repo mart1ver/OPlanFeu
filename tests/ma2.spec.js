@@ -103,6 +103,7 @@ test('show grandMA2 : les GDTF sont convertis en fixture types MA2 dans le zip',
   const zip = fs.readFileSync(await dl.path()).toString('latin1');
   expect(zip).toContain('gma2/library/oplanfeu@test_lyre_test@std.xml');
   expect(zip).toContain('gma2/library/oplanfeu@test_barre_test@13ch.xml');
+  expect(zip).toContain('gma2/gdtf/barre.gdtf');
   const r = await page.evaluate(() => {
     const T = ma2Types(), ly = T.find(x => x.type === 'Test@Lyre'), ba = T.find(x => x.type === 'Test@Barre');
     const doc = s => new DOMParser().parseFromString(s, 'application/xml'), A = (el, a) => el.getAttribute(a);

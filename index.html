@@ -2350,7 +2350,10 @@ async function ma2Download(d = state.d) {
   const libs = new Set();
   for (const r of ma2Types(d)) if (r.conv && r.lib === r.convLib && !libs.has(r.lib)) { libs.add(r.lib); list.push([`gma2/library/${r.lib}.xml`, r.conv.xml]); }
   list.push([`${base}_LISEZMOI.txt`, ma2Readme(d, pb)]);
-  const blob = zipStore(list.map(([n, s]) => [n, enc.encode(s)]));
+  // les GDTF d'origine des types du show, pour référence (gma2/gdtf, ignoré par la console)
+  const gd = new Set();
+  for (const r of ma2Types(d)) { const ty = d.types[r.type]; if (ty && ty.gdtfData && !gd.has(r.type)) { gd.add(r.type); list.push([`gma2/gdtf/${(ty.gdtf || r.type).replace(/[\\/:*?"<>|]+/g, '_').replace(/(\.gdtf)?$/i, '.gdtf')}`, fromB64(ty.gdtfData)]); } }
+  const blob = zipStore(list.map(([n, s]) => [n, typeof s === 'string' ? enc.encode(s) : s]));
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = base + '_grandMA2.zip'; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   return list.map(x => x[0]);
