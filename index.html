@@ -145,6 +145,10 @@ td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; b
 table.grid td input.box { border-color: var(--line); background: var(--bg); }
 table.grid td input.box:focus { background: var(--panel); }
 .view .gridwrap { overflow-x: auto; overflow-y: hidden; padding-bottom: 14px; }
+.macols { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 6px 0 10px; } .macols label { display: flex; gap: 6px; align-items: center; padding: 2px 0; } .masub { padding-inline-start: 22px; font-size: 13px; color: var(--muted); }
+#ma2Dlg td.num { text-align: center; } #ma2Dlg .cf input, #ma2Dlg td input { font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); }
+#ma2Dlg .cgrid { display: flex; flex-wrap: wrap; gap: 8px 14px; } #ma2Dlg .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } #ma2Dlg .cf > span { color: var(--muted); }
+.mawarn { margin: 6px 0; padding: 6px 10px; border-radius: 7px; background: color-mix(in srgb, #e8a317 16%, var(--bg)); font-size: 13px; } .mahelp { margin-top: 12px; font-size: 13px; } .mahelp summary { cursor: pointer; font-weight: 600; }
 .cartedit { margin: 12px 0 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; } .cartedit > summary { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
 .cartedit .cgrid { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0; } .cartedit .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } .cartedit .cf > span { color: var(--muted); } .cartedit input, .cartedit select { font: inherit; font-size: 13px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); min-width: 12em; }
 .planwrap.docopts #docPages { flex: 1; min-width: 0; } .plpanel .dhide { display: flex; gap: 6px; margin: 4px 0; } .plpanel .dhide input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
@@ -673,6 +677,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
     <div class="mapbtns"><button type="button" class="btn ghost" id="gdtfCancel" data-i18n="mapCancel">Annuler</button><button type="submit" class="btn" data-i18n="gdApply">Rattacher</button></div>
   </form>
 </dialog>
+<dialog id="ma2Dlg"><div class="bkdlg"><div class="bkhead"><h2 data-i18n="maTitle">Show de base grandMA2</h2><button type="button" class="iconbtn" id="ma2Close">✕</button></div><div id="ma2Body"></div></div></dialog>
 <dialog id="legDlg"><div class="bkdlg"><div class="bkhead"><h2 data-i18n="lgTitle">Légende du plan</h2><button type="button" class="iconbtn" id="lgClose">✕</button></div><div id="legBody"></div></div></dialog>
 <dialog id="bkDlg">
   <div class="bkdlg">
@@ -792,6 +797,15 @@ const I18N = {
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nombre, nom, univers de chaque sortie DMX, VLAN des ports de switch (les câbles se branchent dans l’onglet Liaisons). Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
+    shConsole: 'Show console', shConsoleHint: 'Créer un show de base pour la console à partir du dossier : patch, positions des machines, groupes, layout et presets.', shMa2: 'grandMA2…', shSoon: 'bientôt',
+    maTitle: 'Show de base grandMA2', maHint: 'OPlanFeu prépare un plugin grandMA2 et ses fichiers (calque XML avec le patch et les positions, layout), dans un zip à copier sur une clé USB ou dans le dossier de l’onPC. Le plugin importe les fixture types, le calque, puis crée les groupes, le layout et les presets. Premier jet au format grandMA2 3.x : à essayer dans un show neuf.',
+    maTypes: 'Fixture types', maTypesHint: 'Pour chaque type et mode, le fichier de la librairie de la console (fabricant@appareil@mode, tel qu’il apparaît dans l’import de fixture types) et son numéro dans le show. Laisser le fichier vide si le type est déjà dans le show à ce numéro. Un projecteur à 1 canal sans fichier devient le Dimmer de la console (type 1).',
+    maType: 'Type', maMode: 'Mode', maCh: 'Canaux', maQty: 'Nb', maLib: 'Fichier de la librairie MA2', maNo: 'N° dans le show', maDimmer: 'Dimmer de la console',
+    maContent: 'Contenu du show', maLayer: 'Patch et positions 3D (calque)', maUseChid: 'Sélection par Channel ID quand il existe', maGroups: 'Groupes', maGAll: 'tous les projecteurs', maGPos: 'un par position (de jardin à cour)', maGType: 'un par type', maGLayer: 'un par calque',
+    maLayout: 'Layout (vue de dessus)', maPresets: 'Presets de base', maPDim: 'intensité 0 / 50 / 100 %', maPCol: '8 couleurs (mélange RVB / CMJ)', maPPos: 'position « Home »',
+    maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
+    maWarnLib: n => `${n} type(s) sans fichier de librairie : à importer à la main au numéro indiqué avant de lancer le plugin.`, maWarnId: n => `${n} projecteur(s) sans Fix ID ni Channel ID numérique : laissés de côté.`, maWarnUnp: n => `${n} projecteur(s) sans adresse : créés sans patch.`, maWarnAll: 'Les presets se font sur le groupe « Tous » : cochez-le.',
+    maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show neuf ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Pool des plugins : Edit sur une case vide, Import, choisir le plugin « oplanfeu_… ».', 'Lancer le plugin et confirmer ; le détail des commandes est dans le System Monitor.', 'Si un import échoue : importer le type ou le calque à la main dans Setup > Patch & Fixture Schedule, puis relancer le plugin.'],
     sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
     sbHint: 'Feuille de patch à imprimer, en A3 ou A4 paysage. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
@@ -931,6 +945,15 @@ const I18N = {
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: count, name, universe of each DMX output, switch port VLAN (cables are plugged in the Links tab). Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
+    shConsole: 'Console show', shConsoleHint: 'Build a basic console show from the dossier: patch, fixture positions, groups, layout and presets.', shMa2: 'grandMA2…', shSoon: 'coming',
+    maTitle: 'grandMA2 basic show', maHint: 'OPlanFeu prepares a grandMA2 plugin and its files (XML layer with patch and positions, layout) in a zip to copy to a USB key or the onPC folder. The plugin imports the fixture types and the layer, then creates groups, layout and presets. First draft in grandMA2 3.x format: try it in a new show.',
+    maTypes: 'Fixture types', maTypesHint: 'For each type and mode, the console library file (manufacturer@fixture@mode, as shown in the fixture type import) and its number in the show. Leave the file empty if the type is already in the show at that number. A 1-channel fixture without a file becomes the console Dimmer (type 1).',
+    maType: 'Type', maMode: 'Mode', maCh: 'Channels', maQty: 'Qty', maLib: 'MA2 library file', maNo: 'No. in show', maDimmer: 'console Dimmer',
+    maContent: 'Show content', maLayer: 'Patch and 3D positions (layer)', maUseChid: 'Select by Channel ID when set', maGroups: 'Groups', maGAll: 'all fixtures', maGPos: 'one per position (left to right)', maGType: 'one per type', maGLayer: 'one per layer',
+    maLayout: 'Layout (top view)', maPresets: 'Basic presets', maPDim: 'intensity 0 / 50 / 100 %', maPCol: '8 colours (RGB / CMY mixing)', maPPos: '“Home” position',
+    maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
+    maWarnLib: n => `${n} type(s) without library file: import them by hand at the given number before running the plugin.`, maWarnId: n => `${n} fixture(s) without a numeric Fix ID or Channel ID: skipped.`, maWarnUnp: n => `${n} fixture(s) without address: created unpatched.`, maWarnAll: 'Presets are stored on the “All” group: tick it.',
+    maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open a new show; if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Plugin pool: Edit an empty cell, Import, pick the “oplanfeu_…” plugin.', 'Run the plugin and confirm; the commands are listed in the System Monitor.', 'If an import fails: import the type or layer by hand in Setup > Patch & Fixture Schedule, then run the plugin again.'],
     sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
     sbHint: 'Printable patch sheet, A3 or A4 landscape. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
@@ -1705,6 +1728,313 @@ function refreshFilters() {
 }
 // ───────────── shows : ouvrir, enregistrer, retrouver ─────────────
 // un « show » est un dossier OPlanFeu ; tous ceux ouverts dans ce navigateur restent dans la liste
+// ───────────── show de base grandMA2 : plugin Lua + calque XML (patch, positions) + layout, pour une clé USB ─────────────
+// le format des fichiers est celui de grandMA2 3.x ; un premier jet, à valider sur la console
+const MA2_DEF = { layer: true, groups: true, gAll: true, gPos: true, gType: true, gLayer: false, layout: true, presets: true, pDim: true, pCol: true, pPos: true,
+  layerNo: 1, groupStart: 1, layoutNo: 1, presetStart: 1, layoutScale: 2, useChid: false };
+function ma2Conf(d = state.d) {
+  d.ma2 = d.ma2 || {}; d.ma2.opts = { ...MA2_DEF, ...(d.ma2.opts || {}) }; d.ma2.types = d.ma2.types || {};
+  return d.ma2;
+}
+const ma2Slug = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+// un fixture type MA2 = un type et un mode ; 1 canal sans réglage : le « Dimmer » de la console (type 1)
+function ma2Types(d = state.d) {
+  const C = ma2Conf(d), m = new Map();
+  d.fixtures.forEach(f => { const k = f.type + '\u0001' + (f.mode || ''); if (!m.has(k)) m.set(k, { k, type: f.type, mode: f.mode || '', nch: f.nch, n: 0 }); m.get(k).n++; });
+  let next = 2;
+  const list = [...m.values()].sort((a, b) => b.n - a.n || natCmp(typeName(a.type), typeName(b.type)));
+  for (const r of list) {
+    const ty = d.types[r.type] || {}, c = C.types[r.k] || {};
+    r.name = ty.name || r.type; r.maker = ty.maker || '';
+    r.dimmer = !c.lib && +r.nch === 1;
+    r.lib = c.lib || ''; r.libPh = r.dimmer ? '' : [ma2Slug(r.maker), ma2Slug(r.name), ma2Slug(r.mode)].filter(Boolean).join('@');
+    r.no = isSet(c.no) ? +c.no : r.dimmer ? 1 : next;
+    if (!r.dimmer) next = Math.max(next, r.no) + 1;
+  }
+  return list;
+}
+const ma2Num = v => /^\d+$/.test(String(v ?? '').trim()) ? +v : null;
+// rotation MVR (axes u, v, w dans le monde) → angles en degrés autour de x, y, z
+function ma2Rot(f) {
+  if (!Array.isArray(f.m) || f.m.length < 9) return [0, 0, 0];
+  const [ux, uy, uz, vx, vy, vz, wx, wy, wz] = f.m, r = v => Math.round(v * 1800 / Math.PI) / 10 || 0;
+  return [r(Math.atan2(vz, wz)), r(Math.asin(Math.max(-1, Math.min(1, -uz)))), r(Math.atan2(uy, ux))];
+}
+// texte pour la console : sans accents (grandMA2 les affiche mal), caractères imprimables seulement
+const ma2Ascii = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[«»“”]/g, '"').replace(/[’‘]/g, "'").replace(/[—–]/g, '-').replace(/[^\x20-\x7e]/g, '');
+const xa = s => ma2Ascii(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const MA2_HEAD = () => `<?xml version="1.0" encoding="utf-8"?>
+<MA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
+\t<Info datetime="${new Date().toISOString().slice(0, 19)}" showfile="oplanfeu" />`;
+// projecteurs retenus, dans l'ordre du patch, avec leur numéro de sélection (Fix ID, ou Channel ID)
+function ma2Fixtures(d = state.d) {
+  const O = ma2Conf(d).opts;
+  return d.fixtures.map(f => ({ f, fid: ma2Num(f.fid), chid: ma2Num(f.chid) }))
+    .map(o => ({ ...o, sel: O.useChid && o.chid !== null ? ['Channel', o.chid] : o.fid !== null ? ['Fixture', o.fid] : o.chid !== null ? ['Channel', o.chid] : null }))
+    .sort((a, b) => cmpKey(numKey(a.f.fid), numKey(b.f.fid)));
+}
+function ma2LayerXml(d = state.d) {
+  const C = ma2Conf(d), T = new Map(ma2Types(d).map(r => [r.k, r])), fx = ma2Fixtures(d).filter(o => o.sel);
+  const rows = fx.map((o, i) => {
+    const f = o.f, ty = T.get(f.type + '\u0001' + (f.mode || '')), rot = ma2Rot(f), n = v => Math.round((+v || 0) * 1000) / 1000;
+    const nm = f.name || `${typeName(f.type)} ${f.fid || f.chid || i + 1}`;
+    const ids = (o.fid !== null ? ` fixture_id="${o.fid}"` : '') + (o.chid !== null ? ` channel_id="${o.chid}"` : '');
+    const patch = f.univ && f.addr ? `\n\t\t\t\t<Patch>\n\t\t\t\t\t<Address>${(f.univ - 1) * 512 + f.addr}</Address>\n\t\t\t\t</Patch>` : '';
+    return `\t\t<Fixture index="${i}" name="${xa(nm)}"${ids}>
+\t\t\t<FixtureType name="${xa(ty.dimmer ? 'Dimmer' : ty.name + (ty.mode ? ' ' + ty.mode : ''))}">
+\t\t\t\t<No>${ty.no}</No>
+\t\t\t</FixtureType>
+\t\t\t<SubFixture index="0" react_to_grandmaster="true" color="ffffff">${patch}
+\t\t\t\t<AbsolutePosition>
+\t\t\t\t\t<Location x="${n(f.x)}" y="${n(f.y)}" z="${n(f.z)}" />
+\t\t\t\t\t<Rotation x="${rot[0]}" y="${rot[1]}" z="${rot[2]}" />
+\t\t\t\t\t<Scaling x="1" y="1" z="1" />
+\t\t\t\t</AbsolutePosition>
+\t\t\t</SubFixture>
+\t\t</Fixture>`;
+  });
+  return `${MA2_HEAD()}\n\t<Layer index="${C.opts.layerNo - 1}" name="${xa(d.meta.titre || 'OPlanFeu')}">\n${rows.join('\n')}\n\t</Layer>\n</MA>\n`;
+}
+// layout : les projecteurs vus de dessus ; une case par projecteur, décalée vers le bas si la place est prise
+function ma2LayoutXml(d = state.d) {
+  const C = ma2Conf(d), k = +C.opts.layoutScale || 2, taken = new Set(), fx = ma2Fixtures(d).filter(o => o.fid !== null);
+  const cells = fx.map(o => {
+    let cx = Math.round((+o.f.x || 0) * k), cy = Math.round((+o.f.y || 0) * k);
+    while (taken.has(cx + ',' + cy)) cy -= 1;
+    taken.add(cx + ',' + cy);
+    return `\t\t\t<LayoutSubFix font_size="Small" center_x="${cx}" center_y="${cy}" size_h="1" size_w="1" background_color="3c3c3c" border_color="5a5a5a" icon="None" show_id="1" show_name="0" show_type="1" function_type="Simple" select_group="1" image_size="Fit">
+\t\t\t\t<image />
+\t\t\t\t<Subfixture fix_id="${o.fid}" sub_index="0" />
+\t\t\t</LayoutSubFix>`;
+  });
+  return `${MA2_HEAD()}\n\t<Layout index="${C.opts.layoutNo}" name="${xa((d.meta.titre || 'OPlanFeu') + ' — plan')}">\n\t\t<SubFixtures>\n${cells.join('\n')}\n\t\t</SubFixtures>\n\t</Layout>\n</MA>\n`;
+}
+// groupes : tous, par position (ordre en x), par type, par calque
+function ma2Groups(d = state.d) {
+  const O = ma2Conf(d).opts, fx = ma2Fixtures(d).filter(o => o.sel), out = [];
+  const byX = list => [...list].sort((a, b) => (+a.f.x || 0) - (+b.f.x || 0) || cmpKey(numKey(a.f.fid), numKey(b.f.fid)));
+  const byPX = list => [...list].sort((a, b) => natCmp(a.f.position || '', b.f.position || '') || (+a.f.x || 0) - (+b.f.x || 0) || cmpKey(numKey(a.f.fid), numKey(b.f.fid)));
+  const by = (key, label, sort = byX) => [...new Set(fx.map(o => key(o.f)).filter(Boolean))].sort(natCmp).map(v => ({ name: label(v), list: sort(fx.filter(o => key(o.f) === v)) }));
+  if (O.gAll) out.push({ name: t('maAll'), list: fx });
+  if (O.gPos) out.push(...by(f => f.position, v => v));
+  if (O.gType) out.push(...by(f => f.type, v => typeName(v), byPX));
+  if (O.gLayer) out.push(...by(f => f.layer, v => v, byPX));
+  let no = +O.groupStart || 1;
+  return out.filter(g => g.list.length).map(g => ({ ...g, no: no++ }));
+}
+// sélection MA2 compacte : « Fixture 101 Thru 106 + 201 », coupée en morceaux de ligne de commande raisonnables
+function ma2SelCmds(list) {
+  const runs = [];
+  for (const o of list) {
+    const [kw, n] = o.sel, r = runs[runs.length - 1];
+    if (r && r.kw === kw && n === r.b + 1) r.b = n; else runs.push({ kw, a: n, b: n });
+  }
+  const cmds = []; let cur = null, len = 0;
+  for (const r of runs) {
+    const part = r.a === r.b ? String(r.a) : `${r.a} Thru ${r.b}`;
+    if (!cur || cur.kw !== r.kw || len + part.length > 180) { cur = { kw: r.kw, parts: [] }; cmds.push(cur); len = 0; }
+    cur.parts.push(part); len += part.length + 3;
+  }
+  return cmds.map(c => `${c.kw} ${c.parts.join(' + ')}`);
+}
+const luaStr = s => '"' + ma2Ascii(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\n') + '"';
+function ma2Lua(d = state.d, files) {
+  const C = ma2Conf(d), O = C.opts, title = d.meta.titre || 'OPlanFeu', groups = O.groups ? ma2Groups(d) : [];
+  const types = ma2Types(d).filter(r => r.lib).map(r => `  { no = ${r.no}, lib = ${luaStr(r.lib)}, name = ${luaStr(r.name + (r.mode ? ' ' + r.mode : ''))} },`).join('\n');
+  const gl = groups.map(g => `  { no = ${g.no}, name = ${luaStr(g.name)}, sel = { ${ma2SelCmds(g.list).map(luaStr).join(', ')} } },`).join('\n');
+  const allNo = groups.length && O.gAll ? groups[0].no : null, P = +O.presetStart || 1;
+  const pre = [];
+  if (O.presets && allNo) {
+    if (O.pDim) [['0 %', 0], ['50 %', 50], ['Full', 100]].forEach(([n, v], i) => pre.push(`  { pool = 1, no = ${P + i}, name = ${luaStr(n)}, cmds = { "At ${v}" } },`));
+    if (O.pPos) pre.push(`  { pool = 2, no = ${P}, name = "Home", cmds = { 'Attribute "PAN" At 0', 'Attribute "TILT" At 0' } },`);
+    if (O.pCol) [['White', 100, 100, 100], ['Red', 100, 0, 0], ['Orange', 100, 50, 0], ['Yellow', 100, 100, 0], ['Green', 0, 100, 0], ['Cyan', 0, 100, 100], ['Blue', 0, 0, 100], ['Magenta', 100, 0, 100]]
+      .forEach(([n, r, g, b], i) => pre.push(`  { pool = 4, no = ${P + i}, name = ${luaStr(n)}, cmds = { 'Attribute "COLORRGB1" At ${r}', 'Attribute "COLORRGB2" At ${g}', 'Attribute "COLORRGB3" At ${b}' } },`));
+  }
+  return `-- OPlanFeu : show de base grandMA2 pour « ${title.replace(/\r?\n/g, ' ')} »
+-- généré le ${new Date().toLocaleString('fr-FR')} par OPlanFeu (https://mart1ver.github.io/OPlanFeu/)
+-- À lancer dans un show neuf (ou de travail) : importe les fixture types, le calque (patch et positions),
+-- puis crée les groupes, le layout et les presets de base. Chaque commande est écrite dans le System Monitor.
+
+local TITLE = ${luaStr(title)}
+local LAYER_FILE = ${luaStr(O.layer ? files.layer : '')}
+local LAYER_NO = ${+O.layerNo || 1}
+local LAYOUT_FILE = ${luaStr(O.layout ? files.layout : '')}
+local LAYOUT_NO = ${+O.layoutNo || 1}
+local TYPES = {
+${types}
+}
+local GROUPS = {
+${gl}
+}
+local ALL_GROUP = ${allNo || 'nil'}
+local PRESETS = {
+${pre.join('\n')}
+}
+
+local function cmd(c)
+  gma.echo('OPlanFeu > ' .. c)
+  gma.cmd(c)
+end
+
+local function step(msg)
+  gma.echo('OPlanFeu : ' .. msg)
+  gma.feedback('OPlanFeu : ' .. msg)
+end
+
+local function run()
+  if not gma.gui.confirm('OPlanFeu', 'Creer le show de base "' .. TITLE .. '" ?\\n' .. #TYPES .. ' fixture type(s), ' .. #GROUPS .. ' groupe(s), ' .. #PRESETS .. ' preset(s).\\nA faire dans un show neuf : les numeros existants seront ecrases.') then return end
+  local prog = gma.gui.progress.start('OPlanFeu')
+  gma.gui.progress.setrange(prog, 0, 5)
+
+  -- 1. fixture types (librairie de la console)
+  if #TYPES > 0 then
+    step('import des fixture types')
+    cmd('cd /'); cmd('cd EditSetup'); cmd('cd FixtureTypes')
+    for _, ty in ipairs(TYPES) do
+      local f = ty.lib
+      if not f:find('%.xml$') then f = f .. '.xml' end
+      cmd('Import "' .. f .. '" At ' .. ty.no .. ' /nc')
+    end
+    cmd('cd /')
+  end
+  gma.gui.progress.set(prog, 1)
+
+  -- 2. calque : patch, Fix ID / Channel ID, positions dans le stage
+  if LAYER_FILE ~= '' then
+    step('import du calque (patch et positions)')
+    cmd('cd /'); cmd('cd EditSetup'); cmd('cd Layers')
+    cmd('Import "' .. LAYER_FILE .. '" At ' .. LAYER_NO .. ' /nc')
+    cmd('cd /')
+  end
+  gma.gui.progress.set(prog, 2)
+
+  -- 3. groupes (sélection dans l'ordre : tous, positions de jardin à cour, types, calques)
+  if #GROUPS > 0 then
+    step('groupes')
+    for _, g in ipairs(GROUPS) do
+      for i, s in ipairs(g.sel) do
+        cmd('ClearAll')
+        cmd(s)
+        cmd('Store Group ' .. g.no .. (i == 1 and ' /o' or ' /merge'))
+      end
+      cmd('Label Group ' .. g.no .. ' "' .. g.name .. '"')
+    end
+    cmd('ClearAll')
+  end
+  gma.gui.progress.set(prog, 3)
+
+  -- 4. layout des projecteurs, comme le plan vu de dessus
+  if LAYOUT_FILE ~= '' then
+    step('layout')
+    cmd('Import "' .. LAYOUT_FILE .. '" At Layout ' .. LAYOUT_NO .. ' /nc')
+  end
+  gma.gui.progress.set(prog, 4)
+
+  -- 5. presets de base (sur le groupe de tous les projecteurs)
+  if ALL_GROUP and #PRESETS > 0 then
+    step('presets de base')
+    for _, p in ipairs(PRESETS) do
+      cmd('ClearAll')
+      cmd('Group ' .. ALL_GROUP)
+      for _, c in ipairs(p.cmds) do cmd(c) end
+      cmd('Store Preset ' .. p.pool .. '.' .. p.no .. ' /o')
+      cmd('Label Preset ' .. p.pool .. '.' .. p.no .. ' "' .. p.name .. '"')
+    end
+    cmd('ClearAll')
+  end
+  gma.gui.progress.set(prog, 5)
+  gma.gui.progress.stop(prog)
+  step('termine')
+  gma.gui.msgbox('OPlanFeu', 'Show de base cree. Le detail des commandes est dans le System Monitor.')
+end
+
+return run
+`;
+}
+function ma2PluginXml(name, lua) {
+  return `${MA2_HEAD()}\n\t<Plugin index="0" execute_on_load="0" name="${xa(name)}" luafile="${xa(lua)}" />\n</MA>\n`;
+}
+function ma2Readme(d, base) {
+  const O = ma2Conf(d).opts, ty = ma2Types(d);
+  return `OPlanFeu — show de base grandMA2 : ${d.meta.titre || ''}
+Généré le ${new Date().toLocaleString('fr-FR')}
+
+Contenu (à copier à la racine d'une clé USB, ou dans le dossier de l'onPC) :
+  gma2/plugins/${base}.xml et ${base}.lua   le plugin
+  gma2/importexport/${base}_layer.xml       le calque : patch, Fix ID / Channel ID, positions 3D${O.layout ? `\n  gma2/importexport/${base}_layout.xml      le layout des projecteurs (vue de dessus)` : ''}
+
+Sur l'onPC, le dossier gma2 est : C:\\ProgramData\\MA Lighting Technologies\\grandma\\gma2_V_<version>\\
+
+Mode d'emploi :
+  1. Nouveau show (ou show de travail).
+  2. Si les fichiers sont sur une clé : Backup > choisir le lecteur USB (ou commande SelectDrive).
+  3. Pool des plugins : Edit sur une case vide > Import > « ${base} ».
+  4. Lancer le plugin et confirmer. Les commandes passées s'affichent dans le System Monitor.
+
+Fixture types (librairie de la console) :
+${ty.map(r => `  n° ${r.no}  ${r.dimmer ? 'Dimmer (type de la console)' : (r.lib || '— À IMPORTER À LA MAIN —') + '   (' + r.name + (r.mode ? ' · ' + r.mode : '') + ')'}`).join('\n')}
+
+Si l'import d'un type ou du calque échoue : Setup > Patch & Fixture Schedule, importer le type
+au bon numéro, puis importer le calque « ${base}_layer » ; relancer ensuite le plugin pour les groupes et presets.
+Premier jet : formats grandMA2 3.x, à valider sur la console.
+`;
+}
+function ma2Download(d = state.d) {
+  const base = 'oplanfeu_' + (ma2Slug(d.meta.titre) || 'show').slice(0, 40), O = ma2Conf(d).opts, enc = new TextEncoder();
+  const files = { layer: base + '_layer', layout: base + '_layout' };
+  const lua = ma2Lua(d, files), list = [
+    [`gma2/plugins/${base}.xml`, ma2PluginXml('OPlanFeu ' + (d.meta.titre || ''), base + '.lua')],
+    [`gma2/plugins/${base}.lua`, lua],
+  ];
+  if (O.layer) list.push([`gma2/importexport/${files.layer}.xml`, ma2LayerXml(d)]);
+  if (O.layout) list.push([`gma2/importexport/${files.layout}.xml`, ma2LayoutXml(d)]);
+  list.push([`${base}_LISEZMOI.txt`, ma2Readme(d, base)]);
+  const blob = zipStore(list.map(([n, s]) => [n, enc.encode(s)]));
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = base + '_grandMA2.zip'; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  return list.map(x => x[0]);
+}
+// fenêtre : correspondance des types, contenu, numéros, téléchargement
+function ma2Dialog() {
+  const d = state.d, C = ma2Conf(d), O = C.opts, x = esc, ty = ma2Types(d), fx = ma2Fixtures(d);
+  const noSel = fx.filter(o => !o.sel).length, unp = d.fixtures.filter(f => !f.univ || !f.addr).length, toDo = ty.filter(r => !r.dimmer && !r.lib).length;
+  const ck = (k, lab) => `<label><input type="checkbox" data-ma="${k}"${O[k] ? ' checked' : ''}> ${x(t(lab))}</label>`;
+  const num = (k, lab) => `<label class="cf"><span>${x(t(lab))}</span><input class="c box" data-ma="${k}" inputmode="numeric" style="width:4em" value="${x(O[k])}"></label>`;
+  const rows = ty.map(r => `<tr data-mak="${x(r.k)}"><td><b>${x(r.name)}</b>${r.maker ? `<br><small class="mut">${x(r.maker)}</small>` : ''}</td><td>${x(r.mode || '—')}</td><td class="num">${x(r.nch ?? '')}</td><td class="num">${r.n}</td>
+<td><input class="c box" data-mat="lib" style="width:19em" value="${x(r.lib)}" placeholder="${x(r.dimmer ? t('maDimmer') : r.libPh)}"></td><td><input class="c box" data-mat="no" inputmode="numeric" style="width:3.6em" value="${x(isSet((C.types[r.k] || {}).no) ? C.types[r.k].no : '')}" placeholder="${r.no}"></td></tr>`).join('');
+  $('#ma2Body').innerHTML = `<p class="hint2">${x(t('maHint'))}</p>
+<h3>${x(t('maTypes'))}</h3><p class="hint2">${x(t('maTypesHint'))}</p>
+<table class="grid"><thead><tr>${['maType', 'maMode', 'maCh', 'maQty', 'maLib', 'maNo'].map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
+<h3>${x(t('maContent'))}</h3>
+<div class="macols"><div>${ck('layer', 'maLayer')}${ck('useChid', 'maUseChid')}</div>
+<div>${ck('groups', 'maGroups')}<div class="masub">${ck('gAll', 'maGAll')}${ck('gPos', 'maGPos')}${ck('gType', 'maGType')}${ck('gLayer', 'maGLayer')}</div></div>
+<div>${ck('layout', 'maLayout')}${ck('presets', 'maPresets')}<div class="masub">${ck('pDim', 'maPDim')}${ck('pCol', 'maPCol')}${ck('pPos', 'maPPos')}</div></div></div>
+<div class="cgrid">${num('layerNo', 'maLayerNo')}${num('groupStart', 'maGroupStart')}${num('layoutNo', 'maLayoutNo')}${num('layoutScale', 'maLayoutScale')}${num('presetStart', 'maPresetStart')}</div>
+${[toDo ? t('maWarnLib', toDo) : '', noSel ? t('maWarnId', noSel) : '', unp ? t('maWarnUnp', unp) : '', O.presets && !O.gAll ? t('maWarnAll') : ''].filter(Boolean).map(w => `<p class="mawarn">⚠ ${x(w)}</p>`).join('')}
+<p style="margin-top:14px"><button type="button" class="btn primary" id="ma2Dl">${x(t('maDownload'))}</button></p>
+<details class="mahelp"><summary>${x(t('maHowTitle'))}</summary><ol>${t('maHow').map(s => `<li>${x(s)}</li>`).join('')}</ol></details>`;
+  if (!$('#ma2Dlg').open) $('#ma2Dlg').showModal();
+}
+document.addEventListener('change', e => {
+  const el = e.target; if (!el.closest || !el.closest('#ma2Dlg') || !state.d) return;
+  const C = ma2Conf();
+  if (el.dataset.ma) {
+    const k = el.dataset.ma;
+    if (el.type === 'checkbox') C.opts[k] = el.checked;
+    else { const n = parseFloat(el.value.replace(',', '.')); if (n > 0) C.opts[k] = k === 'layoutScale' ? n : Math.round(n); }
+  } else if (el.dataset.mat) {
+    const k = el.closest('tr').dataset.mak, r = { ...(C.types[k] || {}) }, v = el.value.trim();
+    if (el.dataset.mat === 'no') { const n = parseInt(v, 10); if (n > 0) r.no = n; else delete r.no; } else { if (v) r.lib = v.replace(/\.xml$/i, ''); else delete r.lib; }
+    if (Object.keys(r).length) C.types[k] = r; else delete C.types[k];
+  } else return;
+  touch(); ma2Dialog();
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button'); if (!b || !state.d) return;
+  if (b.dataset.sh === 'ma2') return ma2Dialog();
+  if (b.id === 'ma2Close') return $('#ma2Dlg').close();
+  if (b.id === 'ma2Dl') ma2Download();
+});
 function renderShows() {
   const d = state.d, x = esc, FS = FSA;
   $('#count').textContent = d ? t('count', d.fixtures.length, d.fixtures.length) : '';
@@ -1714,7 +2044,7 @@ function renderShows() {
 <div class="shm">${BK.handle ? x(t('shLinked', BK.handle.name)) : x(FS ? t('shNotLinked') : t('shNoFsa'))}</div>
 <div class="shbtns">${btn('save', t('shSave'), 'primary', 'Ctrl+S')}${FS ? btn('saveas', t('shSaveAs'), 'ghost') : ''}${btn('dl', t('shDownload'), 'ghost')}${btn('dup', t('shDup'), 'ghost')}${btn('versions', t('shVersions'), 'ghost')}</div></div>` : '';
   $('#view').innerHTML = `<h1 class="ptitle">${x(t('tabShows'))}</h1>
-<div class="shtop">${cur}<div class="shopen"><div class="shk">${x(t('shOpenTitle'))}</div>
+<div class="shtop">${cur}${d ? `<div class="shopen"><div class="shk">${x(t('shConsole'))}</div><p class="hint2">${x(t('shConsoleHint'))}</p><div class="shbtns">${btn('ma2', t('shMa2'), 'primary')}<button type="button" class="btn ghost" disabled title="${x(t('shSoon'))}">grandMA3</button></div></div>` : ''}<div class="shopen"><div class="shk">${x(t('shOpenTitle'))}</div>
 <p class="hint2">${x(t('shOpenHint'))}</p><div class="shbtns">${btn('open', t('shOpen'), d ? '' : 'primary')}${btn('restore', t('bkAllIn'), 'ghost')}${btn('all', t('bkAll'), 'ghost')}</div></div></div>
 <div class="shlisthead"><h2 class="sec">${x(t('shList'))}</h2><input type="search" id="shQ" placeholder="${x(t('searchPh'))}" value="${x(state.shQ || '')}"></div>
 <div id="shList"><p class="hint2">…</p></div>`;
