@@ -15,7 +15,9 @@ test('show grandMA2 : correspondance des types, options, zip pour la clé USB', 
   await expect(pc.locator('input[data-mat=no]')).toHaveAttribute('placeholder', '2');
   await expect(pc.locator('input[data-mat=lib]')).toHaveValue('generic@dimmer@00');
   await expect(rows.filter({ hasText: 'PAR LED Test' }).locator('input[data-mat=no]')).toHaveAttribute('placeholder', '3');
-  await expect(dlg.locator('.mawarn').first()).toContainText('2 type(s) sans fichier');
+  // sans GDTF du fabricant ni fichier de librairie : type provisoire (canaux sans fonction) pour que le patch s'importe
+  await expect(dlg.locator('p.mawarn').first()).toContainText('2 type(s) provisoire(s)');
+  await expect(rows.filter({ hasText: 'PAR LED Test' }).locator('small.mawarn')).toContainText('type provisoire de 8 canaux');
   const lyre = rows.filter({ hasText: 'Lyre Test' });
   await expect(lyre.locator('input[data-mat=lib]')).toHaveAttribute('placeholder', 'test@lyre_test@std');
   await lyre.locator('input[data-mat=lib]').fill('test@lyre_test@std.xmlp'); await lyre.locator('input[data-mat=lib]').press('Tab');
@@ -31,7 +33,11 @@ test('show grandMA2 : correspondance des types, options, zip pour la clé USB', 
   const [dl] = await Promise.all([page.waitForEvent('download'), dlg.locator('#ma2Dl').click()]);
   expect(dl.suggestedFilename()).toBe('oplanfeu_dossier_de_test_grandMA2.zip');
   const zip = fs.readFileSync(await dl.path()).toString('latin1');
-  for (const f of ['gma2/plugins/oplanfeu_dossier_de_test.xml', 'gma2/plugins/oplanfeu_dossier_de_test.lua', 'gma2/fixture_layers/oplanfeu_dossier_de_test_layer.xml', 'gma2/importexport/oplanfeu_dossier_de_test_layout.xml', 'oplanfeu_dossier_de_test_LISEZMOI.txt']) expect(zip).toContain(f);
+  // noms datés (la console garde en mémoire un fichier déjà lu sous le même nom)
+  const pb = zip.match(/gma2\/plugins\/(oplanfeu_dossier_de_test_\d{8})\.lua/)[1];
+  for (const f of [`gma2/plugins/${pb}.xml`, `gma2/fixture_layers/${pb}_layer.xml`, `gma2/importexport/${pb}_layout.xml`, 'oplanfeu_dossier_de_test_LISEZMOI.txt', 'gma2/library/oplanfeu@test_par_led_test@8ch.xml']) expect(zip).toContain(f);
+  expect(zip).toContain(`local PLUGIN_FILE = "${pb}"`);
+  expect(zip).toContain('OPF_CH8');
   // contenu : XML bien formé, patch absolu (univers 2 adresse 101 → 613), noms sans accents, type 7
   const chk = await page.evaluate(() => {
     const layer = ma2LayerXml(), layout = ma2LayoutXml(), ok = s => !new DOMParser().parseFromString(s, 'application/xml').querySelector('parsererror');
@@ -91,8 +97,8 @@ test('show grandMA2 : les GDTF sont convertis en fixture types MA2 dans le zip',
   await expect(lyre.locator('.maconv')).toContainText('oplanfeu@test_lyre_test@std');
   await expect(lyre.locator('input[data-mat=lib]')).toHaveAttribute('placeholder', /GDTF, 13/);
   await expect(dlg.locator('tbody tr').filter({ hasText: 'Barre Test' }).locator('.maconv')).toBeVisible();
-  // il ne reste que le PAR LED sans GDTF à importer à la main
-  await expect(dlg.locator('.mawarn').first()).toContainText('1 type(s) sans fichier');
+  // il ne reste que le PAR LED sans GDTF : type provisoire
+  await expect(dlg.locator('p.mawarn').first()).toContainText('1 type(s) provisoire(s)');
   const [dl] = await Promise.all([page.waitForEvent('download'), dlg.locator('#ma2Dl').click()]);
   const zip = fs.readFileSync(await dl.path()).toString('latin1');
   expect(zip).toContain('gma2/library/oplanfeu@test_lyre_test@std.xml');
@@ -126,4 +132,17 @@ test('show grandMA2 : les GDTF sont convertis en fixture types MA2 dans le zip',
   expect(r.inst).toEqual(['0@1', '1@2', '1@5', '1@8', '1@11']);
   expect(r.barMod2).toEqual(['COLORRGB1:1', 'COLORRGB2:2', 'COLORRGB3:3', 'DIM']);
   expect(r.lua).toContain(`{ no = ${r.no}, lib = "oplanfeu@test_lyre_test@std", name = "Lyre Test Std", conv = true }`);
+  // le plugin recopie les types convertis dans la librairie interne avant de les importer
+  expect(r.lua).toContain("if ty.conv then installFile('library', ty.lib) end");
+  expect(r.lua).toContain("installFile('fixture_layers', LAYER_FILE)");
+  // pixels décrits une seule fois puis répétés par GeometryReference (comme la plupart des GDTF de barres LED)
+  const refs = await page.evaluate(() => {
+    const ch = ['R', 'G', 'B'].map((c, j) => `<DMXChannel Offset="${j + 1}" DMXBreak="1" Geometry="Pixel"><LogicalChannel Attribute="ColorAdd_${c}"><ChannelFunction Attribute="ColorAdd_${c}" DMXFrom="0/1"/></LogicalChannel></DMXChannel>`).join('');
+    const refs = [0, 1, 2, 3, 4, 5].map(i => `<GeometryReference Name="Pixel ${i + 1}" Geometry="Pixel"><Break DMXBreak="1" DMXOffset="${2 + i * 3}"/></GeometryReference>`).join('');
+    const x = `<GDTF><FixtureType Name="Ruban" Manufacturer="Test"><Geometries><Geometry Name="Body">${refs}</Geometry><Geometry Name="Pixel"/></Geometries><DMXModes><DMXMode Name="19ch" Geometry="Body"><DMXChannels>
+<DMXChannel Offset="1" DMXBreak="1" Geometry="Body"><LogicalChannel Attribute="Dimmer"><ChannelFunction Attribute="Dimmer" DMXFrom="0/1"/></LogicalChannel></DMXChannel>${ch}</DMXChannels></DMXMode></DMXModes></FixtureType></GDTF>`;
+    const o = ma2FtFromGdtf(new DOMParser().parseFromString(x, 'application/xml'), '19ch'), d = new DOMParser().parseFromString(o.xml, 'application/xml');
+    return { nch: o.nch, inst: [...d.getElementsByTagName('Instance')].map(i => `${i.getAttribute('module_index')}@${i.getAttribute('patch')}`) };
+  });
+  expect(refs).toEqual({ nch: 19, inst: ['0@1', '1@2', '1@5', '1@8', '1@11', '1@14', '1@17'] });
 });

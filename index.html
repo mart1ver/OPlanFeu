@@ -800,7 +800,7 @@ const I18N = {
     shConsole: 'Show console', shConsoleHint: 'Créer un show de base pour la console à partir du dossier : patch, positions des machines, groupes, layout et presets.', shMa2: 'grandMA2…', shSoon: 'bientôt',
     maTitle: 'Show de base grandMA2', maHint: 'OPlanFeu prépare un plugin grandMA2 et ses fichiers (calque XML avec le patch et les positions, layout), dans un zip à copier sur une clé USB ou dans le dossier de l’onPC. Le plugin importe les fixture types, le calque, puis crée les groupes, le layout et les presets. Testé sur grandMA2 onPC 3.9.61, à lancer dans un show neuf.',
     maTypes: 'Fixture types', maTypesHint: 'Pour chaque type et mode, le fichier de la librairie de la console (fabricant@appareil@mode, tel qu’il apparaît dans l’import de fixture types) et son numéro dans le show. Un type qui a un vrai GDTF (pas le profil générique de WYSIWYG) est converti en fixture type grandMA2 et mis dans le zip (dossier library) : rien à remplir. Laisser le fichier vide si le type est déjà dans le show à ce numéro. Un show neuf contient déjà le n° 1 (réservé) et le n° 2 « Dimmer » : les projecteurs à 1 canal vont sur ce Dimmer, les autres types sont numérotés à partir de 3. Un numéro déjà occupé dans le show n’est pas réimporté.',
-    maType: 'Type', maMode: 'Mode', maCh: 'Canaux', maQty: 'Nb', maLib: 'Fichier de la librairie MA2', maNo: 'N° dans le show', maDimmer: 'Dimmer de la console', maConv: n => `auto : GDTF, ${n} canaux`, maConvTag: 'GDTF converti', maConvBad: (n, m) => `le GDTF a ${n} canaux dans ce mode, le patch en compte ${m}`, maConvWait: 'lecture des GDTF…',
+    maType: 'Type', maMode: 'Mode', maCh: 'Canaux', maQty: 'Nb', maLib: 'Fichier de la librairie MA2', maNo: 'N° dans le show', maDimmer: 'Dimmer de la console', maConv: n => `auto : GDTF, ${n} canaux`, maConvTag: 'GDTF converti', maConvBad: (n, m) => `le GDTF a ${n} canaux dans ce mode, le patch en compte ${m}`, maConvWait: 'lecture des GDTF…', maPhTag: n => `type provisoire de ${n} canaux sans fonction (pas de GDTF du fabricant) : patch et positions importés, à remplacer sur la console (Change fixture type) ; ou indiquer ici le fichier de la librairie MA`, maWarnPh: n => `${n} type(s) provisoire(s), sans fonction : remplacez leur GDTF par celui du fabricant (vue Inventaire) ou indiquez le fichier de la librairie MA.`, maWarnGap: l => `Les numéros de fixture types doivent se suivre sans trou dans le show (la console refuse un import après un trou) : numéro(s) manquant(s) ${l}.`,
     maContent: 'Contenu du show', maLayer: 'Patch et positions 3D (calque)', maUseChid: 'Sélection par Channel ID quand il existe', maGroups: 'Groupes', maGAll: 'tous les projecteurs', maGPos: 'un par position (de jardin à cour)', maGType: 'un par type', maGLayer: 'un par calque',
     maLayout: 'Layout (vue de dessus)', maPresets: 'Presets de base', maPDim: 'intensité 0 / 50 / 100 %', maPCol: '8 couleurs (mélange RVB / CMJ)', maPPos: 'position « Home »',
     maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
@@ -948,7 +948,7 @@ const I18N = {
     shConsole: 'Console show', shConsoleHint: 'Build a basic console show from the dossier: patch, fixture positions, groups, layout and presets.', shMa2: 'grandMA2…', shSoon: 'coming',
     maTitle: 'grandMA2 basic show', maHint: 'OPlanFeu prepares a grandMA2 plugin and its files (XML layer with patch and positions, layout) in a zip to copy to a USB key or the onPC folder. The plugin imports the fixture types and the layer, then creates groups, layout and presets. Tested on grandMA2 onPC 3.9.61; run it in a new show.',
     maTypes: 'Fixture types', maTypesHint: 'For each type and mode, the console library file (manufacturer@fixture@mode, as shown in the fixture type import) and its number in the show. A type with a real GDTF (not the generic WYSIWYG profile) is converted to a grandMA2 fixture type and put in the zip (library folder): nothing to fill in. Leave the file empty if the type is already in the show at that number. A new show already holds no. 1 (reserved) and no. 2 “Dimmer”: 1-channel fixtures use that Dimmer, other types are numbered from 3. A number already used in the show is not imported again.',
-    maType: 'Type', maMode: 'Mode', maCh: 'Channels', maQty: 'Qty', maLib: 'MA2 library file', maNo: 'No. in show', maDimmer: 'console Dimmer', maConv: n => `auto: GDTF, ${n} channels`, maConvTag: 'GDTF converted', maConvBad: (n, m) => `the GDTF has ${n} channels in this mode, the patch says ${m}`, maConvWait: 'reading the GDTFs…',
+    maType: 'Type', maMode: 'Mode', maCh: 'Channels', maQty: 'Qty', maLib: 'MA2 library file', maNo: 'No. in show', maDimmer: 'console Dimmer', maConv: n => `auto: GDTF, ${n} channels`, maConvTag: 'GDTF converted', maConvBad: (n, m) => `the GDTF has ${n} channels in this mode, the patch says ${m}`, maConvWait: 'reading the GDTFs…', maPhTag: n => `placeholder type with ${n} channels and no function (no manufacturer GDTF): patch and positions are imported, replace it on the console (Change fixture type); or give the MA library file here`, maWarnPh: n => `${n} placeholder type(s) with no function: replace their GDTF with the manufacturer's (Inventory view) or give the MA library file.`, maWarnGap: l => `Fixture type numbers must follow each other with no gap in the show (the console refuses an import after a gap): missing number(s) ${l}.`,
     maContent: 'Show content', maLayer: 'Patch and 3D positions (layer)', maUseChid: 'Select by Channel ID when set', maGroups: 'Groups', maGAll: 'all fixtures', maGPos: 'one per position (left to right)', maGType: 'one per type', maGLayer: 'one per layer',
     maLayout: 'Layout (top view)', maPresets: 'Basic presets', maPDim: 'intensity 0 / 50 / 100 %', maPCol: '8 colours (RGB / CMY mixing)', maPPos: '“Home” position',
     maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
@@ -1784,15 +1784,26 @@ function ma2FtFromGdtf(doc, mode, lib) {
   // valeur DMX GDTF « v/n » → valeur sur k octets
   const dv = (s, k) => { const m = String(s || '').match(/^(\d+)(?:\/(\d+))?$/); if (!m) return null; const v = +m[1], n = +(m[2] || 1); return n === k ? v : n < k ? v * 256 ** (k - n) : Math.floor(v / 256 ** (n - k)); };
   const wheels = [], wheelIx = new Map(), gw = n => ft.querySelector(`Wheels > Wheel[Name="${CSS.escape(n)}"]`);
+  const refsOf = new Map();
+  for (const g of ft.querySelectorAll('Geometries GeometryReference')) {
+    const t = g.getAttribute('Geometry') || '', br = [...g.querySelectorAll('Break')];
+    if (!refsOf.has(t)) refsOf.set(t, []);
+    refsOf.get(t).push({ name: g.getAttribute('Name') || t, off: b => { const x = br.find(e => e.getAttribute('DMXBreak') === b) || br[br.length - 1]; return x ? parseInt(x.getAttribute('DMXOffset'), 10) || 1 : 1; } });
+  }
   const chans = [];
   for (const c of M.querySelectorAll('DMXChannels > DMXChannel')) {
     const offs = String(c.getAttribute('Offset') || '').split(',').map(v => parseInt(v, 10)).filter(v => v > 0);
     const lcs = [...c.querySelectorAll('LogicalChannel')]; if (!lcs.length) continue;
     const lattr = lcs[0].getAttribute('Attribute') || 'NoFeature';
     if (!offs.length && lattr !== 'Dimmer') continue;
-    chans.push({ c, offs: offs.slice(0, 3), k: Math.min(3, offs.length) || 3, geo: c.getAttribute('Geometry') || '', lattr, lcs, info: map(lattr) });
+    const geo = c.getAttribute('Geometry') || '', o3 = offs.slice(0, 3), k = Math.min(3, offs.length) || 3;
+    // canal défini sur une géométrie « modèle » (pixel) : une copie par GeometryReference, décalée de son Break DMXOffset
+    const refs = refsOf.get(geo);
+    if (refs && refs.length) for (const r of refs) chans.push({ c, offs: o3.map(v => v + r.off(c.getAttribute('DMXBreak')) - 1), k, geo: r.name, lattr, lcs, info: map(lattr) });
+    else chans.push({ c, offs: o3, k, geo, lattr, lcs, info: map(lattr) });
   }
   if (!chans.length) return null;
+  chans.sort((a, b) => (a.offs[0] || 1e9) - (b.offs[0] || 1e9));
   // instances : canaux regroupés par géométrie ; tant qu'aucun attribut ne se répète, tout va dans le module principal,
   // les géométries qui répètent des attributs (pixels) deviennent des instances à part
   const byGeo = new Map(); chans.forEach(ch => { if (!byGeo.has(ch.geo)) byGeo.set(ch.geo, []); byGeo.get(ch.geo).push(ch); });
@@ -1894,6 +1905,35 @@ function ma2FtFromGdtf(doc, mode, lib) {
 // un fixture type MA2 = un fichier de la librairie de la console (fabricant@appareil@mode). Un show neuf contient déjà
 // le n° 1 « Universal Attributes » (réservé) et le n° 2 « Dimmer 00 » : les gradateurs (1 canal) vont sur le n° 2,
 // les autres types sont numérotés à partir de 3 ; deux types du dossier sur le même fichier partagent le même numéro
+// type sans GDTF du fabricant ni fichier de librairie : fixture type provisoire de N canaux sans fonction, pour que le patch
+// (adresses, positions, groupes) s'importe quand même ; à remplacer ensuite sur la console (Change fixture type)
+function ma2FtPlaceholder(name, maker, mode, nch) {
+  nch = Math.max(1, Math.min(512, +nch || 1));
+  const ct = [...Array(nch)].map((_, i) => `\t\t\t\t<ChannelType attribute="OPF_CH${i + 1}" feature="CONTROL" preset="CONTROL" coarse="${i + 1}">
+\t\t\t\t\t<ChannelFunction from="0" to="100" min_dmx_24="0" max_dmx_24="16777215" subattribute="OPF_CH${i + 1}" attribute="OPF_CH${i + 1}" feature="CONTROL" preset="CONTROL" />
+\t\t\t\t</ChannelType>`).join('\n');
+  const xml = `${MA2_HEAD()}
+\t<FixtureType name="${xa(name + ' (provisoire)')}" mode="${xa(mode)}">
+\t\t<InfoItems>
+\t\t\t<Info type="Revision" date="${new Date().toISOString().slice(0, 10)}">OPlanFeu : type provisoire, ${nch} canaux sans fonction (pas de GDTF du fabricant). A remplacer.</Info>
+\t\t</InfoItems>
+\t\t<short_name>${xa(name.slice(0, 12))}</short_name>
+\t\t<manufacturer>${xa(maker)}</manufacturer>
+\t\t<short_manufacturer>${xa(maker.slice(0, 8))}</short_manufacturer>
+\t\t<Modules>
+\t\t\t<Module name="Main Module" class="Conventional" beamtype="Wash" beam_angle="25" beam_intensity="10000">
+${ct}
+\t\t\t</Module>
+\t\t</Modules>
+\t\t<Instances>
+\t\t\t<Instance module_index="0" patch="1" locked="true" />
+\t\t</Instances>
+\t\t<Wheels />
+\t</FixtureType>
+</MA>
+`;
+  return { xml, name, maker, mode, nch, instances: 1, attrs: [], ph: true };
+}
 // fixture types convertis des GDTF : calculés à l'ouverture de la fenêtre (asynchrone), gardés en cache par type, mode et fichier
 const MA2_CONV = new Map();
 const ma2ConvKey = (d, type, mode) => { const ty = d.types[type] || {}; return ty.gdtfData ? type + '\u0001' + mode + '\u0001' + ty.gdtfData.length + ty.gdtfData.slice(-40) : null; };
@@ -1924,7 +1964,8 @@ function ma2Types(d = state.d) {
     const ty = d.types[r.type] || {}, c = C.types[r.k] || {};
     r.name = ty.name || r.type; r.maker = ty.maker || '';
     r.dimmer = !c.lib && +r.nch === 1;
-    r.conv = !c.lib && !r.dimmer ? ma2ConvOf(d, r.type, r.mode) : null;
+    r.conv = !c.lib && !r.dimmer ? ma2ConvOf(d, r.type, r.mode) || ma2FtPlaceholder(r.name, r.maker, r.mode, r.nch) : null;
+    r.ph = !!(r.conv && r.conv.ph);
     if (r.conv) r.convLib = 'oplanfeu@' + [ma2Slug(r.maker || r.conv.maker), ma2Slug(r.name)].filter(Boolean).join('_') + '@' + (ma2Slug(r.mode) || 'defaut');
     r.lib = c.lib || (r.dimmer ? MA2_DIMMER : r.convLib || '');
     r.libPh = [ma2Slug(r.maker), ma2Slug(r.name), ma2Slug(r.mode)].filter(Boolean).join('@');
@@ -2026,7 +2067,7 @@ const luaStr = s => '"' + ma2Ascii(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"'
 function ma2Lua(d = state.d, files) {
   const C = ma2Conf(d), O = C.opts, title = d.meta.titre || 'OPlanFeu', groups = O.groups ? ma2Groups(d) : [];
   const seen = new Set(), types = ma2Types(d).filter(r => r.lib && !seen.has(r.lib) && seen.add(r.lib))
-    .map(r => `  { no = ${r.no}, lib = ${luaStr(r.lib)}, name = ${luaStr(r.name + (r.mode ? ' ' + r.mode : ''))}${r.conv && r.lib === r.convLib ? ', conv = true' : ''} },`).join('\n');
+    .sort((a, b) => a.no - b.no).map(r => `  { no = ${r.no}, lib = ${luaStr(r.lib)}, name = ${luaStr(r.name + (r.mode ? ' ' + r.mode : ''))}${r.conv && r.lib === r.convLib ? ', conv = true' : ''}${r.ph && r.lib === r.convLib ? ', ph = true' : ''} },`).join('\n');
   const gl = groups.map(g => `  { no = ${g.no}, name = ${luaStr(g.name)}, sel = { ${ma2SelCmds(g.list).map(luaStr).join(', ')} } },`).join('\n');
   const allNo = groups.length && O.gAll ? groups[0].no : null, P = +O.presetStart || 1;
   const first = ma2Fixtures(d).find(o => o.sel), pre = [];
@@ -2043,6 +2084,7 @@ function ma2Lua(d = state.d, files) {
 -- Chaque commande et chaque contrôle sont écrits dans le System Monitor et, sur l'onPC, dans importexport/oplanfeu_log.txt.
 
 local TITLE = ${luaStr(title)}
+local PLUGIN_FILE = ${luaStr(files.plugin || '')}
 local LAYER_FILE = ${luaStr(O.layer ? files.layer : '')}
 local LAYER_NO = ${+O.layerNo || 1}
 local FIRST_SEL = ${luaStr(first ? first.sel.join(' ') : '')}
@@ -2063,6 +2105,8 @@ local O = gma.show.getobj
 local logf, errors = nil, {}
 -- journal sur l'onPC (Windows) : dossier gma2 de la version en cours
 local function gma2dir()
+  local p = tostring(gma.show.getvar('PATH') or '')
+  if p ~= '' and p ~= 'nil' then return (p:gsub('/', '\\\\')) .. '\\\\' end
   local pd = os.getenv and os.getenv('ProgramData')
   local v = tostring(gma.show.getvar('VERSION') or ''):match('^(%d+%.%d+%.%d+)')
   if pd and v then return pd .. '\\\\MA Lighting Technologies\\\\grandma\\\\gma2_V_' .. v .. '\\\\' end
@@ -2109,6 +2153,43 @@ local function suggest(lib)
   if list(maker .. '@*', 15) == 0 then log('   aucun fichier « ' .. maker .. '@… » dans la librairie : verifier le nom du fabricant') end
 end
 
+-- les commandes Import (fixture types, calques, layouts) lisent le dossier gma2 interne de la console (sur l'onPC :
+-- ProgramData / MA Lighting Technologies / grandma / gma2_V_x), pas celui de la cle USB ou du lecteur d'ou vient
+-- le plugin : on recopie les fichiers du zip depuis le lecteur qui contient ce plugin (X:/gma2/plugins/PLUGIN_FILE.lua)
+local function readf(p) local f = io.open(p, 'rb'); if not f then return nil end; local d = f:read('*a'); f:close(); return d end
+local SRC
+local function srcRoot()
+  if SRC ~= nil then return SRC end
+  SRC = false
+  local dir = gma2dir() or ''
+  for c in ('DEFGHIJKLMNOPQRSTUVWXYZC'):gmatch('.') do
+    local root = c .. ':\\\\gma2\\\\'
+    if root:lower() ~= dir:lower() then
+      local f = io.open(root .. 'plugins\\\\' .. PLUGIN_FILE .. '.lua', 'rb')
+      if f then f:close(); SRC = root; log('fichiers du zip trouves sur ' .. root); break end
+    end
+  end
+  return SRC
+end
+local function installFile(sub, name)
+  local dir = gma2dir(); if not dir then return false end
+  local dest = dir .. sub .. '\\\\' .. name .. '.xml'
+  local root = srcRoot()
+  if root then
+    local data = readf(root .. sub .. '\\\\' .. name .. '.xml')
+    if data and #data > 0 then
+      local o = io.open(dest, 'wb')
+      if not o then log('   impossible d\\'ecrire ' .. dest); return false end
+      o:write(data); o:close()
+      log('   copie ' .. root .. sub .. '\\\\' .. name .. '.xml -> ' .. dest)
+      return true
+    end
+  end
+  if readf(dest) then return true end
+  log('   fichier ' .. sub .. '/' .. name .. '.xml introuvable (ni dans le dossier gma2 de la console, ni a cote du plugin)')
+  return false
+end
+
 local function run()
   -- show vide : rien a ecraser, on y va ; sinon (projecteurs ou groupes deja la) on demande
   local busy = (FIRST_SEL ~= '' and exists(FIRST_SEL)) or (#GROUPS > 0 and exists('Group ' .. GROUPS[1].no))
@@ -2126,6 +2207,10 @@ local function run()
     if st == 'ok' then log('fixture type ' .. ty.no .. ' deja dans le show (' .. nm .. ') : garde pour ' .. ty.name)
     else
       if st == 'empty' then cmd('Delete ' .. ty.no .. ' /nc') end
+      if ty.conv then installFile('library', ty.lib) end
+      if ty.no > 1 and not O.handle('FixtureType ' .. (ty.no - 1)) then
+        log('!! le n° ' .. (ty.no - 1) .. ' est vide : la console refuse un fixture type apres un trou, ' .. ty.name .. ' ne peut pas aller au n° ' .. ty.no)
+      end
       cmd('Import "' .. ty.lib .. '" At ' .. ty.no .. ' /nc')
     end
   end
@@ -2133,7 +2218,7 @@ local function run()
   for _, ty in ipairs(TYPES) do
     if ftState(ty.no) ~= 'ok' then
       fail('fixture type ' .. ty.no .. ' introuvable dans la librairie : ' .. ty.lib .. ' (' .. ty.name .. ')')
-      if ty.conv then log('   converti du GDTF par OPlanFeu : verifier que library/' .. ty.lib .. '.xml a bien ete copie avec le reste du zip')
+      if ty.conv then log('   type fait par OPlanFeu : verifier que library/' .. ty.lib .. '.xml a bien ete copie avec le reste du zip')
       else suggest(ty.lib) end
       if ftState(ty.no) == 'empty' then cmd('Delete ' .. ty.no .. ' /nc') end
       bad[#bad + 1] = ty
@@ -2153,6 +2238,7 @@ local function run()
   -- 2. calque : patch, Fix ID / Channel ID, positions (fichier dans fixture_layers)
   if LAYER_FILE ~= '' then
     cmd('cd /'); cmd('cd EditSetup'); cmd('cd Layers')
+    installFile('fixture_layers', LAYER_FILE)
     cmd('Import "' .. LAYER_FILE .. '" At ' .. LAYER_NO .. ' /nc')
     cmd('cd /')
     if FIRST_SEL ~= '' and not exists(FIRST_SEL) then fail('calque non importe (' .. FIRST_SEL .. ' absent) : verifier fixture_layers/' .. LAYER_FILE .. '.xml et les fixture types') end
@@ -2174,6 +2260,7 @@ local function run()
 
   -- 4. layout des projecteurs, comme le plan vu de dessus (fichier dans importexport)
   if LAYOUT_FILE ~= '' then
+    installFile('importexport', LAYOUT_FILE)
     cmd('Import "' .. LAYOUT_FILE .. '" At Layout ' .. LAYOUT_NO .. ' /nc')
     if not exists('Layout ' .. LAYOUT_NO) then fail('layout non importe : verifier importexport/' .. LAYOUT_FILE .. '.xml') end
   end
@@ -2215,11 +2302,14 @@ function ma2Readme(d, base) {
   return `OPlanFeu — show de base grandMA2 : ${d.meta.titre || ''}
 Généré le ${new Date().toLocaleString('fr-FR')}
 
-Contenu (à copier à la racine d'une clé USB, ou dans le dossier de l'onPC) :
+Contenu (copier le dossier gma2 à la racine d'une clé USB ou d'un lecteur, ou dans le dossier gma2 de l'onPC) :
   gma2/plugins/${base}.xml et ${base}.lua   le plugin (journal : gma2/importexport/oplanfeu_log.txt)
   gma2/fixture_layers/${base}_layer.xml     le calque : patch, Fix ID / Channel ID, positions 3D${O.layout ? `\n  gma2/importexport/${base}_layout.xml      le layout des projecteurs (vue de dessus)` : ''}${ty.some(r => r.conv && r.lib === r.convLib) ? `\n  gma2/library/oplanfeu@….xml               les fixture types convertis des GDTF (importés par le plugin)` : ''}
 
-Sur l'onPC, le dossier gma2 est : C:\\ProgramData\\MA Lighting Technologies\\grandma\\gma2_V_<version>\\
+Sur l'onPC, le dossier gma2 interne est : C:\\ProgramData\\MA Lighting Technologies\\grandma\\gma2_V_<version>\\
+Les commandes Import de la console ne lisent que ce dossier interne pour les fixture types, calques et layouts :
+quand le plugin vient d'un autre lecteur (D:, clé USB…), il y recopie lui-même les fichiers du zip.
+Les noms de fichiers sont datés : la console garde en mémoire un fichier déjà lu sous le même nom.
 
 Mode d'emploi (testé sur onPC 3.9.61, à partir d'un show vide) :
   1. Nouveau show :  NewShow "mon_show"
@@ -2235,8 +2325,9 @@ Mode d'emploi (testé sur onPC 3.9.61, à partir d'un show vide) :
      Le détail est dans le System Monitor et, sur l'onPC, dans importexport/oplanfeu_log.txt.
 
 Fixture types (librairie de la console) :
-${ty.map(r => `  n° ${r.no}  ${(r.lib || '— À IMPORTER À LA MAIN —') + '   (' + r.name + (r.mode ? ' · ' + r.mode : '') + ')' + (r.conv && r.lib === r.convLib ? '  converti du GDTF, fichier dans gma2/library' : '')}`).join('\n')}
-  (un show neuf contient déjà le n° 1 « Universal Attributes » et le n° 2 « Dimmer 00 » : un numéro occupé n'est pas réimporté)
+${ty.map(r => `  n° ${r.no}  ${(r.lib || '— À IMPORTER À LA MAIN —') + '   (' + r.name + (r.mode ? ' · ' + r.mode : '') + ')' + (r.ph && r.lib === r.convLib ? '  PROVISOIRE : ' + r.conv.nch + ' canaux sans fonction (pas de GDTF du fabricant), à remplacer' : r.conv && r.lib === r.convLib ? '  converti du GDTF, fichier dans gma2/library' : '')}`).join('\n')}
+  (un show neuf contient déjà le n° 1 « Universal Attributes » et le n° 2 « Dimmer 00 » : un numéro occupé n'est pas réimporté ;
+  les numéros doivent se suivre sans trou, la console refuse un fixture type après un numéro vide)
 
 Si un fixture type est introuvable dans la librairie, le plugin s'arrête avant le calque, sans rien créer d'autre,
 et donne des noms proches de la librairie dans le System Monitor et, sur l'onPC, dans importexport/oplanfeu_log.txt.
@@ -2246,17 +2337,19 @@ Testé sur grandMA2 onPC 3.9.61.
 }
 async function ma2Download(d = state.d) {
   await ma2Convert(d);
+  // noms datés : la console garde en mémoire un fichier déjà lu sous le même nom (un zip refait serait ignoré)
   const base = 'oplanfeu_' + (ma2Slug(d.meta.titre) || 'show').slice(0, 40), O = ma2Conf(d).opts, enc = new TextEncoder();
-  const files = { layer: base + '_layer', layout: base + '_layout' };
+  const now = new Date(), p2 = n => String(n).padStart(2, '0'), pb = `${base}_${p2(now.getMonth() + 1)}${p2(now.getDate())}${p2(now.getHours())}${p2(now.getMinutes())}`;
+  const files = { plugin: pb, layer: pb + '_layer', layout: pb + '_layout' };
   const lua = ma2Lua(d, files), list = [
-    [`gma2/plugins/${base}.xml`, ma2PluginXml('OPlanFeu ' + (d.meta.titre || ''), base + '.lua')],
-    [`gma2/plugins/${base}.lua`, lua],
+    [`gma2/plugins/${pb}.xml`, ma2PluginXml('OPlanFeu ' + (d.meta.titre || ''), pb + '.lua')],
+    [`gma2/plugins/${pb}.lua`, lua],
   ];
   if (O.layer) list.push([`gma2/fixture_layers/${files.layer}.xml`, ma2LayerXml(d)]);
   if (O.layout) list.push([`gma2/importexport/${files.layout}.xml`, ma2LayoutXml(d)]);
   const libs = new Set();
   for (const r of ma2Types(d)) if (r.conv && r.lib === r.convLib && !libs.has(r.lib)) { libs.add(r.lib); list.push([`gma2/library/${r.lib}.xml`, r.conv.xml]); }
-  list.push([`${base}_LISEZMOI.txt`, ma2Readme(d, base)]);
+  list.push([`${base}_LISEZMOI.txt`, ma2Readme(d, pb)]);
   const blob = zipStore(list.map(([n, s]) => [n, enc.encode(s)]));
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = base + '_grandMA2.zip'; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
@@ -2267,11 +2360,13 @@ function ma2Dialog() {
   const d = state.d, C = ma2Conf(d), O = C.opts, x = esc, ty = ma2Types(d), fx = ma2Fixtures(d);
   const noSel = fx.filter(o => !o.sel).length, unp = d.fixtures.filter(f => !f.univ || !f.addr).length, toDo = ty.filter(r => !r.dimmer && !r.lib).length;
   if (!ma2Dialog.busy) { ma2Dialog.busy = true; ma2Convert(d).then(ch => { ma2Dialog.busy = false; if (ch && $('#ma2Dlg').open && state.d === d) ma2Dialog(); }, () => { ma2Dialog.busy = false; }); }
+  const nPh = ty.filter(r => r.ph && r.lib === r.convLib).length, nos = new Set([1, MA2_DIMMER_NO, ...ty.map(r => r.no)]), gaps = [];
+  for (let i = 1; i < Math.max(...nos); i++) if (!nos.has(i)) gaps.push(i);
   const wait = ty.some(r => !r.lib && !r.dimmer && (d.types[r.type] || {}).gdtfData && !MA2_CONV.has(ma2ConvKey(d, r.type, r.mode)));
   const ck = (k, lab) => `<label><input type="checkbox" data-ma="${k}"${O[k] ? ' checked' : ''}> ${x(t(lab))}</label>`;
   const num = (k, lab) => `<label class="cf"><span>${x(t(lab))}</span><input class="c box" data-ma="${k}" inputmode="numeric" style="width:4em" value="${x(O[k])}"></label>`;
   const rows = ty.map(r => `<tr data-mak="${x(r.k)}"><td><b>${x(r.name)}</b>${r.maker ? `<br><small class="mut">${x(r.maker)}</small>` : ''}</td><td>${x(r.mode || '—')}</td><td class="num">${x(r.nch ?? '')}</td><td class="num">${r.n}</td>
-<td><input class="c box" data-mat="lib" style="width:19em" value="${x(r.conv && r.lib === r.convLib ? '' : r.lib)}" placeholder="${x(r.dimmer ? t('maDimmer') : r.conv ? t('maConv', r.conv.nch) : r.libPh)}">${r.conv && r.lib === r.convLib ? `<br><small class="maconv" title="${x(r.convLib)}">✓ ${x(t('maConvTag'))} · ${x(r.convLib)}</small>${+r.nch && +r.nch !== r.conv.nch ? `<br><small class="mawarn">⚠ ${x(t('maConvBad', r.conv.nch, r.nch))}</small>` : ''}` : ''}</td><td><input class="c box" data-mat="no" inputmode="numeric" style="width:3.6em" value="${x(isSet((C.types[r.k] || {}).no) ? C.types[r.k].no : '')}" placeholder="${r.no}"></td></tr>`).join('');
+<td><input class="c box" data-mat="lib" style="width:19em" value="${x(r.conv && r.lib === r.convLib ? '' : r.lib)}" placeholder="${x(r.dimmer ? t('maDimmer') : r.ph ? r.libPh : r.conv ? t('maConv', r.conv.nch) : r.libPh)}">${r.ph && r.lib === r.convLib ? `<br><small class="mawarn" title="${x(r.convLib)}">⚠ ${x(t('maPhTag', r.conv.nch))}</small>` : r.conv && r.lib === r.convLib ? `<br><small class="maconv" title="${x(r.convLib)}">✓ ${x(t('maConvTag'))} · ${x(r.convLib)}</small>${+r.nch && +r.nch !== r.conv.nch ? `<br><small class="mawarn">⚠ ${x(t('maConvBad', r.conv.nch, r.nch))}</small>` : ''}` : ''}</td><td><input class="c box" data-mat="no" inputmode="numeric" style="width:3.6em" value="${x(isSet((C.types[r.k] || {}).no) ? C.types[r.k].no : '')}" placeholder="${r.no}"></td></tr>`).join('');
   $('#ma2Body').innerHTML = `<p class="hint2">${x(t('maHint'))}</p>
 <h3>${x(t('maTypes'))}</h3><p class="hint2">${x(t('maTypesHint'))}</p>
 <table class="grid"><thead><tr>${['maType', 'maMode', 'maCh', 'maQty', 'maLib', 'maNo'].map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
@@ -2280,7 +2375,7 @@ function ma2Dialog() {
 <div>${ck('groups', 'maGroups')}<div class="masub">${ck('gAll', 'maGAll')}${ck('gPos', 'maGPos')}${ck('gType', 'maGType')}${ck('gLayer', 'maGLayer')}</div></div>
 <div>${ck('layout', 'maLayout')}${ck('presets', 'maPresets')}<div class="masub">${ck('pDim', 'maPDim')}${ck('pCol', 'maPCol')}${ck('pPos', 'maPPos')}</div></div></div>
 <div class="cgrid">${num('layerNo', 'maLayerNo')}${num('groupStart', 'maGroupStart')}${num('layoutNo', 'maLayoutNo')}${num('layoutScale', 'maLayoutScale')}${num('presetStart', 'maPresetStart')}</div>
-${wait ? `<p class="hint2">${x(t('maConvWait'))}</p>` : ''}${[toDo && !wait ? t('maWarnLib', toDo) : '', noSel ? t('maWarnId', noSel) : '', unp ? t('maWarnUnp', unp) : '', O.presets && !O.gAll ? t('maWarnAll') : ''].filter(Boolean).map(w => `<p class="mawarn">⚠ ${x(w)}</p>`).join('')}
+${wait ? `<p class="hint2">${x(t('maConvWait'))}</p>` : ''}${[toDo && !wait ? t('maWarnLib', toDo) : '', nPh && !wait ? t('maWarnPh', nPh) : '', gaps.length ? t('maWarnGap', gaps.join(', ')) : '', noSel ? t('maWarnId', noSel) : '', unp ? t('maWarnUnp', unp) : '', O.presets && !O.gAll ? t('maWarnAll') : ''].filter(Boolean).map(w => `<p class="mawarn">⚠ ${x(w)}</p>`).join('')}
 <p style="margin-top:14px"><button type="button" class="btn primary" id="ma2Dl">${x(t('maDownload'))}</button></p>
 <details class="mahelp"><summary>${x(t('maHowTitle'))}</summary><ol>${t('maHow').map(s => `<li>${x(s)}</li>`).join('')}</ol></details>`;
   if (!$('#ma2Dlg').open) $('#ma2Dlg').showModal();
