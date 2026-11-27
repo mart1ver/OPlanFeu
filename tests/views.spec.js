@@ -131,7 +131,7 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
   const svg = page.locator('#view .nsyn svg');
   for (const txt of ['Merger 1', 'fusion LTP', 'IN A', 'IN B', 'OUT', 'entrée 2', 'P1 Lointain']) await expect(svg).toContainText(txt);
   // les lignes DMX sont des traits, pas des boîtes : 2 consoles, le merger et la position d'arrivée
-  await expect(svg.locator('rect.box')).toHaveCount(4);
+  await expect(svg.locator('.box:not(.lg)')).toHaveCount(4);
   // renommer le merger suit dans les lignes
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
   const nm = page.locator('#view input[data-o=devices][data-f=name]').nth(2); await nm.fill('Merger régie'); await nm.press('Enter');
@@ -722,11 +722,16 @@ test('synoptique réseau : colonnes fixes (consoles, switches, nodes, splitters 
   await page.click('#view [data-sv=net]');
   const xs = await page.evaluate(() => {
     const out = {};
-    document.querySelectorAll('#view .nsyn svg g').forEach(g => { const r = g.querySelector('rect.box'), tx = g.querySelector('text'); if (r && tx) out[tx.textContent] = +r.getAttribute('x'); });
+    document.querySelectorAll('#view .nsyn svg g').forEach(g => { const r = g.querySelector('.box'), tx = g.querySelector('text'); if (r && tx) out[tx.textContent] = r.getBBox().x; });
     return out;
   });
   // colonnes fixes : consoles, puis switches (même un switch derrière un switch), nodes, splitters et mergers
-  const col = n => Math.round((xs[n] - 18) / 330);
+  const col = n => Math.round((xs[n] - 18) / 350);
   expect(['MA3', 'MA3 backup', 'MA2 secours', 'SW1', 'SW2', 'SW3', 'Node 1', 'Node 2', 'Node 3', 'Split 1'].map(col)).toEqual([0, 0, 0, 1, 1, 2, 3, 3, 3, 4]);
   await expect(page.locator('#view .nsyn svg')).toContainText('P1 Lointain');
+  // une forme par type d'appareil ; noms de ports dans les boîtes, au point de connexion
+  for (const k of ['console', 'switch', 'node', 'splitter']) await expect(page.locator(`#view .nsyn .box.k-${k}`).first()).toBeVisible();
+  expect(await page.locator('#view .nsyn path.box.k-console').count()).toBe(3);
+  const tag = await page.evaluate(() => { const t2 = [...document.querySelectorAll('#view .nsyn .ptag')].find(e => e.textContent === 'sortie 2'); const b = [...document.querySelectorAll('#view .nsyn g')].find(g => g.querySelector('text') && g.querySelector('text').textContent === 'Node 1').querySelector('.box').getBBox(); const tb = t2.getBBox(); return tb.x >= b.x && tb.x + tb.width <= b.x + b.width + 1; });
+  expect(tag).toBe(true);
 });
