@@ -2660,23 +2660,33 @@ function renderNetSyno() {
   const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, merger: 3, splitter: 3, src: 4 }[n.kind] ?? 5);
   const cmp = (a, b) => (a.edge && b.edge ? (a.edge.k === 'dmx') - (b.edge.k === 'dmx') || a.edge.ord - b.edge.ord : 0) || rank(a) - rank(b) || natCmp(a.name, b.name);
   const isConN = n => n.t === 'dev' && (n.kind === 'console' || !!(n.cons && n.cons.length));
-  // colonnes fixes : consoles, switches, nodes, splitters et mergers ; les autres (positions, PC…) juste après leur source.
-  // Un appareil rattaché à un autre de la même colonne ou d'une colonne plus à droite (switch derrière un switch…)
-  // devient un bloc à part, sous les autres, relié par un câble tracé à part
-  const baseCol = n => n.t !== 'dev' ? null : isConN(n) ? 0 : ({ switch: 1, node: 2, splitter: 3, merger: 3 }[n.kind] ?? null);
-  const colOf = n => { const b = baseCol(n); return b !== null ? b : n.parent ? colOf(n.parent) + 1 : 0; };
+  // colonnes : les consoles à gauche ; les switches ensuite, une colonne de plus par switch en cascade ; puis tous les nodes
+  // dans une même colonne, puis splitters et mergers ; les autres (positions, PC…) juste après leur source.
+  // Un appareil derrière un autre de sa colonne (node derrière un node…) se range juste sous lui, relié par un trait vertical ;
+  // un câble qui revient vers la gauche est tracé à part
+  const swCol = n => n.parent && n.parent.kind === 'switch' && !n.side ? swCol(n.parent) + 1 : 1;
+  let NC = 1;
+  const baseCol = n => n.t !== 'dev' ? null : isConN(n) ? 0 : n.kind === 'switch' ? swCol(n) : n.kind === 'node' ? NC : n.kind === 'splitter' || n.kind === 'merger' ? NC + 1 : null;
+  const colOf = n => { const b = baseCol(n); return b !== null ? b : n.parent ? colOf(n.parent) + (n.side ? 0 : 1) : 0; };
   for (let moved = true; moved;) {
     moved = false;
-    for (const n of N) if (n.parent && baseCol(n) !== null && baseCol(n) <= colOf(n.parent)) { extra.push({ a: n.parent, b: n, e: n.edge }); detach(n); moved = true; }
+    NC = 1 + Math.max(0, ...N.filter(n => n.kind === 'switch' && n.t === 'dev').map(swCol));
+    for (const n of N) {
+      if (!n.parent || n.side || baseCol(n) === null) continue;
+      const b = baseCol(n), pc = colOf(n.parent);
+      if (b === pc) { n.side = true; moved = true; }
+      else if (b < pc) { extra.push({ a: n.parent, b: n, e: n.edge }); detach(n); moved = true; }
+    }
   }
   const roots = N.filter(n => !n.parent).sort((a, b) => isConN(b) - isConN(a) || (b.kids.length > 0) - (a.kids.length > 0) || rank(a) - rank(b) || natCmp(a.name, b.name));
   const CW = 330, BW = 180, BH = 50, PH = 36, RH = 64, PAD = 18, TOP = 76, GAP = CW - BW;
   let row = 0, maxD = 0;
   const place = n => {
     const dep = n.dep = colOf(n); maxD = Math.max(maxD, dep); n.kids.sort(cmp);
-    if (!n.kids.length) { n.y = row++ * RH; return; }
-    n.kids.forEach(k => place(k));
-    n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2;
+    const main = n.kids.filter(k => !k.side), side = n.kids.filter(k => k.side);
+    if (!main.length) n.y = row++ * RH;
+    else { main.forEach(k => place(k)); n.y = (main[0].y + main[main.length - 1].y) / 2; }
+    side.forEach(k => place(k));   // sous le bloc de l'appareil, dans sa colonne
   };
   roots.forEach((r, i) => { if (i && (r.kids.length || roots[i - 1].kids.length)) row += .3; place(r); });
   const W = PAD * 2 + (maxD + 1) * CW - GAP, H = TOP + row * RH + 24;
@@ -2685,7 +2695,8 @@ function renderNetSyno() {
   // un appareil relié à plusieurs autres s'étire sur leur hauteur : chaque câble part de son bord, droit vers l'appareil branché
   N.forEach(n => {
     if (n.y === undefined || !n.kids.length) return;
-    const cys = n.kids.filter(k => k.y !== undefined).map(k => TOP + k.y + BH / 2), a = Math.min(...cys) - 16, b = Math.max(...cys) + 16;
+    const ks = n.kids.filter(k => k.y !== undefined && !k.side); if (!ks.length) return;
+    const cys = ks.map(k => TOP + k.y + BH / 2), a = Math.min(...cys) - 16, b = Math.max(...cys) + 16;
     if (b - a > BH) { n.bt = a; n.bh = b - a; }
   });
   const X = n => PAD + n.dep * CW, hOf = n => n.bh || (n.t === 'pos' ? PH : BH), Y = n => n.bt ?? TOP + n.y + (BH - hOf(n)) / 2, CY = n => TOP + n.y + BH / 2;
@@ -2697,7 +2708,12 @@ function renderNetSyno() {
       + (e.sub ? `<text x="${cx}" y="${y + 12}" font-size="9.5" text-anchor="middle" class="mut">${x(fit(e.sub, w, 9.5))}</text>` : ''); };
   let edges = '', labels = '', boxes = '';
   for (const n of N) {
-    if (n.parent && n.edge) {
+    if (n.parent && n.edge && n.side) {   // même colonne, juste dessous : trait vertical sur la droite des deux boîtes
+      const p = n.parent, x1 = X(p) + BW, y1 = Y(p) + hOf(p) - 10, y2 = CY(n), xs = x1 + 14;
+      edges += `<path d="M${x1} ${y1} H${xs} V${y2} H${x1}" fill="none" ${style(n.edge)}/>`;
+      edges += `<circle cx="${x1}" cy="${y1}" r="2.6" ${style(n.edge).replace('stroke=', 'fill=').replace(/stroke-width="[^"]*"/, '')}/>`;
+      labels += `<text x="${xs + 5}" y="${(y1 + y2) / 2 + 3}" font-size="9.5"${n.edge.k === 'dmx' ? ` style="fill:${ucol(n.edge.l.universe)}" font-weight="700"` : ' class="mut"'}>${x(fit([n.edge.top, n.edge.sub].filter(Boolean).join(' · '), GAP - 30, 9.5))}</text>`;
+    } else if (n.parent && n.edge) {
       // départ sur le bord de l'appareil, à la hauteur de l'appareil branché (dans la boîte, étirée s'il le faut)
       const p = n.parent, x1 = X(p) + BW, x2 = X(n), y2 = CY(n), y1 = Math.min(Math.max(y2, Y(p) + 10), Y(p) + hOf(p) - 10);
       edges += y1 === y2 ? `<path d="M${x1} ${y2} H${x2}" fill="none" ${style(n.edge)}/>` : `<path d="M${x1} ${y1} H${x1 + 14} V${y2} H${x2}" fill="none" ${style(n.edge)}/>`;
