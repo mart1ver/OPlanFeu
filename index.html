@@ -855,7 +855,7 @@ const I18N = {
     sbHint: 'Feuille de patch à imprimer, en A3 ou A4, paysage ou portrait. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
     sbCartHint: 'Le cartouche (titre, lieu, date, responsable, lignes de notes) et la langue des feuilles se règlent dans le dossier complet.',
-    cartTitle: 'Cartouche et langue des documents', dosParts: 'Parties du dossier', cartHint: 'Repris en tête de la feuille de patch, dans le cartouche du plan et sur la couverture du dossier.', cartLang: 'Langue des feuilles imprimées',
+    cartTitle: 'Cartouche et langue des documents', dosParts: 'Parties du dossier', dosFmtHint: 'Les pages sont composées en A4 ; en A3, elles sont agrandies à l’impression.', cartHint: 'Repris en tête de la feuille de patch, dans le cartouche du plan et sur la couverture du dossier.', cartLang: 'Langue des feuilles imprimées',
     tsFilter: 'Filtrer les lignes…', tsReset: 'tout afficher, ordre d’origine', tsSortT: 'Trier (clic : croissant, décroissant, ordre d’origine)', tsCount: (n, m) => `${n} ligne(s) sur ${m}`,
     nsNoSrc: 'source inconnue', nsNoDest: 'arrivée ?', nsFx0: 'aucun projecteur', nsDmxLeg: 'DMX (couleur de l’univers)', nsExtra: 'autre câble',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `sortie ${n}`, ptIn: n => `entrée ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'Sortie DMX', pt_in: 'Entrée DMX',
@@ -1003,7 +1003,7 @@ const I18N = {
     sbHint: 'Printable patch sheet, A3 or A4, landscape or portrait. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
     sbCartHint: 'The title block (title, venue, date, person in charge, note lines) and the sheet language are set in the full dossier.',
-    cartTitle: 'Title block and document language', dosParts: 'Dossier parts', cartHint: 'Used at the top of the patch sheet, in the plot title block and on the dossier cover.', cartLang: 'Language of printed sheets',
+    cartTitle: 'Title block and document language', dosParts: 'Dossier parts', dosFmtHint: 'Pages are laid out in A4; in A3 they are enlarged when printed.', cartHint: 'Used at the top of the patch sheet, in the plot title block and on the dossier cover.', cartLang: 'Language of printed sheets',
     tsFilter: 'Filter rows…', tsReset: 'show all, original order', tsSortT: 'Sort (click: ascending, descending, original order)', tsCount: (n, m) => `${n} of ${m} row(s)`,
     nsNoSrc: 'unknown source', nsNoDest: 'lands ?', nsFx0: 'no fixture', nsDmxLeg: 'DMX (universe colour)', nsExtra: 'other cable',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `out ${n}`, ptIn: n => `in ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'DMX out', pt_in: 'DMX in',
@@ -2911,17 +2911,20 @@ function renderNetSyno() {
 const SYN_VIEWS = ['elec', 'net'];
 // orientation de la page de chaque synoptique (impression et dossier complet), gardée dans le dossier
 const synOrient = k => ((state.d.lieu.settings.synOrient || {})[k] === 'portrait' ? 'portrait' : 'landscape');
+const synFmt = k => ((state.d.lieu.settings.synFmt || {})[k] === 'A3' ? 'A3' : 'A4');
 function renderSynoView() {
   ensureLieu(state.d);
-  const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec', or = synOrient(sv);
+  const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec', or = synOrient(sv), fm = synFmt(sv);
   const head = `<div class="subtabs">${SYN_VIEWS.map(k => `<button type="button" data-sv="${k}"${k === sv ? ' class="on"' : ''}>${esc(t('sv_' + k))}</button>`).join('')}</div>
-${cfgBar(cfgBox('syno:' + sv + ':page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label></div>`, 'A4 · ' + t('or_' + or)))}
+${cfgBar(cfgBox('syno:' + sv + ':page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('doFormat'))} <select data-synfmt="${sv}">${['A3', 'A4'].map(f => `<option value="${f}"${f === fm ? ' selected' : ''}>${f}</option>`).join('')}</select></label><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label></div>`, fm + ' · ' + t('or_' + or)))}
 <div class="plopts noprint"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   const ed = sv === 'net' ? synEditor() : null;
   $('#view').innerHTML = head.replace('<div class="cfgbar noprint">', '<div class="cfgbar noprint">' + (ed ? cfgBox('syno:net:edit', t('seTitle'), ed.html, ed.sum, true) : ''))
     + `<div class="synwrap${or === 'portrait' ? ' port' : ''}${ed && state.synMode ? ' synlink' : ''}">${sv === 'elec' ? renderSyno() : renderNetSyno()}</div>`;
-  $('#pagesize').textContent = or === 'portrait' ? '@page { size: A4 portrait; margin: 12mm; } .syn svg { max-height: 265mm !important; }' : '';
+  // page : format et orientation ; hauteur du schéma limitée à la page (moins les marges et le titre de la vue)
+  const ph = (fm === 'A3' ? (or === 'portrait' ? 420 : 297) : (or === 'portrait' ? 297 : 210)) - 32;
+  $('#pagesize').textContent = `@page { size: ${fm} ${or}; margin: 12mm; } @media print { .syn svg { max-height: ${ph}mm !important; } }`;
 }
 // ───────────── édition du synoptique réseau / DMX : câble sélectionné, relier deux appareils, supprimer ─────────────
 const synLinkOf = id => { const [c, i] = String(id || '').split(':'); const l = c && state.d && (state.d.lieu[c] || []).find(y => y.id === i); return l ? { coll: c, l } : null; };
@@ -3054,6 +3057,8 @@ document.addEventListener('keydown', e => {
   state.synMode = null; state.synFrom = null; state.synSel = null; state.synDev = null; render();
 });
 document.getElementById('view').addEventListener('change', e => {
+  const kf = e.target.dataset && e.target.dataset.synfmt;
+  if (kf && state.d) { const S = state.d.lieu.settings; S.synFmt = { ...(S.synFmt || {}), [kf]: e.target.value === 'A3' ? 'A3' : 'A4' }; touch(); renderSynoView(); return; }
   const k = e.target.dataset && e.target.dataset.synor; if (!k || !state.d) return;
   const S = state.d.lieu.settings; S.synOrient = { ...(S.synOrient || {}), [k]: e.target.value === 'portrait' ? 'portrait' : 'landscape' };
   touch(); renderSynoView();
@@ -3540,7 +3545,7 @@ function autoDmx() {
   });
   return [n, m];
 }
-const HEAD_FMT = { A4: [297, 210, 1], A5: [210, 148, .72], A6: [148, 105, .5] };
+const HEAD_FMT = { A3: [420, 297, 1.41], A4: [297, 210, 1], A5: [210, 148, .72], A6: [148, 105, .5] };
 function renderHeads() {
   const L = state.d.lieu, fmt = HEAD_FMT[state.headFmt] ? state.headFmt : 'A5', [W, H, sc] = HEAD_FMT[fmt];
   const pts = [...L.points].sort((x, y) => natCmp(x.name, y.name)).filter(p => state.headSol || (p.kind !== 'sol' && state.d.fixtures.some(f => f.position === p.name)));
@@ -4464,11 +4469,14 @@ function renderDossier() {
   $('#view').innerHTML = cfgBar(
     cfgBox('dos:parts', t('dosParts'), `<div class="cfgcols">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}</div><p class="hint2">${esc(t('dosHint'))}</p>`, `${DOS_SECTIONS.filter(k => S[k]).length}/${DOS_SECTIONS.length}`, true),
     cfgBox('dos:views', t('vwInDos'), VW.length ? `<div class="cfgcols">${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : v.kind === 'sheet' ? t('pvw_sheet') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2">${esc(t('vwNone'))}</p>`, `${VW.filter(v => v.inDossier).length}/${VW.length}`, true),
+    cfgBox('dos:page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('doFormat'))} <select data-dosfmt="1">${['A3', 'A4'].map(f => `<option value="${f}"${f === (S.fmt === 'A3' ? 'A3' : 'A4') ? ' selected' : ''}>${f}</option>`).join('')}</select></label></div><p class="hint2">${esc(t('dosFmtHint'))}</p>`, S.fmt === 'A3' ? 'A3' : 'A4'),
     cfgBox('dos:cart', t('cartTitle'), cart, [m.titre, m.lieu].filter(Boolean).join(' — ')))
 + `<div class="plopts noprint"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
 <label>${esc(t('zoom'))} <input type="range" id="dosZoom" min="20" max="100" value="${S.zoom || 45}"></label></div>
 <div id="dosPages">${dossierPages().join('')}</div>`;
-  $('#pagesize').textContent = '@page { size: A4 landscape; margin: 0; } @page port { size: A4 portrait; margin: 0; }';
+  // A3 : les pages, composées en A4, sont agrandies à l'impression (×1,41)
+  const F = S.fmt === 'A3' ? 'A3' : 'A4';
+  $('#pagesize').textContent = `@page { size: ${F} landscape; margin: 0; } @page port { size: ${F} portrait; margin: 0; }` + (F === 'A3' ? ' @media print { body #dosPages > * { zoom: 1.4142 !important; } }' : '');
   dosZoom();
   if ((state.dos.plan || (state.d.views || []).some(v => v.kind === 'plan' && v.inDossier)) && !(PLAN_GEO.ready && PLAN_GEO.key === planGeoKey())) ensurePlanGeo().then(ok => { if (ok && state.tab === 'dossier') renderDossier(); });
   if ($('#dosPages .big.lfid')) fitLabels(40, 30);
@@ -4477,6 +4485,7 @@ function dosZoom() { document.querySelectorAll('#dosPages > *').forEach(x => { x
 document.getElementById('view').addEventListener('change', e => {
   const v = e.target.closest && e.target.closest('[data-dosv]');
   if (v && state.d) { const x = (state.d.views || []).find(y => y.id === v.dataset.dosv); if (x) { x.inDossier = v.checked; touch(); renderDossier(); } return; }
+  if (e.target.dataset && e.target.dataset.dosfmt) { state.dos.fmt = e.target.value === 'A3' ? 'A3' : 'A4'; store.set('dos', state.dos); renderDossier(); return; }
   const el = e.target.closest && e.target.closest('[data-dos]'); if (!el) return; state.dos[el.dataset.dos] = el.checked; store.set('dos', state.dos); renderDossier();
 });
 document.getElementById('view').addEventListener('click', e => {

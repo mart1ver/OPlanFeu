@@ -825,3 +825,22 @@ test('synoptiques : la page à l’écran suit l’orientation choisie', async (
   await page.selectOption('#view select[data-synor=net]', 'portrait');
   expect(await ratio()).toBeCloseTo(297 / 210, 1);
 });
+
+test('A3 ou A4 : synoptiques et dossier complet', async ({ page }) => {
+  await loadSynthetic(page, d => { d.lieu = { points: [], boards: [], lines: [], consoles: [], dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }], devices: [{ id: 'v1', name: 'Node 1', kind: 'node' }], netLinks: [] }; });
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=net]');
+  await page.click('#view details[data-cfg="syno:net:page"] > summary');
+  await page.selectOption('#view select[data-synfmt=net]', 'A3');
+  await expect(page.locator('#view details[data-cfg="syno:net:page"] > summary')).toContainText('A3 · paysage');
+  expect(await page.evaluate(() => [state.d.lieu.settings.synFmt, $('#pagesize').textContent])).toEqual([{ net: 'A3' }, expect.stringContaining('size: A3 landscape')]);
+  // dossier complet en A3 : pages en A4 agrandies à l'impression
+  await page.click('#tabs button[data-v=dossier]');
+  await page.click('#view details[data-cfg="dos:page"] > summary');
+  await page.selectOption('#view select[data-dosfmt]', 'A3');
+  expect(await page.evaluate(() => $('#pagesize').textContent)).toContain('@page { size: A3 landscape');
+  await page.emulateMedia({ media: 'print' });
+  const pdf = (await page.pdf({ preferCSSPageSize: true })).toString('latin1');
+  const boxes = [...pdf.matchAll(/\/MediaBox\s*\[\s*0 0 ([\d.]+) ([\d.]+)/g)].map(m => [Math.round(+m[1]), Math.round(+m[2])]);
+  expect(boxes[0]).toEqual([1191, 842]);   // A3 paysage en points
+});
