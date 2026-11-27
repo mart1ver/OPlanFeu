@@ -48,6 +48,9 @@ test('feuille de patch : patch par position', async ({ page }) => {
   await page.click('#view [data-pv=sheet]');
   const pages = page.locator('#docPages');
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(1);
+  // réglages dans des boîtes rétractables au-dessus de la feuille : « Contenu de la feuille » fermée au départ
+  await expect(page.locator('#view details[data-cfg=content]')).not.toHaveAttribute('open', '');
+  await page.click('#view details[data-cfg=content] > summary');
   await page.click('#view [data-dck=optPos]');
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(0);
   await page.click('#view [data-dck=optPos]');
@@ -68,6 +71,7 @@ test('feuille de patch : vues de départ, vue personnalisée reprise dans le dos
   await page.evaluate(() => { window.prompt = () => 'Patch jardin'; });
   await page.click('#view [data-svnew]');
   await page.selectOption('#view select[data-dopt=fmt]', 'A4');
+  await page.click('#view details[data-cfg=content] > summary');
   await page.click('#view [data-dck=optSumType]');
   const v = await page.evaluate(() => state.d.views.find(x => x.kind === 'sheet'));
   expect([v.name, v.base, v.inDossier, v.settings.fmt, v.settings.chk.optPos, v.settings.chk.optSumType, v.settings.chk.optUniv]).toEqual(['Patch jardin', 'pos', true, 'A4', true, false, false]);
@@ -153,4 +157,19 @@ test('export MVR depuis la vue Shows (plus dans le dossier complet)', async ({ p
   expect(dl.suggestedFilename()).toMatch(/\.mvr$/);
   await page.click('#tabs button[data-v=dossier]');
   await expect(page.locator('#dosMvr')).toHaveCount(0);
+});
+
+test('feuille de patch : la feuille prend toute la largeur, boîtes ouvertes ou fermées gardées', async ({ page }) => {
+  await page.setViewportSize({ width: 1500, height: 900 });
+  await loadSynthetic(page);
+  await page.click('#view [data-pv=sheet]');
+  // pas de panneau sur le côté : la zone des pages a la largeur de la vue
+  const w = await page.evaluate(() => [$('#docPages').getBoundingClientRect().width, $('#view').getBoundingClientRect().width]);
+  expect(w[0]).toBeGreaterThan(w[1] - 80);
+  await page.click('#view details[data-cfg=views] > summary');
+  await page.click('#view details[data-cfg=hidden] > summary');
+  await page.click('#view [data-pv=table]'); await page.click('#view [data-pv=sheet]');
+  await expect(page.locator('#view details[data-cfg=views]')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#view details[data-cfg=hidden]')).toHaveAttribute('open', '');
+  await expect(page.locator('#view details[data-cfg=page] > summary')).toContainText('A3 · paysage');
 });

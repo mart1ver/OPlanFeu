@@ -382,6 +382,21 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .shcard .sht { display: flex; gap: 8px; align-items: baseline; } .shcard .sht b { font-size: 14.5px; } .shbadge { font-size: 10.5px; background: var(--accent); color: #111; border-radius: 99px; padding: 1px 7px; }
 .shcard .shbtns { margin-top: 9px; }
 .pvstrip { display: grid; gap: 6px; margin: 12px 0 0; }
+/* boîtes de réglages rétractables au-dessus d'une vue (feuille de patch) */
+.cfgbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; margin: 12px 0 0; }
+.cfg { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 7px 14px; font-size: 12.5px; flex: 0 1 auto; min-width: 0; }
+.cfg[open] { padding-bottom: 11px; }
+.cfg > summary { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); padding: 2px 0; display: flex; gap: 10px; align-items: baseline; }
+.cfg > summary small { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink); font-size: 12px; }
+.cfg .cfgbody { margin-top: 6px; }
+.cfg .pvstrip { margin: 0; } .cfg .hint2 { margin: 8px 0 0; max-width: 760px; }
+.cfg .cfgrow { display: flex; flex-wrap: wrap; gap: 8px 16px; } .cfg .cfgrow label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.cfg select { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; }
+.cfg .cfgcols { display: flex; flex-wrap: wrap; gap: 6px 28px; } .cfg .cfgcols label { display: flex; gap: 6px; align-items: center; white-space: nowrap; padding: 1.5px 0; cursor: pointer; }
+.cfg .grp { margin: 2px 0 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.cfg .dhide { display: flex; gap: 6px; align-items: center; } .cfg .dhide input { width: 220px; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.cfg .chips { margin-top: 6px; max-width: 760px; }
+#docPages.fullw { padding-top: 10px; }
 .pvrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; } .pvrow small { color: var(--muted); } .pvrow label { display: flex; gap: 5px; align-items: center; margin-inline-start: 8px; }
 .pvlab { width: 110px; flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); font-weight: 600; }
 .pvchip { font: inherit; font-size: 12.5px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
@@ -813,7 +828,7 @@ const I18N = {
     maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
     maWarnLib: n => `${n} type(s) sans fichier de librairie : à importer à la main au numéro indiqué avant de lancer le plugin.`, maWarnId: n => `${n} projecteur(s) sans Fix ID ni Channel ID numérique : laissés de côté.`, maWarnUnp: n => `${n} projecteur(s) sans adresse : créés sans patch.`, maWarnAll: 'Les presets se font sur le groupe « Tous » : cochez-le.',
     maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show vide (NewShow) ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Importer le plugin dans une case vide du pool, pas la case 1 (un show neuf y a le plugin de démonstration de MA) : cd Plugin, puis Import "oplanfeu_…" At 2, puis cd /.', 'Lancer : Plugin 2. Dans un show vide, il ne demande rien ; le détail est dans le System Monitor et dans importexport/oplanfeu_log.txt (onPC).', 'Si un fixture type est introuvable, le plugin s’arrête sans rien créer et donne des noms proches de la librairie (System Monitor, et importexport/oplanfeu_log.txt sur l’onPC) : corriger le nom ici, retélécharger, relancer.'],
-    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
+    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbPage: 'Mise en page', sbViews: 'Vues', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
     sbHint: 'Feuille de patch à imprimer, en A3 ou A4, paysage ou portrait. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
     sbCartHint: 'Le cartouche (titre, lieu, date, responsable, lignes de notes) et la langue des feuilles se règlent dans le dossier complet.',
@@ -961,7 +976,7 @@ const I18N = {
     maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
     maWarnLib: n => `${n} type(s) without library file: import them by hand at the given number before running the plugin.`, maWarnId: n => `${n} fixture(s) without a numeric Fix ID or Channel ID: skipped.`, maWarnUnp: n => `${n} fixture(s) without address: created unpatched.`, maWarnAll: 'Presets are stored on the “All” group: tick it.',
     maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open an empty show (NewShow); if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Import the plugin into an empty pool cell, not cell 1 (a new show holds MA’s demo plugin there): cd Plugin, then Import "oplanfeu_…" At 2, then cd /.', 'Run: Plugin 2. In an empty show it asks nothing; details are in the System Monitor and importexport/oplanfeu_log.txt (onPC).', 'If a fixture type is not found, the plugin stops without creating anything and lists close library names (System Monitor, and importexport/oplanfeu_log.txt on onPC): fix the name here, download again, run again.'],
-    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
+    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbPage: 'Page layout', sbViews: 'Views', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
     sbHint: 'Printable patch sheet, A3 or A4, landscape or portrait. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
     sbCartHint: 'The title block (title, venue, date, person in charge, note lines) and the sheet language are set in the full dossier.',
@@ -5869,25 +5884,38 @@ ${cur ? `<div class="pvrow pvcur"><span class="pvlab"></span><b>${x(cur.name)}</
 <label><input type="checkbox" data-svdos="1"${cur.inDossier ? ' checked' : ''}> ${x(t('pvInDos'))}</label><button type="button" class="minibtn" data-svren="1">${x(t('vwRen'))}</button><button type="button" class="minibtn" data-svdup="1">${x(t('shDup'))}</button><button type="button" class="minibtn x" data-svdel="1">${x(t('vwDel'))}</button></div>`
       : `<div class="pvrow pvcur"><span class="pvlab"></span><small>${x(t('sbBaseHint'))}</small></div>`}</div>`;
 }
+// boîtes rétractables au-dessus de la feuille (vues, mise en page, contenu, projecteurs masqués) : la feuille a toute la largeur
+state.sheetCfg = store.get('sheetCfg', { views: true, page: true, content: false, hidden: false });
 function renderSheetDoc() {
-  const D = ensureDocs(state.d), c = DOC.chk, x = esc, gw = t('gwLayer');
+  const D = ensureDocs(state.d), c = DOC.chk, x = esc, gw = t('gwLayer'), O = state.sheetCfg;
   const ck = (id, lab) => `<label><input type="checkbox" data-dck="${id}"${c[id] ? ' checked' : ''}> ${x(lab)}</label>`;
   const hidden = docFx().filter(f => D.hidden.includes(f.k));
-  const panel = `<details class="plpanel" open><summary>${x(t('sbContent'))}</summary>
-<div class="grp">${x(t('sbSums'))}</div>${ck('optSumLayer', t('optSumG', gw))}${ck('optSumPos', t('optSumPos'))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}
-<div class="grp">${x(t('sbPatch'))}</div>${ck('optLayer', t('optG', gw))}${ck('optPos', t('optPos'))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}
-<div class="grp">${x(t('sbOther'))}</div>${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}
-<div class="grp">${x(t('legHidden'))}${hidden.length > 1 ? `<button type="button" id="dUnhideAll">${x(t('unhideAll'))}</button>` : ''}</div>
-<div class="dhide"><input type="text" id="dHideIn" list="dFxList" placeholder="${x(t('hidePh'))}" autocomplete="off"><button type="button" class="minibtn" id="dHideBtn">${x(t('hideBtn'))}</button></div>
+  const box = (k, title, body, extra = '') => `<details class="cfg" data-cfg="${k}"${O[k] ? ' open' : ''}><summary>${x(title)}${extra}</summary><div class="cfgbody">${body}</div></details>`;
+  const nOn = SHEET_CHK.filter(k => c[k]).length;
+  const vwHtml = sheetViewStrip();
+  const page = `<div class="cfgrow"><label>${x(t('doFormat'))} <select data-dopt="fmt">${['A3', 'A4'].map(f => `<option value="${f}"${f === DOC.fmt ? ' selected' : ''}>${x(t('fmt' + f))}</option>`).join('')}</select></label>
+<label>${x(t('plOrient'))} <select data-dopt="orient">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === DOC.orient ? ' selected' : ''}>${x(t('or_' + o))}</option>`).join('')}</select></label></div>
+<p class="hint2">${x(t('sbCartHint'))} <button type="button" class="linkbtn" data-gotab="dossier">${x(t('tabDossier'))} →</button></p>`;
+  const content = `<div class="cfgcols"><div><div class="grp">${x(t('sbSums'))}</div>${ck('optSumLayer', t('optSumG', gw))}${ck('optSumPos', t('optSumPos'))}${ck('optSumUniv', t('optSumUniv'))}${ck('optSumType', t('optSumType'))}</div>
+<div><div class="grp">${x(t('sbPatch'))}</div>${ck('optLayer', t('optG', gw))}${ck('optPos', t('optPos'))}${ck('optUniv', t('optUniv'))}${ck('optMap', t('optMap'))}</div>
+<div><div class="grp">${x(t('sbOther'))}</div>${ck('optHideUnp', t('optHide'))}${ck('optExport', t('optExport'))}</div></div>`;
+  const hid = `<div class="dhide"><input type="text" id="dHideIn" list="dFxList" placeholder="${x(t('hidePh'))}" autocomplete="off"><button type="button" class="minibtn" id="dHideBtn">${x(t('hideBtn'))}</button>${hidden.length > 1 ? `<button type="button" class="linkbtn" id="dUnhideAll">${x(t('unhideAll'))}</button>` : ''}</div>
 <datalist id="dFxList">${docFx().filter(f => !D.hidden.includes(f.k)).sort((a, b) => cmpKey(a.key, b.key)).map(f => `<option value="${x(fxLabelD(f))}"></option>`).join('')}</datalist>
-<div class="chips">${hidden.map(f => `<span class="chip" title="${x(fxLabelD(f))}"><span>${x(fxLabelD(f))}</span><button type="button" class="chipx" data-unhide="${x(f.k)}">×</button></span>`).join('')}</div>
-<p class="hint2">${x(t('sbCartHint'))} <button type="button" class="linkbtn" data-gotab="dossier">${x(t('tabDossier'))} →</button></p></details>`;
-  return `<p class="hint noprint" style="margin:12px 0 0">${x(t('sbHint'))}</p>${sheetViewStrip()}
-<div class="plopts noprint docopts"><label>${x(t('doFormat'))} <select data-dopt="fmt">${['A3', 'A4'].map(f => `<option value="${f}"${f === DOC.fmt ? ' selected' : ''}>${x(t('fmt' + f))}</option>`).join('')}</select></label>
-<label>${x(t('plOrient'))} <select data-dopt="orient">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === DOC.orient ? ' selected' : ''}>${x(t('or_' + o))}</option>`).join('')}</select></label>
-<span class="spacer"></span><span id="docInfo" class="plstate"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><label>${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></label></div>
-<div class="planwrap docopts">${panel}<div id="docPages" dir="${PL() === 'ar' ? 'rtl' : 'ltr'}" lang="${PL()}"></div></div>`;
+<div class="chips">${hidden.map(f => `<span class="chip" title="${x(fxLabelD(f))}"><span>${x(fxLabelD(f))}</span><button type="button" class="chipx" data-unhide="${x(f.k)}">×</button></span>`).join('')}</div>`;
+  const cur = state.sheetViewId && views('sheet').find(v => v.id === state.sheetViewId);
+  return `<div class="cfgbar noprint docopts">
+${box('views', t('sbViews'), vwHtml, `<small>${x(cur ? cur.name : t('sb_' + state.sheetBase))}</small>`)}
+${box('page', t('sbPage'), page, `<small>${x(DOC.fmt + ' · ' + t('or_' + DOC.orient))}</small>`)}
+${box('content', t('sbContent'), content, `<small>${nOn}/${SHEET_CHK.length}</small>`)}
+${box('hidden', t('legHidden'), hid, `<small>${hidden.length}</small>`)}
+</div>
+<div class="plopts noprint docopts"><span class="spacer"></span><span id="docInfo" class="plstate"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><label>${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></label></div>
+<div id="docPages" class="fullw" dir="${PL() === 'ar' ? 'rtl' : 'ltr'}" lang="${PL()}"></div>`;
 }
+document.getElementById('view').addEventListener('toggle', e => {
+  const k = e.target.dataset && e.target.dataset.cfg; if (!k) return;
+  state.sheetCfg = { ...state.sheetCfg, [k]: e.target.open }; store.set('sheetCfg', state.sheetCfg);
+}, true);
 document.getElementById('view').addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('[data-svbase],[data-svsel],[data-svnew],[data-svren],[data-svdup],[data-svdel],[data-gotab]'); if (!b || !state.d) return;
   if (b.dataset.gotab) { state.tab = b.dataset.gotab; store.set('tab', state.tab); return render(); }
