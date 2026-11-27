@@ -792,6 +792,9 @@ test('synoptique réseau : modifier un appareil au clic, déplacer boîtes et c�
   expect(await page.evaluate(() => state.d.lieu.devices.find(d => d.id === 'v1').ip)).toBe('2.0.0.11');
   await expect(page.locator('#view .nsyn')).toContainText('2.0.0.11');
   await expect(box.locator('[data-pname]').first()).toBeVisible();
+  await expect(box.locator('select[data-f=line]')).toBeVisible();
+  await box.locator('#synDesel').click();
+  await page.locator('#view .nsyn').scrollIntoViewIfNeeded();
   // glisser une boîte : décalage gardé dans le dossier
   const g = page.locator('#view .nsyn [data-sdev="Node 2"] .box');
   const b0 = await g.boundingBox();
@@ -843,4 +846,30 @@ test('A3 ou A4 : synoptiques et dossier complet', async ({ page }) => {
   const pdf = (await page.pdf({ preferCSSPageSize: true })).toString('latin1');
   const boxes = [...pdf.matchAll(/\/MediaBox\s*\[\s*0 0 ([\d.]+) ([\d.]+)/g)].map(m => [Math.round(+m[1]), Math.round(+m[2])]);
   expect(boxes[0]).toEqual([1191, 842]);   // A3 paysage en points
+});
+
+test('appareils réseau : ligne électrique et puissance, comptées dans la charge de la ligne', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], consoles: [], dmxLines: [], netLinks: [],
+      boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'D1', board: 'TD1', kind: 'direct', phase: 'L1', amps: 16, dest: 'Régie' }],
+      models: [{ id: 'm1', name: 'GS108', kind: 'switch', eth: 8, power: 15 }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch', model: 'GS108' }, { id: 'v1', name: 'Node 1', kind: 'node' }] };
+  });
+  await page.click('#tabs button[data-v=net]');
+  await page.click('#view [data-nv=net]');
+  await page.locator('#view tr:has(input[value="SW1"]) select[data-f=line]').selectOption('D1');
+  await page.locator('#view tr:has(input[value="Node 1"]) select[data-f=line]').selectOption('D1');
+  expect(await page.evaluate(() => state.d.lieu.devices.map(d => d.line))).toEqual(['D1', 'D1']);
+  // puissance d'un appareil sans modèle : dans sa fiche
+  await page.locator('#view tr:has(input[value="Node 1"]) [data-devtog]').click();
+  await page.locator('#view .dvsheet input[data-f=power]').fill('12');
+  await page.locator('#view .dvsheet input[data-f=power]').press('Tab');
+  const R = await page.evaluate(() => { const r = lineLoad(state.d.lieu.lines[0]); return [r.w, r.status, lineWho(r)]; });
+  expect(R).toEqual([27, 'ok', ['SW1', 'Node 1']]);
+  // dans l'onglet Électricité, la ligne liste ses appareils
+  await page.click('#tabs button[data-v=elec]');
+  await expect(page.locator('#view tr:has(input[value="D1"])')).toContainText('SW1, Node 1');
+  // renommer la ligne : les appareils suivent
+  const ln = page.locator('#view input[value="D1"]').first(); await ln.fill('D9'); await ln.press('Tab');
+  expect(await page.evaluate(() => state.d.lieu.devices.map(d => d.line))).toEqual(['D9', 'D9']);
 });

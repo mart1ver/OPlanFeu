@@ -840,7 +840,7 @@ const I18N = {
     addDmx: 'Ajouter une ligne DMX', srPort: 'premier port', srU: 'premier univers', srUStep: 'univers', srUSame: 'le même', srUInc: '+1 par ligne', srPortInc: 'port +1 par ligne',
     autoDmx: 'Répartir automatiquement', autoDone: (n, m) => `${n} projecteur(s) raccroché(s) à une ligne DMX, ${m} sans ligne possible.`, delDmxAsk: n => `Supprimer la ligne DMX « ${n} » ?`,
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nombre, nom, univers de chaque sortie DMX, VLAN des ports de switch (les câbles se branchent dans l’onglet Liaisons). Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
-    dvName: 'Appareil', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
+    dvName: 'Appareil', dvLine: 'Ligne élec.', dvPower: 'Puissance (W)', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kother: 'Autre',
     shConsole: 'Show console', shConsoleHint: 'Créer un show de base pour la console à partir du dossier : patch, positions des machines, groupes, layout et presets.', shMa2: 'grandMA2…', shSoon: 'bientôt',
     maTitle: 'Show de base grandMA2', maHint: 'OPlanFeu prépare un plugin grandMA2 et ses fichiers (calque XML avec le patch et les positions, layout), dans un zip à copier sur une clé USB ou dans le dossier de l’onPC. Le plugin importe les fixture types, le calque, puis crée les groupes, le layout et les presets. Testé sur grandMA2 onPC 3.9.61, à lancer dans un show neuf.',
@@ -988,7 +988,7 @@ const I18N = {
     addDmx: 'Add a DMX line', srPort: 'first port', srU: 'first universe', srUStep: 'universe', srUSame: 'same', srUInc: '+1 per line', srPortInc: 'port +1 per line',
     autoDmx: 'Auto-assign', autoDone: (n, m) => `${n} fixture(s) attached to a DMX line, ${m} with no possible line.`, delDmxAsk: n => `Delete the DMX line “${n}”?`,
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: count, name, universe of each DMX output, switch port VLAN (cables are plugged in the Links tab). Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
-    dvName: 'Device', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
+    dvName: 'Device', dvLine: 'Power line', dvPower: 'Power (W)', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
     kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kother: 'Other',
     shConsole: 'Console show', shConsoleHint: 'Build a basic console show from the dossier: patch, fixture positions, groups, layout and presets.', shMa2: 'grandMA2…', shSoon: 'coming',
     maTitle: 'grandMA2 basic show', maHint: 'OPlanFeu prepares a grandMA2 plugin and its files (XML layer with patch and positions, layout) in a zip to copy to a USB key or the onPC folder. The plugin imports the fixture types and the layer, then creates groups, layout and presets. Tested on grandMA2 onPC 3.9.61; run it in a new show.',
@@ -2551,14 +2551,20 @@ function sortedLines() {
   const order = new Map(state.d.lieu.boards.map((b, i) => [b.name, i]));
   return [...state.d.lieu.lines].sort((a, b) => (order.get(a.board) ?? 1e9) - (order.get(b.board) ?? 1e9) || natCmp(a.name, b.name));
 }
+const devPower = d => { const m = devModel(d); return +(isSet(d.power) ? d.power : m && m.power) || 0; };
+// ce qui est branché sur une ligne : numéros des projecteurs, puis noms des appareils réseau
+const lineWho = R => [...R.g.map(f => f.fid || '?').sort((a, b) => cmpKey(numKey(a), numKey(b))), ...R.dv.map(d => d.name)];
 function lineLoad(l) {
   const st = state.d.lieu.settings, V = +st.volts || 230, n = l.phase === 'tri' ? 3 : 1;
   const g = state.d.fixtures.filter(f => f.circuit && f.circuit === l.name);
+  // appareils réseau branchés sur la ligne (switch, node, console…) : leur puissance est celle de leur modèle
+  const dv = (state.d.lieu.devices || []).filter(d => d.line && d.line === l.name);
   let w = 0, miss = 0; g.forEach(f => { const pw = (state.d.types[f.type] || {}).power; if (pw > 0) w += pw; else miss++; });
+  dv.forEach(d => { const pw = devPower(d); if (pw > 0) w += pw; else miss++; });
   const cap = V * (+l.amps || 0) * n, pct = cap > 0 ? w / cap * 100 : null;
-  let status = !g.length ? 'free' : pct === null ? 'unk' : pct > 100 ? 'over' : pct >= (+st.elWarnPct || 80) ? 'warn' : 'ok';
+  let status = !g.length && !dv.length ? 'free' : pct === null ? 'unk' : pct > 100 ? 'over' : pct >= (+st.elWarnPct || 80) ? 'warn' : 'ok';
   if (status === 'ok' && miss) status = 'part';
-  return { g, w, miss, cap, pct, status, amps: w / V / n };
+  return { g, dv, w, miss, cap, pct, status, amps: w / V / n };
 }
 function boardLoad(b) {
   const V = +state.d.lieu.settings.volts || 230, ph = { L1: 0, L2: 0, L3: 0 }, ls = state.d.lieu.lines.filter(l => l.board === b.name);
@@ -2590,8 +2596,8 @@ function renderElec() {
   }).join('');
   const lRows = sortedLines().map(l => {
     const R = lineLoad(l), w = Math.min(100, Math.max(0, R.pct ?? 0));
-    const ids = [...R.g].sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => f.fid || '?').join(', ');
-    const gauge = R.g.length && R.pct !== null ? `<span class="gauge ${R.status}"><i style="width:${w}%"></i></span>${Math.round(R.pct)} %` : '';
+    const ids = lineWho(R).join(', ');
+    const gauge = (R.g.length || R.dv.length) && R.pct !== null ? `<span class="gauge ${R.status}"><i style="width:${w}%"></i></span>${Math.round(R.pct)} %` : '';
     return `<tr><td>${inL(l, 'name', l.name, 5.5)}</td>
 <td><select class="c" data-l="${esc(l.id)}" data-lf="board"><option value=""></option>${opt(boardNames, l.board)}</select></td>
 <td><select class="c" data-l="${esc(l.id)}" data-lf="kind">${opt(['grada', 'direct'], l.kind, v => t('k' + v))}</select></td>
@@ -2877,7 +2883,7 @@ function renderNetSyno() {
     const ty0 = by + (n.kind === 'splitter' || n.kind === 'console' ? 3 : 0), L1 = lineBox(ty0 + 21, 13), L2 = lineBox(ty0 + 36, 10.5), L3 = lineBox(ty0 + 50, 10.5);
     const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
     const l2p = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), n.kind === 'merger' ? t('mg_' + (n.d.merge || 'htp')) : '', n.d && n.d.model ? n.d.model : m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean);
-    let l3 = [n.d.ip || (n.virtual ? t('nsNoIp') : ''), n.vlan ? 'VLAN ' + n.vlan : ''].filter(Boolean).join(' · '), l2 = l2p.join(' · '), l3m = true;
+    let l3 = [n.d.ip || (n.virtual ? t('nsNoIp') : ''), n.vlan ? 'VLAN ' + n.vlan : '', n.d.line ? '⚡' + n.d.line : ''].filter(Boolean).join(' · '), l2 = l2p.join(' · '), l3m = true;
     // deuxième ligne trop longue (noms de ports à sa hauteur) et troisième vide : la suite passe en troisième ligne
     if (!l3 && l2p.length > 1 && fit(l2, L2.w, 10.5 * .95) !== l2) {
       let k = 1; while (k < l2p.length - 1 && fit(l2p.slice(0, k + 1).join(' · '), L2.w, 10.5 * .95) === l2p.slice(0, k + 1).join(' · ')) k++;
@@ -3086,7 +3092,7 @@ function renderSyno() {
 <g font-size="10.5" class="mut"><text x="96" y="86">${x(t('lnName'))}</text><text x="196" y="86">${x(t('lnPhase'))}</text><text x="250" y="86">${x(t('lnAmps'))}</text><text x="318" y="86">${x(t('lnKind'))}</text><text x="380" y="86">${x(t('lnDimmer'))} / DMX</text><text x="560" y="86">${x(t('lnDest'))}</text><text x="740" y="86">${x(t('lnFix'))}</text><text x="${W - 20}" y="86" text-anchor="end">W</text></g>`;
       part.forEach((l, i) => {
         const y = 80 + i * RH + RH / 2 + 6, R = lineLoad(l), col = l.phase === 'tri' ? '#555' : (PHC[l.phase] || '#555');
-        const ids = R.g.map(f => f.fid || '?').sort((a, b2) => cmpKey(numKey(a), numKey(b2)));
+        const ids = lineWho(R);
         const idTxt = ids.length > 10 ? ids.slice(0, 10).join(' ') + ' …+' + (ids.length - 10) : ids.join(' ');
         g += `<line class="wire" x1="60" y1="${y}" x2="78" y2="${y}" stroke-width="2"/>
 <rect x="78" y="${y - 6}" width="12" height="12" fill="none" stroke="${col}" stroke-width="2"/><line x1="78" y1="${y + 6}" x2="90" y2="${y - 6}" stroke="${col}" stroke-width="1.5"/>
@@ -3175,7 +3181,7 @@ function renderElecLabels() {
     out += `<h2 class="bd noprint">${esc(b.name)}</h2><div class="labs">`;
     if (b.id) out += `<div class="lab board"><div class="n">${esc(b.name)}<small>${esc(supply)}</small></div><div class="l3">${esc(b.location || '')}</div><div class="l4">${esc(t('lines'))} : ${esc([...ls].sort((a, c) => natCmp(a.name, c.name)).map(l => l.name).join(' '))}</div></div>`;
     for (const l of [...ls].sort((a, c) => natCmp(a.name, c.name))) {
-      const R = lineLoad(l), ids = R.g.map(f => f.fid || '?').sort((a, c) => cmpKey(numKey(a), numKey(c)));
+      const R = lineLoad(l), ids = lineWho(R);
       out += `<div class="lab"><div class="n">${esc(l.name)}<small><span class="ph ${esc(l.phase)}">${esc(l.phase === 'tri' ? '3P' : l.phase || '')}</span> ${esc(l.amps ? l.amps + ' A' : '')}</small></div>
 <div class="l2">${esc(t('k' + (l.kind || 'direct')))}${l.dimmer ? ' · ' + esc(l.dimmer) : ''}${l.dmx ? ' · DMX ' + esc(l.dmx) : ''}</div>
 <div class="l3">→ ${esc(l.dest || '')}</div><div class="l4">${esc(ids.join(' '))}</div></div>`;
@@ -3374,6 +3380,14 @@ function portMaps() {
   }
   return out.length ? `<h2 class="sec" style="margin-top:22px">${x(t('pmTitle'))}</h2><div class="pmwrap">${out.join('')}</div>` : '';
 }
+// ligne électrique d'un appareil : liste des lignes, rangées par tableau
+function devLineSel(d) {
+  const L = state.d.lieu, x = esc, by = new Map();
+  [...L.lines].sort((a, b) => natCmp(a.name, b.name)).forEach(l => { const k = l.board || '—'; if (!by.has(k)) by.set(k, []); by.get(k).push(l); });
+  const o = [...by].map(([b, ls]) => `<optgroup label="${x(b)}">${ls.map(l => `<option value="${x(l.name)}"${l.name === d.line ? ' selected' : ''}>${x(l.name + (l.phase ? ' · ' + (l.phase === 'tri' ? '3P' : l.phase) : '') + (l.dest ? ' → ' + l.dest : ''))}</option>`).join('')}</optgroup>`).join('');
+  const stale = d.line && !L.lines.some(l => l.name === d.line) ? `<option value="${x(d.line)}" selected>${x(d.line)} ?</option>` : '';
+  return `<select class="c" data-o="devices" data-id="${x(d.id)}" data-f="line"><option value=""></option>${stale}${o}</select>`;
+}
 // fiche d'un appareil : réglages, nombre de ports, et chaque port avec son câble
 function devSheet(d, P) {
   const L = state.d.lieu, x = esc, m = devModel(d), c = P.c, isCon = d.kind === 'console', con = isCon && L.consoles.find(k => k.device === d.name);
@@ -3398,7 +3412,8 @@ function devSheet(d, P) {
   const heads = ['ptPort', 'ptName', 'ptUniv', ...(d.kind === 'switch' ? ['ptVlan'] : []), 'ptTo'];
   return `<div class="dvsheet"><div class="cgrid">${fld('dvMask', inp('mask', d.mask, 8).replace('value=""', `value="" placeholder="${x(L.settings.mask || '')}"`))}${fld('dvMac', inp('mac', d.mac, 9))}
 ${d.kind === 'merger' ? fld('dvMerge', `<select class="c" data-o="devices" data-id="${x(d.id)}" data-f="merge">${opts(['htp', 'ltp', 'backup'], d.merge || 'htp', v => t('mg_' + v))}</select>`) : ''}
-<label class="cf"><span>${x(t('dvPoe'))}</span><span><input type="checkbox" data-o="devices" data-id="${x(d.id)}" data-f="poe"${d.poe ? ' checked' : ''}> ${x(t('dvPoeNeed'))}</span></label>${fld('dvNotes', inp('notes', d.notes, 14))}</div>
+<label class="cf"><span>${x(t('dvPoe'))}</span><span><input type="checkbox" data-o="devices" data-id="${x(d.id)}" data-f="poe"${d.poe ? ' checked' : ''}> ${x(t('dvPoeNeed'))}</span></label>
+${fld('dvLine', devLineSel(d))}${fld('dvPower', `<input class="c box" data-o="devices" data-id="${x(d.id)}" data-f="power" inputmode="decimal" style="width:5em" value="${x(d.power ?? '')}" placeholder="${x(m && m.power ? m.power : 'W')}">`)}${fld('dvNotes', inp('notes', d.notes, 14))}</div>
 <div class="cgrid">${counts}</div>${d.kind === 'splitter' ? `<p class="hint2" style="margin:0 0 6px">${x(t('dvSplitHint'))}</p>` : ''}
 ${P.list.length ? `<table class="grid ptab"><thead><tr>${heads.map(k => `<th class="nosort">${x(t(k))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table><p class="hint2" style="margin:6px 0 0">${x(t('dvLinksHint'))} <button type="button" class="linkbtn" data-nv="dmx">${x(t('nvDmx'))} →</button></p>` : `<p class="hint2">${x(t('dvNoPorts'))}</p>`}</div>`;
 }
@@ -3498,13 +3513,13 @@ ${dev && +c.dmxPorts > 0 ? `<div class="protos"><span style="color:var(--muted)"
 <td>${inp('devices', d, 'name', d.name, 9)}</td><td>${sel('devices', d, 'kind', opt(DEV_KINDS, d.kind, v => t('k' + v)))}</td>
 <td>${d.kind === 'console' ? (() => { const c = L.consoles.find(c2 => c2.device === d.name), cm = c && conModel(c); return `<button type="button" class="linkbtn" data-nv="console" title="${esc(t('dvConModel'))}">${esc(cm ? cm[1] || t('mOther') : t('dvConModel'))}</button>`; })() : sel('devices', d, 'model', '<option value=""></option>' + opt([...new Set([...L.models.filter(m => !m.kind || m.kind === d.kind || m.name === d.model).map(m => m.name).sort(natCmp), d.model].filter(Boolean))], d.model))}</td>
 <td>${inp('devices', d, 'ip', d.ip, 8, 0, pb.some(m => m.startsWith('ip')) ? 'ipbad' : '')}${pb.filter(m => m.startsWith('ip')).map(m => `<br><span class="missing" style="font-size:11px">${esc(t(m))}</span>`).join('')}</td>
-<td>${inp('devices', d, 'location', d.location, 9)}</td><td class="lks">${conn || `<span class="mut">${esc(t('dvNoConn'))}</span>`}${msgs ? '<br>' + msgs : ''}</td>
+<td>${inp('devices', d, 'location', d.location, 9)}</td><td>${devLineSel(d)}</td><td class="lks">${conn || `<span class="mut">${esc(t('dvNoConn'))}</span>`}${msgs ? '<br>' + msgs : ''}</td>
 <td class="noprint">${conLinked ? `<span class="mut" title="${esc(t('dvConLinked'))}">🎛</span>` : `<button type="button" class="minibtn x" data-deldev="${esc(d.id)}">×</button>`}</td></tr>`
-        + (isOpen ? `<tr class="devsheet"><td></td><td colspan="7">${devSheet(d, P)}</td></tr>` : '');
+        + (isOpen ? `<tr class="devsheet"><td></td><td colspan="8">${devSheet(d, P)}</td></tr>` : '');
     }).join('');
     body = title('nvNet') + `<p class="hint noprint" style="margin:12px 0 0">${esc(t('netHint'))}</p>` + setRow +
       `<h2 class="sec" style="margin-top:6px">${esc(t('nvNet'))} <button type="button" class="minibtn noprint" id="addDev" style="margin-inline-start:8px">${esc(t('addDev'))}</button>${L.devices.length ? `<button type="button" class="minibtn noprint" id="devAll" style="margin-inline-start:6px">${esc(t(open.size ? 'dvCloseAll' : 'dvOpenAll'))}</button>` : ''}</h2>
-<div class="gridwrap"><table class="grid dvtab"><thead><tr><th class="nosort noprint"></th>${['dvName', 'dvKind', 'dvModel', 'dvIp', 'dvLoc', 'dvConn'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>` + portMaps();
+<div class="gridwrap"><table class="grid dvtab"><thead><tr><th class="nosort noprint"></th>${['dvName', 'dvKind', 'dvModel', 'dvIp', 'dvLoc', 'dvLine', 'dvConn'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${rows}</tbody></table></div>` + portMaps();
   } else if (nv === 'models') {
     const num = (m, f) => inp('models', m, f, m[f], 3.2, 1);
     const rows = L.models.map(m => {
@@ -4400,7 +4415,7 @@ function dossierPages() {
   // électricité
   if (S.elec && (L.boards.length || L.lines.length)) {
     const bRows = L.boards.map(b => { const R = boardLoad(b); return `<tr>${td(b.name, 'b')}${td(t(b.supply === 'tri' ? 'sTri' : 'sMono'))}${td(b.amps ? b.amps + ' A' : '', 'n')}${td(b.location)}${td(R.ls.length, 'n')}${td(R.w ? fmtNum(R.w) + ' W' : '', 'n')}${td(b.supply === 'mono' ? fmtNum(R.A.L1 + R.A.L2 + R.A.L3) : ['L1', 'L2', 'L3'].map(k => fmtNum(R.A[k])).join(' · '), 'n' + (R.over ? ' bad' : ''))}${td(R.imb === null ? '' : Math.round(R.imb) + ' %', 'n')}${td(b.notes, 'w')}</tr>`; });
-    const lRows = sortedLines().map(l => { const R = lineLoad(l), stc = { over: 'bad', warn: 'warn', part: 'warn', ok: 'ok' }[R.status] || ''; return `<tr>${td(l.name, 'b')}${td(l.board)}${td(t('k' + (l.kind || 'direct')))}${td(l.phase === 'tri' ? t('sTri') : l.phase)}${td(l.amps ? l.amps + ' A' : '', 'n')}${td(l.dest)}${td(l.dimmer)}${td(l.dmx)}${td(R.g.map(f => f.fid || '?').sort((a, b) => cmpKey(numKey(a), numKey(b))).join(', '), 'w')}${td(R.w ? fmtNum(R.w) : '', 'n')}${td(R.g.length && R.pct !== null ? Math.round(R.pct) + ' %' : '', 'n ' + stc)}</tr>`; });
+    const lRows = sortedLines().map(l => { const R = lineLoad(l), stc = { over: 'bad', warn: 'warn', part: 'warn', ok: 'ok' }[R.status] || ''; return `<tr>${td(l.name, 'b')}${td(l.board)}${td(t('k' + (l.kind || 'direct')))}${td(l.phase === 'tri' ? t('sTri') : l.phase)}${td(l.amps ? l.amps + ' A' : '', 'n')}${td(l.dest)}${td(l.dimmer)}${td(l.dmx)}${td(lineWho(R).join(', '), 'w')}${td(R.w ? fmtNum(R.w) : '', 'n')}${td((R.g.length || R.dv.length) && R.pct !== null ? Math.round(R.pct) + ' %' : '', 'n ' + stc)}</tr>`; });
     sec('elec', `<div class="dpage"><h2>${esc(t('dElecTitle'))}</h2><h3>${esc(t('dBoards'))}</h3>${dtab([t('bdName'), t('bdSupply'), t('bdAmps'), t('bdLoc'), t('bdLines'), t('bdPower'), t('bdPhases'), t('bdImb'), t('bdNotes')], bRows)}
 <h3>${esc(t('dLines'))}</h3>${dtab([t('lnName'), t('lnBoard'), t('lnKind'), t('lnPhase'), t('lnAmps'), t('lnDest'), t('lnDimmer'), t('lnDmx'), t('lnFix'), t('lnPower'), t('lnLoad')], lRows)}</div>`);
   }
@@ -5541,7 +5556,7 @@ view.addEventListener('change', e => {
       const n = parseFloat(v.replace(',', '.')); x[k] = v === '' ? null : isNaN(n) || n < 0 ? x[k] : n;
     } else if (k === 'protocols') {
       const set = new Set(x.protocols || []); if (go.checked) set.add(go.dataset.v); else set.delete(go.dataset.v); x.protocols = CON_PROTOS.map(p => p[0]).filter(p => set.has(p));
-    } else if (['universe', 'port', 'length', 'vlan', 'params', 'extCount', 'extParams', 'universes', 'dmxPorts', 'dmxIn', 'ethPorts', 'ap', 'bp', 'destPort'].includes(k)) {
+    } else if (['universe', 'port', 'length', 'vlan', 'params', 'extCount', 'extParams', 'universes', 'dmxPorts', 'dmxIn', 'ethPorts', 'ap', 'bp', 'destPort'].includes(k) || (go.dataset.o === 'devices' && k === 'power')) {
       const n = parseFloat(v.replace(',', '.')); x[k] = v === '' ? null : isNaN(n) ? x[k] : n;
     } else x[k] = v;
     if (go.dataset.o === 'consoles' && k === 'model') {     // modèle choisi : paramètres et protocoles proposés
@@ -5571,7 +5586,7 @@ view.addEventListener('change', e => {
   if (lf) {
     const l = state.d.lieu.lines.find(x => x.id === lf.dataset.l); if (!l) return;
     const k = lf.dataset.lf, v = lf.value.trim();
-    if (k === 'name') { if (v && v !== l.name && !state.d.lieu.lines.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.circuit === l.name) f.circuit = v; }); l.name = v; } }
+    if (k === 'name') { if (v && v !== l.name && !state.d.lieu.lines.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.circuit === l.name) f.circuit = v; }); state.d.lieu.devices.forEach(d => { if (d.line === l.name) d.line = v; }); l.name = v; } }
     else if (k === 'amps') { const n = parseFloat(v.replace(',', '.')); l.amps = v === '' ? null : isNaN(n) ? l.amps : n; }
     else l[k] = v;
     if (l.kind === 'grada' && l.phase === 'tri') l.phase = 'L1';   // une ligne graduée est monophasée
@@ -5734,7 +5749,7 @@ view.addEventListener('click', async e => {
   }
   if (b.dataset.dell) {
     const x = state.d.lieu.lines.find(y => y.id === b.dataset.dell);
-    if (x && confirm(t('delLineAsk', x.name))) { state.d.lieu.lines = state.d.lieu.lines.filter(y => y !== x); touch(); render(); }
+    if (x && confirm(t('delLineAsk', x.name))) { state.d.lieu.lines = state.d.lieu.lines.filter(y => y !== x); state.d.lieu.devices.forEach(d => { if (d.line === x.name) d.line = ''; }); touch(); render(); }
     return;
   }
   if (b.id === 'srCreate') {
