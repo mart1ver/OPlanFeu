@@ -736,3 +736,41 @@ test('synoptique réseau : colonnes fixes (consoles, switches, nodes, splitters 
   const tag = await page.evaluate(() => { const t2 = [...document.querySelectorAll('#view .nsyn .ptag')].find(e => e.textContent === 'sortie 2'); const b = [...document.querySelectorAll('#view .nsyn g')].find(g => g.querySelector('text') && g.querySelector('text').textContent === 'Node 1').querySelector('.box').getBBox(); const tb = t2.getBBox(); return tb.x >= b.x && tb.x + tb.width <= b.x + b.width + 1; });
   expect(tag).toBe(true);
 });
+
+test('synoptique réseau : modifier, relier et supprimer des liaisons', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [],
+      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch', ports: { eth: 8 } }, { id: 'v1', name: 'Node 1', kind: 'node', ports: { eth: 2, out: 4 } }, { id: 'v2', name: 'Node 2', kind: 'node', ports: { eth: 2, out: 4 } },
+        { id: 'c', name: 'MA3', kind: 'console', ports: { eth: 2 } }],
+      netLinks: [{ id: 'n1', kind: 'eth', name: 'C1', a: 'SW1', ap: 1, b: 'Node 1', bp: 1 }] };
+  });
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=net]');
+  const box = page.locator('#view details[data-cfg="syno:net:edit"]');
+  await expect(box).toHaveAttribute('open', '');
+  // clic sur un câble : il est sélectionné et ses champs s'ouvrent
+  await page.locator('#view .nsyn .lkhit[data-lk="netLinks:n1"]').click({ force: true });
+  await expect(page.locator('#view .nsyn path.lksel')).toHaveCount(1);
+  await box.locator('[data-o=netLinks][data-f=length]').fill('25');
+  await box.locator('[data-o=netLinks][data-f=length]').press('Tab');
+  expect(await page.evaluate(() => state.d.lieu.netLinks[0].length)).toBe(25);
+  await expect(page.locator('#view .nsyn')).toContainText('25 m');
+  // relier la console au switch en Ethernet : deux clics, premiers ports libres
+  await box.locator('[data-synmode=eth]').click();
+  await page.locator('#view .nsyn [data-sdev="MA3"]').click();
+  await expect(box).toContainText('départ : MA3');
+  await page.locator('#view .nsyn [data-sdev="SW1"]').click();
+  expect(await page.evaluate(() => state.d.lieu.netLinks.map(l => [l.a, l.ap, l.b, l.bp]))).toEqual([['SW1', 1, 'Node 1', 1], ['MA3', 1, 'SW1', 2]]);
+  // une ligne DMX du node 2 vers une position
+  await box.locator('[data-synmode=dmx]').click();
+  await page.locator('#view .nsyn [data-sdev="Node 2"]').click();
+  await box.locator('#synToPos').selectOption('P3 Face');
+  expect(await page.evaluate(() => state.d.lieu.dmxLines.map(l => [l.name, l.src, l.port, l.dest]))).toEqual([['DMX A', 'Node 1', 1, 'P1 Lointain'], ['DMX 2', 'Node 2', 1, 'P3 Face']]);
+  await expect(page.locator('#view .nsyn [data-spos="P3 Face"]')).toHaveCount(1);
+  await expect(box.locator('[data-o=dmxLines][data-f=name]')).toHaveValue('DMX 2');
+  // supprimer la liaison sélectionnée (la dernière créée)
+  const n = await page.evaluate(() => state.d.lieu.netLinks.length + state.d.lieu.dmxLines.length);
+  await box.locator('#synDel').click();
+  expect(await page.evaluate(() => state.d.lieu.netLinks.length + state.d.lieu.dmxLines.length)).toBe(n - 1);
+});

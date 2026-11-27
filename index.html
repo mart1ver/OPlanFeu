@@ -396,6 +396,13 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .cfg .grp { margin: 2px 0 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
 .cfg .dhide { display: flex; gap: 6px; align-items: center; } .cfg .dhide input { width: 220px; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 .cfg .chips { margin-top: 6px; max-width: 760px; }
+.syn .lkhit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
+.syn .lksel { filter: drop-shadow(0 0 3px rgba(232, 160, 32, .9)); }
+.synlink .nsyn [data-sdev], .synlink .nsyn [data-spos] { cursor: crosshair; } .synlink .nsyn [data-sdev]:hover .box, .synlink .nsyn [data-spos]:hover .box { stroke: var(--accent) !important; stroke-width: 3; }
+.nsyn .synfrom .box { stroke: var(--accent) !important; stroke-width: 3.5; }
+.cfg .seedit { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; margin-top: 8px; } .cfg .sef { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); }
+.cfg .sef select, .cfg .sef input { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; }
+.cfg .selab { font-size: 12px; } .cfg .sestep { font-size: 12px; color: var(--accent); font-weight: 600; }
 .cfgbar > .cfgtools { margin: 0 0 0 auto; align-self: flex-start; padding: 4px 0; } .cfgbar > .cfgtools > span { margin: 0 !important; }
 .cfg .cartedit { margin: 0; background: none; border: 0; padding: 0; } .cfg .cartedit .cgrid { margin: 6px 0 0; }
 .cfg .cfgrow input:not([type]), .cfg .cfgrow input[inputmode] { width: 6em; font: inherit; font-size: 13px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); }
@@ -834,7 +841,7 @@ const I18N = {
     maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
     maWarnLib: n => `${n} type(s) sans fichier de librairie : à importer à la main au numéro indiqué avant de lancer le plugin.`, maWarnId: n => `${n} projecteur(s) sans Fix ID ni Channel ID numérique : laissés de côté.`, maWarnUnp: n => `${n} projecteur(s) sans adresse : créés sans patch.`, maWarnAll: 'Les presets se font sur le groupe « Tous » : cochez-le.',
     maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show vide (NewShow) ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Importer le plugin dans une case vide du pool, pas la case 1 (un show neuf y a le plugin de démonstration de MA) : cd Plugin, puis Import "oplanfeu_…" At 2, puis cd /.', 'Lancer : Plugin 2. Dans un show vide, il ne demande rien ; le détail est dans le System Monitor et dans importexport/oplanfeu_log.txt (onPC).', 'Si un fixture type est introuvable, le plugin s’arrête sans rien créer et donne des noms proches de la librairie (System Monitor, et importexport/oplanfeu_log.txt sur l’onPC) : corriger le nom ici, retélécharger, relancer.'],
-    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbPage: 'Mise en page', sbViews: 'Vues', setBox: 'Réglages et aide', helpBox: 'Aide', labDocBox: 'Langue et regroupement', plDraw: 'Dessin', plFixBox: 'Projecteurs affichés', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
+    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbPage: 'Mise en page', sbViews: 'Vues', seTitle: 'Liaisons', seConnect: 'Relier deux appareils :', seLink_eth: 'Ethernet', seLink_fiber: 'Fibre', seLink_dmx: 'DMX', seStep1: 'cliquez l’appareil de départ (Échap pour annuler)', seStep2: a => `départ : ${a} — cliquez l’appareil ou la position d’arrivée`, seHint: 'Cliquez sur un câble du synoptique pour le modifier ou le supprimer. Pour en ajouter un, choisissez son type puis cliquez les deux appareils : il prend leurs premiers ports libres.', seDel: 'Supprimer la liaison', seToPos: 'ou vers la position', seDesel: 'Désélectionner', setBox: 'Réglages et aide', helpBox: 'Aide', labDocBox: 'Langue et regroupement', plDraw: 'Dessin', plFixBox: 'Projecteurs affichés', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
     sbHint: 'Feuille de patch à imprimer, en A3 ou A4, paysage ou portrait. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
     sbCartHint: 'Le cartouche (titre, lieu, date, responsable, lignes de notes) et la langue des feuilles se règlent dans le dossier complet.',
@@ -982,7 +989,7 @@ const I18N = {
     maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
     maWarnLib: n => `${n} type(s) without library file: import them by hand at the given number before running the plugin.`, maWarnId: n => `${n} fixture(s) without a numeric Fix ID or Channel ID: skipped.`, maWarnUnp: n => `${n} fixture(s) without address: created unpatched.`, maWarnAll: 'Presets are stored on the “All” group: tick it.',
     maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open an empty show (NewShow); if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Import the plugin into an empty pool cell, not cell 1 (a new show holds MA’s demo plugin there): cd Plugin, then Import "oplanfeu_…" At 2, then cd /.', 'Run: Plugin 2. In an empty show it asks nothing; details are in the System Monitor and importexport/oplanfeu_log.txt (onPC).', 'If a fixture type is not found, the plugin stops without creating anything and lists close library names (System Monitor, and importexport/oplanfeu_log.txt on onPC): fix the name here, download again, run again.'],
-    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbPage: 'Page layout', sbViews: 'Views', setBox: 'Settings and help', helpBox: 'Help', labDocBox: 'Language and grouping', plDraw: 'Drawing', plFixBox: 'Shown fixtures', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
+    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbPage: 'Page layout', sbViews: 'Views', seTitle: 'Links', seConnect: 'Connect two devices:', seLink_eth: 'Ethernet', seLink_fiber: 'Fibre', seLink_dmx: 'DMX', seStep1: 'click the start device (Esc to cancel)', seStep2: a => `from: ${a} — click the device or position to connect`, seHint: 'Click a cable in the diagram to edit or delete it. To add one, pick its type then click the two devices: it takes their first free ports.', seDel: 'Delete link', seToPos: 'or to the position', seDesel: 'Deselect', setBox: 'Settings and help', helpBox: 'Help', labDocBox: 'Language and grouping', plDraw: 'Drawing', plFixBox: 'Shown fixtures', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
     sbHint: 'Printable patch sheet, A3 or A4, landscape or portrait. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
     sbCartHint: 'The title block (title, venue, date, person in charge, note lines) and the sheet language are set in the full dossier.',
@@ -2751,7 +2758,10 @@ function renderNetSyno() {
   }
   const X = n => PAD + n.dep * CW, hOf = n => n.bh || (n.t === 'pos' ? PH : BH), Y = n => n.bt ?? TOP + n.y + (BH - hOf(n)) / 2, CY = n => TOP + n.y + BH / 2;
   const fit = (s2, w, fs = 10) => { const m = Math.floor(w / (fs * .56)); return s2.length > m ? s2.slice(0, m - 1) + '…' : s2; };
-  const style = e => e.k === 'dmx' ? `stroke="${ucol(e.l.universe)}" stroke-width="2.6"` : e.k === 'fiber' ? 'stroke="#7a5cc8" stroke-width="2"' : 'stroke="var(--ink)" stroke-width="1.5"';
+  // câble cliquable (édition dans la vue Synoptiques) : identifiant de la liaison, et trait épaissi s'il est sélectionné
+  const lkId = e => e.l && e.l.id ? (e.k === 'dmx' ? 'dmxLines:' : 'netLinks:') + e.l.id : '';
+  const style = e => { const id = lkId(e), on = id && state.synSel === id, w = (e.k === 'dmx' ? 2.6 : e.k === 'fiber' ? 2 : 1.5) * (on ? 2.2 : 1);
+    return `stroke="${e.k === 'dmx' ? ucol(e.l.universe) : e.k === 'fiber' ? '#7a5cc8' : 'var(--ink)'}" stroke-width="${w}"${id ? ` data-lk="${esc(id)}"` : ''}${on ? ' class="lksel"' : ''}`; };
   // texte d'un câble : au-dessus (ports, nom de ligne) et au-dessous (univers, VLAN, longueur) du dernier tronçon
   const label = (e, xa, xb, y) => { const w = xb - xa, cx = (xa + xb) / 2;
     return `<text x="${cx}" y="${y - 5}" font-size="10" text-anchor="middle" font-weight="${e.k === 'dmx' ? 700 : 400}"${e.k === 'dmx' ? ` style="fill:${ucol(e.l.universe)}"` : ' class="mut"'}>${x(fit(e.top, w))}</text>`
@@ -2837,7 +2847,7 @@ function renderNetSyno() {
     const bx = X(n), by = Y(n), h = hOf(n), bad = (n.d && n.d.id && iss.has(n.d.id)) || (n.l && iss.has(n.l.id));
     if (n.t === 'pos') {
       const col = ucol(n.l.universe);
-      boxes += `<g${bad ? ' class="bad"' : ''}><rect class="box pos${n.noDest ? ' loose' : ''}" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="${h / 2}"/><circle cx="${bx + 14}" cy="${by + h / 2}" r="4.5" fill="${col}"/>
+      boxes += `<g class="${bad ? 'bad' : ''}${state.synFrom === n.name ? ' synfrom' : ''}" data-spos="${x(n.name)}"><rect class="box pos${n.noDest ? ' loose' : ''}" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="${h / 2}"/><circle cx="${bx + 14}" cy="${by + h / 2}" r="4.5" fill="${col}"/>
 <text x="${bx + 26}" y="${by + 16}" font-size="12" font-weight="700">${x(fit(n.name, BW - 34))}</text><text x="${bx + 26}" y="${by + 30}" font-size="10" class="mut">${x(n.n ? t('nsFx', n.n) : t('nsFx0'))}</text></g>`;
       continue;
     }
@@ -2860,7 +2870,7 @@ function renderNetSyno() {
     }
     const stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'merger' ? '#b5651d' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
     const loose = n.virtual || (!n.parent && !ethNames.has(n.name) && n.kind !== 'switch' && L.devices.some(d => d.kind === 'switch') && !ins.has(n));
-    boxes += `<g${bad ? ' class="bad"' : ''}>${devShape(n.kind, bx, by, BW, h, 'box' + (loose ? ' loose' : '') + ' k-' + (n.kind || 'other'), stripe)}
+    boxes += `<g class="${bad ? 'bad' : ''}${state.synFrom === n.name ? ' synfrom' : ''}"${n.virtual ? '' : ` data-sdev="${x(n.name)}"`}>${devShape(n.kind, bx, by, BW, h, 'box' + (loose ? ' loose' : '') + ' k-' + (n.kind || 'other'), stripe)}
 <text x="${L1.x}" y="${ty0 + 21}" font-size="13" font-weight="700">${x(fit(n.name, L1.w, 13 * .8))}</text>
 <text x="${L2.x}" y="${ty0 + 36}" font-size="10.5" class="mut">${x(fit(l2, L2.w, 10.5 * .95))}</text><text x="${L3.x}" y="${ty0 + 50}" font-size="10.5"${l3m ? ` style="font-family:'IBM Plex Mono',monospace"` : ' class="mut"'}>${x(fit(l3, L3.w, 10.5 * (l3m ? 1.1 : .95)))}</text></g>`;
     const tcol = e => e.k === 'dmx' ? ` style="fill:${ucol(e.l.universe)}"` : '';
@@ -2881,7 +2891,7 @@ function renderNetSyno() {
 <g font-size="10.5" class="mut">${lgs}</g>`;
   return `<h1 class="ptitle">${x(t('nsTitle'))} — ${x(state.d.meta.titre || '')} — ${x(state.d.meta.date || '')}</h1>
 <p class="hint noprint" style="margin:12px 0 0">${x(t('nsHint'))}</p>
-<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${boxes}${ports}${labels}</svg></div>`;
+<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${[...edges.matchAll(/<path d="([^"]+)"[^>]*data-lk="([^"]+)"/g)].map(m => `<path d="${m[1]}" class="lkhit noprint" data-lk="${m[2]}"/>`).join('')}${boxes}${ports}${labels}</svg></div>`;
 }
 const SYN_VIEWS = ['elec', 'net'];
 // orientation de la page de chaque synoptique (impression et dossier complet), gardée dans le dossier
@@ -2893,9 +2903,94 @@ function renderSynoView() {
 ${cfgBar(cfgBox('syno:' + sv + ':page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label></div>`, 'A4 · ' + t('or_' + or)))}
 <div class="plopts noprint"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  $('#view').innerHTML = head + `<div class="synwrap${or === 'portrait' ? ' port' : ''}">${sv === 'elec' ? renderSyno() : renderNetSyno()}</div>`;
+  const ed = sv === 'net' ? synEditor() : null;
+  $('#view').innerHTML = head.replace('<div class="cfgbar noprint">', '<div class="cfgbar noprint">' + (ed ? cfgBox('syno:net:edit', t('seTitle'), ed.html, ed.sum, true) : ''))
+    + `<div class="synwrap${or === 'portrait' ? ' port' : ''}${ed && state.synMode ? ' synlink' : ''}">${sv === 'elec' ? renderSyno() : renderNetSyno()}</div>`;
   $('#pagesize').textContent = or === 'portrait' ? '@page { size: A4 portrait; margin: 12mm; } .syn svg { max-height: 265mm !important; }' : '';
 }
+// ───────────── édition du synoptique réseau / DMX : câble sélectionné, relier deux appareils, supprimer ─────────────
+const synLinkOf = id => { const [c, i] = String(id || '').split(':'); const l = c && state.d && (state.d.lieu[c] || []).find(y => y.id === i); return l ? { coll: c, l } : null; };
+function synEditor() {
+  const L = state.d.lieu, x = esc, links = allLinks(), M = state.synMode || '';
+  const opt = (vals, cur, lab) => vals.map(v => `<option value="${x(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${x(lab ? lab(v) : v)}</option>`).join('');
+  const inp = (o, l, f, v, w, num) => `<input class="c box" data-o="${o}" data-id="${x(l.id)}" data-f="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${v === null || v === undefined ? '' : x(v)}">`;
+  const sel = (o, l, f, inner) => `<select class="c" data-o="${o}" data-id="${x(l.id)}" data-f="${f}">${inner}</select>`;
+  const portSel = (o, l, f, devName, dir) => {
+    const dv = devByName(devName), Q = dv ? devPortList(dv, links).list.filter(q => q.dir === dir) : [], cur = l[f];
+    const os = Q.map(q => [q.n, portLabel(dv, q.key) + (q.use.some(u => u.x.l !== l) ? ' — ' + q.use.filter(u => u.x.l !== l).map(u => u.other || '?').join(', ') : '')]);
+    if (isSet(cur) && !Q.some(q => q.n === +cur)) os.push([cur, String(cur)]);
+    return `<select class="c" data-o="${o}" data-id="${x(l.id)}" data-f="${f}"><option value=""></option>${os.map(([v, lab]) => `<option value="${x(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${x(lab)}</option>`).join('')}</select>`;
+  };
+  const devNames = L.devices.map(d => d.name).sort(natCmp), posNames = L.points.map(p2 => p2.name).sort(natCmp);
+  const fld = (lab, html) => `<label class="sef"><span>${x(t(lab))}</span>${html}</label>`;
+  const modes = `<span class="seg">${['eth', 'fiber', 'dmx'].map(k => `<button type="button" data-synmode="${k}"${M === k ? ' class="on"' : ''}>${x(t('seLink_' + k))}</button>`).join('')}</span>`;
+  const step = M ? `<span class="sestep">${x(state.synFrom ? t('seStep2', state.synFrom) : t('seStep1'))}</span>${M === 'dmx' && state.synFrom && posNames.length ? `<label class="sef" style="flex-direction:row;align-items:center;gap:6px">${x(t('seToPos'))} <select id="synToPos"><option value=""></option>${opt(posNames)}</select></label>` : ''}` : '';
+  let edit = `<p class="hint2">${x(t('seHint'))}</p>`, sum = String(L.netLinks.length + L.dmxLines.length);
+  const S = synLinkOf(state.synSel);
+  if (S && S.coll === 'netLinks') {
+    const l = S.l, ds = opt([...new Set([...devNames, l.a, l.b].filter(Boolean))].sort(natCmp));
+    edit = `<div class="seedit">${fld('lkRef', inp('netLinks', l, 'name', l.name, 8))}${fld('lkKind', sel('netLinks', l, 'kind', opt(['eth', 'fiber'], l.kind || 'eth', v => t('lk_' + v))))}
+${fld('lkFrom', sel('netLinks', l, 'a', '<option value=""></option>' + ds.replace(`value="${x(l.a)}"`, `value="${x(l.a)}" selected`)))}${fld('dlPort', portSel('netLinks', l, 'ap', l.a, 'eth'))}
+${fld('lkTo', sel('netLinks', l, 'b', '<option value=""></option>' + ds.replace(`value="${x(l.b)}"`, `value="${x(l.b)}" selected`)))}${fld('dlPort', portSel('netLinks', l, 'bp', l.b, 'eth'))}
+${fld('dlLen', inp('netLinks', l, 'length', l.length, 4, 1))}${fld('dlNotes', inp('netLinks', l, 'notes', l.notes, 10))}
+<button type="button" class="minibtn x" id="synDel">${x(t('seDel'))}</button><button type="button" class="linkbtn" id="synDesel">${x(t('seDesel'))}</button></div>`;
+    sum = [l.name, l.a && l.b ? l.a + ' → ' + l.b : ''].filter(Boolean).join(' · ');
+  } else if (S) {
+    const l = S.l, srcs = L.devices.filter(d => devCounts(d).out > 0 || ['console', 'node', 'merger', 'splitter'].includes(d.kind)).map(d => d.name).sort(natCmp);
+    const dIn = L.devices.filter(d => devCounts(d).in > 0 || ['merger', 'splitter'].includes(d.kind)).map(d => d.name).sort(natCmp);
+    const dest = '<option value=""></option>' + `<optgroup label="${x(t('dlDestPts'))}">${opt(posNames, l.dest)}</optgroup>` + (dIn.length ? `<optgroup label="${x(t('dlDestDev'))}">${opt(dIn, l.dest)}</optgroup>` : '') + (l.dest && !posNames.includes(l.dest) && !dIn.includes(l.dest) ? opt([l.dest], l.dest) : '');
+    edit = `<div class="seedit">${fld('dlName', inp('dmxLines', l, 'name', l.name, 8))}${fld('lkKind', sel('dmxLines', l, 'conn', opt(['5', '3'], l.conn || '5', v => t('lk_dmx' + v))))}
+${fld('lkFrom', sel('dmxLines', l, 'src', '<option value=""></option>' + opt([...new Set([...srcs, l.src].filter(Boolean))], l.src)))}${fld('dlPort', portSel('dmxLines', l, 'port', l.src, 'out'))}
+${fld('lkTo', sel('dmxLines', l, 'dest', dest))}${devByName(l.dest) ? fld('dlPort', portSel('dmxLines', l, 'destPort', l.dest, 'in')) : ''}
+${fld('dlU', inp('dmxLines', l, 'universe', l.universe, 3.5, 1))}${fld('dlLen', inp('dmxLines', l, 'length', l.length, 4, 1))}${fld('dlNotes', inp('dmxLines', l, 'notes', l.notes, 10))}
+<button type="button" class="minibtn x" id="synDel">${x(t('seDel'))}</button><button type="button" class="linkbtn" id="synDesel">${x(t('seDesel'))}</button></div>`;
+    sum = [l.name, l.src && l.dest ? l.src + ' → ' + l.dest : ''].filter(Boolean).join(' · ');
+  }
+  return { sum, html: `<div class="cfgrow"><b class="selab">${x(t('seConnect'))}</b>${modes}${step}</div>${edit}` };
+}
+// premier port libre d'un appareil dans un sens (eth, out, in)
+const freePort = (dv, dir) => { if (!dv) return null; const q = devPortList(dv, allLinks()).list.find(q2 => q2.dir === dir && !q2.use.length); return q ? q.n : null; };
+function synConnect(a, b, isPos) {
+  const L = state.d.lieu, M = state.synMode, A = devByName(a), B = isPos ? null : devByName(b);
+  if (!A || (!B && !isPos) || a === b) return;
+  if (M === 'dmx') {
+    let i = L.dmxLines.length + 1, n; do n = 'DMX ' + i++; while (L.dmxLines.some(y => y.name === n));
+    const port = freePort(A, 'out'), u = port && A.portUniv ? A.portUniv['o' + port] : null;
+    const l = { id: uid(), name: n, src: a, port, universe: isSet(u) ? u : null, dest: b, destPort: B ? freePort(B, 'in') : null, length: null, notes: '' };
+    L.dmxLines.push(l); syncUniverses(L); syncDmxFixtures(); state.synSel = 'dmxLines:' + l.id;
+  } else {
+    if (isPos) return;
+    const l = { id: uid(), kind: M === 'fiber' ? 'fiber' : 'eth', name: '', a, ap: freePort(A, 'eth'), b, bp: freePort(B, 'eth'), length: null, notes: '' };
+    L.netLinks.push(l); state.synSel = 'netLinks:' + l.id;
+  }
+  state.synFrom = null; state.synMode = null; touch(); render();
+}
+document.getElementById('view').addEventListener('click', e => {
+  if (!state.d || state.tab !== 'syno') return;
+  const m = e.target.closest('[data-synmode]');
+  if (m) { state.synMode = state.synMode === m.dataset.synmode ? null : m.dataset.synmode; state.synFrom = null; state.synSel = null; render(); return; }
+  if (e.target.id === 'synDesel') { state.synSel = null; render(); return; }
+  if (e.target.id === 'synDel') {
+    const S = synLinkOf(state.synSel); if (!S) return;
+    if (S.coll === 'dmxLines' && !confirm(t('delDmxAsk', S.l.name))) return;
+    state.d.lieu[S.coll] = state.d.lieu[S.coll].filter(y => y !== S.l); if (S.coll === 'dmxLines') { syncUniverses(state.d.lieu); syncDmxFixtures(); }
+    state.synSel = null; touch(); render(); return;
+  }
+  const g = e.target.closest('[data-sdev], [data-spos]');
+  if (g && state.synMode) {
+    const name = g.dataset.sdev || g.dataset.spos, isPos = !g.dataset.sdev;
+    if (!state.synFrom) { if (isPos) return; state.synFrom = name; render(); return; }
+    return synConnect(state.synFrom, name, isPos);
+  }
+  const lk = e.target.closest('[data-lk]');
+  if (lk) { state.synSel = state.synSel === lk.dataset.lk ? null : lk.dataset.lk; state.synMode = null; state.synFrom = null; render(); return; }
+});
+document.getElementById('view').addEventListener('change', e => { if (e.target.id === 'synToPos' && e.target.value && state.synFrom) synConnect(state.synFrom, e.target.value, true); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || !state.d || state.tab !== 'syno' || !(state.synMode || state.synSel)) return;
+  if (e.target.closest && e.target.closest('input, select, textarea')) return;
+  state.synMode = null; state.synFrom = null; state.synSel = null; render();
+});
 document.getElementById('view').addEventListener('change', e => {
   const k = e.target.dataset && e.target.dataset.synor; if (!k || !state.d) return;
   const S = state.d.lieu.settings; S.synOrient = { ...(S.synOrient || {}), [k]: e.target.value === 'portrait' ? 'portrait' : 'landscape' };
