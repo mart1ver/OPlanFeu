@@ -774,3 +774,43 @@ test('synoptique réseau : modifier, relier et supprimer des liaisons', async ({
   await box.locator('#synDel').click();
   expect(await page.evaluate(() => state.d.lieu.netLinks.length + state.d.lieu.dmxLines.length)).toBe(n - 1);
 });
+
+test('synoptique réseau : modifier un appareil au clic, déplacer boîtes et câbles en glissant', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [], consoles: [], dmxLines: [],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch', ports: { eth: 8 } }, { id: 'v1', name: 'Node 1', kind: 'node', ports: { eth: 2, out: 4 } }, { id: 'v2', name: 'Node 2', kind: 'node', ports: { eth: 2, out: 4 } }],
+      netLinks: [{ id: 'n1', kind: 'eth', name: 'C1', a: 'SW1', ap: 1, b: 'Node 1', bp: 1 }, { id: 'n2', kind: 'eth', name: 'C2', a: 'SW1', ap: 2, b: 'Node 2', bp: 1 }] };
+  });
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=net]');
+  const box = page.locator('#view details[data-cfg="syno:net:edit"]');
+  // clic sur un appareil : ses réglages et sa fiche de ports
+  await page.locator('#view .nsyn [data-sdev="Node 1"]').click();
+  await expect(box.locator('[data-o=devices][data-f=name]')).toHaveValue('Node 1');
+  await box.locator('[data-o=devices][data-f=ip]').fill('2.0.0.11');
+  await box.locator('[data-o=devices][data-f=ip]').press('Tab');
+  expect(await page.evaluate(() => state.d.lieu.devices.find(d => d.id === 'v1').ip)).toBe('2.0.0.11');
+  await expect(page.locator('#view .nsyn')).toContainText('2.0.0.11');
+  await expect(box.locator('[data-pname]').first()).toBeVisible();
+  // glisser une boîte : décalage gardé dans le dossier
+  const g = page.locator('#view .nsyn [data-sdev="Node 2"] .box');
+  const b0 = await g.boundingBox();
+  await page.mouse.move(b0.x + 40, b0.y + 20); await page.mouse.down(); await page.mouse.move(b0.x + 90, b0.y + 80, { steps: 5 }); await page.mouse.up();
+  const offs = await page.evaluate(() => state.d.lieu.settings.synOff);
+  expect(Object.keys(offs)).toEqual(['d:v2']);
+  expect(offs['d:v2'].dy).toBeGreaterThan(20);
+  const b1 = await page.locator('#view .nsyn [data-sdev="Node 2"] .box').boundingBox();
+  expect(b1.y).toBeGreaterThan(b0.y + 20);
+  // glisser un câble : son tronçon vertical se déplace
+  const hit = page.locator('#view .nsyn .lkhit[data-lk="netLinks:n2"]');
+  const d0 = await hit.getAttribute('d'), m = d0.match(/H([\d.]+) V/);
+  const sv = await page.locator('#view .nsyn svg').boundingBox(), vb = await page.evaluate(() => document.querySelector('#view .nsyn svg').viewBox.baseVal.width);
+  const k = sv.width / vb, y1 = +d0.match(/^M[\d.]+ ([\d.]+)/)[1], y2 = +d0.match(/V([\d.]+)/)[1];
+  const px = sv.x + +m[1] * k, py = sv.y + ((y1 + y2) / 2) * k;
+  await page.mouse.move(px, py); await page.mouse.down(); await page.mouse.move(px + 60, py, { steps: 5 }); await page.mouse.up();
+  const r = await page.evaluate(() => state.d.lieu.settings.synRoute);
+  expect(r['netLinks:n2']).toBeGreaterThan(30);
+  // tout remettre en place
+  await box.locator('#synAuto').click();
+  expect(await page.evaluate(() => [state.d.lieu.settings.synOff, state.d.lieu.settings.synRoute])).toEqual([undefined, undefined]);
+});
