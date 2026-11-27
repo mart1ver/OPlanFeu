@@ -2680,7 +2680,7 @@ function renderNetSyno() {
     }
   }
   const roots = N.filter(n => !n.parent).sort((a, b) => isConN(b) - isConN(a) || (b.kids.length > 0) - (a.kids.length > 0) || rank(a) - rank(b) || natCmp(a.name, b.name));
-  const CW = 350, BW = 200, BH = 50, PH = 36, RH = 64, PAD = 18, TOP = 76, GAP = CW - BW;
+  const CW = 350, BW = 200, BH = 60, PH = 38, RH = 74, PAD = 18, TOP = 76, GAP = CW - BW;
   let row = 0, maxD = 0;
   const place = n => {
     const dep = n.dep = colOf(n); maxD = Math.max(maxD, dep); n.kids.sort(cmp);
@@ -2697,9 +2697,37 @@ function renderNetSyno() {
   N.forEach(n => {
     if (n.y === undefined || !n.kids.length) return;
     const ks = n.kids.filter(k => k.y !== undefined && !k.side); if (!ks.length) return;
-    const cys = ks.map(k => TOP + k.y + BH / 2), a = Math.min(...cys) - 16, b = Math.max(...cys) + 16;
+    const cys = ks.map(k => TOP + k.y + BH / 2), a = Math.min(...cys) - 18, b = Math.max(...cys) + 18;
     if (b - a > BH) { n.bt = a; n.bh = b - a; }
   });
+  // boîte qui reçoit plusieurs câbles hors de l'arbre (merger…) : assez haute pour les ranger de part et d'autre du milieu
+  const depY = new Map();
+  {
+    const cy0 = n => TOP + n.y + BH / 2, cnt = new Map();
+    for (const q of extra) {
+      if (!q.a || !q.b || q.a.y === undefined || q.b.y === undefined) continue;
+      const [s0, b0] = q.b.dep < q.a.dep && q.e.k !== 'dmx' ? [q.b, q.a] : [q.a, q.b];
+      const c = cnt.get(b0) || { up: 0, dn: 0 }; if (cy0(s0) < cy0(b0)) c.up++; else c.dn++; cnt.set(b0, c);
+    }
+    // départs de ces câbles : sous les départs de l'arbre (ou au milieu d'un appareil sans autre câble), 13 px d'écart,
+    // et la boîte agrandie pour les garder loin du bord
+    const outs = new Map();
+    for (const q of extra) {
+      if (!q.a || !q.b || q.a.y === undefined || q.b.y === undefined) continue;
+      const s0 = q.b.dep < q.a.dep && q.e.k !== 'dmx' ? q.b : q.a;
+      if (!outs.has(s0)) outs.set(s0, []); outs.get(s0).push(q);
+    }
+    for (const [s0, list] of outs) {
+      const ks = s0.kids.filter(k => !k.side && k.y !== undefined), y0 = ks.length ? Math.max(...ks.map(cy0)) + 13 : cy0(s0);
+      list.forEach((q, j) => { depY.set(q.e.l, y0 + j * 13); });
+      const top = s0.bt ?? cy0(s0) - BH / 2, bot = Math.max(top + (s0.bh || BH), y0 + (list.length - 1) * 13 + 14);
+      if (bot - top > (s0.bh || BH)) { s0.bt = top; s0.bh = bot - top; }
+    }
+    for (const [b0, c] of cnt) {
+      const cy = cy0(b0), top = Math.min(b0.bt ?? cy - BH / 2, cy - (c.up * 11 + 12)), bot = Math.max((b0.bt ?? cy - BH / 2) + (b0.bh || BH), cy + c.dn * 11 + 12);
+      if (bot - top > (b0.bh || BH)) { b0.bt = top; b0.bh = bot - top; }
+    }
+  }
   const X = n => PAD + n.dep * CW, hOf = n => n.bh || (n.t === 'pos' ? PH : BH), Y = n => n.bt ?? TOP + n.y + (BH - hOf(n)) / 2, CY = n => TOP + n.y + BH / 2;
   const fit = (s2, w, fs = 10) => { const m = Math.floor(w / (fs * .56)); return s2.length > m ? s2.slice(0, m - 1) + '…' : s2; };
   const style = e => e.k === 'dmx' ? `stroke="${ucol(e.l.universe)}" stroke-width="2.6"` : e.k === 'fiber' ? 'stroke="#7a5cc8" stroke-width="2"' : 'stroke="var(--ink)" stroke-width="1.5"';
@@ -2716,27 +2744,39 @@ function renderNetSyno() {
     if (!n.parent || !n.edge) continue;
     const p = n.parent, e = n.edge;
     if (n.side) {   // même colonne, juste dessous : trait vertical sur la droite des deux boîtes
-      const x1 = X(p) + BW, y1 = Y(p) + hOf(p) - 10, y2 = CY(n), xs = x1 + 14;
+      const x1 = X(p) + BW, y1 = Y(p) + hOf(p) - 14, y2 = CY(n), xs = x1 + 14;
       edges += `<path d="M${x1} ${y1} H${xs} V${y2} H${x1}" fill="none" ${style(e)}/>` + dot(x1, y1, e) + dot(x1, y2, e);
       labels += `<text x="${xs + 5}" y="${(y1 + y2) / 2 + 3}" font-size="9.5"${e.k === 'dmx' ? ` style="fill:${ucol(e.l.universe)}" font-weight="700"` : ' class="mut"'}>${x(fit([e.top, e.sub].filter(Boolean).join(' · '), GAP - 30, 9.5))}</text>`;
       tag(p, 'R', y1, e, e.pa); tag(n, 'R', y2, e, e.pb);
     } else {   // départ sur le bord de l'appareil, à la hauteur de l'appareil branché (dans la boîte, étirée s'il le faut)
-      const x1 = X(p) + BW, x2 = X(n), y2 = CY(n), y1 = Math.min(Math.max(y2, Y(p) + 10), Y(p) + hOf(p) - 10);
+      const x1 = X(p) + BW, x2 = X(n), y2 = CY(n), y1 = Math.min(Math.max(y2, Y(p) + 12), Y(p) + hOf(p) - 14);
       edges += (y1 === y2 ? `<path d="M${x1} ${y2} H${x2}" fill="none" ${style(e)}/>` : `<path d="M${x1} ${y1} H${x1 + 14} V${y2} H${x2}" fill="none" ${style(e)}/>`) + dot(x1, y1, e) + (n.t === 'dev' ? dot(x2, y2, e) : '');
       labels += label(e, x1 + 6, x2 - 4, y2);
       tag(p, 'R', y1, e, e.pa); tag(n, 'L', y2, e, e.pb);
     }
   }
   // câbles hors de l'arbre : autres entrées d'un merger, double attache Ethernet ; arrivée sur le bord gauche de la boîte, un peu décalée
-  const slot = new Map();
+  // arrivées de ces câbles rangées sans croisement : au-dessus de l'arrivée principale pour ceux qui viennent d'en haut,
+  // au-dessous pour ceux qui viennent d'en bas, dans l'ordre de hauteur de leur départ
+  const XQ = [];
   for (let q of extra) {
     if (!q.a || !q.b || q.a.dep === undefined || q.b.dep === undefined) continue;
     if (q.b.dep < q.a.dep && q.e.k !== 'dmx') {   // câble vers un appareil plus à gauche (une 2e console) : tracé depuis lui
       const l = q.e.l, fwd = byName.get(l.a) === q.b;
       q = { a: q.b, b: q.a, e: ethEdge(q.b, q.a, fwd ? l.ap : l.bp, fwd ? l.bp : l.ap, l) };
     }
-    const k = (slot.get(q.b) || 0) + 1; slot.set(q.b, k);
-    const x1 = X(q.a) + BW, y1 = q.a.kids.length ? Y(q.a) + hOf(q.a) - 6 : CY(q.a), x2 = X(q.b), y2 = Math.min(Y(q.b) + hOf(q.b) - 6, CY(q.b) + k * 11);   // sous l'arrivée principale, au milieu de la boîte
+    XQ.push({ ...q, y1: depY.get(q.e.l) ?? (q.a.kids.length ? Y(q.a) + hOf(q.a) - 14 : CY(q.a)) });
+  }
+  const byB = new Map(); XQ.forEach(q => { if (!byB.has(q.b)) byB.set(q.b, []); byB.get(q.b).push(q); });
+  for (const [b, list] of byB) {
+    const c = CY(b), lo = Y(b) + 12, hi = Y(b) + hOf(b) - 14;
+    const up = list.filter(q => q.y1 < c).sort((p, q) => q.y1 - p.y1), dn = list.filter(q => q.y1 >= c).sort((p, q) => p.y1 - q.y1);
+    // le plus proche arrive le plus près du milieu, et son tronçon vertical est le plus à gauche : pas de croisement
+    up.forEach((q, i) => { q.y2 = Math.max(lo, c - (i + 1) * 11); q.k = up.length - i; });
+    dn.forEach((q, i) => { q.y2 = Math.min(hi, c + (i + 1) * 11); q.k = dn.length - i; });
+  }
+  for (const q of XQ) {
+    const k = q.k, x1 = X(q.a) + BW, y1 = q.y1, x2 = X(q.b), y2 = q.y2, xv = x2 - 22 - (k - 1) * 7;
     if (q.a.dep === q.b.dep) {   // même colonne : trait vertical sur la droite de la colonne
       const xs = x1 + 12 + (k - 1) * 6, yb = CY(q.b);
       edges += `<path d="M${x1} ${y1} H${xs} V${yb} H${x1}" fill="none" ${style(q.e)}/>` + dot(x1, y1, q.e) + dot(x1, yb, q.e);
@@ -2744,7 +2784,7 @@ function renderNetSyno() {
       tag(q.a, 'R', y1, q.e, q.e.pa); tag(q.b, 'R', yb, q.e, q.e.pb);
       continue;
     }
-    const d = x2 - x1 > 40 ? `M${x1} ${y1} H${x2 - 22} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 10} V${Math.min(Y(q.a), Y(q.b)) - 10} H${x2 - 22} V${y2} H${x2}`;
+    const d = x2 - x1 > 40 ? `M${x1} ${y1} H${xv} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 10} V${Math.min(Y(q.a), Y(q.b)) - 10} H${xv} V${y2} H${x2}`;
     edges += `<path d="${d}" fill="none" ${style(q.e)} stroke-dasharray="${q.e.k === 'dmx' ? '7 3' : '3 3'}" opacity=".85"/>` + dot(x1, y1, q.e) + dot(x2, y2, q.e);
     // nom du câble au départ (après le bus de l'appareil), pour ne pas s'empiler à l'arrivée
     const lw = Math.max(110, Math.min(GAP - 26, x2 - x1 - 40)), lx = x1 + 20;
@@ -2761,7 +2801,7 @@ function renderNetSyno() {
     if (kind === 'switch') return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="1"/><rect x="${bx}" y="${b - Math.min(6, h / 3)}" width="${w}" height="${Math.min(6, h / 3)}" fill="${col}"/>${[...Array(Math.max(0, Math.floor((w - 8) / 14)))].map((_, i) => `<rect x="${bx + 8 + i * 14}" y="${b - 4.5}" width="8" height="3" fill="var(--bg)"/>`).join('')}`;
     if (kind === 'node') return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="${Math.min(16, h / 2)}"/>`;
     if (kind === 'splitter' || kind === 'merger') {
-      const i = Math.min(10, h / 5), [li, ri] = kind === 'splitter' ? [i, 0] : [0, i];
+      const i = Math.min(8, h / 6), [li, ri] = kind === 'splitter' ? [i, 0] : [0, i];
       return `<path class="${cls}" ${sw} d="M${bx} ${by + li} L${r} ${by + ri} V${b - ri} L${bx} ${b - li} Z"/>`;
     }
     return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${h}" rx="2" fill="${col}"/>`;
@@ -2777,7 +2817,7 @@ function renderNetSyno() {
     if (n.t === 'pos') {
       const col = ucol(n.l.universe);
       boxes += `<g${bad ? ' class="bad"' : ''}><rect class="box pos${n.noDest ? ' loose' : ''}" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="${h / 2}"/><circle cx="${bx + 14}" cy="${by + h / 2}" r="4.5" fill="${col}"/>
-<text x="${bx + 26}" y="${by + 15}" font-size="12" font-weight="700">${x(fit(n.name, BW - 34))}</text><text x="${bx + 26}" y="${by + 28}" font-size="10" class="mut">${x(n.n ? t('nsFx', n.n) : t('nsFx0'))}</text></g>`;
+<text x="${bx + 26}" y="${by + 16}" font-size="12" font-weight="700">${x(fit(n.name, BW - 34))}</text><text x="${bx + 26}" y="${by + 30}" font-size="10" class="mut">${x(n.n ? t('nsFx', n.n) : t('nsFx0'))}</text></g>`;
       continue;
     }
     // textes de la boîte décalés pour laisser la place aux noms de ports qui tombent à leur hauteur
@@ -2787,8 +2827,8 @@ function renderNetSyno() {
     // pour chaque ligne de texte (ligne de base yb, taille fs) : retrait à gauche et réserve à droite des noms de ports à sa hauteur
     const lineBox = (yb, fs) => { const hit = tg => tg.y - 4 < yb + 2 && tg.y + 6 > yb - fs * .85;
       const iL = Math.min(70, Math.max(0, ...tl.filter(hit).map(tg => tagW(tg.s)))), rR = Math.min(70, Math.max(0, ...tr.filter(hit).map(tg => tagW(tg.s))));
-      return { x: bx + 13 + (iL ? iL + 4 : 0), w: BW - 20 - (iL ? iL + 4 : 0) - (rR ? rR + 6 : 0) }; };
-    const L1 = lineBox(by + 17, 13), L2 = lineBox(by + 31, 10.5), L3 = lineBox(by + 44, 10.5);
+      return { x: bx + 15 + (iL ? iL + 6 : 0), w: BW - 26 - (iL ? iL + 6 : 0) - (rR ? rR + 8 : 0) }; };
+    const ty0 = by + (n.kind === 'splitter' || n.kind === 'console' ? 3 : 0), L1 = lineBox(ty0 + 21, 13), L2 = lineBox(ty0 + 36, 10.5), L3 = lineBox(ty0 + 50, 10.5);
     const c0 = (n.cons || [])[0], m = c0 && conModel(c0);
     const l2p = [t('k' + (n.kind === 'src' ? 'other' : n.kind)), n.kind === 'merger' ? t('mg_' + (n.d.merge || 'htp')) : '', n.d && n.d.model ? n.d.model : m ? m[1] : '', n.cons && n.cons.length && c0.name !== n.name ? c0.name : ''].filter(Boolean);
     let l3 = [n.d.ip || (n.virtual ? t('nsNoIp') : ''), n.vlan ? 'VLAN ' + n.vlan : ''].filter(Boolean).join(' · '), l2 = l2p.join(' · '), l3m = true;
@@ -2800,11 +2840,11 @@ function renderNetSyno() {
     const stripe = n.kind === 'switch' ? 'var(--ink)' : n.kind === 'console' ? 'var(--accent)' : n.kind === 'merger' ? '#b5651d' : n.kind === 'node' || n.kind === 'splitter' ? '#3b7bd4' : '#9a9a9a';
     const loose = n.virtual || (!n.parent && !ethNames.has(n.name) && n.kind !== 'switch' && L.devices.some(d => d.kind === 'switch') && !ins.has(n));
     boxes += `<g${bad ? ' class="bad"' : ''}>${devShape(n.kind, bx, by, BW, h, 'box' + (loose ? ' loose' : '') + ' k-' + (n.kind || 'other'), stripe)}
-<text x="${L1.x}" y="${by + 17}" font-size="13" font-weight="700">${x(fit(n.name, L1.w, 13 * .8))}</text>
-<text x="${L2.x}" y="${by + 31}" font-size="10.5" class="mut">${x(fit(l2, L2.w, 10.5 * .95))}</text><text x="${L3.x}" y="${by + 44}" font-size="10.5"${l3m ? ` style="font-family:'IBM Plex Mono',monospace"` : ' class="mut"'}>${x(fit(l3, L3.w, 10.5 * (l3m ? 1.1 : .95)))}</text></g>`;
+<text x="${L1.x}" y="${ty0 + 21}" font-size="13" font-weight="700">${x(fit(n.name, L1.w, 13 * .8))}</text>
+<text x="${L2.x}" y="${ty0 + 36}" font-size="10.5" class="mut">${x(fit(l2, L2.w, 10.5 * .95))}</text><text x="${L3.x}" y="${ty0 + 50}" font-size="10.5"${l3m ? ` style="font-family:'IBM Plex Mono',monospace"` : ' class="mut"'}>${x(fit(l3, L3.w, 10.5 * (l3m ? 1.1 : .95)))}</text></g>`;
     const tcol = e => e.k === 'dmx' ? ` style="fill:${ucol(e.l.universe)}"` : '';
-    ports += tl.map(tg => `<text class="ptag" x="${bx + 9}" y="${tg.y + 3.5}" font-size="9.5" font-weight="600"${tcol(tg.e)}>${x(fitTag(tg, 70))}</text>`).join('')
-      + tr.map(tg => `<text class="ptag" x="${bx + BW - 6}" y="${tg.y + 3.5}" font-size="9.5" font-weight="600" text-anchor="end"${tcol(tg.e)}>${x(fitTag(tg, 70))}</text>`).join('');
+    ports += tl.map(tg => `<text class="ptag" x="${bx + 11}" y="${tg.y + 3.5}" font-size="9.5" font-weight="600"${tcol(tg.e)}>${x(fitTag(tg, 70))}</text>`).join('')
+      + tr.map(tg => `<text class="ptag" x="${bx + BW - 9}" y="${tg.y + 3.5}" font-size="9.5" font-weight="600" text-anchor="end"${tcol(tg.e)}>${x(fitTag(tg, 70))}</text>`).join('');
   }
   // légende alignée à droite, chaque entrée à la largeur de son texte
   const LGI = [['stroke="var(--ink)" stroke-width="1.5"', 'Ethernet'], ['stroke="#7a5cc8" stroke-width="2"', t('lk_fiber')], ['stroke="#4363d8" stroke-width="2.6"', t('nsDmxLeg')], ['stroke="#888" stroke-width="1.5" stroke-dasharray="3 3"', t('nsExtra')]];
