@@ -814,3 +814,14 @@ test('synoptique réseau : modifier un appareil au clic, déplacer boîtes et c�
   await box.locator('#synAuto').click();
   expect(await page.evaluate(() => [state.d.lieu.settings.synOff, state.d.lieu.settings.synRoute])).toEqual([undefined, undefined]);
 });
+
+test('synoptiques : la page à l’écran suit l’orientation choisie', async ({ page }) => {
+  await loadSynthetic(page, d => { d.lieu = { points: [], boards: [], lines: [], consoles: [], dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }], devices: [{ id: 'v1', name: 'Node 1', kind: 'node' }], netLinks: [] }; });
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=net]');
+  const ratio = () => page.locator('#view .synwrap > .syn').evaluate(el => { const r = el.getBoundingClientRect(); return r.height / r.width; });
+  expect(await ratio()).toBeCloseTo(210 / 297, 1);
+  await page.click('#view details[data-cfg="syno:net:page"] > summary');
+  await page.selectOption('#view select[data-synor=net]', 'portrait');
+  expect(await ratio()).toBeCloseTo(297 / 210, 1);
+});

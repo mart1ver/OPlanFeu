@@ -396,6 +396,14 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .cfg .grp { margin: 2px 0 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
 .cfg .dhide { display: flex; gap: 6px; align-items: center; } .cfg .dhide input { width: 220px; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 .cfg .chips { margin-top: 6px; max-width: 760px; }
+/* vue Synoptiques : chaque schéma dans une page à l'écran (A4 paysage ou portrait), comme à l'impression */
+@media screen {
+  .synwrap { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 4px 0 30px; }
+  .synwrap > .hint, .synwrap > p, .synwrap > h1, .synwrap > h2 { align-self: stretch; }
+  .synwrap > .syn { margin: 0; width: min(100%, 1180px); aspect-ratio: 297 / 210; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,.12); padding: 12px; display: flex; align-items: flex-start; justify-content: center; }
+  .synwrap.port > .syn { width: min(100%, 720px); aspect-ratio: 210 / 297; }
+  .synwrap > .syn svg { width: 100%; height: 100%; border: 0; border-radius: 0; }
+}
 .syn .lkhit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
 .syn .lksel { filter: drop-shadow(0 0 3px rgba(232, 160, 32, .9)); }
 .synlink .nsyn [data-sdev], .synlink .nsyn [data-spos] { cursor: crosshair; } .synlink .nsyn [data-sdev]:hover .box, .synlink .nsyn [data-spos]:hover .box { stroke: var(--accent) !important; stroke-width: 3; }
@@ -2898,7 +2906,7 @@ function renderNetSyno() {
 <g font-size="10.5" class="mut">${lgs}</g>`;
   return `<h1 class="ptitle">${x(t('nsTitle'))} — ${x(state.d.meta.titre || '')} — ${x(state.d.meta.date || '')}</h1>
 <p class="hint noprint" style="margin:12px 0 0">${x(t('nsHint'))}</p>
-<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${[...edges.matchAll(/<path d="([^"]+)"[^>]*data-lk="([^"]+)"/g)].map(m => `<path d="${m[1]}" class="lkhit noprint" data-lk="${m[2]}"/>`).join('')}${boxes}${ports}${labels}</svg></div>`;
+<div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" preserveAspectRatio="xMidYMin meet" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${[...edges.matchAll(/<path d="([^"]+)"[^>]*data-lk="([^"]+)"/g)].map(m => `<path d="${m[1]}" class="lkhit noprint" data-lk="${m[2]}"/>`).join('')}${boxes}${ports}${labels}</svg></div>`;
 }
 const SYN_VIEWS = ['elec', 'net'];
 // orientation de la page de chaque synoptique (impression et dossier complet), gardée dans le dossier
@@ -3094,7 +3102,7 @@ function renderSyno() {
         const ph = b.supply === 'mono' ? `${fmtNum(BL.A.L1 + BL.A.L2 + BL.A.L3)} A` : ['L1', 'L2', 'L3'].map(k => `${k} ${fmtNum(BL.A[k])} A`).join('   ');
         g += `<text x="98" y="${yb}" font-size="12.5" font-weight="700">${x(t('synTotal'))} : ${x(fmtNum(BL.w))} W   —   ${x(ph)}${BL.imb !== null ? '   —   ' + x(t('bdImb')) + ' ' + Math.round(BL.imb) + ' %' : ''}</text>`;
       }
-      out += `<div class="syn"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${x(b.name)}">${g}</svg></div>`;
+      out += `<div class="syn"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin meet" role="img" aria-label="${x(b.name)}">${g}</svg></div>`;
     }
   }
   return out;
