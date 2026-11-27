@@ -112,3 +112,45 @@ test('numéroter les noms d’une sélection, dans l’ordre du tableau', async 
   await page.click('#bRename');
   expect(await page.evaluate(() => ['101', '102', '103'].map(id => state.d.fixtures.find(x => x.fid === id).name))).toEqual(['Spot 01', 'Spot 02', 'Spot 03']);
 });
+
+test('portrait ou paysage par vue : feuille de patch et plan, gardé dans le dossier complet', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#view [data-pv=sheet]');
+  await page.evaluate(() => { window.prompt = () => 'Patch portrait'; });
+  await page.click('#view [data-svnew]');
+  await page.selectOption('#view select[data-dopt=fmt]', 'A4');
+  await page.selectOption('#view select[data-dopt=orient]', 'portrait');
+  const sheet = page.locator('#docPages .sheet').first();
+  await expect(sheet).toHaveClass(/A4 port/);
+  const box = await sheet.evaluate(el => { const r = el.getBoundingClientRect(); return r.height / r.width; });
+  expect(box).toBeCloseTo(297 / 210, 1);
+  await expect(page.locator('#docInfo')).toContainText('A4 portrait');
+  expect(await page.evaluate(() => state.d.views.find(x => x.name === 'Patch portrait').settings.orient)).toBe('portrait');
+  // A4 portrait : une seule colonne de patch par page
+  expect(await page.locator('#docPages .sheet .cols').first().evaluate(el => el.children.length)).toBe(1);
+  // retour à une vue de départ : paysage
+  await page.click('#view [data-svbase=full]');
+  await expect(page.locator('#docPages .sheet').first()).not.toHaveClass(/port/);
+  // vue du plan en portrait
+  await page.click('#tabs button[data-v=plan]');
+  await page.evaluate(() => { window.prompt = () => 'Plan portrait'; });
+  await page.click('#view [data-pvnew]');
+  await page.selectOption('[data-pl=orient]', 'portrait');
+  await expect.poll(() => page.evaluate(() => state.d.views.find(x => x.name === 'Plan portrait').settings.orient)).toBe('portrait');
+  // dossier complet : les deux vues gardent leur orientation (page nommée « port »)
+  await page.click('#tabs button[data-v=dossier]');
+  await expect(page.locator('#dosPages .sheet.port')).not.toHaveCount(0);
+  await expect(page.locator('#dosPages .plansheet.port')).toHaveCount(1);
+  const pw = await page.locator('#dosPages .plansheet.port svg').getAttribute('width');
+  expect(pw).toBe('210mm');
+  expect(await page.evaluate(() => $('#pagesize').textContent)).toContain('@page port { size: A4 portrait');
+});
+
+test('export MVR depuis la vue Shows (plus dans le dossier complet)', async ({ page }) => {
+  await loadSynthetic(page);
+  await page.click('#tabs button[data-v=shows]');
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#view [data-sh=mvr]')]);
+  expect(dl.suggestedFilename()).toMatch(/\.mvr$/);
+  await page.click('#tabs button[data-v=dossier]');
+  await expect(page.locator('#dosMvr')).toHaveCount(0);
+});

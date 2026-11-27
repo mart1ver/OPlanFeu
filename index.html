@@ -275,6 +275,8 @@ input.ipbad { color: var(--err) !important; font-weight: 600; }
 }
 .sheet.A3 { width: 420mm; height: 297mm; }
 .sheet.A4 { width: 297mm; height: 210mm; }
+.sheet.A3.port { width: 297mm; height: 420mm; }
+.sheet.A4.port { width: 210mm; height: 297mm; }
 /* planches d'étiquettes (A3 portrait) */
 .sheet.A3P { width: 297mm; height: 420mm; padding: 10mm; }
 .sheet.LSH { padding: 0; }
@@ -483,6 +485,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
   #dosPages .dpage.cover, #dosPages .dpage.full, #dosPages .sheet, #dosPages .plansheet, #dosPages .phead { break-before: page; break-after: auto; }
   #dosPages .dpage.full { width: 297mm; height: 210mm; padding: 12mm; overflow: hidden; }
   #dosPages .dpage.cover { width: 297mm; height: 210mm; padding: 18mm 20mm; overflow: hidden; }
+  #dosPages .port { page: port; }   /* vue en portrait au milieu du dossier en paysage */
   .dwrap .sp { height: 12mm; }
 }
 .plansheet { background: #fff; box-shadow: 0 2px 18px rgba(0,0,0,.18); flex: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -777,13 +780,13 @@ const I18N = {
     mapReplace: 'Réimporter ce fichier avec ces colonnes ? Les modifications faites depuis l’import seront perdues.',
     pvw_table: 'Tableau', pvw_sheet: 'Feuille de patch', nvSheet: 'Feuille de patch', nvFxlabels: 'Étiquettes projecteurs', nvDiff: 'Changements',
     hideRow: 'Cliquer pour masquer ce projecteur sur les documents', annPh: 'annotation…', doOptions: 'Réglages des documents', doPlang: 'Langue des documents imprimés', doGroup: 'Regrouper par', gLayer: 'Calque', gPosition: 'Position', gwLayer: 'calque', gwPos: 'position',
-    doFormat: 'Format papier (paysage)', fmtA3: 'A3 · 3 colonnes', fmtA4: 'A4 · 2 colonnes', doNote: 'Cartouche (texte libre)', line: n => `Ligne ${n}`, doHeadHint: 'Titre et sous-titre : ceux du dossier (Titre, Lieu / salle).',
+    doFormat: 'Format papier', fmtA3: 'A3', fmtA4: 'A4', doNote: 'Cartouche (texte libre)', line: n => `Ligne ${n}`, doHeadHint: 'Titre et sous-titre : ceux du dossier (Titre, Lieu / salle).',
     doContent: 'Contenu', optSumG: g => `Récap. par ${g}`, optSumPos: 'Récap. par position', optPos: 'Patch par position', optSumUniv: 'Récap. par univers', optSumType: 'Récap. par type de projecteur', optG: g => `Patch par ${g}`, optUniv: 'Patch par univers', optMap: "Plan d'occupation des univers", optHide: 'Masquer les non patchés', optExport: "Afficher la date d'export du fichier",     legHidden: 'Projecteurs masqués sur les documents', hidePh: 'Fix ID ou nom…', hideBtn: 'Masquer', hideHint: "Ou cliquer sur une ligne de l'aperçu pour la masquer.", unhideAll: 'Tout réafficher', notFound: 'Aucun projecteur ne correspond.',
     legLabels: 'Format des étiquettes', lbCutGrp: 'A3 à découper (scotch)', lbAdhGrp: 'Planches adhésives A4', lbCustom: 'Autre planche (dimensions à saisir)…', cuPage: 'Papier', cuCols: 'Colonnes', cuRows: 'Lignes', cuW: 'Largeur étiquette (mm)', cuH: 'Hauteur étiquette (mm)', cuLeft: 'Marge gauche (mm)', cuTop: 'Marge haut (mm)', cuPx: 'Pas horizontal (mm)', cuPy: 'Pas vertical (mm)',
     lbAdhHint: "Planche adhésive : imprimer à 100 % (« Taille réelle »), marges Aucune. Faire d'abord un essai sur papier ordinaire, par transparence.", lbOnly: 'Fix ID seul (lisible de loin)', lbPatch: 'Adresse DMX (univ.adr)', lbName: 'Nom', lbType: 'Type de projecteur', lbLayerG: g => g === 'position' ? 'Nom de la position (bandeau)' : 'Nom du calque (bandeau)', lbAnn: "Zone d'annotation", lbHint: "Annotation : cliquer en bas d'une étiquette dans l'aperçu et écrire.",
     legColors: g => g === 'position' ? 'Positions à imprimer' : 'Calques à imprimer', lcHint: 'Décocher pour ne pas imprimer ces étiquettes. Cliquer sur la pastille pour changer la couleur.', colorsReset: 'Couleurs par défaut',
             zoom: 'Zoom',
-    printHintDoc: "Dans la boîte d'impression : marges <b>Aucune</b>, « Graphiques d'arrière-plan » coché.", pageInfo: (n, f) => `${n} page${n > 1 ? 's' : ''} ${f} paysage`,
+    printHintDoc: "Dans la boîte d'impression : marges <b>Aucune</b>, « Graphiques d'arrière-plan » coché.", pageInfo: (n, f, o) => `${n} page${n > 1 ? 's' : ''} ${f} ${o || 'paysage'}`,
     lbInfo: (n, p) => `${n} étiquette${n > 1 ? 's' : ''}, ${p} planche${p > 1 ? 's' : ''} A3`, lbInfoAdh: (n, p, nm) => `${n} étiquette${n > 1 ? 's' : ''}, ${p} planche${p > 1 ? 's' : ''} ${nm}`, noLabels: 'Aucun projecteur à étiqueter.', noPatched: 'Aucun projecteur à afficher.',
     legPlugins: 'Plugins pour la console', pluginsHint: "Plugins grandMA2 et grandMA3 de Give Me The Patch : ils sortent le patch de la console en feuille .html, qu'OPlanFeu sait ouvrir.",
     tabNet: 'DMX et réseau', nvUniv: 'Univers', nvDmx: 'Liaisons', nvNet: 'Appareils', nvLabels: 'Étiquettes DMX',
@@ -807,7 +810,7 @@ const I18N = {
     maWarnLib: n => `${n} type(s) sans fichier de librairie : à importer à la main au numéro indiqué avant de lancer le plugin.`, maWarnId: n => `${n} projecteur(s) sans Fix ID ni Channel ID numérique : laissés de côté.`, maWarnUnp: n => `${n} projecteur(s) sans adresse : créés sans patch.`, maWarnAll: 'Les presets se font sur le groupe « Tous » : cochez-le.',
     maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show vide (NewShow) ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Importer le plugin dans une case vide du pool, pas la case 1 (un show neuf y a le plugin de démonstration de MA) : cd Plugin, puis Import "oplanfeu_…" At 2, puis cd /.', 'Lancer : Plugin 2. Dans un show vide, il ne demande rien ; le détail est dans le System Monitor et dans importexport/oplanfeu_log.txt (onPC).', 'Si un fixture type est introuvable, le plugin s’arrête sans rien créer et donne des noms proches de la librairie (System Monitor, et importexport/oplanfeu_log.txt sur l’onPC) : corriger le nom ici, retélécharger, relancer.'],
     sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
-    sbHint: 'Feuille de patch à imprimer, en A3 ou A4 paysage. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
+    sbHint: 'Feuille de patch à imprimer, en A3 ou A4, paysage ou portrait. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
     sbCartHint: 'Le cartouche (titre, lieu, date, responsable, lignes de notes) et la langue des feuilles se règlent dans le dossier complet.',
     cartTitle: 'Cartouche et langue des documents', cartHint: 'Repris en tête de la feuille de patch, dans le cartouche du plan et sur la couverture du dossier.', cartLang: 'Langue des feuilles imprimées',
@@ -925,13 +928,13 @@ const I18N = {
     mapReplace: 'Re-import this file with these columns? Changes made since the import will be lost.',
     pvw_table: 'Table', pvw_sheet: 'Patch sheet', nvSheet: 'Patch sheet', nvFxlabels: 'Fixture labels', nvDiff: 'Changes',
     hideRow: 'Click to hide this fixture on the documents', annPh: 'note…', doOptions: 'Document settings', doPlang: 'Language of printed documents', doGroup: 'Group by', gLayer: 'Layer', gPosition: 'Position', gwLayer: 'layer', gwPos: 'position',
-    doFormat: 'Paper size (landscape)', fmtA3: 'A3 · 3 columns', fmtA4: 'A4 · 2 columns', doNote: 'Title block (free text)', line: n => `Line ${n}`, doHeadHint: 'Title and subtitle: those of the dossier (Title, Venue / room).',
+    doFormat: 'Paper size', fmtA3: 'A3', fmtA4: 'A4', doNote: 'Title block (free text)', line: n => `Line ${n}`, doHeadHint: 'Title and subtitle: those of the dossier (Title, Venue / room).',
     doContent: 'Content', optSumG: g => `Summary by ${g}`, optSumPos: 'Summary by position', optPos: 'Patch by position', optSumUniv: 'Summary by universe', optSumType: 'Summary by fixture type', optG: g => `Patch by ${g}`, optUniv: 'Patch by universe', optMap: 'Universe occupancy map', optHide: 'Hide unpatched', optExport: 'Show the file export date',     legHidden: 'Fixtures hidden on the documents', hidePh: 'Fix ID or name…', hideBtn: 'Hide', hideHint: 'Or click a row in the preview to hide it.', unhideAll: 'Show all', notFound: 'No matching fixture.',
     legLabels: 'Label format', lbCutGrp: 'A3 to cut (tape)', lbAdhGrp: 'A4 adhesive sheets', lbCustom: 'Other sheet (enter dimensions)…', cuPage: 'Paper', cuCols: 'Columns', cuRows: 'Rows', cuW: 'Label width (mm)', cuH: 'Label height (mm)', cuLeft: 'Left margin (mm)', cuTop: 'Top margin (mm)', cuPx: 'Horizontal pitch (mm)', cuPy: 'Vertical pitch (mm)',
     lbAdhHint: 'Adhesive sheet: print at 100% (“Actual size”), margins None. Test on plain paper first, against the light.', lbOnly: 'Fix ID only (readable from afar)', lbPatch: 'DMX address (univ.addr)', lbName: 'Name', lbType: 'Fixture type', lbLayerG: g => `${g[0].toUpperCase() + g.slice(1)} name (band)`, lbAnn: 'Note area', lbHint: 'Note: click the bottom of a label in the preview and type.',
     legColors: g => g === 'position' ? 'Positions to print' : 'Layers to print', lcHint: 'Untick to skip these labels. Click the swatch to change the colour.', colorsReset: 'Default colours',
             zoom: 'Zoom',
-    printHintDoc: 'In the print dialog: margins <b>None</b>, “Background graphics” ticked.', pageInfo: (n, f) => `${n} page${n > 1 ? 's' : ''} ${f} landscape`,
+    printHintDoc: 'In the print dialog: margins <b>None</b>, “Background graphics” ticked.', pageInfo: (n, f, o) => `${n} page${n > 1 ? 's' : ''} ${f} ${o || 'landscape'}`,
     lbInfo: (n, p) => `${n} label${n > 1 ? 's' : ''}, ${p} A3 sheet${p > 1 ? 's' : ''}`, lbInfoAdh: (n, p, nm) => `${n} label${n > 1 ? 's' : ''}, ${p} sheet${p > 1 ? 's' : ''} ${nm}`, noLabels: 'No fixture to label.', noPatched: 'No fixture to show.',
     legPlugins: 'Console plugins', pluginsHint: 'Give Me The Patch plugins for grandMA2 and grandMA3: they export the console patch as an .html sheet that OPlanFeu can open.',
     tabNet: 'DMX and network', nvUniv: 'Universes', nvDmx: 'Links', nvNet: 'Devices', nvLabels: 'DMX labels',
@@ -955,7 +958,7 @@ const I18N = {
     maWarnLib: n => `${n} type(s) without library file: import them by hand at the given number before running the plugin.`, maWarnId: n => `${n} fixture(s) without a numeric Fix ID or Channel ID: skipped.`, maWarnUnp: n => `${n} fixture(s) without address: created unpatched.`, maWarnAll: 'Presets are stored on the “All” group: tick it.',
     maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open an empty show (NewShow); if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Import the plugin into an empty pool cell, not cell 1 (a new show holds MA’s demo plugin there): cd Plugin, then Import "oplanfeu_…" At 2, then cd /.', 'Run: Plugin 2. In an empty show it asks nothing; details are in the System Monitor and importexport/oplanfeu_log.txt (onPC).', 'If a fixture type is not found, the plugin stops without creating anything and lists close library names (System Monitor, and importexport/oplanfeu_log.txt on onPC): fix the name here, download again, run again.'],
     sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
-    sbHint: 'Printable patch sheet, A3 or A4 landscape. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
+    sbHint: 'Printable patch sheet, A3 or A4, landscape or portrait. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
     sbCartHint: 'The title block (title, venue, date, person in charge, note lines) and the sheet language are set in the full dossier.',
     cartTitle: 'Title block and document language', cartHint: 'Used at the top of the patch sheet, in the plot title block and on the dossier cover.', cartLang: 'Language of printed sheets',
@@ -2410,7 +2413,7 @@ function renderShows() {
   const cur = d ? `<div class="shcur"><div class="shk">${x(t('shCurrent'))}</div><h2>${x(d.meta.titre || t('untitled'))}</h2>
 <div class="shm">${x([d.meta.lieu, d.meta.date ? new Date(d.meta.date).toLocaleDateString(LANG) : '', t('count', d.fixtures.length, d.fixtures.length)].filter(Boolean).join(' · '))}</div>
 <div class="shm">${BK.handle ? x(t('shLinked', BK.handle.name)) : x(FS ? t('shNotLinked') : t('shNoFsa'))}</div>
-<div class="shbtns">${btn('save', t('shSave'), 'primary', 'Ctrl+S')}${FS ? btn('saveas', t('shSaveAs'), 'ghost') : ''}${btn('dl', t('shDownload'), 'ghost')}${btn('dup', t('shDup'), 'ghost')}${btn('versions', t('shVersions'), 'ghost')}</div></div>` : '';
+<div class="shbtns">${btn('save', t('shSave'), 'primary', 'Ctrl+S')}${FS ? btn('saveas', t('shSaveAs'), 'ghost') : ''}${btn('dl', t('shDownload'), 'ghost')}${btn('mvr', t('exportMvr'), 'ghost')}${btn('dup', t('shDup'), 'ghost')}${btn('versions', t('shVersions'), 'ghost')}</div></div>` : '';
   $('#view').innerHTML = `<h1 class="ptitle">${x(t('tabShows'))}</h1>
 <div class="shtop">${cur}${d ? `<div class="shopen"><div class="shk">${x(t('shConsole'))}</div><p class="hint2">${x(t('shConsoleHint'))}</p><div class="shbtns">${btn('ma2', t('shMa2'), 'primary')}<button type="button" class="btn ghost" disabled title="${x(t('shSoon'))}">grandMA3</button></div></div>` : ''}<div class="shopen"><div class="shk">${x(t('shOpenTitle'))}</div>
 <p class="hint2">${x(t('shOpenHint'))}</p><div class="shbtns">${btn('open', t('shOpen'), d ? '' : 'primary')}${btn('restore', t('bkAllIn'), 'ghost')}${btn('all', t('bkAll'), 'ghost')}</div></div></div>
@@ -2445,6 +2448,7 @@ document.addEventListener('click', async e => {
     if (k === 'save') bkSaveNow();
     else if (k === 'saveas') await bkLinkFile();
     else if (k === 'dl') bkDownload();
+    else if (k === 'mvr') { if (state.d) await exportMVR(); }
     else if (k === 'versions') await bkDialog();
     else if (k === 'open') { if (typeof window.showOpenFilePicker === 'function') $('#drop').click(); else $('#file').click(); }
     else if (k === 'restore') $('#bkFile').click();
@@ -4029,19 +4033,21 @@ function dossierPages() {
     if (v.kind === 'plan') {
       const oldH = d.planHide, oldL = d.planLab2;
       d.planHide = clone(v.hide); d.planLab2 = { ['v:' + v.id]: clone(v.labs || {}) };
-      let html; try { html = withTemp(state, { planViewId: v.id }, () => withTemp(state.plan, { ...v.settings, fmt: 'A4', orient: 'landscape' }, () => renderPlan(true))); } finally { d.planHide = oldH; d.planLab2 = oldL; }
+      const port = v.settings && v.settings.orient === 'portrait';
+      let html; try { html = withTemp(state, { planViewId: v.id }, () => withTemp(state.plan, { ...v.settings, fmt: 'A4', orient: port ? 'portrait' : 'landscape' }, () => renderPlan(true))); } finally { d.planHide = oldH; d.planLab2 = oldL; }
+      if (port) html = html.replace('<div class="plansheet"', '<div class="plansheet port"');
       html = html.replace(/<p class="hint[^]*$/, '').replace(/(<text x="10" y="16" font-size="6" font-weight="700">)[^<]*/, `$1${esc(v.name)}`);
       toc.push(v.name); out.push(html);
     } else if (v.kind === 'sheet') {
       const D = ensureDocs(d), oldH = D.hidden; D.hidden = clone(v.hide || []);
-      let pg; try { pg = withTemp(DOC, { fmt: 'A4', group: 'layer', chk: { ...DOC.chk, ...(v.settings.chk || {}) } }, () => sheetPages()); } finally { D.hidden = oldH; }
+      let pg; try { pg = withTemp(DOC, { fmt: 'A4', orient: v.settings.orient === 'portrait' ? 'portrait' : 'landscape', group: 'layer', chk: { ...DOC.chk, ...(v.settings.chk || {}) } }, () => sheetPages()); } finally { D.hidden = oldH; }
       if (pg) { toc.push(v.name); out.push(pg.join('')); }
     } else if (v.img) {
       toc.push(v.name); out.push(`<div class="dpage full v3page"><h2>${esc(v.name)}</h2><img src="${v.img}" alt=""><div class="v3cap">${esc(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + esc(state.d.meta.lieu) : ''} · 3D</div></div>`);
     }
   }
   // feuille de patch (A4)
-  if (S.patch) { const pg = withTemp(DOC, { fmt: 'A4', group: 'layer' }, () => sheetPages()); sec('patch', pg ? pg.join('') : ''); }
+  if (S.patch) { const pg = withTemp(DOC, { fmt: 'A4', orient: 'landscape', group: 'layer' }, () => sheetPages()); sec('patch', pg ? pg.join('') : ''); }
   // accroches et charges
   if (S.loads) {
     const rows = [...L.points].sort((a, b) => natCmp(a.name, b.name)).map(p => {
@@ -4124,10 +4130,10 @@ function renderDossier() {
 <div class="dosopts noprint">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}</div>
 ${(state.d.views || []).length ? `<div class="dosopts noprint"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">${esc(t('vwInDos'))}</b>${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : v.kind === 'sheet' ? t('pvw_sheet') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2 noprint" style="margin-top:8px">${esc(t('vwNone'))}</p>`}
 <div class="dosopts noprint">
-<span class="spacer"></span><button type="button" class="minibtn" id="dosMvr">${esc(t('exportMvr'))}</button><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
+<span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
 <label>${esc(t('zoom'))} <input type="range" id="dosZoom" min="20" max="100" value="${S.zoom || 45}"></label></div>
 <div id="dosPages">${dossierPages().join('')}</div>`;
-  $('#pagesize').textContent = '@page { size: A4 landscape; margin: 0; }';
+  $('#pagesize').textContent = '@page { size: A4 landscape; margin: 0; } @page port { size: A4 portrait; margin: 0; }';
   dosZoom();
   if ((state.dos.plan || (state.d.views || []).some(v => v.kind === 'plan' && v.inDossier)) && !(PLAN_GEO.ready && PLAN_GEO.key === planGeoKey())) ensurePlanGeo().then(ok => { if (ok && state.tab === 'dossier') renderDossier(); });
   if ($('#dosPages .big.lfid')) fitLabels(40, 30);
@@ -4143,7 +4149,6 @@ document.getElementById('view').addEventListener('click', e => {
   e.preventDefault(); const V = state.d.views, i = V.findIndex(y => y.id === b.dataset.vup); if (i > 0) { [V[i - 1], V[i]] = [V[i], V[i - 1]]; touch(); renderDossier(); }
 });
 document.getElementById('view').addEventListener('input', e => { if (e.target.id === 'dosZoom') { state.dos.zoom = +e.target.value; store.set('dos', state.dos); dosZoom(); } });
-document.getElementById('view').addEventListener('click', e => { if (e.target.id === 'dosMvr') exportMVR(); });
 
 // ───────────── export MVR (GeneralSceneDescription + GDTF des types) ─────────────
 const CRC_T = (() => { const T = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; T[n] = c >>> 0; } return T; })();
@@ -5420,7 +5425,7 @@ const DOC_I18N = {
 const DOC_LANGS = [['fr', 'FR · Français'], ['en', 'EN · English'], ['es', 'ES · Español'], ['pt', 'PT · Português'], ['it', 'IT · Italiano'], ['de', 'DE · Deutsch'],
   ['nl', 'NL · Nederlands'], ['zh', 'ZH · 中文'], ['ja', 'JA · 日本語'], ['ru', 'RU · Русский'], ['ar', 'AR · العربية']];
 const DOC = {
-  fmt: store.get('docFmt', 'A3'), plang: store.get('docPlang', null), group: store.get('docGroup', 'layer'), zoom: store.get('docZoom', 45),
+  fmt: store.get('docFmt', 'A3'), orient: store.get('docOrient', 'landscape'), plang: store.get('docPlang', null), group: store.get('docGroup', 'layer'), zoom: store.get('docZoom', 45),
   lbSize: store.get('docLbSize', '40x30'), colors: store.get('docColors', {}),
   chk: { optSumLayer: true, optSumPos: true, optPos: true, optSumUniv: true, optSumType: true, optLayer: true, optUniv: true, optMap: true, optHideUnp: false, optExport: true,
     lbOnly: false, lbFid: true, lbPatch: true, lbName: true, lbType: false, lbChid: false, lbLayer: true, lbAnn: true, lbCirc: false, lbDmxL: false, lbHideUnp: false, ...store.get('docChk', {}) },
@@ -5432,6 +5437,9 @@ const tp = (k, ...a) => {
 };
 const DOC_POS = { thLayer: 'thPos', thLayers: 'thPoss', sumLayer: 'sumPos', secLayer: 'secPos', kpiLayers: 'kpiPos', dLayer: 'dPos' };
 const G_FORMATS = { A3: { W: 420, H: 297, ncol: 3 }, A4: { W: 297, H: 210, ncol: 2 } };
+const G_PORT = { A3: { W: 297, H: 420, ncol: 2 }, A4: { W: 210, H: 297, ncol: 1 } };
+const gFmt = (fmt, orient = DOC.orient) => (orient === 'portrait' ? G_PORT : G_FORMATS)[fmt] || G_FORMATS.A3;
+const sheetCls = fmt => `sheet ${fmt}${DOC.orient === 'portrait' ? ' port' : ''}`;
 const G_MARGIN = 14, G_ROW = 4.6, G_HEAD = 7, G_THEAD = 5, G_GAP = 4, G_H2 = 11;
 const G_PALETTE = ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324', '#469990', '#ffe119',
   '#800000', '#000075', '#bfef45', '#808000', '#fabed4', '#dcbeff', '#aaffc3', '#ffd8b1', '#a9a9a9', '#000000'];
@@ -5538,7 +5546,7 @@ ${gMetaHTML(today)}</header>
 }
 function measureMM(html, fmt) {
   const m = $('#measure');
-  m.innerHTML = `<div class="sheet ${fmt}"><div id="summary" style="display:flow-root">${html}</div></div>`;
+  m.innerHTML = `<div class="${sheetCls(fmt)}"><div id="summary" style="display:flow-root">${html}</div></div>`;
   const h = m.querySelector('#summary').getBoundingClientRect().height;
   m.innerHTML = '';
   return h * 25.4 / 96 + 2;
@@ -5549,7 +5557,7 @@ const docSub = () => state.d.meta.lieu || '';
 const docVisible = () => { const D = ensureDocs(state.d), hid = new Set(D.hidden); return docFx().filter(f => !hid.has(f.k)); };
 // feuille de patch : récapitulatifs, patch par regroupement, patch par univers, plan d'occupation
 function sheetPages() {
-  const D = ensureDocs(state.d), fmt = DOC.fmt, { H, ncol } = G_FORMATS[fmt], pageH = H - 2 * G_MARGIN - 7;
+  const D = ensureDocs(state.d), fmt = DOC.fmt, { H, ncol } = gFmt(fmt), pageH = H - 2 * G_MARGIN - 7;
   const fx = docVisible().filter(f => !(DOC.chk.optHideUnp && f.univ === null));
   if (!fx.length) return null;
   const A = gAnalyse(fx), titre = docTitleText(), lieu = docSub(), note = D.note.map(x => (x || '').trim()).join('\n').replace(/\n+$/, '');
@@ -5581,11 +5589,11 @@ function sheetPages() {
   if (page1 !== null) sheets.splice(pre.length, 0, page1);
   if (DOC.chk.optMap && A.univs.length) sheets.splice(pre.length + 1, 0, ...univMapPages(A, fmt));
   const foot = lieu ? `${titre} — ${lieu}` : titre;
-  return sheets.map((s, i) => `<div class="sheet ${fmt}">${s}<div class="pfoot"><span>${esc(state.d.meta.source || '')}</span><span>${esc(foot)} · p. ${i + 1}/${sheets.length}</span></div></div>`);
+  return sheets.map((s, i) => `<div class="${sheetCls(fmt)}">${s}<div class="pfoot"><span>${esc(state.d.meta.source || '')}</span><span>${esc(foot)} · p. ${i + 1}/${sheets.length}</span></div></div>`);
 }
 // plan d'occupation : une barre de 512 canaux par univers
 function univMapPages(A, fmt) {
-  const { H } = G_FORMATS[fmt], pageH = H - 2 * G_MARGIN - 7, BLK = 17, colors = layerColors(A.layers), pc = x => (x / 512 * 100).toFixed(3) + '%';
+  const { H } = gFmt(fmt), pageH = H - 2 * G_MARGIN - 7, BLK = 17, colors = layerColors(A.layers), pc = x => (x / 512 * 100).toFixed(3) + '%';
   let anyEst = false, anyOvl = false;
   const blocks = A.univs.map(u => {
     const g = A.patched.filter(f => f.univ === u).sort((a, b) => a.addr - b.addr), occ = new Uint8Array(514);
@@ -5682,15 +5690,15 @@ const SHEET_BASES = {
   sum: { optSumLayer: true, optSumPos: true, optSumUniv: true, optSumType: true },
 };
 state.sheetBase = store.get('sheetBase', 'full'); state.sheetViewId = null;
-const sheetPick = () => ({ fmt: DOC.fmt, chk: Object.fromEntries(SHEET_CHK.map(k => [k, !!DOC.chk[k]])) });
+const sheetPick = () => ({ fmt: DOC.fmt, orient: DOC.orient, chk: Object.fromEntries(SHEET_CHK.map(k => [k, !!DOC.chk[k]])) });
 function sheetCapture(v) { v.settings = sheetPick(); v.hide = clone(ensureDocs(state.d).hidden); }
-function sheetApply(v) { DOC.fmt = v.settings.fmt || 'A3'; Object.assign(DOC.chk, v.settings.chk || {}); ensureDocs(state.d).hidden = clone(v.hide || []); }
+function sheetApply(v) { DOC.fmt = v.settings.fmt || 'A3'; DOC.orient = v.settings.orient === 'portrait' ? 'portrait' : 'landscape'; Object.assign(DOC.chk, v.settings.chk || {}); ensureDocs(state.d).hidden = clone(v.hide || []); }
 function sheetEnter(v) {
   if (!state.sheetViewId) state.sheetFree = { ...sheetPick(), hide: clone(ensureDocs(state.d).hidden) };
   state.sheetViewId = v.id; sheetApply(v);
 }
 function sheetLeave() {
-  if (state.sheetViewId && state.sheetFree) { const F = state.sheetFree; DOC.fmt = F.fmt; Object.assign(DOC.chk, F.chk); ensureDocs(state.d).hidden = clone(F.hide); }
+  if (state.sheetViewId && state.sheetFree) { const F = state.sheetFree; DOC.fmt = F.fmt; DOC.orient = F.orient || 'landscape'; Object.assign(DOC.chk, F.chk); ensureDocs(state.d).hidden = clone(F.hide); }
   state.sheetViewId = null;
 }
 function sheetViewSync() {   // la vue personnalisée ouverte suit chaque modification
@@ -5725,6 +5733,7 @@ function renderSheetDoc() {
 <p class="hint2">${x(t('sbCartHint'))} <button type="button" class="linkbtn" data-gotab="dossier">${x(t('tabDossier'))} →</button></p></details>`;
   return `<p class="hint noprint" style="margin:12px 0 0">${x(t('sbHint'))}</p>${sheetViewStrip()}
 <div class="plopts noprint docopts"><label>${x(t('doFormat'))} <select data-dopt="fmt">${['A3', 'A4'].map(f => `<option value="${f}"${f === DOC.fmt ? ' selected' : ''}>${x(t('fmt' + f))}</option>`).join('')}</select></label>
+<label>${x(t('plOrient'))} <select data-dopt="orient">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === DOC.orient ? ' selected' : ''}>${x(t('or_' + o))}</option>`).join('')}</select></label>
 <span class="spacer"></span><span id="docInfo" class="plstate"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><label>${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></label></div>
 <div class="planwrap docopts">${panel}<div id="docPages" dir="${PL() === 'ar' ? 'rtl' : 'ltr'}" lang="${PL()}"></div></div>`;
 }
@@ -5735,8 +5744,8 @@ document.getElementById('view').addEventListener('click', e => {
   const cur = views('sheet').find(v => v.id === state.sheetViewId);
   if (b.dataset.svbase) {   // vue de départ : tout est remis à zéro (contenu, format, projecteurs masqués)
     sheetLeave(); state.sheetBase = b.dataset.svbase; store.set('sheetBase', state.sheetBase);
-    SHEET_CHK.forEach(k => { DOC.chk[k] = !!SHEET_BASES[state.sheetBase][k]; }); DOC.fmt = 'A3'; ensureDocs(d).hidden = [];
-    store.set('docChk', DOC.chk); store.set('docFmt', DOC.fmt);
+    SHEET_CHK.forEach(k => { DOC.chk[k] = !!SHEET_BASES[state.sheetBase][k]; }); DOC.fmt = 'A3'; DOC.orient = 'landscape'; ensureDocs(d).hidden = [];
+    store.set('docChk', DOC.chk); store.set('docFmt', DOC.fmt); store.set('docOrient', DOC.orient);
   }
   else if (b.dataset.svsel) { const v = views('sheet').find(x => x.id === b.dataset.svsel); if (v) sheetEnter(v); }
   else if (b.dataset.svnew || b.dataset.svdup) {
@@ -5792,7 +5801,7 @@ function renderDocPages() {
   const el = $('#docPages'); if (!el || !state.d) return;
   const nv = state.tab === 'labels' ? 'fxlabels' : patchView(), info = $('#docInfo');
   el.dir = PL() === 'ar' ? 'rtl' : 'ltr'; el.lang = PL();
-  let pages, size = `${DOC.fmt} landscape`;
+  let pages, size = `${DOC.fmt} ${DOC.orient === 'portrait' ? 'portrait' : 'landscape'}`;
   if (nv === 'fxlabels') {
     const L = labelPages(); pages = L.pages; if (L.pages) size = L.size;
     info.textContent = !L.pages ? '' : L.G.cut ? t('lbInfo', L.count, L.n) : t('lbInfoAdh', L.count, L.n, L.G.name);
@@ -5802,7 +5811,7 @@ function renderDocPages() {
     pages = withTemp(DOC, { group: 'layer' }, () => sheetPages());
     sheetViewSync();
     el.innerHTML = pages ? pages.join('') : `<div class="empty"><div>${esc(t('noPatched'))}</div></div>`;
-    info.textContent = pages ? t('pageInfo', pages.length, DOC.fmt) : '';
+    info.textContent = pages ? t('pageInfo', pages.length, DOC.fmt, t('or_' + DOC.orient)) : '';
   }
   $('#pagesize').textContent = `@page { size: ${size}; margin: 0; }`;
   applyDocZoom();
@@ -5817,6 +5826,7 @@ view.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.dck) { DOC.chk[el.dataset.dck] = el.checked; docSaveChk(); return render(); }
   if (el.dataset.dopt === 'fmt') { DOC.fmt = el.value; store.set('docFmt', DOC.fmt); return render(); }
+  if (el.dataset.dopt === 'orient') { DOC.orient = el.value === 'portrait' ? 'portrait' : 'landscape'; store.set('docOrient', DOC.orient); return render(); }
   if (el.dataset.dopt === 'plang') { DOC.plang = el.value; store.set('docPlang', el.value); return renderDocPages(); }
   if (el.dataset.dopt === 'lbSize') { DOC.lbSize = el.value; store.set('docLbSize', el.value); return render(); }
   if (el.dataset.loff !== undefined) { const D = state.d.docs, l = el.dataset.loff; D.lbOff = el.checked ? D.lbOff.filter(y => y !== l) : [...D.lbOff, l]; touch(); return render(); }
