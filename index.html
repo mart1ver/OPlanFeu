@@ -2660,16 +2660,25 @@ function renderNetSyno() {
   const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, merger: 3, splitter: 3, src: 4 }[n.kind] ?? 5);
   const cmp = (a, b) => (a.edge && b.edge ? (a.edge.k === 'dmx') - (b.edge.k === 'dmx') || a.edge.ord - b.edge.ord : 0) || rank(a) - rank(b) || natCmp(a.name, b.name);
   const isConN = n => n.t === 'dev' && (n.kind === 'console' || !!(n.cons && n.cons.length));
+  // colonnes fixes : consoles, switches, nodes, splitters et mergers ; les autres (positions, PC…) juste après leur source.
+  // Un appareil rattaché à un autre de la même colonne ou d'une colonne plus à droite (switch derrière un switch…)
+  // devient un bloc à part, sous les autres, relié par un câble tracé à part
+  const baseCol = n => n.t !== 'dev' ? null : isConN(n) ? 0 : ({ switch: 1, node: 2, splitter: 3, merger: 3 }[n.kind] ?? null);
+  const colOf = n => { const b = baseCol(n); return b !== null ? b : n.parent ? colOf(n.parent) + 1 : 0; };
+  for (let moved = true; moved;) {
+    moved = false;
+    for (const n of N) if (n.parent && baseCol(n) !== null && baseCol(n) <= colOf(n.parent)) { extra.push({ a: n.parent, b: n, e: n.edge }); detach(n); moved = true; }
+  }
   const roots = N.filter(n => !n.parent).sort((a, b) => isConN(b) - isConN(a) || (b.kids.length > 0) - (a.kids.length > 0) || rank(a) - rank(b) || natCmp(a.name, b.name));
   const CW = 330, BW = 180, BH = 50, PH = 36, RH = 64, PAD = 18, TOP = 76, GAP = CW - BW;
   let row = 0, maxD = 0;
-  const place = (n, dep) => {
-    n.dep = dep; maxD = Math.max(maxD, dep); n.kids.sort(cmp);
+  const place = n => {
+    const dep = n.dep = colOf(n); maxD = Math.max(maxD, dep); n.kids.sort(cmp);
     if (!n.kids.length) { n.y = row++ * RH; return; }
-    n.kids.forEach(k => place(k, dep + 1));
+    n.kids.forEach(k => place(k));
     n.y = (n.kids[0].y + n.kids[n.kids.length - 1].y) / 2;
   };
-  roots.forEach((r, i) => { if (i && (r.kids.length || roots[i - 1].kids.length)) row += .3; place(r, 0); });
+  roots.forEach((r, i) => { if (i && (r.kids.length || roots[i - 1].kids.length)) row += .3; place(r); });
   const W = PAD * 2 + (maxD + 1) * CW - GAP, H = TOP + row * RH + 24;
   const pal = typeof G_PALETTE !== 'undefined' ? G_PALETTE : ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#9a6324'];
   const ucol = u => u ? pal[(+u - 1) % pal.length] : '#888';
@@ -2721,6 +2730,12 @@ function renderNetSyno() {
     }
     const k = (slot.get(q.b) || 0) + 1; slot.set(q.b, k);
     const x1 = X(q.a) + BW, y1 = q.a.kids.length ? Y(q.a) + hOf(q.a) - 6 : CY(q.a), x2 = X(q.b), y2 = Y(q.b) + Math.min(hOf(q.b) - 6, 8 + k * 11);
+    if (q.a.dep === q.b.dep) {   // même colonne (switch derrière un switch) : trait vertical sur la droite de la colonne
+      const xs = x1 + 12 + (k - 1) * 6, yb = CY(q.b);
+      edges += `<path d="M${x1} ${y1} H${xs} V${yb} H${x1}" fill="none" ${style(q.e)}/>`;
+      labels += `<text x="${xs + 4}" y="${(y1 + yb) / 2}" font-size="9.5" class="mut">${x(fit(q.e.top, GAP - 30))}</text>`;
+      continue;
+    }
     const d = x2 - x1 > 40 ? `M${x1} ${y1} H${x2 - 22} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 10} V${Math.min(Y(q.a), Y(q.b)) - 10} H${x2 - 22} V${y2} H${x2}`;
     edges += `<path d="${d}" fill="none" ${style(q.e)} stroke-dasharray="${q.e.k === 'dmx' ? '7 3' : '3 3'}" opacity=".85"/>`;
     // texte au départ du câble (après le bus de l'appareil), pour ne pas s'empiler à l'arrivée

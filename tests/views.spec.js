@@ -706,11 +706,12 @@ test('portrait ou paysage : vues 3D et synoptiques, gardé dans le dossier compl
   expect(w).toBeCloseTo(297 / 210, 1);
 });
 
-test('synoptique réseau : les consoles toujours dans la colonne de gauche', async ({ page }) => {
+test('synoptique réseau : colonnes fixes (consoles, switches, nodes, splitters et mergers)', async ({ page }) => {
   await loadSynthetic(page, d => {
     d.lieu = { points: [], boards: [], lines: [],
-      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }, { id: 'd2', name: 'DMX B', src: 'MA2 secours', port: 1, universe: 2, dest: 'P3 Face' }],
-      devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 's2', name: 'SW2', kind: 'switch' }, { id: 'v1', name: 'Node 1', kind: 'node' },
+      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }, { id: 'd2', name: 'DMX B', src: 'MA2 secours', port: 1, universe: 2, dest: 'P3 Face' },
+        { id: 'd3', name: 'DMX C', src: 'Node 1', port: 2, universe: 3, dest: 'Split 1', destPort: 1 }, { id: 'd4', name: 'DMX D', src: 'Split 1', port: 1, universe: 3, dest: 'P2 Milieu' }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 's2', name: 'SW2', kind: 'switch' }, { id: 'v1', name: 'Node 1', kind: 'node' }, { id: 'sp', name: 'Split 1', kind: 'splitter' },
         { id: 'c', name: 'MA3', kind: 'console' }, { id: 'c2', name: 'MA3 backup', kind: 'console' }, { id: 'c3', name: 'MA2 secours', kind: 'console' }],
       netLinks: [{ id: 'n1', kind: 'eth', a: 'SW1', ap: 1, b: 'SW2', bp: 1 }, { id: 'n2', kind: 'eth', a: 'SW2', ap: 2, b: 'MA3', bp: 1 }, { id: 'n3', kind: 'eth', a: 'SW1', ap: 2, b: 'Node 1', bp: 1 },
         { id: 'n4', kind: 'eth', a: 'SW1', ap: 3, b: 'MA3 backup', bp: 1 }],
@@ -723,7 +724,8 @@ test('synoptique réseau : les consoles toujours dans la colonne de gauche', asy
     document.querySelectorAll('#view .nsyn svg g').forEach(g => { const r = g.querySelector('rect.box'), tx = g.querySelector('text'); if (r && tx) out[tx.textContent] = +r.getAttribute('x'); });
     return out;
   });
-  const minX = Math.min(...Object.values(xs));
-  for (const c of ['MA3', 'MA3 backup', 'MA2 secours']) expect(xs[c]).toBe(minX);
-  for (const o of ['SW1', 'SW2', 'Node 1']) expect(xs[o]).toBeGreaterThan(minX);
+  // colonnes fixes : consoles, puis switches (même un switch derrière un switch), nodes, splitters et mergers
+  const col = n => Math.round((xs[n] - 18) / 330);
+  expect(['MA3', 'MA3 backup', 'MA2 secours', 'SW1', 'SW2', 'Node 1', 'Split 1'].map(col)).toEqual([0, 0, 0, 1, 1, 2, 3]);
+  await expect(page.locator('#view .nsyn svg')).toContainText('P1 Lointain');
 });
