@@ -669,3 +669,39 @@ test('univers d’une sortie de node : les projecteurs du patch se raccrochent �
   await cell.fill(`${u1 + 9}.1`); await cell.press('Tab');
   expect(await onLine()).toBe('- DMX B DMX B DMX B DMX B DMX B');
 });
+
+test('portrait ou paysage : vues 3D et synoptiques, gardé dans le dossier complet', async ({ page }) => {
+  test.setTimeout(90_000);
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'G1', board: 'TD1', kind: 'grada', phase: 'L1', amps: 16, dest: 'P2 Milieu' }],
+      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch', ip: '2.0.0.2' }, { id: 'v1', name: 'Node 1', kind: 'node', ip: '2.0.0.10' }], consoles: [] };
+  });
+  // synoptique réseau en portrait : réglage du dossier, page d'impression en portrait
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=net]');
+  await page.selectOption('#view select[data-synor=net]', 'portrait');
+  await expect(page.locator('#view .synwrap.port')).toHaveCount(1);
+  expect(await page.evaluate(() => [state.d.lieu.settings.synOrient, $('#pagesize').textContent])).toEqual([{ net: 'portrait' }, expect.stringContaining('A4 portrait')]);
+  await page.click('#view [data-sv=elec]');
+  await expect(page.locator('#view select[data-synor=elec]')).toHaveValue('landscape');
+  // vue 3D en portrait : cadre à la forme de la page, réglage et image gardés dans la vue
+  await page.click('#tabs button[data-v=v3d]');
+  await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
+  page.on('dialog', dlg => dlg.accept('Vue 3D portrait'));
+  await page.evaluate(() => { window.prompt = () => 'Vue 3D portrait'; });
+  await page.click('#view [data-vnew="3d"]');
+  await page.selectOption('#view select[data-v3=orient]', 'portrait');
+  await expect(page.locator('#v3.port')).toHaveCount(1);
+  const r = await page.locator('#v3').evaluate(el => el.clientHeight / el.clientWidth);
+  expect(r).toBeGreaterThan(1.3);
+  await expect.poll(() => page.evaluate(() => { const v = state.d.views.find(x => x.name === 'Vue 3D portrait'); return v && v.settings.orient; })).toBe('portrait');
+  // dossier complet : page 3D et synoptique réseau en portrait, synoptique électrique en paysage
+  await page.evaluate(() => { const v = state.d.views.find(x => x.name === 'Vue 3D portrait'); v.inDossier = true; });
+  await page.click('#tabs button[data-v=dossier]');
+  await expect(page.locator('#dosPages .v3page.port')).toHaveCount(1);
+  await expect(page.locator('#dosPages .dpage.port:has(.nsyn)')).toHaveCount(1);
+  await expect(page.locator('#dosPages .dpage:not(.port):has(.syn:not(.nsyn))')).toHaveCount(1);
+  const w = await page.locator('#dosPages .v3page.port').evaluate(el => el.getBoundingClientRect().height / el.getBoundingClientRect().width);
+  expect(w).toBeCloseTo(297 / 210, 1);
+});

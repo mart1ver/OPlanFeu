@@ -411,6 +411,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 @media (max-width: 600px) { #mapRows { grid-template-columns: 1fr; } }
 [hidden] { display: none !important; }
 .v3wrap { position: relative; margin-top: 10px; height: calc(100vh - 175px); min-height: 380px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #15161a; }
+.v3wrap.port { height: calc(100vh - 175px); width: auto; aspect-ratio: 210 / 297; max-width: 100%; margin-left: auto; margin-right: auto; }   /* cadre de la page en portrait */
 .v3wrap canvas { display: block; width: 100%; height: 100%; cursor: grab; } .v3wrap canvas:active { cursor: grabbing; }
 .v3tip { position: absolute; pointer-events: none; background: rgba(20,20,24,.92); color: #fff; font-size: 12px; padding: 5px 8px; border-radius: 7px; white-space: nowrap; transform: translate(12px, 12px); }
 .v3info { position: absolute; left: 10px; bottom: 10px; color: #cfcfd4; font-size: 11.5px; background: rgba(20,20,24,.7); padding: 5px 8px; border-radius: 7px; pointer-events: none; }
@@ -449,6 +450,7 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .vbar { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 3px 8px; border: 1px dashed var(--line); border-radius: 9px; }
 .vbar select { max-width: 14em; }
 .dpage.full { width: 297mm; height: 210mm; padding: 12mm; display: flex; flex-direction: column; }
+.dpage.port { width: 210mm; min-height: 297mm; } .dpage.full.port { height: 297mm; }
 .v3page img { flex: 1; min-height: 0; width: 100%; object-fit: contain; background: #15161a; border-radius: 2mm; }
 .v3page .v3cap { font-size: 8pt; color: #666; margin-top: 2mm; }
 .v3warn { position: absolute; left: 50%; transform: translateX(-50%); top: 10px; max-width: 340px; z-index: 2; background: rgba(120,60,0,.88); color: #fff; font-size: 12px; padding: 8px 10px; border-radius: 9px; }
@@ -486,6 +488,8 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
   #dosPages .dpage.full { width: 297mm; height: 210mm; padding: 12mm; overflow: hidden; }
   #dosPages .dpage.cover { width: 297mm; height: 210mm; padding: 18mm 20mm; overflow: hidden; }
   #dosPages .port { page: port; }   /* vue en portrait au milieu du dossier en paysage */
+  #dosPages .dpage.full.port { width: 210mm; height: 297mm; }
+  #dosPages .dpage.port .syn svg { max-height: 265mm; }
   .dwrap .sp { height: 12mm; }
 }
 .plansheet { background: #fff; box-shadow: 0 2px 18px rgba(0,0,0,.18); flex: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -2726,14 +2730,22 @@ function renderNetSyno() {
 <div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${boxes}${labels}</svg></div>`;
 }
 const SYN_VIEWS = ['elec', 'net'];
+// orientation de la page de chaque synoptique (impression et dossier complet), gardée dans le dossier
+const synOrient = k => ((state.d.lieu.settings.synOrient || {})[k] === 'portrait' ? 'portrait' : 'landscape');
 function renderSynoView() {
   ensureLieu(state.d);
-  const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec';
+  const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec', or = synOrient(sv);
   const head = `<div class="subtabs">${SYN_VIEWS.map(k => `<button type="button" data-sv="${k}"${k === sv ? ' class="on"' : ''}>${esc(t('sv_' + k))}</button>`).join('')}</div>
-<div class="settings noprint" style="margin-bottom:0"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
+<div class="settings noprint" style="margin-bottom:0"><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  $('#view').innerHTML = head + (sv === 'elec' ? renderSyno() : renderNetSyno());
+  $('#view').innerHTML = head + `<div class="synwrap${or === 'portrait' ? ' port' : ''}">${sv === 'elec' ? renderSyno() : renderNetSyno()}</div>`;
+  $('#pagesize').textContent = or === 'portrait' ? '@page { size: A4 portrait; margin: 12mm; } .syn svg { max-height: 265mm !important; }' : '';
 }
+document.getElementById('view').addEventListener('change', e => {
+  const k = e.target.dataset && e.target.dataset.synor; if (!k || !state.d) return;
+  const S = state.d.lieu.settings; S.synOrient = { ...(S.synOrient || {}), [k]: e.target.value === 'portrait' ? 'portrait' : 'landscape' };
+  touch(); renderSynoView();
+});
 function renderSyno() {
   const L = state.d.lieu, V = +L.settings.volts || 230;
   if (!L.lines.length) return `<p class="hint" style="margin-top:16px">${esc(t('synEmpty'))}</p>`;
@@ -3963,7 +3975,7 @@ document.getElementById('view').addEventListener('pointerdown', e => {
 // ───────────── vues enregistrées (plan et 3D), à reprendre dans le dossier complet ─────────────
 const PLAN_DEFAULTS = { view: 'top', point: '', color: 'type', l2: 'patch', labels: true, labSize: 100, labRot: 0, struct: true, points: true, grid: true, fmt: 'A3', orient: 'landscape', fit: 'scale', scale: null, rot: 0, rulers: true, zone: null };
 const PLAN_KEYS = ['view', 'point', 'color', 'l2', 'labels', 'labSize', 'labRot', 'struct', 'points', 'grid', 'fmt', 'orient', 'fit', 'scale', 'rot', 'rulers', 'zone'];
-const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid'];
+const V3_KEYS = ['color', 'shapes', 'labels', 'beams', 'points', 'struct', 'grid', 'orient'];
 const clone = o => JSON.parse(JSON.stringify(o ?? null));
 const views = kind => (state.d.views || []).filter(v => v.kind === kind);
 function viewBar(kind) {
@@ -4043,7 +4055,7 @@ function dossierPages() {
       let pg; try { pg = withTemp(DOC, { fmt: 'A4', orient: v.settings.orient === 'portrait' ? 'portrait' : 'landscape', group: 'layer', chk: { ...DOC.chk, ...(v.settings.chk || {}) } }, () => sheetPages()); } finally { D.hidden = oldH; }
       if (pg) { toc.push(v.name); out.push(pg.join('')); }
     } else if (v.img) {
-      toc.push(v.name); out.push(`<div class="dpage full v3page"><h2>${esc(v.name)}</h2><img src="${v.img}" alt=""><div class="v3cap">${esc(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + esc(state.d.meta.lieu) : ''} · 3D</div></div>`);
+      toc.push(v.name); out.push(`<div class="dpage full v3page${v.settings && v.settings.orient === 'portrait' ? ' port' : ''}"><h2>${esc(v.name)}</h2><img src="${v.img}" alt=""><div class="v3cap">${esc(state.d.meta.titre || '')}${state.d.meta.lieu ? ' — ' + esc(state.d.meta.lieu) : ''} · 3D</div></div>`);
     }
   }
   // feuille de patch (A4)
@@ -4065,7 +4077,7 @@ function dossierPages() {
     sec('elec', `<div class="dpage"><h2>${esc(t('dElecTitle'))}</h2><h3>${esc(t('dBoards'))}</h3>${dtab([t('bdName'), t('bdSupply'), t('bdAmps'), t('bdLoc'), t('bdLines'), t('bdPower'), t('bdPhases'), t('bdImb'), t('bdNotes')], bRows)}
 <h3>${esc(t('dLines'))}</h3>${dtab([t('lnName'), t('lnBoard'), t('lnKind'), t('lnPhase'), t('lnAmps'), t('lnDest'), t('lnDimmer'), t('lnDmx'), t('lnFix'), t('lnPower'), t('lnLoad')], lRows)}</div>`);
   }
-  if (S.syno && L.lines.length) sec('syno', `<div class="dpage"><h2>${esc(t('synTitle'))}</h2>${renderSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '')}</div>`);
+  if (S.syno && L.lines.length) sec('syno', `<div class="dpage${synOrient('elec') === 'portrait' ? ' port' : ''}"><h2>${esc(t('synTitle'))}</h2>${renderSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '')}</div>`);
   // DMX, console, réseau
   if (S.dmx) {
     const cRows = L.consoles.map(c => { const C = consoleCheck(c), m = conModel(c); return `<tr>${td(c.name, 'b')}${td(t('r' + (c.role || 'other')[0].toUpperCase() + (c.role || 'other').slice(1)))}${td(m ? (m[1] || t('mOther')) : '')}${td(C.max ? `≈ ${C.U.ch} / ${C.max}` : '', 'n' + (C.overP ? ' bad' : ''))}${td(`${C.U.univ}${c.universes ? ' / ' + c.universes : ''}`, 'n' + (C.overU ? ' bad' : ''))}${td((c.protocols || []).map(k => (CON_PROTOS.find(q => q[0] === k) || [k, k])[1]).join(', '), C.protoOk ? '' : 'bad')}${td(c.version)}${td(c.device)}${td(c.showfile, 'w')}</tr>`; });
@@ -4083,7 +4095,7 @@ ${dRows.length ? `<h3>${esc(t('dDmxLines'))}</h3>${dtab([t('dlName'), t('dlSrc')
 ${vRows.length ? `<h3>${esc(t('dDevices'))}</h3>${dtab([t('dvName'), t('dvKind'), t('dvModel'), t('dvIp'), t('dvMask'), t('dvConn'), t('dvMac'), t('dvLoc')], vRows)}` : ''}
 ${nRows.length ? `<h3>${esc(t('dNetLinks'))}</h3>${dtab([t('lkRef'), t('lkKind'), t('lkFrom'), t('lkTo'), t('dlLen'), t('dlNotes')], nRows)}` : ''}</div>`);
   }
-  if (S.netsyno && (L.devices.length || L.dmxLines.length)) sec('netsyno', `<div class="dpage"><h2>${esc(t('nsTitle'))}</h2>${renderNetSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '').replace(/<p class="hint noprint"[^]*?<\/p>/, '')}</div>`);
+  if (S.netsyno && (L.devices.length || L.dmxLines.length)) sec('netsyno', `<div class="dpage${synOrient('net') === 'portrait' ? ' port' : ''}"><h2>${esc(t('nsTitle'))}</h2>${renderNetSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '').replace(/<p class="hint noprint"[^]*?<\/p>/, '')}</div>`);
   if (S.inv) {
     const qty = new Map(); d.fixtures.forEach(f => qty.set(f.type, (qty.get(f.type) || 0) + 1));
     const PR = (L.parc || []).length ? new Map(parcAlloc().rows.map(r => [r.k, r])) : null;
@@ -4106,7 +4118,7 @@ ${nRows.length ? `<h3>${esc(t('dNetLinks'))}</h3>${dtab([t('lkRef'), t('lkKind')
   }
   // pages de texte : marges haute et basse répétées sur chaque feuille (en-tête et pied de tableau vides)
   const sp = '<tr><td><div class="sp"></div></td></tr>';
-  return out.map(h => h.replace(/^<div class="dpage">([\s\S]*)<\/div>$/, (m, inner) => `<div class="dpage"><table class="dwrap"><thead>${sp}</thead><tbody><tr><td>${inner}</td></tr></tbody><tfoot>${sp}</tfoot></table></div>`));
+  return out.map(h => h.replace(/^<div class="dpage( port)?">([\s\S]*)<\/div>$/, (m, pc, inner) => `<div class="dpage${pc || ''}"><table class="dwrap"><thead>${sp}</thead><tbody><tr><td>${inner}</td></tr></tbody><tfoot>${sp}</tfoot></table></div>`));
 }
 document.getElementById('view').addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('cartedit')) state.cartOpen = e.target.open; }, true);
 document.getElementById('view').addEventListener('change', e => {
@@ -4240,8 +4252,8 @@ function renderV3() {
 ${ck('shapes')}${ck('labels')}${ck('points')}${ck('struct')}${ck('grid')}</div>
 <div class="plopts">${ck('beams')}${S.beams ? `<label>${esc(t('v3Zoom'))} <select data-v3="beamZoom">${o(['min', 'mid', 'max'], S.beamZoom, v => t('v3Zoom_' + v))}</select></label>
 <label>${esc(t('v3BeamCol'))} <select data-v3="beamCol">${o(['cct', 'color'], S.beamCol, v => t('v3BeamCol_' + v))}</select></label>
-<label>${esc(t('v3BeamI'))} <input type="range" data-v3="beamI" min="10" max="300" step="10" value="${+S.beamI || 100}"></label>${ck('pools')}` : ''}</div><div class="plopts">${viewBar('3d')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
-<div class="v3wrap" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
+<label>${esc(t('v3BeamI'))} <input type="range" data-v3="beamI" min="10" max="300" step="10" value="${+S.beamI || 100}"></label>${ck('pools')}` : ''}</div><div class="plopts">${viewBar('3d')}<label>${esc(t('plOrient'))} <select data-v3="orient">${o(['landscape', 'portrait'], S.orient === 'portrait' ? 'portrait' : 'landscape', v => t('or_' + v))}</select></label><span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
+<div class="v3wrap${S.orient === 'portrait' ? ' port' : ''}" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
   const fx = state.d.fixtures.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
   if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
   loadThree().then(() => { if (state.tab === 'v3d' && $('#v3')) return buildV3(fx); }).catch(() => { const el = $('#v3'); if (el) el.innerHTML = `<div class="v3msg">${esc(t('v3Fail'))}</div>`; });
@@ -4640,6 +4652,12 @@ document.getElementById('view').addEventListener('change', e => {
   const el = e.target.closest && e.target.closest('[data-v3]'); if (!el || !state.d) return;
   state.v3[el.dataset.v3] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value; store.set('v3', state.v3);
   if (el.dataset.v3 === 'beamI' && V3.beamMats) { V3.beamMats.forEach(m => { m.uniforms.uI.value = m.userData.i0 * (+el.value / 100); }); return; }
+  if (el.dataset.v3 === 'orient') {   // cadre de la vue à la forme de la page ; la vue ouverte garde l'orientation et une image recadrée
+    const w = $('#v3'); if (w) w.classList.toggle('port', el.value === 'portrait');
+    const v = views('3d').find(x => x.id === state.v3ViewId);
+    if (v) { v.settings = { ...(v.settings || {}), orient: el.value }; touch(); setTimeout(() => { const img = v3Snapshot(); if (img) { v.img = img; touch(); } }, 250); }
+    if (w && V3.renderer) return;
+  }
   renderV3();
 });
 document.getElementById('view').addEventListener('click', e => {
