@@ -1,5 +1,5 @@
 // Chaque vue s'affiche sans erreur avec le dossier de test ; plan, 3D et dossier complet produisent quelque chose
-const { test, expect, loadSynthetic } = require('./helpers');
+const { test, expect, openCfg, loadSynthetic } = require('./helpers');
 
 // le plan se redessine encore juste après l'ouverture (formes des projecteurs chargées à part) : on attend qu'il ne bouge plus
 async function planStable(page) {
@@ -14,7 +14,7 @@ const TABS = { fixtures: ['pv', ['table', 'sheet']], plan: [], rigging: ['rv', [
 
 for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
   test(`vue ${tab}${subs ? ' et ses sous-vues' : ''}`, async ({ page }) => {
-    await loadSynthetic(page);
+    await loadSynthetic(page); await openCfg(page);
     await page.click(`#tabs button[data-v=${tab}]`);
     await expect(page.locator('#view')).not.toBeEmpty();
     for (const s of subs || []) {
@@ -26,7 +26,7 @@ for (const [tab, [attr, subs] = []] of Object.entries(TABS)) {
 }
 
 test('plan : un projecteur dessiné et une étiquette par projecteur, taille des étiquettes réglable', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages svg')).toBeVisible();
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
@@ -37,7 +37,7 @@ test('plan : un projecteur dessiné et une étiquette par projecteur, taille des
 
 test('3D : la scène se construit avec les faisceaux', async ({ page }) => {
   test.setTimeout(90_000);
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=v3d]');
   await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
   const n = await page.evaluate(() => ({ items: V3.items.filter(it => it.f).length, beams: [...V3.beamInfo.values()].filter(Boolean).length }));
@@ -45,7 +45,7 @@ test('3D : la scène se construit avec les faisceaux', async ({ page }) => {
 });
 
 test('dossier complet : couverture, plan, patch, accroches, inventaire', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=dossier]');
   const h = await page.locator('#dosPages h2').allTextContents();
   for (const k of ['Accroches et charges', 'Types et inventaire']) expect(h.join('|')).toContain(k);
@@ -57,7 +57,7 @@ test('étiquettes : une par projecteur, tête de perche, lignes, réseau', async
   await loadSynthetic(page, d => {
     d.lieu = { points: [], boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'G1', board: 'TD1', kind: 'grada', phase: 'L1', amps: 16, dest: 'P2 Milieu' }],
       dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }], devices: [{ id: 'v1', name: 'Node 1', kind: 'node', ip: '2.0.0.10', vlan: 10, sw: 'SW1', port: '4' }], consoles: [] };
-  });
+  }); await openCfg(page);
   await page.click('#tabs button[data-v=labels]');
   await page.click('#view [data-lv=fx]');
   await expect(page.locator('#docPages .lbl, #docPages [class*=lab]').first()).toBeVisible();
@@ -71,7 +71,7 @@ test('étiquettes : une par projecteur, tête de perche, lignes, réseau', async
 });
 
 test('plan : les six vues (dessus, dessous, face, lointain, jardin, cour)', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const firstX = {};
@@ -86,7 +86,7 @@ test('plan : les six vues (dessus, dessous, face, lointain, jardin, cour)', asyn
 });
 
 test('patch : la feuille de patch est dans l’onglet Patch', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#view [data-pv=sheet]');
   await expect(page.locator('#docPages .sheet').first()).toBeVisible();
   await expect(page.locator('#docPages')).toContainText('101');
@@ -102,7 +102,7 @@ test('synoptiques : électrique et réseau / DMX', async ({ page }) => {
       devices: [{ id: 's', name: 'SW1', kind: 'switch', ip: '2.0.0.2' }, { id: 'v1', name: 'Node 1', kind: 'node', ip: '2.0.0.10', sw: 'SW1', port: '4' }, { id: 'c', name: 'MA3', kind: 'console', ip: '2.0.0.1', sw: 'SW1', port: '1' }, { id: 'x', name: 'PC perdu', kind: 'pc', ip: '2.0.0.50' }],
       consoles: [{ id: 'k', name: 'Console principale', model: 'ma3light', device: 'MA3' }] };
     d.fixtures.forEach(f => { if (f.position === 'P1 Lointain') f.dmxLine = 'DMX A'; });
-  });
+  }); await openCfg(page);
   await page.click('#tabs button[data-v=syno]');
   await page.click('#view [data-sv=elec]'); await expect(page.locator('#view .syn svg')).toHaveCount(1);
   await page.click('#view [data-sv=net]');
@@ -119,7 +119,7 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
       devices: [{ id: 'c1', name: 'MA3', kind: 'console' }, { id: 'c2', name: 'Avo', kind: 'console' }, { id: 'm', name: 'Merger 1', kind: 'merger', merge: 'ltp' }],
       dmxLines: [{ id: 'a', name: 'IN A', src: 'MA3', port: 1, universe: 1, dest: 'Merger 1' }, { id: 'b', name: 'IN B', src: 'Avo', port: 1, universe: 1, dest: 'Merger 1' },
         { id: 'o', name: 'OUT', src: 'Merger 1', port: 1, universe: 1, dest: 'P1 Lointain' }] };
-  });
+  }); await openCfg(page);
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=dmx]');
   await expect(page.locator('#view select[data-f=dest]').first()).toHaveValue('Merger 1');
   await page.click('#view [data-nv=net]');
@@ -139,7 +139,7 @@ test('merger DMX : deux entrées, une sortie, dans le tableau et le synoptique',
 });
 
 test('plan : échelle choisie, ajustée à la page avec règles, rotation', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const cart = () => page.locator('#planPages svg').first().textContent();
@@ -161,7 +161,7 @@ test('plan : échelle choisie, ajustée à la page avec règles, rotation', asyn
 });
 
 test('plan : page en portrait, légende en bandeau', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.selectOption('[data-pl=orient]', 'portrait');
@@ -171,7 +171,7 @@ test('plan : page en portrait, légende en bandeau', async ({ page }) => {
 });
 
 test('plan : éditeur de légende (masquer, renommer, ordre, entrée libre, notes)', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#plLegEdit');
@@ -201,7 +201,7 @@ test('plan : éditeur de légende (masquer, renommer, ordre, entrée libre, note
 });
 
 test('légende : mode et nombre de canaux des types', async ({ page }) => {
-  await loadSynthetic(page, d => { d.types['Test@Lyre'].modes = { Std: 20, Basic: 12 }; d.fixtures[0].mode = 'Basic'; d.fixtures[0].nch = 12; });
+  await loadSynthetic(page, d => { d.types['Test@Lyre'].modes = { Std: 20, Basic: 12 }; d.fixtures[0].mode = 'Basic'; d.fixtures[0].nch = 12; }); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const sheet = page.locator('#planPages svg').first();
@@ -217,7 +217,7 @@ test('légende : mode et nombre de canaux des types', async ({ page }) => {
 });
 
 test('étiquettes du plan : rotation par 45°, jamais perdues hors du cadre', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   const lab = () => page.locator(`#planPages .plab[data-u="u-1"]`);
@@ -244,7 +244,7 @@ test('étiquettes du plan : rotation par 45°, jamais perdues hors du cadre', as
 test('vues du plan : vues de départ, vues personnalisées enregistrées au fil des modifications, choix dans le dossier', async ({ page }) => {
   page.removeAllListeners('dialog');
   let answer = 'Face régie'; page.on('dialog', d => d.type() === 'prompt' ? d.accept(answer) : d.accept());
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#view [data-pvbase=front]');
@@ -306,7 +306,7 @@ test('plan : zone à afficher, tracée à la souris puis réglée au décimètre
 });
 
 test('plan : choisir une vue de départ remet tout à zéro', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.selectOption('[data-pl=rot]', '90');
@@ -323,10 +323,10 @@ test('plan : choisir une vue de départ remet tout à zéro', async ({ page }) =
 });
 
 test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en tête du panneau', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
-  const grps = await page.locator('.plpanel .grp').allTextContents();
+  const grps = await page.locator('.cfg[data-cfg="plan:fix"] .grp').allTextContents();
   expect(grps[0]).toContain('Projecteurs par type');
   // A3 paysage, 1:50 : le cadre utile fait environ 324 × 261 mm, soit 16,2 × 13 m
   await page.evaluate(() => { Object.assign(state.plan, { zone: { x0: -8, x1: 8, y0: -6, y1: 6.9 }, fit: 'scale', scale: 50 }); renderPlanView(); });
@@ -336,7 +336,7 @@ test('plan : zone qui tient juste au cadre, pas d’alerte ; projecteurs en têt
 });
 
 test('plan : projecteurs superposés, étiquettes en colonnes par type, sans chevauchement', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#view [data-pvbase=front]');   // de face, le lointain et le milieu (même hauteur) se cachent l'un l'autre
@@ -351,7 +351,7 @@ test('plan : projecteurs superposés, étiquettes en colonnes par type, sans che
 });
 
 test('plan : colonnes d’étiquettes au-dessus des projecteurs superposés (vue de côté)', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await page.click('#view [data-pvbase=cour]');   // de côté, chaque perche se réduit à une pile
@@ -370,7 +370,7 @@ test('plan : colonnes d’étiquettes au-dessus des projecteurs superposés (vue
 });
 
 test('plan : aucune étiquette ne chevauche une autre étiquette ni un projecteur, dans les six vues', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   for (const v of ['top', 'bottom', 'front', 'back', 'jardin', 'cour']) {
@@ -385,64 +385,64 @@ test('plan : aucune étiquette ne chevauche une autre étiquette ni un projecteu
 });
 
 test('plan : masquer ou afficher des machines, par type ou une à une', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
-  const grps = await page.locator('.plpanel .grp').allTextContents();
+  const grps = await page.locator('.cfg[data-cfg="plan:fix"] .grp').allTextContents();
   expect(grps[0]).toContain('Projecteurs par type');
-  await page.uncheck('.plpanel [data-plh=type][data-k="Test@PC"]');
+  await page.uncheck('.cfg [data-plh=type][data-k="Test@PC"]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(16);
-  await page.check('.plpanel [data-plh=type][data-k="Test@PC"]');
+  await page.check('.cfg [data-plh=type][data-k="Test@PC"]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   // une machine seule : déplier le type et décocher 101
-  await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
-  await page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-plfx="u-1"]').uncheck();
+  await page.locator('.cfg details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
+  await page.locator('.cfg details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-plfx="u-1"]').uncheck();
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(23);
-  await expect(page.locator('.plpanel details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary small')).toHaveText('5/6');
-  await page.click('.plpanel [data-plall=types]');
+  await expect(page.locator('.cfg details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary small')).toHaveText('5/6');
+  await page.click('.cfg [data-plall=types]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
 });
 
 test('3D : masquer ou afficher des machines par type ou une à une, projecteurs en tête', async ({ page }) => {
   test.setTimeout(90_000);
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=v3d]');
   await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
-  const grps = await page.locator('#v3 .v3panel .grp').allTextContents();
+  const grps = await page.locator('.cfg[data-cfg="3d:elems"] .grp').allTextContents();
   expect(grps[0]).toContain('Projecteurs par type');
   const shown = () => page.evaluate(() => V3.items.filter(it => it.f && it.o.visible).length);
-  await page.uncheck('#v3 [data-v3h=type][data-k="Test@PC"]');
+  await page.uncheck('#view [data-v3h=type][data-k="Test@PC"]');
   await expect.poll(shown).toBe(16);
-  await page.check('#v3 [data-v3h=type][data-k="Test@PC"]');
-  await page.locator('#v3 details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
-  await page.locator('#v3 details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-v3fx="u-1"]').uncheck();
+  await page.check('#view [data-v3h=type][data-k="Test@PC"]');
+  await page.locator('#view details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('summary .tw').click();
+  await page.locator('#view details.ly', { has: page.locator('[data-k="Test@Lyre"]') }).locator('[data-v3fx="u-1"]').uncheck();
   await expect.poll(shown).toBe(23);
-  await page.click('#v3 [data-v3all=types]');
+  await page.click('#view [data-v3all=types]');
   await expect.poll(shown).toBe(24);
-  await expect(page.locator('#v3 [data-v3fx="u-1"]').first()).toBeChecked();
+  await expect(page.locator('#view [data-v3fx="u-1"]').first()).toBeChecked();
 });
 
 test('projecteurs par position : machine par machine, plan et 3D', async ({ page }) => {
   test.setTimeout(90_000);
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   await planStable(page);
   const posRow = sel => page.locator(`${sel} details.ly`, { has: page.locator('[data-k="P2 Milieu"]') });
-  await posRow('.plpanel').locator('summary .tw').click();
-  await posRow('.plpanel').locator('[data-plfx="u-7"]').uncheck();
+  await posRow('.cfg').locator('summary .tw').click();
+  await posRow('.cfg').locator('[data-plfx="u-7"]').uncheck();
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(23);
-  await expect(posRow('.plpanel').locator('summary small')).toHaveText('7/8');
+  await expect(posRow('.cfg').locator('summary small')).toHaveText('7/8');
   // même machine décochée dans la liste par type
-  await expect(page.locator('.plpanel [data-plfx="u-7"]').first()).not.toBeChecked();
-  await page.click('.plpanel [data-plall=pos]');
+  await expect(page.locator('.cfg [data-plfx="u-7"]').first()).not.toBeChecked();
+  await page.click('.cfg [data-plall=pos]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24);
   await page.click('#tabs button[data-v=v3d]');
   await expect(page.locator('#v3 canvas')).toBeVisible({ timeout: 45000 });
-  await posRow('#v3').locator('summary .tw').click();
-  await posRow('#v3').locator('[data-v3fx="u-7"]').uncheck();
+  await posRow('#view .cfg[data-cfg="3d:elems"]').locator('summary .tw').click();
+  await posRow('#view .cfg[data-cfg="3d:elems"]').locator('[data-v3fx="u-7"]').uncheck();
   await expect.poll(() => page.evaluate(() => V3.items.filter(it => it.f && it.o.visible).length)).toBe(23);
-  await expect(page.locator('#v3 [data-v3fx="u-7"]').first()).not.toBeChecked();
+  await expect(page.locator('#view [data-v3fx="u-7"]').first()).not.toBeChecked();
 });
 
 test('plan : déplacer le nom d’un point d’accroche', async ({ page }) => {
@@ -462,12 +462,13 @@ test('plan : déplacer le nom d’un point d’accroche', async ({ page }) => {
   expect(await page.evaluate(() => !!state.d.planLab2[planLabKey()]['p:P2 Milieu'])).toBe(true);
   await tag.click({ button: 'right' });
   await expect(tag).toHaveAttribute('transform', /rotate\(45\)/);
+  await page.click('#view details[data-cfg="plan:labs"] > summary');
   await page.click('#plLabReset');
   await expect(tag).not.toHaveAttribute('transform', /rotate/);
 });
 
 test('plan : étiquettes tournées à 45°, le trait de rappel touche toujours le cadre', async ({ page }) => {
-  await loadSynthetic(page);
+  await loadSynthetic(page); await openCfg(page);
   await page.click('#tabs button[data-v=plan]');
   await expect(page.locator('#planPages .plab:not(.ptag)')).toHaveCount(24, { timeout: 15000 });
   for (const v of ['front', 'cour']) {
@@ -495,7 +496,7 @@ test('modèles d’appareils : ports des switches et des nodes vérifiés', asyn
     d.lieu = { points: [], boards: [], lines: [], consoles: [],
       devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 'n1', name: 'Node 1', kind: 'node', sw: 'SW1', port: '3', poe: true }, { id: 'n2', name: 'Node 2', kind: 'node', sw: 'SW1', port: '12' }],
       dmxLines: [{ id: 'a', name: 'DMX A', src: 'Node 1', port: 1, universe: 1 }, { id: 'b', name: 'DMX B', src: 'Node 1', port: 5, universe: 2 }] };
-  });
+  }); await openCfg(page);
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=models]');
   await expect(page.locator('#view')).toContainText('Aucun modèle');
   // deux modèles : un switch 8 ports dont 2 PoE, un node 4 sorties
@@ -535,7 +536,7 @@ test('les consoles figurent dans les appareils du réseau', async ({ page }) => 
   await loadSynthetic(page, d => {
     d.lieu = { points: [], boards: [], lines: [], dmxLines: [], devices: [{ id: 'v', name: 'grandMA3 régie', kind: 'console', ip: '2.0.0.100' }],
       consoles: [{ id: 'c1', name: 'grandMA3 régie' }, { id: 'c2', name: 'onPC backup' }] };
-  });
+  }); await openCfg(page);
   // la première retrouve son appareil, la seconde en reçoit un
   expect(await page.evaluate(() => state.d.lieu.devices.map(v => `${v.name}:${v.kind}`))).toEqual(['grandMA3 régie:console', 'onPC backup:console']);
   expect(await page.evaluate(() => state.d.lieu.consoles.map(c => c.device))).toEqual(['grandMA3 régie', 'onPC backup']);
@@ -568,7 +569,7 @@ test('appareils : ports réglés dans la fiche, univers des sorties de console e
       consoles: [{ id: 'k', name: 'MA3', device: 'MA3' }],
       devices: [{ id: 'c', name: 'MA3', kind: 'console' }, { id: 'sr', name: 'SW régie', kind: 'switch', model: 'Switch 8' }, { id: 'n', name: 'Node 1', kind: 'node', poe: true }, { id: 'sp', name: 'Split', kind: 'splitter', ports: { in: 1, out: 4 } }],
       dmxLines: [{ id: 'a', name: 'DMX A', src: 'MA3', port: 2, universe: null, dest: 'Split', destPort: 1 }, { id: 'b', name: 'DMX B', src: 'Split', port: 1, dest: 'P1 Lointain' }, { id: 'c2', name: 'DMX C', src: 'Split', port: 3, dest: 'P2 Milieu' }] };
-  });
+  }); await openCfg(page);
   // console : nombres de ports et univers de chaque sortie, dans l'onglet Console
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=console]');
   const cf = f => page.locator(`#view input[data-o=consoles][data-f=${f}]`);
@@ -609,7 +610,7 @@ test('tableaux : tri par colonne et filtre des lignes, dans toutes les vues', as
     d.lieu = { points: [], boards: [], lines: [], consoles: [], netLinks: [{ id: 'k1', kind: 'eth', a: 'SW1', ap: 2, b: 'Node B', bp: 1 }, { id: 'k2', kind: 'eth', a: 'SW1', ap: 1, b: 'Node A', bp: 1 }],
       dmxLines: [{ id: 'x1', name: 'DMX 2', src: 'Node A', port: 1, universe: 2 }, { id: 'x2', name: 'DMX 10', src: 'Node A', port: 2, universe: 1 }],
       devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 'a', name: 'Node A', kind: 'node' }, { id: 'b', name: 'Node B', kind: 'node' }] };
-  });
+  }); await openCfg(page);
   // accroches : le filtre ne garde que les lignes qui contiennent tous les mots, le total reste
   await page.click('#tabs button[data-v=rigging]');
   const rg = page.locator('#view table.grid').first(), rows = rg.locator('tbody tr:not([hidden])');
@@ -649,7 +650,7 @@ test('univers d’une sortie de node : les projecteurs du patch se raccrochent �
     d.lieu = { points: [], boards: [], lines: [], consoles: [], netLinks: [],
       devices: [{ id: 'n', name: 'Node 1', kind: 'node', ports: { out: 2 } }],
       dmxLines: [{ id: 'a', name: 'DMX A', src: 'Node 1', port: 1, dest: 'P1 Lointain' }, { id: 'b', name: 'DMX B', src: 'Node 1', port: 2, dest: 'P1 Lointain' }] };
-  });
+  }); await openCfg(page);
   const u1 = await page.evaluate(() => state.d.fixtures.find(f => f.position === 'P1 Lointain').univ);
   const onLine = () => page.evaluate(() => state.d.fixtures.filter(f => f.position === 'P1 Lointain').map(f => f.dmxLine || '-').join(' '));
   await page.click('#tabs button[data-v=net]'); await page.click('#view [data-nv=net]');
@@ -676,7 +677,7 @@ test('portrait ou paysage : vues 3D et synoptiques, gardé dans le dossier compl
     d.lieu = { points: [], boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'G1', board: 'TD1', kind: 'grada', phase: 'L1', amps: 16, dest: 'P2 Milieu' }],
       dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }],
       devices: [{ id: 's', name: 'SW1', kind: 'switch', ip: '2.0.0.2' }, { id: 'v1', name: 'Node 1', kind: 'node', ip: '2.0.0.10' }], consoles: [] };
-  });
+  }); await openCfg(page);
   // synoptique réseau en portrait : réglage du dossier, page d'impression en portrait
   await page.click('#tabs button[data-v=syno]');
   await page.click('#view [data-sv=net]');
@@ -717,7 +718,7 @@ test('synoptique réseau : colonnes fixes (consoles, switches, nodes, splitters 
         { id: 'n4', kind: 'eth', a: 'SW1', ap: 3, b: 'MA3 backup', bp: 1 }, { id: 'n5', kind: 'eth', a: 'SW2', ap: 5, b: 'SW3', bp: 1 }, { id: 'n6', kind: 'eth', a: 'SW3', ap: 2, b: 'Node 2', bp: 1 },
         { id: 'n7', kind: 'eth', a: 'Node 2', ap: 2, b: 'Node 3', bp: 1 }],
       consoles: [] };
-  });
+  }); await openCfg(page);
   await page.click('#tabs button[data-v=syno]');
   await page.click('#view [data-sv=net]');
   const xs = await page.evaluate(() => {

@@ -151,7 +151,7 @@ table.grid td input.box:focus { background: var(--panel); }
 .maconv { color: #2e8b57; font-size: 11.5px; } small.mawarn { display: inline-block; margin: 3px 0; padding: 2px 6px; font-size: 11.5px; } .mawarn { margin: 6px 0; padding: 6px 10px; border-radius: 7px; background: color-mix(in srgb, #e8a317 16%, var(--bg)); font-size: 13px; } .mahelp { margin-top: 12px; font-size: 13px; } .mahelp summary { cursor: pointer; font-weight: 600; }
 .cartedit { margin: 12px 0 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; } .cartedit > summary { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
 .cartedit .cgrid { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0; } .cartedit .cf { display: flex; flex-direction: column; gap: 2px; font-size: 12px; } .cartedit .cf > span { color: var(--muted); } .cartedit input, .cartedit select { font: inherit; font-size: 13px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); min-width: 12em; }
-.planwrap.docopts #docPages { flex: 1; min-width: 0; } .plpanel .dhide { display: flex; gap: 6px; margin: 4px 0; } .plpanel .dhide input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.planwrap.docopts #docPages { flex: 1; min-width: 0; } :is(.plpanel, .cfg) .dhide { display: flex; gap: 6px; margin: 4px 0; } .plpanel .dhide input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 .tfilter { display: flex; align-items: center; gap: 10px; margin: 10px 0 6px; } .tfilter .tfq { font: inherit; font-size: 13px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); width: 240px; } .tfilter .tfn { font-size: 12px; color: var(--muted); }
 table.grid th.tsort { cursor: pointer; user-select: none; } table.grid th.tsort:hover { color: var(--ink); } table.grid th.tsort.asc::after { content: ' ▲'; font-size: 9px; } table.grid th.tsort.desc::after { content: ' ▼'; font-size: 9px; }
 .dvtab td.lks { min-width: 220px; max-width: 520px; white-space: normal; } .ptab select, .lktab select { max-width: 240px; } .ptab td:nth-child(3) select { max-width: 300px; } .lk { display: inline-block; margin: 1px 6px 1px 0; padding: 1px 6px; border-radius: 4px; background: var(--panel); font-size: 12px; white-space: nowrap; } .lk.out, .lk.in { box-shadow: inset 2px 0 0 #4363d8; }
@@ -396,6 +396,11 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .cfg .grp { margin: 2px 0 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
 .cfg .dhide { display: flex; gap: 6px; align-items: center; } .cfg .dhide input { width: 220px; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 .cfg .chips { margin-top: 6px; max-width: 760px; }
+.cfgbar > .cfgtools { margin: 0 0 0 auto; align-self: flex-start; padding: 4px 0; } .cfgbar > .cfgtools > span { margin: 0 !important; }
+.cfg .cartedit { margin: 0; background: none; border: 0; padding: 0; } .cfg .cartedit .cgrid { margin: 6px 0 0; }
+.cfg .cfgrow input:not([type]), .cfg .cfgrow input[inputmode] { width: 6em; font: inherit; font-size: 13px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); }
+.cfg .lycols { display: flex; flex-wrap: wrap; gap: 4px 32px; align-items: flex-start; } .cfg .lycols > * { min-width: 230px; }
+.cfg .plhint { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
 #docPages.fullw { padding-top: 10px; }
 .pvrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; } .pvrow small { color: var(--muted); } .pvrow label { display: flex; gap: 5px; align-items: center; margin-inline-start: 8px; }
 .pvlab { width: 110px; flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); font-weight: 600; }
@@ -447,15 +452,15 @@ dialog#mapDlg h2 { margin: 0 0 6px; font-size: 17px; }
 .plpanel { flex: none; width: 250px; position: sticky; top: 12px; margin-top: 18px; max-height: calc(100vh - 150px); overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; }
 .plpanel:not([open]) { width: auto; }
 .plpanel > summary { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); padding: 2px 0; }
-.plpanel .grp { margin: 9px 0 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
-.plpanel .grp button { font: inherit; font-size: 11px; color: var(--muted); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; text-transform: none; letter-spacing: 0; }
-.plpanel label { display: flex; gap: 6px; align-items: center; white-space: nowrap; padding: 1.5px 0; cursor: pointer; }
-.plpanel label small { color: var(--muted); margin-inline-start: auto; padding-inline-start: 8px; }
-.plpanel details.ly > summary { font-weight: 500; font-size: 12.5px; color: var(--ink); list-style: none; display: flex; gap: 6px; align-items: center; cursor: pointer; }
-.plpanel details.ly > summary::-webkit-details-marker { display: none; }
-.plpanel details.ly > summary .tw { width: 10px; color: var(--muted); } .plpanel details.ly[open] > summary .tw { transform: rotate(90deg); }
-.plpanel details.ly > div { padding-inline-start: 22px; }
-.plpanel input { accent-color: var(--accent); margin: 0; }
+:is(.plpanel, .cfg) .grp { margin: 9px 0 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+:is(.plpanel, .cfg) .grp button { font: inherit; font-size: 11px; color: var(--muted); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; text-transform: none; letter-spacing: 0; }
+:is(.plpanel, .cfg) label { display: flex; gap: 6px; align-items: center; white-space: nowrap; padding: 1.5px 0; cursor: pointer; }
+:is(.plpanel, .cfg) label small { color: var(--muted); margin-inline-start: auto; padding-inline-start: 8px; }
+:is(.plpanel, .cfg) details.ly > summary { font-weight: 500; font-size: 12.5px; color: var(--ink); list-style: none; display: flex; gap: 6px; align-items: center; cursor: pointer; }
+:is(.plpanel, .cfg) details.ly > summary::-webkit-details-marker { display: none; }
+:is(.plpanel, .cfg) details.ly > summary .tw { width: 10px; color: var(--muted); } :is(.plpanel, .cfg) details.ly[open] > summary .tw { transform: rotate(90deg); }
+:is(.plpanel, .cfg) details.ly > div { padding-inline-start: 22px; }
+:is(.plpanel, .cfg) input { accent-color: var(--accent); margin: 0; }
 .plhint { color: var(--muted); font-size: 11.5px; margin-top: 8px; white-space: normal; }
 .planwrap #planPages { flex: 1; min-width: 0; overflow: auto; align-items: flex-start; }
 .plstate { font-size: 12px; color: var(--muted); }
@@ -512,6 +517,7 @@ table.dwrap { width: 100%; border-collapse: collapse; } table.dwrap > * > tr > t
 .plansheet svg text { font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", Arial, sans-serif; }
 .plansheet .fx:hover { opacity: .6; cursor: help; }
 #planPages { padding: 18px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+#planPages.fullw { overflow: auto; align-items: safe center; padding-top: 10px; }
 .plopts { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 12px 0 0; font-size: 13px; }
 .plopts label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
 .plopts select { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; }
@@ -828,11 +834,11 @@ const I18N = {
     maLayerNo: 'N° du calque', maGroupStart: 'Premier groupe', maLayoutNo: 'N° du layout', maLayoutScale: 'Cases par mètre', maPresetStart: 'Premier preset', maAll: 'Tous',
     maWarnLib: n => `${n} type(s) sans fichier de librairie : à importer à la main au numéro indiqué avant de lancer le plugin.`, maWarnId: n => `${n} projecteur(s) sans Fix ID ni Channel ID numérique : laissés de côté.`, maWarnUnp: n => `${n} projecteur(s) sans adresse : créés sans patch.`, maWarnAll: 'Les presets se font sur le groupe « Tous » : cochez-le.',
     maDownload: 'Télécharger le show (.zip)', maHowTitle: 'Sur la console', maHow: ['Copier le contenu du zip à la racine d’une clé USB (dossier gma2), ou dans le dossier gma2 de l’onPC.', 'Ouvrir un show vide (NewShow) ; si les fichiers sont sur la clé, la choisir comme lecteur (Backup, ou SelectDrive).', 'Importer le plugin dans une case vide du pool, pas la case 1 (un show neuf y a le plugin de démonstration de MA) : cd Plugin, puis Import "oplanfeu_…" At 2, puis cd /.', 'Lancer : Plugin 2. Dans un show vide, il ne demande rien ; le détail est dans le System Monitor et dans importexport/oplanfeu_log.txt (onPC).', 'Si un fixture type est introuvable, le plugin s’arrête sans rien créer et donne des noms proches de la librairie (System Monitor, et importexport/oplanfeu_log.txt sur l’onPC) : corriger le nom ici, retélécharger, relancer.'],
-    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbPage: 'Mise en page', sbViews: 'Vues', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
+    sb_full: 'Complète', sb_pos: 'Par position', sb_layer: 'Par calque', sb_univ: 'Par univers', sb_sum: 'Récapitulatifs', sbContent: 'Contenu de la feuille', sbPage: 'Mise en page', sbViews: 'Vues', setBox: 'Réglages et aide', helpBox: 'Aide', labDocBox: 'Langue et regroupement', plDraw: 'Dessin', plFixBox: 'Projecteurs affichés', sbSums: 'Récapitulatifs', sbPatch: 'Patch', sbOther: 'Autres',
     sbHint: 'Feuille de patch à imprimer, en A3 ou A4, paysage ou portrait. Comme pour le plan : une vue de départ, puis des vues personnalisées (contenu, format, projecteurs masqués) à afficher ou non dans le dossier complet.',
     sbBaseHint: 'Vue de départ : la choisir remet tout à zéro (contenu, format, projecteurs masqués). « Nouvelle vue » crée une vue personnalisée à partir d’elle, gardée au fil des modifications.',
     sbCartHint: 'Le cartouche (titre, lieu, date, responsable, lignes de notes) et la langue des feuilles se règlent dans le dossier complet.',
-    cartTitle: 'Cartouche et langue des documents', cartHint: 'Repris en tête de la feuille de patch, dans le cartouche du plan et sur la couverture du dossier.', cartLang: 'Langue des feuilles imprimées',
+    cartTitle: 'Cartouche et langue des documents', dosParts: 'Parties du dossier', cartHint: 'Repris en tête de la feuille de patch, dans le cartouche du plan et sur la couverture du dossier.', cartLang: 'Langue des feuilles imprimées',
     tsFilter: 'Filtrer les lignes…', tsReset: 'tout afficher, ordre d’origine', tsSortT: 'Trier (clic : croissant, décroissant, ordre d’origine)', tsCount: (n, m) => `${n} ligne(s) sur ${m}`,
     nsNoSrc: 'source inconnue', nsNoDest: 'arrivée ?', nsFx0: 'aucun projecteur', nsDmxLeg: 'DMX (couleur de l’univers)', nsExtra: 'autre câble',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `sortie ${n}`, ptIn: n => `entrée ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'Sortie DMX', pt_in: 'Entrée DMX',
@@ -976,11 +982,11 @@ const I18N = {
     maLayerNo: 'Layer no.', maGroupStart: 'First group', maLayoutNo: 'Layout no.', maLayoutScale: 'Cells per metre', maPresetStart: 'First preset', maAll: 'All',
     maWarnLib: n => `${n} type(s) without library file: import them by hand at the given number before running the plugin.`, maWarnId: n => `${n} fixture(s) without a numeric Fix ID or Channel ID: skipped.`, maWarnUnp: n => `${n} fixture(s) without address: created unpatched.`, maWarnAll: 'Presets are stored on the “All” group: tick it.',
     maDownload: 'Download the show (.zip)', maHowTitle: 'On the console', maHow: ['Copy the zip content to the root of a USB key (gma2 folder), or into the onPC gma2 folder.', 'Open an empty show (NewShow); if the files are on the key, select it as drive (Backup, or SelectDrive).', 'Import the plugin into an empty pool cell, not cell 1 (a new show holds MA’s demo plugin there): cd Plugin, then Import "oplanfeu_…" At 2, then cd /.', 'Run: Plugin 2. In an empty show it asks nothing; details are in the System Monitor and importexport/oplanfeu_log.txt (onPC).', 'If a fixture type is not found, the plugin stops without creating anything and lists close library names (System Monitor, and importexport/oplanfeu_log.txt on onPC): fix the name here, download again, run again.'],
-    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbPage: 'Page layout', sbViews: 'Views', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
+    sb_full: 'Complete', sb_pos: 'By position', sb_layer: 'By layer', sb_univ: 'By universe', sb_sum: 'Summaries', sbContent: 'Sheet content', sbPage: 'Page layout', sbViews: 'Views', setBox: 'Settings and help', helpBox: 'Help', labDocBox: 'Language and grouping', plDraw: 'Drawing', plFixBox: 'Shown fixtures', sbSums: 'Summaries', sbPatch: 'Patch', sbOther: 'Other',
     sbHint: 'Printable patch sheet, A3 or A4, landscape or portrait. As for the plot: a starting view, then custom views (content, format, hidden fixtures) to show or not in the full dossier.',
     sbBaseHint: 'Starting view: choosing it resets everything (content, format, hidden fixtures). “New view” creates a custom view from it, kept as you edit.',
     sbCartHint: 'The title block (title, venue, date, person in charge, note lines) and the sheet language are set in the full dossier.',
-    cartTitle: 'Title block and document language', cartHint: 'Used at the top of the patch sheet, in the plot title block and on the dossier cover.', cartLang: 'Language of printed sheets',
+    cartTitle: 'Title block and document language', dosParts: 'Dossier parts', cartHint: 'Used at the top of the patch sheet, in the plot title block and on the dossier cover.', cartLang: 'Language of printed sheets',
     tsFilter: 'Filter rows…', tsReset: 'show all, original order', tsSortT: 'Sort (click: ascending, descending, original order)', tsCount: (n, m) => `${n} of ${m} row(s)`,
     nsNoSrc: 'unknown source', nsNoDest: 'lands ?', nsFx0: 'no fixture', nsDmxLeg: 'DMX (universe colour)', nsExtra: 'other cable',
     ptEth: n => `port ${n}`, ptSfp: n => `SFP ${n}`, ptOut: n => `out ${n}`, ptIn: n => `in ${n}`, pt_eth: 'Ethernet', pt_sfp: 'SFP', pt_out: 'DMX out', pt_in: 'DMX in',
@@ -2884,7 +2890,8 @@ function renderSynoView() {
   ensureLieu(state.d);
   const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec', or = synOrient(sv);
   const head = `<div class="subtabs">${SYN_VIEWS.map(k => `<button type="button" data-sv="${k}"${k === sv ? ' class="on"' : ''}>${esc(t('sv_' + k))}</button>`).join('')}</div>
-<div class="settings noprint" style="margin-bottom:0"><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
+${cfgBar(cfgBox('syno:' + sv + ':page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label></div>`, 'A4 · ' + t('or_' + or)))}
+<div class="plopts noprint"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   $('#view').innerHTML = head + `<div class="synwrap${or === 'portrait' ? ' port' : ''}">${sv === 'elec' ? renderSyno() : renderNetSyno()}</div>`;
   $('#pagesize').textContent = or === 'portrait' ? '@page { size: A4 portrait; margin: 12mm; } .syn svg { max-height: 265mm !important; }' : '';
@@ -3866,17 +3873,19 @@ function planPanel() {
   const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k2, c]) => { const list = d.fixtures.filter(f => (f.position || '—') === k2).sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))), shown = list.filter(f => !hidO.has('f:' + f.uid)).length;
     return `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-plh="pos" data-k="${x(k2)}"${H.pos.includes(k2) ? '' : ' checked'}> ${x(k2 === '—' ? t('noPos') : k2)} <small>${shown < c ? shown + '/' : ''}${c}</small></summary><div>${list.map(f => `<label><input type="checkbox" data-plfx="${x(f.uid)}"${hidO.has('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || typeName(f.type))}</small></label>`).join('')}</div></details>`; }).join('');
   const ck = (k2, lab) => `<label><input type="checkbox" data-pl="${k2}"${P[k2] !== false ? ' checked' : ''}> ${x(t(lab))}</label>`;
-  return `<details class="plpanel noprint" open><summary>${x(t('v3Elems'))}</summary>
-<div class="grp">${x(t('plFixT'))}<button type="button" data-plall="types">${x(t('v3All'))}</button><button type="button" data-plnone="types">${x(t('v3None'))}</button></div>${tys}
-<div class="grp">${x(t('v3Fix'))}<button type="button" data-plall="pos">${x(t('v3All'))}</button><button type="button" data-plnone="pos">${x(t('v3None'))}</button></div>${ps}
-<div class="grp">${x(t('plShow'))}</div>${ck('labels', 'plLabels')}${ck('points', 'plPoints')}${ck('struct', 'plStruct')}${ck('grid', 'plGrid')}
-<div class="grp">${x(t('v3Struct'))}<button type="button" data-plall="layers">${x(t('v3All'))}</button><button type="button" data-plnone="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}
-<div class="grp"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-plunhide="1">${x(t('unhideAll'))}</button></div>
-<div class="grp">${x(t('plLegend'))}<button type="button" id="plLegEdit">${x(t('plLegEdit'))}</button></div>
-<div class="grp">${x(t('plLabs'))}<button type="button" id="plLabReset">${x(t('plLabReset'))}</button></div>
-<label>${x(t('plLabRot'))} <select data-pl="labRot">${[0, 45, 90, 135, 180, 225, 270, 315].map(v => `<option value="${v}"${(+P.labRot || 0) === v ? ' selected' : ''}>${v}°</option>`).join('')}</select></label>
-<label>${x(t('plLabSize'))} <input type="range" data-pl="labSize" min="40" max="300" step="10" value="${+P.labSize || 100}" style="flex:1;min-width:0"> <small id="plLabSizeV">${+P.labSize || 100} %</small></label>
-<div class="plhint">${x(t('plDragHint'))}</div></details>`;
+  const nShown = d.fixtures.filter(f => !hidO.has('f:' + f.uid) && !(H.types || []).includes(f.type) && !H.pos.includes(f.position || '—')).length;
+  return {
+    show: `<div class="grp">${x(t('plShow'))}</div><div class="cfgrow">${ck('labels', 'plLabels')}${ck('points', 'plPoints')}${ck('struct', 'plStruct')}${ck('grid', 'plGrid')}</div>`,
+    fix: `<div class="lycols"><div><div class="grp">${x(t('plFixT'))}<button type="button" data-plall="types">${x(t('v3All'))}</button><button type="button" data-plnone="types">${x(t('v3None'))}</button></div>${tys}</div>
+<div><div class="grp">${x(t('v3Fix'))}<button type="button" data-plall="pos">${x(t('v3All'))}</button><button type="button" data-plnone="pos">${x(t('v3None'))}</button></div>${ps}</div></div>
+<div class="grp"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-plunhide="1">${x(t('unhideAll'))}</button></div>`,
+    fixSum: `${nShown}/${d.fixtures.length}`,
+    struct: `<div class="grp">${x(t('v3Struct'))}<button type="button" data-plall="layers">${x(t('v3All'))}</button><button type="button" data-plnone="layers">${x(t('v3None'))}</button></div><div class="lycols">${lays || `<small>${x(t('dEmpty'))}</small>`}</div>`,
+    structSum: lays ? `${[...byL.keys()].filter(l => !H.layers.includes(l)).length}/${byL.size}` : '0',
+    labs: `<div class="cfgrow"><label>${x(t('plLabRot'))} <select data-pl="labRot">${[0, 45, 90, 135, 180, 225, 270, 315].map(v => `<option value="${v}"${(+P.labRot || 0) === v ? ' selected' : ''}>${v}°</option>`).join('')}</select></label>
+<label>${x(t('plLabSize'))} <input type="range" data-pl="labSize" min="40" max="300" step="10" value="${+P.labSize || 100}" style="width:140px"> <small id="plLabSizeV">${+P.labSize || 100} %</small></label>
+<button type="button" class="minibtn" id="plLabReset">${x(t('plLabReset'))}</button></div><div class="plhint">${x(t('plDragHint'))}</div>`,
+  };
 }
 // ───────────── éditeur de légende du plan ─────────────
 function legSections() {
@@ -4008,21 +4017,29 @@ function renderPlanView() {
   const pts = [...new Set(state.d.fixtures.map(f => f.position).filter(Boolean))].sort(natCmp);
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   const geoOk = PLAN_GEO.ready && PLAN_GEO.key === planGeoKey();
-  $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('plHint'))}</p>
-${planViewStrip()}
-<div class="plopts noprint">
+  const PP = planPanel(), cur = state.planViewId && views('plan').find(v => v.id === state.planViewId);
+  const sel = (k, vals, cur0, lab) => `<select data-pl="${k}">${o(vals, cur0, lab)}</select>`;
+  const draw = `<div class="cfgrow">
 <label>${esc(t('plPoint'))} <select data-pl="point"><option value="">${esc(t('plAll'))}</option>${o(pts, P.point, v => v)}</select></label>
-<label>${esc(t('plColor'))} <select data-pl="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], P.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
-<label>${esc(t('plLabel2'))} <select data-pl="l2">${o(['none', 'patch', 'name', 'circuit', 'dmx', 'gel', 'type', 'unit'], P.l2, v => t('l2' + v))}</select></label>
-<label>${esc(t('doFormat'))} <select data-pl="fmt">${o(['A3', 'A4'], P.fmt, v => v)}</select></label>
-<label>${esc(t('plOrient'))} <select data-pl="orient">${o(['landscape', 'portrait'], P.orient === 'portrait' ? 'portrait' : 'landscape', v => t('or_' + v))}</select></label>
-<label>${esc(t('plScaleSel'))} <select data-pl="scaleSel">${o(['auto', ...SCALES.map(String), 'fit'], P.fit === 'fit' ? 'fit' : P.scale ? String(P.scale) : 'auto', v => v === 'auto' ? t('plScaleAuto') : v === 'fit' ? t('plScaleFit') : '1:' + v)}</select></label>
-<label>${esc(t('plRot'))} <select data-pl="rot">${o(['0', '90', '180', '270'], String(planRot(P)), v => v + '°')}</select></label>
-<label><input type="checkbox" data-pl="rulers"${P.rulers !== false ? ' checked' : ''}> ${esc(t('plRulers'))}</label>
+<label>${esc(t('plColor'))} ${sel('color', ['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], P.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</label>
+<label>${esc(t('plLabel2'))} ${sel('l2', ['none', 'patch', 'name', 'circuit', 'dmx', 'gel', 'type', 'unit'], P.l2, v => t('l2' + v))}</label>
+<label>${esc(t('plRot'))} ${sel('rot', ['0', '90', '180', '270'], String(planRot(P)), v => v + '°')}</label>
 <button type="button" class="minibtn${state.planZoneDraw ? ' primary' : ''}" id="plZoneDraw" title="${esc(t('zoneDrawT'))}">${esc(t(state.planZoneDraw ? 'zoneDrawing' : 'zoneDraw'))}</button>
-<span class="spacer"></span><span class="plstate">${geoOk ? '' : esc(t('v3Shaping'))}</span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="160" value="${P.zoom}"></label></div>
-${zoneEditor()}
-<div class="planwrap">${planPanel()}<div id="planPages"${state.planZoneDraw ? ' class="zdraw"' : ''}>${renderPlan()}</div></div>`;
+<button type="button" class="minibtn" id="plLegEdit">${esc(t('plLegend'))} : ${esc(t('plLegEdit'))}</button></div>${PP.show}`;
+  const page = `<div class="cfgrow">
+<label>${esc(t('doFormat'))} ${sel('fmt', ['A3', 'A4'], P.fmt, v => v)}</label>
+<label>${esc(t('plOrient'))} ${sel('orient', ['landscape', 'portrait'], P.orient === 'portrait' ? 'portrait' : 'landscape', v => t('or_' + v))}</label>
+<label>${esc(t('plScaleSel'))} ${sel('scaleSel', ['auto', ...SCALES.map(String), 'fit'], P.fit === 'fit' ? 'fit' : P.scale ? String(P.scale) : 'auto', v => v === 'auto' ? t('plScaleAuto') : v === 'fit' ? t('plScaleFit') : '1:' + v)}</label>
+<label><input type="checkbox" data-pl="rulers"${P.rulers !== false ? ' checked' : ''}> ${esc(t('plRulers'))}</label></div>`;
+  $('#view').innerHTML = cfgBar(
+    cfgBox('plan:views', t('sbViews'), planViewStrip() + `<p class="hint2">${esc(t('plHint'))}</p>`, cur ? cur.name : t('pv_' + (P.view === 'side' ? 'cour' : P.view || 'top')).replace(/ \(.*\)$/, ''), true),
+    cfgBox('plan:draw', t('plDraw'), draw, t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[P.color] || 'cType'), true),
+    cfgBox('plan:page', t('sbPage'), page, `${P.fmt} · ${t('or_' + (P.orient === 'portrait' ? 'portrait' : 'landscape'))}`, true),
+    cfgBox('plan:fix', t('plFixBox'), PP.fix, PP.fixSum),
+    cfgBox('plan:struct', t('v3Struct'), PP.struct, PP.structSum),
+    cfgBox('plan:labs', t('plLabs'), PP.labs, (+P.labSize || 100) + ' %'))
++ zoneEditor() + `<div class="plopts noprint"><span class="spacer"></span><span class="plstate">${geoOk ? '' : esc(t('v3Shaping'))}</span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button><label>${esc(t('zoom'))} <input type="range" id="plZoom" min="20" max="160" value="${P.zoom}"></label></div>
+<div id="planPages" class="fullw${state.planZoneDraw ? ' zdraw' : ''}">${renderPlan()}</div>`;
   planViewSync();
   $('#pagesize').textContent = `@page { size: ${P.fmt} ${P.orient === 'portrait' ? 'portrait' : 'landscape'}; margin: 0; }`;
   document.querySelectorAll('#planPages .plansheet').forEach(x => { x.style.zoom = P.zoom / 100; });
@@ -4282,15 +4299,16 @@ function renderDossier() {
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   const D = ensureDocs(state.d), m = state.d.meta, x = esc;
   const cf = (k, lab, type = 'text') => `<label class="cf"><span>${x(t(lab))}</span><input class="c box" type="${type}" data-cmeta="${k}" value="${x(m[k] || '')}"></label>`;
-  const cart = `<details class="cartedit noprint"${state.cartOpen ? ' open' : ''}><summary>${x(t('cartTitle'))}</summary><p class="hint2">${x(t('cartHint'))}</p>
+  const cart = `<div class="cartedit"><p class="hint2">${x(t('cartHint'))}</p>
 <div class="cgrid">${cf('titre', 'mTitre')}${cf('lieu', 'mLieu')}${cf('date', 'mDate', 'date')}${cf('auteur', 'mAuteur')}
 <label class="cf"><span>${x(t('cartLang'))}</span><select class="c" data-cplang="1">${DOC_LANGS.map(([k, n]) => `<option value="${k}"${k === PL() ? ' selected' : ''}>${x(n)}</option>`).join('')}</select></label></div>
-<div class="cgrid">${[0, 1, 2, 3].map(i => `<label class="cf"><span>${x(t('line', i + 1))}</span><input class="c box" data-cnote="${i}" style="width:16em" value="${x(D.note[i] || '')}"></label>`).join('')}</div></details>`;
-  $('#view').innerHTML = `<p class="hint noprint" style="margin:12px 0 0">${esc(t('dosHint'))}</p>${cart}
-<div class="dosopts noprint">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}</div>
-${(state.d.views || []).length ? `<div class="dosopts noprint"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">${esc(t('vwInDos'))}</b>${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : v.kind === 'sheet' ? t('pvw_sheet') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2 noprint" style="margin-top:8px">${esc(t('vwNone'))}</p>`}
-<div class="dosopts noprint">
-<span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
+<div class="cgrid">${[0, 1, 2, 3].map(i => `<label class="cf"><span>${x(t('line', i + 1))}</span><input class="c box" data-cnote="${i}" style="width:16em" value="${x(D.note[i] || '')}"></label>`).join('')}</div></div>`;
+  const VW = state.d.views || [];
+  $('#view').innerHTML = cfgBar(
+    cfgBox('dos:parts', t('dosParts'), `<div class="cfgcols">${DOS_SECTIONS.map(k => `<label><input type="checkbox" data-dos="${k}"${S[k] ? ' checked' : ''}> ${esc(t('s' + k[0].toUpperCase() + k.slice(1)))}</label>`).join('')}</div><p class="hint2">${esc(t('dosHint'))}</p>`, `${DOS_SECTIONS.filter(k => S[k]).length}/${DOS_SECTIONS.length}`, true),
+    cfgBox('dos:views', t('vwInDos'), VW.length ? `<div class="cfgcols">${state.d.views.map((v, i) => `<label><input type="checkbox" data-dosv="${esc(v.id)}"${v.inDossier ? ' checked' : ''}> ${esc(v.name)} <small style="color:var(--muted)">${esc(v.kind === 'plan' ? t('tabPlan') : v.kind === 'sheet' ? t('pvw_sheet') : '3D')}</small>${i ? `<button type="button" class="minibtn x" data-vup="${esc(v.id)}" title="${esc(t('vwUp'))}">↑</button>` : ''}</label>`).join('')}</div>` : `<p class="hint2">${esc(t('vwNone'))}</p>`, `${VW.filter(v => v.inDossier).length}/${VW.length}`, true),
+    cfgBox('dos:cart', t('cartTitle'), cart, [m.titre, m.lieu].filter(Boolean).join(' — ')))
++ `<div class="plopts noprint"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button>
 <label>${esc(t('zoom'))} <input type="range" id="dosZoom" min="20" max="100" value="${S.zoom || 45}"></label></div>
 <div id="dosPages">${dossierPages().join('')}</div>`;
   $('#pagesize').textContent = '@page { size: A4 landscape; margin: 0; } @page port { size: A4 portrait; margin: 0; }';
@@ -4394,13 +4412,18 @@ function renderV3() {
   const ck = k => `<label><input type="checkbox" data-v3="${k}"${S[k] ? ' checked' : ''}> ${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</label>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
   v3Stop();
-  $('#view').innerHTML = `<p class="hint" style="margin:12px 0 0">${esc(t('v3Hint'))}</p>
-<div class="plopts">${['persp', 'top', 'front', 'side'].map(k => `<button type="button" class="minibtn" data-cam="${k}">${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}
-<label>${esc(t('plColor'))} <select data-v3="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], S.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
+  const cur = state.v3ViewId && views('3d').find(v => v.id === state.v3ViewId), P3 = v3Panel();
+  const views3 = `<div class="cfgrow">${viewBar('3d')}<label>${esc(t('plOrient'))} <select data-v3="orient">${o(['landscape', 'portrait'], S.orient === 'portrait' ? 'portrait' : 'landscape', v => t('or_' + v))}</select></label></div><p class="hint2">${esc(t('v3Hint'))}</p>`;
+  const draw = `<div class="cfgrow"><label>${esc(t('plColor'))} <select data-v3="color">${o(['type', 'layer', 'position', 'univ', 'circuit', 'dmx'], S.color, v => t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[v]))}</select></label>
 ${ck('shapes')}${ck('labels')}${ck('points')}${ck('struct')}${ck('grid')}</div>
-<div class="plopts">${ck('beams')}${S.beams ? `<label>${esc(t('v3Zoom'))} <select data-v3="beamZoom">${o(['min', 'mid', 'max'], S.beamZoom, v => t('v3Zoom_' + v))}</select></label>
+<div class="cfgrow">${ck('beams')}${S.beams ? `<label>${esc(t('v3Zoom'))} <select data-v3="beamZoom">${o(['min', 'mid', 'max'], S.beamZoom, v => t('v3Zoom_' + v))}</select></label>
 <label>${esc(t('v3BeamCol'))} <select data-v3="beamCol">${o(['cct', 'color'], S.beamCol, v => t('v3BeamCol_' + v))}</select></label>
-<label>${esc(t('v3BeamI'))} <input type="range" data-v3="beamI" min="10" max="300" step="10" value="${+S.beamI || 100}"></label>${ck('pools')}` : ''}</div><div class="plopts">${viewBar('3d')}<label>${esc(t('plOrient'))} <select data-v3="orient">${o(['landscape', 'portrait'], S.orient === 'portrait' ? 'portrait' : 'landscape', v => t('or_' + v))}</select></label><span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
+<label>${esc(t('v3BeamI'))} <input type="range" data-v3="beamI" min="10" max="300" step="10" value="${+S.beamI || 100}"></label>${ck('pools')}` : ''}</div>`;
+  $('#view').innerHTML = cfgBar(
+    cfgBox('3d:views', t('sbViews'), views3, cur ? cur.name : t('vwFree').replace(/^— | —$/g, ''), true),
+    cfgBox('3d:draw', t('plDraw'), draw, t({ type: 'cType', layer: 'cLayer', position: 'cPos', univ: 'cUniv', circuit: 'cCirc', dmx: 'cDmx' }[S.color] || 'cType'), true),
+    cfgBox('3d:elems', t('v3Elems'), P3.html, P3.sum))
++ `<div class="plopts noprint">${['persp', 'top', 'front', 'side'].map(k => `<button type="button" class="minibtn" data-cam="${k}">${esc(t('v3' + k[0].toUpperCase() + k.slice(1)))}</button>`).join('')}<span class="spacer"></span><button type="button" class="minibtn" id="v3png">${esc(t('v3Png'))}</button></div>
 <div class="v3wrap${S.orient === 'portrait' ? ' port' : ''}" id="v3"><div class="v3msg">${esc(t('v3Load'))}</div></div>`;
   const fx = state.d.fixtures.filter(f => [f.x, f.y, f.z].every(Number.isFinite));
   if (!fx.length) { $('#v3').innerHTML = `<div class="v3msg">${esc(t('v3NoXYZ'))}</div>`; return; }
@@ -4588,8 +4611,8 @@ function applyV3Vis() {
     else if (it.bar) v = !P.has(it.bar);
     it.o.visible = v; if (it.label) it.label.visible = v; (it.extra || []).forEach(o => { o.visible = v; });
   }
-  document.querySelectorAll('#v3 [data-v3fx]').forEach(c => { c.checked = !O.has('f:' + c.dataset.v3fx); });
-  const info = document.querySelector('#v3 .v3hid'); if (info) { info.hidden = !H.objs.length; info.querySelector('b').textContent = H.objs.length; }
+  document.querySelectorAll('#view [data-v3fx]').forEach(c => { c.checked = !O.has('f:' + c.dataset.v3fx); });
+  const info = document.querySelector('#view .v3hid'); if (info) { info.hidden = !H.objs.length; info.querySelector('b').textContent = H.objs.length; }
 }
 const isShown = o => { for (let x = o; x; x = x.parent) if (!x.visible) return false; return true; };
 function v3Panel() {
@@ -4606,17 +4629,17 @@ function v3Panel() {
   const tys = [...byT].sort((a, b) => b[1].length - a[1].length || typeName(a[0]).localeCompare(typeName(b[0]))).map(([k2, list]) =>
     `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="type" data-k="${x(k2)}"${(H.types || []).includes(k2) ? '' : ' checked'}> ${x(typeName(k2))} <small>${list.length}</small></summary><div>${[...list].sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => `<label><input type="checkbox" data-v3fx="${x(f.uid)}"${H.objs.includes('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || f.position || '')}</small></label>`).join('')}</div></details>`).join('');
   const ps = [...pos].sort((a, b) => natCmp(a[0], b[0])).map(([k, c]) => `<details class="ly"><summary><span class="tw">▸</span><input type="checkbox" data-v3h="pos" data-k="${x(k)}"${H.pos.includes(k) ? '' : ' checked'}> ${x(k === '—' ? t('noPos') : k)} <small>${c}</small></summary><div>${d.fixtures.filter(f => (f.position || '—') === k).sort((a, b) => cmpKey(numKey(a.fid), numKey(b.fid))).map(f => `<label><input type="checkbox" data-v3fx="${x(f.uid)}"${H.objs.includes('f:' + f.uid) ? '' : ' checked'}> ${x(f.fid || '?')} <small>${x(f.name || typeName(f.type))}</small></label>`).join('')}</div></details>`).join('');
-  return `<details class="v3panel" ${state.v3PanelOpen === false ? '' : 'open'}><summary>${x(t('v3Elems'))}</summary>
-<div class="grp">${x(t('plFixT'))}<button type="button" data-v3all="types">${x(t('v3All'))}</button><button type="button" data-v3none="types">${x(t('v3None'))}</button></div>${tys}
-<div class="grp">${x(t('v3Fix'))}<button type="button" data-v3all="pos">${x(t('v3All'))}</button><button type="button" data-v3none="pos">${x(t('v3None'))}</button></div>${ps}
-<div class="grp">${x(t('v3Struct'))}<button type="button" data-v3all="layers">${x(t('v3All'))}</button><button type="button" data-v3none="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}
+  const hidO = new Set(H.objs), nShown = d.fixtures.filter(f => !hidO.has('f:' + f.uid) && !(H.types || []).includes(f.type) && !H.pos.includes(f.position || '—')).length;
+  return { sum: `${nShown}/${d.fixtures.length}`, html: `<div class="lycols"><div><div class="grp">${x(t('plFixT'))}<button type="button" data-v3all="types">${x(t('v3All'))}</button><button type="button" data-v3none="types">${x(t('v3None'))}</button></div>${tys}</div>
+<div><div class="grp">${x(t('v3Fix'))}<button type="button" data-v3all="pos">${x(t('v3All'))}</button><button type="button" data-v3none="pos">${x(t('v3None'))}</button></div>${ps}</div>
+<div><div class="grp">${x(t('v3Struct'))}<button type="button" data-v3all="layers">${x(t('v3All'))}</button><button type="button" data-v3none="layers">${x(t('v3None'))}</button></div>${lays || `<small>${x(t('dEmpty'))}</small>`}</div></div>
 <div class="grp v3hid"${H.objs.length ? '' : ' hidden'}>${x(t('v3HidObjs'))} : <b>${H.objs.length}</b><button type="button" data-v3unhide="1">${x(t('unhideAll'))}</button></div>
-<div style="color:#9a9aa2;font-size:11px;margin-top:6px;white-space:normal">${x(t('v3DblHint'))}</div></details>`;
+<div class="plhint">${x(t('v3DblHint'))}</div>` };
 }
 function buildV3Scene(fx) {
   V3.items = [];
   const T = window.THREE, S = state.v3, d = state.d, wrap = $('#v3');
-  wrap.innerHTML = '<div class="v3tip" hidden></div><div class="v3info"></div><div class="v3leg"></div>' + v3Panel();
+  wrap.innerHTML = '<div class="v3tip" hidden></div><div class="v3info"></div><div class="v3leg"></div>';
   const renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   wrap.prepend(renderer.domElement);
@@ -4820,8 +4843,8 @@ document.getElementById('view').addEventListener('click', e => {
       const k = b.dataset.v3all || b.dataset.v3none, all = k === 'layers' ? [...new Set((state.d.structures || []).map(o => o.layer || '—'))] : k === 'types' ? [...new Set(state.d.fixtures.map(f => f.type))] : [...new Set(state.d.fixtures.map(f => f.position || '—'))];
       H[k] = b.dataset.v3none ? all : []; if (k === 'layers' && b.dataset.v3all) H.names = [];
       if ((k === 'types' || k === 'pos') && b.dataset.v3all) H.objs = H.objs.filter(v => !v.startsWith('f:'));
-      document.querySelectorAll(`#v3 [data-v3h="${{ layers: 'layer', types: 'type', pos: 'pos' }[k]}"]`).forEach(c => { c.checked = !!b.dataset.v3all; });
-      if (k === 'layers' && b.dataset.v3all) document.querySelectorAll('#v3 [data-v3h="name"]').forEach(c => { c.checked = true; });
+      document.querySelectorAll(`#view [data-v3h="${{ layers: 'layer', types: 'type', pos: 'pos' }[k]}"]`).forEach(c => { c.checked = !!b.dataset.v3all; });
+      if (k === 'layers' && b.dataset.v3all) document.querySelectorAll('#view [data-v3h="name"]').forEach(c => { c.checked = true; });
     }
     touch(); applyV3Vis();
   }
@@ -5119,6 +5142,27 @@ function render() {
   else renderFixtures();
   // tous les tableaux, sauf celui du Patch (il a déjà son tri et ses filtres) et les documents à imprimer
   if (!(state.tab === 'fixtures' && patchView() === 'table') && state.tab !== 'dossier') tableTools();
+}
+// vues en tableau : l'aide et les paramètres (tension, protocole…) passent dans une boîte rétractable « Réglages et aide »
+// au-dessus du tableau ; les boutons d'action restent visibles dans une barre
+function cfgize() {
+  const V = $('#view'); if (!V || V.querySelector(':scope > .cfgbar')) return;
+  const hint = V.querySelector(':scope > p.hint'); if (!hint) return;
+  const on = V.querySelector('.subtabs button.on'), sub = on ? Object.values(on.dataset)[0] || '' : '';
+  const id = `${state.tab}:${sub}:help`;
+  let set = hint.nextElementSibling; if (!set || !set.classList.contains('settings')) set = null;
+  const params = set ? [...set.children].filter(el => el.tagName === 'LABEL') : [];
+  const sum = params.map(l => { const i = l.querySelector('select, input'); if (!i) return ''; if (i.type === 'checkbox') return ''; return i.tagName === 'SELECT' ? (i.selectedOptions[0] || {}).textContent || '' : i.value; }).filter(Boolean).join(' · ');
+  const wrap = document.createElement('div'); wrap.innerHTML = cfgBar(cfgBox(id, t(params.length ? 'setBox' : 'helpBox'), (params.length ? '<div class="cfgrow"></div>' : '') + `<p class="hint2"></p>`, sum));
+  const bar = wrap.firstElementChild, body = bar.querySelector('.cfgbody');
+  if (params.length) { const row = body.querySelector('.cfgrow'); params.forEach(l => row.appendChild(l)); }
+  body.querySelector('.hint2').innerHTML = hint.innerHTML;
+  hint.replaceWith(bar);
+  // les boutons d'action à droite, sur la ligne des boîtes
+  if (set) { set.classList.add('noprint', 'cfgtools'); if (!set.querySelector('button, input, select')) set.remove(); else bar.appendChild(set); }
+}
+for (const fn of ['renderRigging', 'renderElec', 'renderNet', 'renderInventory', 'renderLabels', 'renderFixtures']) {
+  const f = window[fn]; window[fn] = function (...a) { const r = f.apply(this, a); try { cfgize(); } catch (e) { console.warn(e); } return r; };
 }
 // ───────────── tri et filtre des tableaux (Accroches, Électricité, DMX et réseau) ─────────────
 // clic sur un en-tête : tri croissant, décroissant, puis ordre d'origine ; champ « Filtrer » : lignes qui contiennent tous les mots
@@ -5884,13 +5928,22 @@ ${cur ? `<div class="pvrow pvcur"><span class="pvlab"></span><b>${x(cur.name)}</
 <label><input type="checkbox" data-svdos="1"${cur.inDossier ? ' checked' : ''}> ${x(t('pvInDos'))}</label><button type="button" class="minibtn" data-svren="1">${x(t('vwRen'))}</button><button type="button" class="minibtn" data-svdup="1">${x(t('shDup'))}</button><button type="button" class="minibtn x" data-svdel="1">${x(t('vwDel'))}</button></div>`
       : `<div class="pvrow pvcur"><span class="pvlab"></span><small>${x(t('sbBaseHint'))}</small></div>`}</div>`;
 }
-// boîtes rétractables au-dessus de la feuille (vues, mise en page, contenu, projecteurs masqués) : la feuille a toute la largeur
-state.sheetCfg = store.get('sheetCfg', { views: true, page: true, content: false, hidden: false });
+// ───────────── réglages des vues : boîtes rétractables au-dessus de la vue, qui garde toute la largeur ─────────────
+// id « vue:boîte », ouverte ou fermée gardée d'une visite à l'autre ; résumé court dans le titre
+state.cfgOpen = store.get('cfgOpen', {});
+function cfgBox(id, title, body, sum = '', def = false, cls = '') {
+  const open = id in state.cfgOpen ? state.cfgOpen[id] : def;
+  return `<details class="cfg${cls ? ' ' + cls : ''}" data-cfg="${id}"${open ? ' open' : ''}><summary>${esc(title)}${sum !== '' ? ` <small>${esc(sum)}</small>` : ''}</summary><div class="cfgbody">${body}</div></details>`;
+}
+const cfgBar = (...boxes) => `<div class="cfgbar noprint">${boxes.filter(Boolean).join('')}</div>`;
+document.getElementById('view').addEventListener('toggle', e => {
+  const k = e.target.dataset && e.target.dataset.cfg; if (!k) return;
+  state.cfgOpen[k] = e.target.open; store.set('cfgOpen', state.cfgOpen);
+}, true);
 function renderSheetDoc() {
-  const D = ensureDocs(state.d), c = DOC.chk, x = esc, gw = t('gwLayer'), O = state.sheetCfg;
+  const D = ensureDocs(state.d), c = DOC.chk, x = esc, gw = t('gwLayer');
   const ck = (id, lab) => `<label><input type="checkbox" data-dck="${id}"${c[id] ? ' checked' : ''}> ${x(lab)}</label>`;
   const hidden = docFx().filter(f => D.hidden.includes(f.k));
-  const box = (k, title, body, extra = '') => `<details class="cfg" data-cfg="${k}"${O[k] ? ' open' : ''}><summary>${x(title)}${extra}</summary><div class="cfgbody">${body}</div></details>`;
   const nOn = SHEET_CHK.filter(k => c[k]).length;
   const vwHtml = sheetViewStrip();
   const page = `<div class="cfgrow"><label>${x(t('doFormat'))} <select data-dopt="fmt">${['A3', 'A4'].map(f => `<option value="${f}"${f === DOC.fmt ? ' selected' : ''}>${x(t('fmt' + f))}</option>`).join('')}</select></label>
@@ -5903,19 +5956,14 @@ function renderSheetDoc() {
 <datalist id="dFxList">${docFx().filter(f => !D.hidden.includes(f.k)).sort((a, b) => cmpKey(a.key, b.key)).map(f => `<option value="${x(fxLabelD(f))}"></option>`).join('')}</datalist>
 <div class="chips">${hidden.map(f => `<span class="chip" title="${x(fxLabelD(f))}"><span>${x(fxLabelD(f))}</span><button type="button" class="chipx" data-unhide="${x(f.k)}">×</button></span>`).join('')}</div>`;
   const cur = state.sheetViewId && views('sheet').find(v => v.id === state.sheetViewId);
-  return `<div class="cfgbar noprint docopts">
-${box('views', t('sbViews'), vwHtml, `<small>${x(cur ? cur.name : t('sb_' + state.sheetBase))}</small>`)}
-${box('page', t('sbPage'), page, `<small>${x(DOC.fmt + ' · ' + t('or_' + DOC.orient))}</small>`)}
-${box('content', t('sbContent'), content, `<small>${nOn}/${SHEET_CHK.length}</small>`)}
-${box('hidden', t('legHidden'), hid, `<small>${hidden.length}</small>`)}
-</div>
+  return `<div class="docopts">${cfgBar(
+    cfgBox('sheet:views', t('sbViews'), vwHtml, cur ? cur.name : t('sb_' + state.sheetBase), true),
+    cfgBox('sheet:page', t('sbPage'), page, DOC.fmt + ' · ' + t('or_' + DOC.orient), true),
+    cfgBox('sheet:content', t('sbContent'), content, `${nOn}/${SHEET_CHK.length}`),
+    cfgBox('sheet:hidden', t('legHidden'), hid, String(hidden.length)))}</div>
 <div class="plopts noprint docopts"><span class="spacer"></span><span id="docInfo" class="plstate"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><label>${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></label></div>
 <div id="docPages" class="fullw" dir="${PL() === 'ar' ? 'rtl' : 'ltr'}" lang="${PL()}"></div>`;
 }
-document.getElementById('view').addEventListener('toggle', e => {
-  const k = e.target.dataset && e.target.dataset.cfg; if (!k) return;
-  state.sheetCfg = { ...state.sheetCfg, [k]: e.target.open }; store.set('sheetCfg', state.sheetCfg);
-}, true);
 document.getElementById('view').addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('[data-svbase],[data-svsel],[data-svnew],[data-svren],[data-svdup],[data-svdel],[data-gotab]'); if (!b || !state.d) return;
   if (b.dataset.gotab) { state.tab = b.dataset.gotab; store.set('tab', state.tab); return render(); }
@@ -5962,14 +6010,25 @@ ${hidden.length > 1 ? `<button type="button" class="linkbtn" id="dUnhideAll">${x
     const A = gAnalyse(docFx()), colors = layerColors(A.layers), cnt = {}; docVisible().forEach(f => { cnt[f.layer] = (cnt[f.layer] || 0) + 1; });
     const cu = { ...CU_DEF, ...store.get('docLbCustom', {}) };
     const opt = (v, l) => `<option value="${v}"${v === DOC.lbSize ? ' selected' : ''}>${x(l)}</option>`;
-    opts = `<fieldset><legend>${x(t('legLabels'))}</legend><select data-dopt="lbSize" class="dsel"><optgroup label="${x(t('lbCutGrp'))}">${opt('40x30', '4 × 3 cm — 78')}${opt('30x40', '3 × 4 cm — 81')}${opt('50x20', '5 × 2 cm — 95')}</optgroup>
+    const fmtB = `<select data-dopt="lbSize" class="dsel"><optgroup label="${x(t('lbCutGrp'))}">${opt('40x30', '4 × 3 cm — 78')}${opt('30x40', '3 × 4 cm — 81')}${opt('50x20', '5 × 2 cm — 95')}</optgroup>
 <optgroup label="${x(t('lbAdhGrp'))}">${Object.entries(LB_SHEETS).map(([k, g]) => opt(k, `${g.name} — ${g.cols * g.rows}`)).join('')}${opt('custom', t('lbCustom'))}</optgroup></select>
 ${DOC.lbSize === 'custom' ? `<div class="lbcust"><label><span>${x(t('cuPage'))}</span><select data-dcu="page" class="dsel"><option${cu.page === 'A4' ? ' selected' : ''}>A4</option><option${cu.page === 'A3' ? ' selected' : ''}>A3</option></select></label>
 ${[['cols', 'cuCols'], ['rows', 'cuRows'], ['w', 'cuW'], ['h', 'cuH'], ['left', 'cuLeft'], ['top', 'cuTop'], ['px', 'cuPx'], ['py', 'cuPy']].map(([k, l]) => `<label><span>${x(t(l))}</span><input type="number" step="0.05" min="0" data-dcu="${k}" value="${x(cu[k])}"></label>`).join('')}</div>` : ''}
-${lbGeom().cut ? '' : `<p class="hint2">${x(t('lbAdhHint'))}</p>`}</fieldset>` + common +
-      `<fieldset><legend>${x(t('doContent'))}</legend>${ck('lbOnly', t('lbOnly'))}${ck('lbFid', 'Fix ID')}${ck('lbPatch', t('lbPatch'))}${ck('lbName', t('lbName'))}${ck('lbType', t('lbType'))}${ck('lbChid', 'Ch ID')}${ck('lbLayer', t('lbLayerG', gw))}${ck('lbCirc', t('cCircuit'))}${ck('lbDmxL', t('cDmxLine'))}${ck('lbAnn', t('lbAnn'))}${ck('lbHideUnp', t('optHide'))}<p class="hint2">${x(t('lbHint'))}</p></fieldset>
-<fieldset><legend>${x(t('legColors', gw))}</legend><p class="hint2">${x(t('lcHint'))}</p><div class="lcolors">${A.layers.map(l => `<div class="lcolor${D.lbOff.includes(l) ? ' off' : ''}"><input type="checkbox" data-loff="${x(l)}"${D.lbOff.includes(l) ? '' : ' checked'}><input type="color" value="${colors[l]}" data-lcol="${x(l)}"><span>${x(l)}</span><small>${cnt[l] || 0}</small></div>`).join('')}</div>
-<button type="button" class="linkbtn" id="dColReset">${x(t('colorsReset'))}</button></fieldset>` + hideBox;
+${lbGeom().cut ? '' : `<p class="hint2">${x(t('lbAdhHint'))}</p>`}`;
+    const contB = `<div class="cfgcols">${ck('lbOnly', t('lbOnly'))}${ck('lbFid', 'Fix ID')}${ck('lbPatch', t('lbPatch'))}${ck('lbName', t('lbName'))}${ck('lbType', t('lbType'))}${ck('lbChid', 'Ch ID')}${ck('lbLayer', t('lbLayerG', gw))}${ck('lbCirc', t('cCircuit'))}${ck('lbDmxL', t('cDmxLine'))}${ck('lbAnn', t('lbAnn'))}${ck('lbHideUnp', t('optHide'))}</div><p class="hint2">${x(t('lbHint'))}</p>`;
+    const colB = `<p class="hint2">${x(t('lcHint'))}</p><div class="lcolors">${A.layers.map(l => `<div class="lcolor${D.lbOff.includes(l) ? ' off' : ''}"><input type="checkbox" data-loff="${x(l)}"${D.lbOff.includes(l) ? '' : ' checked'}><input type="color" value="${colors[l]}" data-lcol="${x(l)}"><span>${x(l)}</span><small>${cnt[l] || 0}</small></div>`).join('')}</div>
+<button type="button" class="linkbtn" id="dColReset">${x(t('colorsReset'))}</button>`;
+    const nOff = D.lbOff.filter(l => A.layers.includes(l)).length, nHid = docFx().filter(f => D.hidden.includes(f.k)).length;
+    const lbName = DOC.lbSize === 'custom' ? t('lbCustom') : LB_SHEETS[DOC.lbSize] ? LB_SHEETS[DOC.lbSize].name : DOC.lbSize.replace('x', ' × ') + ' cm';
+    return `<div class="docopts">${cfgBar(
+      cfgBox('labels:fmt', t('legLabels'), fmtB, lbName, true),
+      cfgBox('labels:doc', t('labDocBox'), common.replace(/^<fieldset><legend>([^<]*)<\/legend>/, '<div class="grp">$1</div>').replace(/<legend style="margin-top:8px">([^<]*)<\/legend>/, '<div class="grp">$1</div>').replace(/<\/fieldset>$/, ''), (DOC_LANGS.find(l => l[0] === PL()) || ['', ''])[1].split(' · ')[0] + ' · ' + t(DOC.group === 'layer' ? 'gLayer' : 'gPosition'), false),
+      cfgBox('labels:content', t('doContent'), contB, String(['lbFid', 'lbPatch', 'lbName', 'lbType', 'lbChid', 'lbLayer', 'lbCirc', 'lbDmxL', 'lbAnn'].filter(k => c[k]).length)),
+      cfgBox('labels:colors', t('legColors', gw), colB, `${A.layers.length - nOff}/${A.layers.length}`),
+      cfgBox('labels:hidden', t('legHidden'), hideBox.replace(/^<fieldset><legend>[^<]*<\/legend>/, '').replace(/<\/fieldset>$/, ''), String(nHid)))}</div>
+<div class="plopts noprint"><span id="docInfo" class="plstate"></span><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><span class="zoom">${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></span></div>
+<p class="hint2 noprint" style="margin:4px 0 0">${t('printHintDoc')}</p>
+<div id="docPages" class="fullw" dir="${PL() === 'ar' ? 'rtl' : 'ltr'}" lang="${PL()}"></div>`;
   }
   return `<details class="docopts noprint" open><summary>${x(t('doOptions'))}</summary><div class="dgrid">${opts}</div></details>
 <div class="doctool noprint"><span id="docInfo"></span><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${x(t('print'))}</button><span class="zoom">${x(t('zoom'))} <input type="range" id="dZoom" min="20" max="100" value="${DOC.zoom}"> <span id="dZoomV">${DOC.zoom} %</span></span></div>

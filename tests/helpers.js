@@ -65,4 +65,8 @@ async function loadSynthetic(page, tweak) {
 // (chemin en ASCII : un titre de test avec une apostrophe typographique casserait setInputFiles)
 function tmpFile(testInfo, name, content) { const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'opf-')), p = path.join(dir, name); if (content !== undefined) fs.writeFileSync(p, content); return p; }
 
-module.exports = { test, expect, syntheticDossier, loadSynthetic, tmpFile };
+// toutes les boîtes de réglages des vues ouvertes (sinon leurs commandes sont cachées)
+async function openCfg(page) {
+  await page.evaluate(() => { state.cfgOpen = new Proxy(state.cfgOpen, { has: () => true, get: (o, k) => (k in o ? o[k] : true) }); });
+}
+module.exports = { test, expect, syntheticDossier, loadSynthetic, tmpFile, openCfg };

@@ -49,8 +49,8 @@ test('feuille de patch : patch par position', async ({ page }) => {
   const pages = page.locator('#docPages');
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(1);
   // réglages dans des boîtes rétractables au-dessus de la feuille : « Contenu de la feuille » fermée au départ
-  await expect(page.locator('#view details[data-cfg=content]')).not.toHaveAttribute('open', '');
-  await page.click('#view details[data-cfg=content] > summary');
+  await expect(page.locator('#view details[data-cfg="sheet:content"]')).not.toHaveAttribute('open', '');
+  await page.click('#view details[data-cfg="sheet:content"] > summary');
   await page.click('#view [data-dck=optPos]');
   await expect(pages.locator('h2', { hasText: 'Patch par position' })).toHaveCount(0);
   await page.click('#view [data-dck=optPos]');
@@ -71,7 +71,7 @@ test('feuille de patch : vues de départ, vue personnalisée reprise dans le dos
   await page.evaluate(() => { window.prompt = () => 'Patch jardin'; });
   await page.click('#view [data-svnew]');
   await page.selectOption('#view select[data-dopt=fmt]', 'A4');
-  await page.click('#view details[data-cfg=content] > summary');
+  await page.click('#view details[data-cfg="sheet:content"] > summary');
   await page.click('#view [data-dck=optSumType]');
   const v = await page.evaluate(() => state.d.views.find(x => x.kind === 'sheet'));
   expect([v.name, v.base, v.inDossier, v.settings.fmt, v.settings.chk.optPos, v.settings.chk.optSumType, v.settings.chk.optUniv]).toEqual(['Patch jardin', 'pos', true, 'A4', true, false, false]);
@@ -83,7 +83,7 @@ test('feuille de patch : vues de départ, vue personnalisée reprise dans le dos
   // dossier complet : la vue y figure ; le cartouche s'y édite et revient sur la feuille
   await page.click('#tabs button[data-v=dossier]');
   await expect(page.locator('#view [data-dosv]')).toHaveCount(1);
-  await page.click('#view .cartedit summary');
+  await page.click('#view details[data-cfg="dos:cart"] > summary');
   await page.locator('#view input[data-cnote="0"]').fill('Version 3 — régie lumière'); await page.locator('#view input[data-cnote="0"]').press('Tab');
   await page.locator('#view input[data-cmeta=auteur]').fill('Martin'); await page.locator('#view input[data-cmeta=auteur]').press('Tab');
   await page.selectOption('#view select[data-cplang]', 'en');
@@ -166,10 +166,10 @@ test('feuille de patch : la feuille prend toute la largeur, boîtes ouvertes ou 
   // pas de panneau sur le côté : la zone des pages a la largeur de la vue
   const w = await page.evaluate(() => [$('#docPages').getBoundingClientRect().width, $('#view').getBoundingClientRect().width]);
   expect(w[0]).toBeGreaterThan(w[1] - 80);
-  await page.click('#view details[data-cfg=views] > summary');
-  await page.click('#view details[data-cfg=hidden] > summary');
+  await page.click('#view details[data-cfg="sheet:views"] > summary');
+  await page.click('#view details[data-cfg="sheet:hidden"] > summary');
   await page.click('#view [data-pv=table]'); await page.click('#view [data-pv=sheet]');
-  await expect(page.locator('#view details[data-cfg=views]')).not.toHaveAttribute('open', '');
-  await expect(page.locator('#view details[data-cfg=hidden]')).toHaveAttribute('open', '');
-  await expect(page.locator('#view details[data-cfg=page] > summary')).toContainText('A3 · paysage');
+  await expect(page.locator('#view details[data-cfg="sheet:views"]')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#view details[data-cfg="sheet:hidden"]')).toHaveAttribute('open', '');
+  await expect(page.locator('#view details[data-cfg="sheet:page"] > summary')).toContainText('A3 · paysage');
 });
