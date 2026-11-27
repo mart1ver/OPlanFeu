@@ -2614,9 +2614,14 @@ function renderNetSyno() {
   {
     const seen = new Set(), devN = N.filter(n => n.t === 'dev');
     devN.sort((a, b) => (b.kind === 'switch') - (a.kind === 'switch') || (adj.get(b.name) || []).length - (adj.get(a.name) || []).length || natCmp(a.name, b.name));
-    for (const r of devN) {
-      if (seen.has(r)) continue; seen.add(r);
-      const Q = [r];
+    // les consoles partent toujours de la colonne de gauche : parcours lancé depuis toutes les consoles à la fois, puis le reste
+    const isCon = n => n.kind === 'console' || !!(n.cons && n.cons.length);
+    const cons = devN.filter(isCon).sort((a, b) => natCmp(a.name, b.name));
+    for (const r of [null, ...devN]) {
+      const starts = r === null ? cons : [r];
+      if (r !== null && seen.has(r)) continue;
+      starts.forEach(n => seen.add(n));
+      const Q = [...starts];
       while (Q.length) {
         const p = Q.shift();
         for (const e of adj.get(p.name) || []) {
@@ -2654,7 +2659,8 @@ function renderNetSyno() {
   // ordre : switches, consoles, nodes…, puis les positions ; enfants dans l'ordre des ports
   const rank = n => n.t !== 'dev' ? 9 : ({ switch: 0, console: 1, node: 2, merger: 3, splitter: 3, src: 4 }[n.kind] ?? 5);
   const cmp = (a, b) => (a.edge && b.edge ? (a.edge.k === 'dmx') - (b.edge.k === 'dmx') || a.edge.ord - b.edge.ord : 0) || rank(a) - rank(b) || natCmp(a.name, b.name);
-  const roots = N.filter(n => !n.parent).sort((a, b) => (b.kids.length > 0) - (a.kids.length > 0) || rank(a) - rank(b) || natCmp(a.name, b.name));
+  const isConN = n => n.t === 'dev' && (n.kind === 'console' || !!(n.cons && n.cons.length));
+  const roots = N.filter(n => !n.parent).sort((a, b) => isConN(b) - isConN(a) || (b.kids.length > 0) - (a.kids.length > 0) || rank(a) - rank(b) || natCmp(a.name, b.name));
   const CW = 330, BW = 180, BH = 50, PH = 36, RH = 64, PAD = 18, TOP = 76, GAP = CW - BW;
   let row = 0, maxD = 0;
   const place = (n, dep) => {
@@ -2707,8 +2713,12 @@ function renderNetSyno() {
   }
   // câbles hors de l'arbre : autres entrées d'un merger, double attache Ethernet ; arrivée sur le bord gauche de la boîte, un peu décalée
   const slot = new Map();
-  for (const q of extra) {
+  for (let q of extra) {
     if (!q.a || !q.b || q.a.dep === undefined || q.b.dep === undefined) continue;
+    if (q.b.dep < q.a.dep && q.e.k !== 'dmx') {   // câble vers un appareil plus à gauche (une 2e console) : tracé depuis lui
+      const l = q.e.l, fwd = byName.get(l.a) === q.b;
+      q = { a: q.b, b: q.a, e: ethEdge(q.b, q.a, fwd ? l.ap : l.bp, fwd ? l.bp : l.ap, l) };
+    }
     const k = (slot.get(q.b) || 0) + 1; slot.set(q.b, k);
     const x1 = X(q.a) + BW, y1 = q.a.kids.length ? Y(q.a) + hOf(q.a) - 6 : CY(q.a), x2 = X(q.b), y2 = Y(q.b) + Math.min(hOf(q.b) - 6, 8 + k * 11);
     const d = x2 - x1 > 40 ? `M${x1} ${y1} H${x2 - 22} V${y2} H${x2}` : `M${x1} ${y1} H${x1 + 10} V${Math.min(Y(q.a), Y(q.b)) - 10} H${x2 - 22} V${y2} H${x2}`;

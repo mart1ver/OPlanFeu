@@ -705,3 +705,25 @@ test('portrait ou paysage : vues 3D et synoptiques, gardé dans le dossier compl
   const w = await page.locator('#dosPages .v3page.port').evaluate(el => el.getBoundingClientRect().height / el.getBoundingClientRect().width);
   expect(w).toBeCloseTo(297 / 210, 1);
 });
+
+test('synoptique réseau : les consoles toujours dans la colonne de gauche', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], boards: [], lines: [],
+      dmxLines: [{ id: 'd1', name: 'DMX A', src: 'Node 1', port: 1, universe: 1, dest: 'P1 Lointain' }, { id: 'd2', name: 'DMX B', src: 'MA2 secours', port: 1, universe: 2, dest: 'P3 Face' }],
+      devices: [{ id: 's', name: 'SW1', kind: 'switch' }, { id: 's2', name: 'SW2', kind: 'switch' }, { id: 'v1', name: 'Node 1', kind: 'node' },
+        { id: 'c', name: 'MA3', kind: 'console' }, { id: 'c2', name: 'MA3 backup', kind: 'console' }, { id: 'c3', name: 'MA2 secours', kind: 'console' }],
+      netLinks: [{ id: 'n1', kind: 'eth', a: 'SW1', ap: 1, b: 'SW2', bp: 1 }, { id: 'n2', kind: 'eth', a: 'SW2', ap: 2, b: 'MA3', bp: 1 }, { id: 'n3', kind: 'eth', a: 'SW1', ap: 2, b: 'Node 1', bp: 1 },
+        { id: 'n4', kind: 'eth', a: 'SW1', ap: 3, b: 'MA3 backup', bp: 1 }],
+      consoles: [] };
+  });
+  await page.click('#tabs button[data-v=syno]');
+  await page.click('#view [data-sv=net]');
+  const xs = await page.evaluate(() => {
+    const out = {};
+    document.querySelectorAll('#view .nsyn svg g').forEach(g => { const r = g.querySelector('rect.box'), tx = g.querySelector('text'); if (r && tx) out[tx.textContent] = +r.getAttribute('x'); });
+    return out;
+  });
+  const minX = Math.min(...Object.values(xs));
+  for (const c of ['MA3', 'MA3 backup', 'MA2 secours']) expect(xs[c]).toBe(minX);
+  for (const o of ['SW1', 'SW2', 'Node 1']) expect(xs[o]).toBeGreaterThan(minX);
+});
