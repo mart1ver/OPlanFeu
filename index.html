@@ -409,7 +409,9 @@ details.docopts summary { cursor: pointer; font-size: 12px; font-weight: 600; te
 .synlink .nsyn [data-sdev], .synlink .nsyn [data-spos] { cursor: crosshair; } .synlink .nsyn [data-sdev]:hover .box, .synlink .nsyn [data-spos]:hover .box { stroke: var(--accent) !important; stroke-width: 3; }
 .nsyn [data-skey] { cursor: grab; } .nsyn [data-skey]:active { cursor: grabbing; } .syn .lkhit { cursor: ew-resize; }
 .cfg .sedev { margin-top: 10px; } .cfg .sedev .dvsheet { font-size: 12.5px; }
-.nsyn .synfrom .box { stroke: var(--accent) !important; stroke-width: 3.5; }
+.nsyn .synfrom .box, .esyn .synfrom .box { stroke: var(--accent) !important; stroke-width: 3.5; }
+.esyn svg { min-width: 640px; } .esyn [data-skey] { cursor: grab; } .esyn [data-skey]:active { cursor: grabbing; }
+.synlink .esyn [data-enode] { cursor: crosshair; } .synlink .esyn [data-enode]:hover .box { stroke: var(--accent) !important; stroke-width: 3; }
 .cfg .seedit { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; margin-top: 8px; } .cfg .sef { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); }
 .cfg .sef select, .cfg .sef input { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; }
 .cfg .selab { font-size: 12px; } .cfg .sestep { font-size: 12px; color: var(--accent); font-weight: 600; }
@@ -841,7 +843,7 @@ const I18N = {
     autoDmx: 'Répartir automatiquement', autoDone: (n, m) => `${n} projecteur(s) raccroché(s) à une ligne DMX, ${m} sans ligne possible.`, delDmxAsk: n => `Supprimer la ligne DMX « ${n} » ?`,
     netHint: "Tous les appareils du réseau lumière : consoles, nodes, switches, mergers, ordinateurs, serveurs média… Ouvrir la fiche (▸) pour régler ses ports : nombre, nom, univers de chaque sortie DMX, VLAN des ports de switch (les câbles se branchent dans l’onglet Liaisons). Adresses en double ou hors réseau, ports pris deux fois, inexistants ou sans PoE sont signalés.",
     dvName: 'Appareil', dvLine: 'Ligne élec.', dvPower: 'Puissance (W)', dvKind: 'Type', dvIp: 'Adresse IP', dvMask: 'Masque', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Emplacement', dvU: 'Univers', dvNotes: 'Notes',
-    kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kdimmer: 'Gradateur', kother: 'Autre',
+    kconsole: 'Console', knode: 'Node DMX', ksplitter: 'Splitter', kmerger: 'Merger DMX', kswitch: 'Switch', kpc: 'Ordinateur', kmedia: 'Serveur média', kwifi: 'Borne wifi', kdimmer: 'Gradateur', kboard: 'Tableau', kpos: 'Position', bdFed: 'Alimenté par', esTitle: 'Lignes et tableaux', esConnect: 'Tirer une ligne :', esTie: 'Nouvelle ligne', esStep1: 'cliquez le tableau ou le gradateur de départ', esStep2: n => `depuis ${n} : cliquez l’arrivée (position, gradateur, tableau ou appareil)`, esHint: 'Cliquez un câble pour modifier sa ligne, un tableau ou un gradateur pour ses réglages. Glissez une boîte pour la déplacer, un câble pour déplacer son tronçon vertical. Une ligne qui alimente un tableau, un gradateur ou un appareil se règle dans sa fiche (« Alimenté par »).', esSum: n => `${n} ligne${n > 1 ? 's' : ''}`, esFeeds: 'Alimente', esGuess: 'arrivée supposée', esFx: n => `${n} proj.`, esLayout: 'Présentation', esMode_graph: 'Schéma', esMode_list: 'Liste unifilaire', kother: 'Autre',
     dmCh: 'Voies', dmSupply: 'Branchement', dmCtl: 'Commande', dmCtl_dmx: 'DMX', dmCtl_eth: 'Ethernet', dmCtl_both: 'Ethernet + DMX', dmAmps: 'Calibre des voies (A)', dmOut: 'Type des voies', dmFeed: 'Ligne d’alimentation', dmMake: 'Créer / mettre à jour les voies', dmMade: n => `${n} voie(s) créée(s), les autres mises à jour.`, dmHint: 'Les voies du gradateur sont des lignes électriques rangées sous son nom (comme un tableau) : leurs projecteurs font la charge du gradateur, qui s’ajoute à celle de sa ligne d’alimentation.', dimmers: 'Gradateurs', addDimmer: 'Ajouter un gradateur', newDimmer: 'GRADA', dmLoad: 'Charge', dmPhases: 'Phases (A)', dmNoLine: 'aucune voie : bouton « Créer les voies » dans sa fiche', dmChans: n => `${n} voie${n > 1 ? 's' : ''}`, dmFedBy: 'alimenté par', grpBoards: 'Tableaux', grpDimmers: 'Gradateurs',
     shConsole: 'Show console', shConsoleHint: 'Créer un show de base pour la console à partir du dossier : patch, positions des machines, groupes, layout et presets.', shMa2: 'grandMA2…', shSoon: 'bientôt',
     maTitle: 'Show de base grandMA2', maHint: 'OPlanFeu prépare un plugin grandMA2 et ses fichiers (calque XML avec le patch et les positions, layout), dans un zip à copier sur une clé USB ou dans le dossier de l’onPC. Le plugin importe les fixture types, le calque, puis crée les groupes, le layout et les presets. Testé sur grandMA2 onPC 3.9.61, à lancer dans un show neuf.',
@@ -990,7 +992,7 @@ const I18N = {
     autoDmx: 'Auto-assign', autoDone: (n, m) => `${n} fixture(s) attached to a DMX line, ${m} with no possible line.`, delDmxAsk: n => `Delete the DMX line “${n}”?`,
     netHint: 'Every device on the lighting network: consoles, nodes, switches, mergers, computers, media servers… Open its sheet (▸) to set its ports: count, name, universe of each DMX output, switch port VLAN (cables are plugged in the Links tab). Duplicate or off-network addresses, ports used twice, missing or without PoE are flagged.',
     dvName: 'Device', dvLine: 'Power line', dvPower: 'Power (W)', dvKind: 'Type', dvIp: 'IP address', dvMask: 'Mask', dvVlan: 'VLAN', dvSwitch: 'Switch', dvPort: 'Port', dvMac: 'MAC', dvLoc: 'Location', dvU: 'Universes', dvNotes: 'Notes',
-    kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kdimmer: 'Dimmer', kother: 'Other',
+    kconsole: 'Console', knode: 'DMX node', ksplitter: 'Splitter', kmerger: 'DMX merger', kswitch: 'Switch', kpc: 'Computer', kmedia: 'Media server', kwifi: 'Wi-Fi AP', kdimmer: 'Dimmer', kboard: 'Board', kpos: 'Position', bdFed: 'Fed by', esTitle: 'Lines and boards', esConnect: 'Draw a line:', esTie: 'New line', esStep1: 'click the source board or dimmer', esStep2: n => `from ${n}: click the arrival (position, dimmer, board or device)`, esHint: 'Click a cable to edit its line, a board or dimmer for its settings. Drag a box to move it, a cable to move its vertical segment. A line feeding a board, a dimmer or a device is set in its sheet (“Fed by”).', esSum: n => `${n} line${n > 1 ? 's' : ''}`, esFeeds: 'Feeds', esGuess: 'assumed arrival', esFx: n => `${n} fixt.`, esLayout: 'Layout', esMode_graph: 'Diagram', esMode_list: 'Single-line list', kother: 'Other',
     dmCh: 'Channels', dmSupply: 'Supply', dmCtl: 'Control', dmCtl_dmx: 'DMX', dmCtl_eth: 'Ethernet', dmCtl_both: 'Ethernet + DMX', dmAmps: 'Channel rating (A)', dmOut: 'Channel type', dmFeed: 'Supply line', dmMake: 'Create / update channels', dmMade: n => `${n} channel(s) created, the others updated.`, dmHint: 'Dimmer channels are power lines filed under its name (like a board): their fixtures make the dimmer load, which adds to its supply line load.', dimmers: 'Dimmers', addDimmer: 'Add a dimmer', newDimmer: 'DIM', dmLoad: 'Load', dmPhases: 'Phases (A)', dmNoLine: 'no channel yet: “Create channels” button in its sheet', dmChans: n => `${n} channel${n > 1 ? 's' : ''}`, dmFedBy: 'fed by', grpBoards: 'Boards', grpDimmers: 'Dimmers',
     shConsole: 'Console show', shConsoleHint: 'Build a basic console show from the dossier: patch, fixture positions, groups, layout and presets.', shMa2: 'grandMA2…', shSoon: 'coming',
     maTitle: 'grandMA2 basic show', maHint: 'OPlanFeu prepares a grandMA2 plugin and its files (XML layer with patch and positions, layout) in a zip to copy to a USB key or the onPC folder. The plugin imports the fixture types and the layer, then creates groups, layout and presets. Tested on grandMA2 onPC 3.9.61; run it in a new show.',
@@ -2585,18 +2587,21 @@ function dimMakeLines(d) {
   return made;
 }
 // ce qui est branché sur une ligne : numéros des projecteurs, puis noms des appareils réseau
-const lineWho = R => [...R.g.map(f => f.fid || '?').sort((a, b) => cmpKey(numKey(a), numKey(b))), ...R.dv.map(d => d.name)];
+const lineWho = R => [...R.g.map(f => f.fid || '?').sort((a, b) => cmpKey(numKey(a), numKey(b))), ...R.dv.map(d => d.name), ...(R.sb || []).map(b => b.name)];
 function lineLoad(l) {
   const st = state.d.lieu.settings, V = +st.volts || 230, n = l.phase === 'tri' ? 3 : 1;
   const g = state.d.fixtures.filter(f => f.circuit && f.circuit === l.name);
   // appareils réseau branchés sur la ligne (switch, node, console…) : leur puissance est celle de leur modèle
   const dv = (state.d.lieu.devices || []).filter(d => d.line && d.line === l.name);
+  // tableaux divisionnaires alimentés par la ligne : leur charge s'y ajoute
+  const sb = state.d.lieu.boards.filter(b => b.line && b.line === l.name && b.name !== l.board);
   let w = 0, miss = 0; g.forEach(f => { const pw = (state.d.types[f.type] || {}).power; if (pw > 0) w += pw; else miss++; });
   dv.forEach(d => { const R = devLoad(d); w += R.w; miss += R.miss; });
+  sb.forEach(b => { if (DIM_SEEN.has(b)) return; DIM_SEEN.add(b); try { const R = boardLoad(b); w += R.w; miss += R.miss; } finally { DIM_SEEN.delete(b); } });
   const cap = V * (+l.amps || 0) * n, pct = cap > 0 ? w / cap * 100 : null;
-  let status = !g.length && !dv.length ? 'free' : pct === null ? 'unk' : pct > 100 ? 'over' : pct >= (+st.elWarnPct || 80) ? 'warn' : 'ok';
+  let status = !g.length && !dv.length && !sb.length ? 'free' : pct === null ? 'unk' : pct > 100 ? 'over' : pct >= (+st.elWarnPct || 80) ? 'warn' : 'ok';
   if (status === 'ok' && miss) status = 'part';
-  return { g, dv, w, miss, cap, pct, status, amps: w / V / n };
+  return { g, dv, sb, w, miss, cap, pct, status, amps: w / V / n };
 }
 function boardLoad(b) {
   const V = +state.d.lieu.settings.volts || 230, ph = { L1: 0, L2: 0, L3: 0 }, ls = state.d.lieu.lines.filter(l => l.board === b.name);
@@ -2635,7 +2640,7 @@ function renderElec() {
     const R = boardLoad(b);
     const phs = b.supply === 'mono' ? fA(R.A.L1 + R.A.L2 + R.A.L3) : ['L1', 'L2', 'L3'].map(k => fA(R.A[k])).join(' · ');
     return `<tr><td>${inB(b, 'name', b.name, 9)}</td><td><select class="c" data-b="${esc(b.id)}" data-bf="supply">${opt(['tri', 'mono'], b.supply, v => t(v === 'tri' ? 'sTri' : 'sMono'))}</select></td>
-<td>${inB(b, 'amps', b.amps, 3.6, 1)}</td><td>${inB(b, 'location', b.location, 10)}</td><td class="ro num">${R.ls.length}</td>
+<td>${inB(b, 'amps', b.amps, 3.6, 1)}</td><td>${inB(b, 'location', b.location, 10)}</td><td>${lineSelHtml(b.line, `data-b="${esc(b.id)}" data-bf="line"`, b.name)}</td><td class="ro num">${R.ls.length}</td>
 <td class="ro num">${R.w ? fmtNum(R.w) + ' W' : ''}${R.miss ? `<br><span class="missing" style="font-size:11px">${esc(t('stPMiss', R.miss))}</span>` : ''}</td>
 <td class="ro num${R.over ? ' missing' : ''}">${phs}</td><td class="ro num">${R.imb === null ? '' : Math.round(R.imb) + ' %'}</td>
 <td>${inB(b, 'notes', b.notes, 12)}</td><td class="noprint">${R.ls.length ? '' : `<button type="button" class="minibtn x" data-delb="${esc(b.id)}">×</button>`}</td></tr>`;
@@ -2663,7 +2668,7 @@ function renderElec() {
 <label>${esc(t('setElWarn'))} <input data-set="elWarnPct" inputmode="decimal" value="${esc(st.elWarnPct)}"></label>
 <span class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto"><button type="button" class="minibtn" id="saveLieu">${esc(t('lieuSave'))}</button><button type="button" class="minibtn" id="loadLieu">${esc(t('lieuLoad'))}</button></span></div>
 <h2 class="sec">${esc(t('boards'))} <button type="button" class="minibtn noprint" id="addBoard" style="margin-inline-start:8px">${esc(t('addBoard'))}</button></h2>
-<div class="gridwrap"><table class="grid"><thead><tr>${['bdName', 'bdSupply', 'bdAmps', 'bdLoc', 'bdLines', 'bdPower', 'bdPhases', 'bdImb', 'bdNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${bRows}</tbody></table></div>
+<div class="gridwrap"><table class="grid"><thead><tr>${['bdName', 'bdSupply', 'bdAmps', 'bdLoc', 'bdFed', 'bdLines', 'bdPower', 'bdPhases', 'bdImb', 'bdNotes'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${bRows}</tbody></table></div>
 <h2 class="sec">${esc(t('dimmers'))} <button type="button" class="minibtn noprint" id="addDimmer" style="margin-inline-start:8px">${esc(t('addDimmer'))}</button></h2>
 ${dims.length ? `<p class="hint2 noprint" style="margin:0 0 6px">${esc(t('dmHint'))}</p><div class="gridwrap"><table class="grid dimtab"><thead><tr>${['dvName', 'dmCh', 'dmSupply', 'dmFeed', 'dmCtl', 'dmAmps', 'dmOut', 'bdLines', 'dmLoad', 'dmPhases'].map(k => `<th class="nosort">${esc(t(k))}</th>`).join('')}<th class="nosort noprint"></th></tr></thead><tbody>${dRows}</tbody></table></div>` : ''}
 <h2 class="sec">${esc(t('lines'))} <button type="button" class="minibtn noprint" id="addLine" style="margin-inline-start:8px">${esc(t('addLine'))}</button></h2>
@@ -2681,6 +2686,19 @@ ${dims.length ? `<p class="hint2 noprint" style="margin:0 0 6px">${esc(t('dmHint
 // synoptique : un schéma unifilaire par tableau, découpé en blocs imprimables
 // ───────────── synoptique réseau et DMX ─────────────
 // arbre de gauche à droite : switches → appareils (raccordés par leur switch et leur port) → lignes DMX des nodes et consoles → arrivées
+// une forme par type d'appareil (synoptiques réseau et électrique), côtés gauche et droit verticaux : les câbles s'y raccordent
+const devShape = (kind, bx, by, w, h, cls, col) => {
+  const r = bx + w, b = by + h, sw = `style="stroke:${col}" stroke-width="1.8"`;
+  if (kind === 'console') { const c = Math.min(16, h / 3); return `<path class="${cls}" ${sw} d="M${bx} ${by + c} L${bx + c * 1.6} ${by} H${r - c * 1.6} L${r} ${by + c} V${b} H${bx} Z"/>`; }
+  if (kind === 'switch') return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="1"/><rect x="${bx}" y="${b - Math.min(6, h / 3)}" width="${w}" height="${Math.min(6, h / 3)}" fill="${col}"/>${[...Array(Math.max(0, Math.floor((w - 8) / 14)))].map((_, i) => `<rect x="${bx + 8 + i * 14}" y="${b - 4.5}" width="8" height="3" fill="var(--bg)"/>`).join('')}`;
+  if (kind === 'node') return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="${Math.min(16, h / 2)}"/>`;
+  if (kind === 'splitter' || kind === 'merger') {
+    const i = Math.min(8, h / 6), [li, ri] = kind === 'splitter' ? [i, 0] : [0, i];
+    return `<path class="${cls}" ${sw} d="M${bx} ${by + li} L${r} ${by + ri} V${b - ri} L${bx} ${b - li} Z"/>`;
+  }
+  if (kind === 'dimmer') { const hb = Math.min(7, h / 3); return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="1"/><rect x="${bx}" y="${by}" width="${w}" height="${hb}" fill="${col}"/>${[...Array(Math.max(0, Math.floor((w - 6) / 8)))].map((_, i) => `<rect x="${bx + 5 + i * 8}" y="${by + 1.5}" width="2.4" height="${hb - 3}" fill="var(--bg)"/>`).join('')}`; }
+  return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${h}" rx="2" fill="${col}"/>`;
+};
 function renderNetSyno() {
   const L = state.d.lieu, st = L.settings, x = s => esc(String(s ?? ''));
   if (!L.devices.length && !L.dmxLines.length) return `<p class="hint" style="margin-top:16px">${x(t('nsEmpty'))}</p>`;
@@ -2895,18 +2913,6 @@ function renderNetSyno() {
   // une forme par type d'appareil, côtés gauche et droit verticaux (les câbles s'y raccordent) :
   // console en pupitre (coins du haut coupés), switch à angles droits avec barre de ports en bas, node arrondi,
   // splitter qui s'ouvre vers la droite, merger qui se resserre vers la droite, autres en rectangle à bande
-  const devShape = (kind, bx, by, w, h, cls, col) => {
-    const r = bx + w, b = by + h, sw = `style="stroke:${col}" stroke-width="1.8"`;
-    if (kind === 'console') { const c = Math.min(16, h / 3); return `<path class="${cls}" ${sw} d="M${bx} ${by + c} L${bx + c * 1.6} ${by} H${r - c * 1.6} L${r} ${by + c} V${b} H${bx} Z"/>`; }
-    if (kind === 'switch') return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="1"/><rect x="${bx}" y="${b - Math.min(6, h / 3)}" width="${w}" height="${Math.min(6, h / 3)}" fill="${col}"/>${[...Array(Math.max(0, Math.floor((w - 8) / 14)))].map((_, i) => `<rect x="${bx + 8 + i * 14}" y="${b - 4.5}" width="8" height="3" fill="var(--bg)"/>`).join('')}`;
-    if (kind === 'node') return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="${Math.min(16, h / 2)}"/>`;
-    if (kind === 'splitter' || kind === 'merger') {
-      const i = Math.min(8, h / 6), [li, ri] = kind === 'splitter' ? [i, 0] : [0, i];
-      return `<path class="${cls}" ${sw} d="M${bx} ${by + li} L${r} ${by + ri} V${b - ri} L${bx} ${b - li} Z"/>`;
-    }
-    if (kind === 'dimmer') { const hb = Math.min(7, h / 3); return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="1"/><rect x="${bx}" y="${by}" width="${w}" height="${hb}" fill="${col}"/>${[...Array(Math.max(0, Math.floor((w - 6) / 8)))].map((_, i) => `<rect x="${bx + 5 + i * 8}" y="${by + 1.5}" width="2.4" height="${hb - 3}" fill="var(--bg)"/>`).join('')}`; }
-    return `<rect class="${cls}" ${sw} x="${bx}" y="${by}" width="${w}" height="${h}" rx="6"/><rect x="${bx}" y="${by}" width="5" height="${h}" rx="2" fill="${col}"/>`;
-  };
   let ports = '';
   // noms de ports d'un même bord trop serrés : écartés pour rester lisibles
   for (const T of tags.values()) for (const side of ['L', 'R']) {
@@ -2965,6 +2971,263 @@ function renderNetSyno() {
 <p class="hint noprint" style="margin:12px 0 0">${x(t('nsHint'))}</p>
 <div class="syn nsyn"><svg viewBox="0 0 ${Math.max(W, 760)} ${H}" preserveAspectRatio="xMidYMin meet" role="img" aria-label="${x(t('nsTitle'))}">${head}${edges}${[...edges.matchAll(/<path d="([^"]+)"[^>]*data-lk="([^"]+)"/g)].map(m => `<path d="${m[1]}" class="lkhit noprint" data-lk="${m[2]}"/>`).join('')}${boxes}${ports}${labels}</svg></div>`;
 }
+// ───────────── schéma électrique : tableaux → gradateurs → arrivées ; une ligne électrique = un câble ─────────────
+const PH_COL = { L1: '#8a5a2b', L2: 'var(--ink)', L3: '#8c8c8c', tri: '#6a4c93' };
+const esMode = () => state.d.lieu.settings.elecSyn === 'list' ? 'list' : 'graph';
+const elecSynHtml = () => esMode() === 'list' ? renderSyno() : renderElecGraph();
+// nœud du schéma d'après sa clé : « b:<id> » tableau, « d:<id> » gradateur ou appareil, « p:<nom> » position
+function esNode(key) {
+  const L = state.d.lieu, [k, ...r] = String(key || '').split(':'), v = r.join(':');
+  if (k === 'b') { const b = L.boards.find(y => y.id === v); return b && { t: 'board', b, name: b.name }; }
+  if (k === 'd') { const d = L.devices.find(y => y.id === v); return d && { t: d.kind === 'dimmer' ? 'dim' : 'dev', d, name: d.name }; }
+  if (k === 'p') return { t: 'pos', name: v };
+  return null;
+}
+// nœuds (tableaux, gradateurs, appareils et positions alimentés) et câbles (une ligne vers chacune de ses arrivées)
+function elecGraph() {
+  const L = state.d.lieu, N = [], by = new Map(), E = [];
+  const node = (key, o) => { if (by.has(key)) return by.get(key); Object.assign(o, { key, out: [], inn: [] }); N.push(o); by.set(key, o); return o; };
+  const boardN = new Map(), dimN = new Map();
+  L.boards.forEach(b => { if (!boardN.has(b.name)) boardN.set(b.name, node('b:' + b.id, { t: 'board', b, name: b.name })); });
+  dimDevs().forEach(d => { if (!boardN.has(d.name) && !dimN.has(d.name)) dimN.set(d.name, node('d:' + d.id, { t: 'dim', d, name: d.name })); });
+  let orphan = null;
+  for (const l of sortedLines()) {
+    let s = boardN.get(l.board) || dimN.get(l.board);
+    if (!s) s = orphan = orphan || node('v:orphan', { t: 'board', b: { name: t('noBoard') }, name: t('noBoard'), virtual: true });
+    const tg = [];
+    L.boards.forEach(b => { const n = boardN.get(b.name); if (b.line === l.name && n && n !== s && !tg.includes(n)) tg.push(n); });
+    L.devices.forEach(d => { if (d.line !== l.name || !d.name) return; const n = dimN.get(d.name) || (d.kind !== 'dimmer' ? node('d:' + d.id, { t: 'dev', d, name: d.name }) : null); if (n && n !== s && !tg.includes(n)) tg.push(n); });
+    // arrivée : la position de la ligne ; sans elle, celle où sont la plupart de ses projecteurs (supposée)
+    let dest = l.dest, guess = false;
+    if (!dest) {
+      const cnt = new Map(); state.d.fixtures.forEach(f => { if (f.circuit === l.name && f.position) cnt.set(f.position, (cnt.get(f.position) || 0) + 1); });
+      const best = [...cnt].sort((a, b) => b[1] - a[1])[0]; if (best) { dest = best[0]; guess = true; }
+    }
+    if (dest) tg.push(node('p:' + dest, { t: 'pos', name: dest }));
+    const R = lineLoad(l);
+    if (!tg.length) E.push({ l, s, b: null, R });
+    tg.forEach(b => E.push({ l, s, b, R, guess: guess && b.t === 'pos' }));
+  }
+  E.forEach(e => { e.s.out.push(e); if (e.b) e.b.inn.push(e); });
+  return { N, E };
+}
+function renderElecGraph() {
+  const L = state.d.lieu, st = L.settings, V = +st.volts || 230, x = s => esc(String(s ?? ''));
+  const title = `<h1 class="ptitle">${x(t('synTitle'))} — ${x(state.d.meta.titre || '')} — ${x(state.d.meta.date || '')}</h1>`;
+  if (!L.lines.length && !dimDevs().length && !L.boards.length) return title + `<p class="hint" style="margin-top:16px">${x(t('synEmpty'))}</p>`;
+  const { N, E } = elecGraph();
+  const CW = 390, BW = 214, GAP = CW - BW, PAD = 18, TOP = 84, SL = 15, GY = 16;
+  // colonnes : tableaux (un tableau alimenté par un autre se met à sa droite), puis gradateurs, puis arrivées
+  const feed = n => E.find(e => e.b === n && e.s !== n);
+  const bc = (n, k = 0) => { const f = feed(n); return f && f.s.t === 'board' && k < 30 ? bc(f.s, k + 1) + 1 : 0; };
+  const maxB = Math.max(0, ...N.filter(n => n.t === 'board').map(n => bc(n)));
+  const memo = new Map();
+  const colRaw = (n, k = 0) => {
+    if (memo.has(n)) return memo.get(n); if (k > 30) return 0;
+    const f = feed(n); let c = 0;
+    if (n.t === 'board') c = f ? colRaw(f.s, k + 1) + 1 : 0;
+    else if (n.t === 'dim') c = Math.max(maxB + 1, f ? colRaw(f.s, k + 1) + 1 : 0);
+    memo.set(n, c); return c;
+  };
+  const last = 1 + Math.max(0, ...N.filter(n => n.t === 'board' || n.t === 'dim').map(n => colRaw(n)));
+  N.forEach(n => { n.col = n.t === 'pos' || n.t === 'dev' ? last : colRaw(n); });
+  // hauteur : textes en haut, puis un emplacement par départ ou arrivée
+  const TXT = n => n.t === 'pos' ? 38 : 52;
+  const outLines = n => [...new Set(n.out.map(e => e.l))];
+  N.forEach(n => { n.h = Math.max(n.t === 'pos' ? 46 : 62, TXT(n) + Math.max(outLines(n).length, n.inn.length, 1) * SL + 6); });
+  // ordre vertical : parcours depuis les tableaux de tête ; un parent se centre sur ce qu'il alimente
+  const placed = new Set(); let cur = TOP;
+  const place = n => {
+    placed.add(n);
+    const kids = [];
+    n.out.forEach(e => { if (e.b && !placed.has(e.b) && e.b.col > n.col) { placed.add(e.b); kids.push(e.b); } });
+    kids.forEach(place);
+    if (!kids.length) { n.y = cur; cur += n.h + GY; return; }
+    const a = kids[0].y, z = kids[kids.length - 1].y + kids[kids.length - 1].h;
+    n.y = Math.max(TOP, (a + z) / 2 - n.h / 2); cur = Math.max(cur, n.y + n.h + GY);
+  };
+  const rank = n => ({ board: 0, dim: 1, dev: 2, pos: 3 })[n.t] + (n.virtual ? .5 : 0);
+  const roots = N.filter(n => !feed(n) || feed(n).s.col >= n.col).sort((a, b) => rank(a) - rank(b));
+  roots.forEach((r, i) => { if (!placed.has(r)) { if (i) cur += 8; place(r); } });
+  N.forEach(n => { if (!placed.has(n)) place(n); });
+  // pas de chevauchement dans une colonne
+  for (let c = 0; c <= last; c++) {
+    const col = N.filter(n => n.col === c).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < col.length; i++) { const m = col[i - 1].y + col[i - 1].h + GY; if (col[i].y < m) col[i].y = m; }
+  }
+  // déplacements à la main : boîtes (décalage) et tronçon vertical des câbles, gardés dans le dossier
+  const OFF = st.synOffE || {}, ROUTE = st.synRouteE || {};
+  const off = n => OFF[n.key] || { dx: 0, dy: 0 };
+  const X = n => PAD + n.col * CW + off(n).dx, Y = n => n.y + off(n).dy;
+  const lkId = e => 'lines:' + e.l.id;
+  // départs rangés dans l'ordre de hauteur de leurs arrivées (les câbles ne se croisent pas), arrivées dans l'ordre des départs
+  const dep = new Map();
+  for (const n of N) {
+    const ls = outLines(n).map(l => { const es = n.out.filter(e => e.l === l && e.b); return { l, k: es.length ? Math.min(...es.map(e => Y(e.b) + e.b.h / 2)) : 1e9 }; }).sort((a, b) => a.k - b.k);
+    ls.forEach((q, i) => dep.set(n.key + '|' + q.l.id, Y(n) + TXT(n) + SL / 2 + i * SL));
+  }
+  E.forEach(e => { e.y1 = dep.get(e.s.key + '|' + e.l.id); });
+  for (const n of N) n.inn.slice().sort((a, b) => a.y1 - b.y1 || natCmp(a.l.name, b.l.name)).forEach((e, j) => { e.y2 = Y(n) + TXT(n) + SL / 2 + j * SL; });
+  let W = PAD * 2 + (last + 1) * CW - GAP, H = TOP;
+  N.forEach(n => { W = Math.max(W, X(n) + BW + PAD); H = Math.max(H, Y(n) + n.h + 24); });
+  const fit = (s2, w, fs = 10) => { const m = Math.floor(w / (fs * .56)); return s2.length > m ? s2.slice(0, Math.max(1, m - 1)) + '…' : s2; };
+  const kW = w => w >= 1000 ? fmtNum(Math.round(w / 100) / 10) + ' kW' : fmtNum(Math.round(w)) + ' W';
+  const phS = l => l.phase === 'tri' ? '3P' : l.phase || '';
+  const style = e => { const on = state.synSel === lkId(e); return `stroke="${PH_COL[e.l.phase] || '#888'}" stroke-width="${(e.l.phase === 'tri' ? 2.6 : 1.7) * (on ? 2 : 1)}" data-lk="${x(lkId(e))}"${on ? ' class="lksel"' : ''}${e.guess ? ' stroke-dasharray="5 3"' : ''}`; };
+  // tracé : un câble avance à la hauteur de son départ et descend (ou monte) dans le couloir juste avant son arrivée ;
+  // si une boîte est sur le chemin, il descend dès la sortie et avance à la hauteur de l'arrivée
+  const boxAt = (c0, c1, y) => N.some(n => n.col > c0 && n.col < c1 && y > Y(n) - 4 && y < Y(n) + n.h + 4);
+  const chans = new Map(), F = [];
+  for (const e of E) {
+    if (!e.b) continue;
+    const x1 = X(e.s) + BW, x2 = X(e.b);
+    if (x2 < x1 + 24) { F.push({ e, back: true, x1, x2: X(e.b) + BW }); continue; }
+    let ch = e.b.col, hy = e.y1;
+    if (e.b.col - e.s.col > 1 && boxAt(e.s.col, e.b.col, e.y1) && !boxAt(e.s.col, e.b.col, e.y2)) { ch = e.s.col + 1; hy = e.y2; }
+    const q = { e, x1, x2, ch, hy }; F.push(q);
+    if (Math.abs(e.y1 - e.y2) > .5) { if (!chans.has(ch)) chans.set(ch, []); chans.get(ch).push(q); }
+  }
+  for (const [ch, list] of chans) {
+    const down = list.filter(q => q.e.y2 > q.e.y1).sort((a, b) => b.e.y1 - a.e.y1 || b.e.y2 - a.e.y2), up = list.filter(q => q.e.y2 < q.e.y1).sort((a, b) => a.e.y1 - b.e.y1 || a.e.y2 - b.e.y2);
+    const all = [...down, ...up], left = PAD + ch * CW - GAP, step = Math.min(8, (GAP - 46) / Math.max(1, all.length));
+    all.forEach((q, i) => { q.lane = left + 14 + i * step; });
+  }
+  let edges = '', labels = '', boxes = '', ports = '';
+  const tags = new Map(), tag = (n, side, y, e, s2) => { if (!tags.has(n)) tags.set(n, []); tags.get(n).push({ side, y, e, s: s2 }); };
+  const dot = (cx, cy, e) => `<circle cx="${cx}" cy="${cy}" r="2.6" fill="${PH_COL[e.l.phase] || '#888'}"/>`;
+  const cabTxt = e => [e.l.amps ? e.l.amps + ' A' : '', e.R.w ? kW(e.R.w) : ''].filter(Boolean).join(' · ');
+  const label = (e, xa, xb, y) => { const w = xb - xa - 8; if (w < 26) return ''; const s2 = cabTxt(e); return s2 ? `<text x="${(xa + xb) / 2}" y="${y - 4}" font-size="9" text-anchor="middle" class="${e.R.status === 'over' ? 'over' : e.R.status === 'warn' ? 'warn' : 'mut'}">${x(fit(s2, w, 9))}</text>` : ''; };
+  for (const q of F) {
+    const e = q.e, y1 = e.y1, y2 = e.y2;
+    tag(e.s, 'R', y1, e, e.l.name + ' ' + phS(e.l));
+    if (q.back) {   // arrivée plus à gauche : tracé par la droite des deux boîtes
+      const xs = Math.max(q.x1, q.x2) + (isSet(ROUTE[lkId(e)]) ? ROUTE[lkId(e)] : 16);
+      edges += `<path d="M${q.x1} ${y1} H${xs} V${y2} H${q.x2}" fill="none" ${style(e)}/>` + dot(q.x1, y1, e) + dot(q.x2, y2, e);
+      tag(e.b, 'R', y2, e, e.l.name + (e.guess ? ' ?' : '')); continue;
+    }
+    const xm = isSet(ROUTE[lkId(e)]) ? q.x1 + ROUTE[lkId(e)] : q.lane;
+    const d = Math.abs(y1 - y2) <= .5 && !isSet(ROUTE[lkId(e)]) ? `M${q.x1} ${y1} H${q.x2}` : `M${q.x1} ${y1} H${xm} V${y2} H${q.x2}`;
+    edges += `<path d="${d}" fill="none" ${style(e)}/>` + dot(q.x1, y1, e) + dot(q.x2, y2, e);
+    labels += label(e, Math.abs(y1 - y2) <= .5 && !isSet(ROUTE[lkId(e)]) ? q.x1 : xm, q.x2, y2);
+    tag(e.b, 'L', y2, e, e.l.name + (e.guess ? ' ?' : ''));
+  }
+  // lignes sans arrivée : un bout de câble, « libre » ou « ? » s'il y a des projecteurs
+  for (const e of E.filter(e2 => !e2.b)) {
+    const x1 = X(e.s) + BW, y1 = e.y1;
+    edges += `<path d="M${x1} ${y1} H${x1 + 34}" fill="none" ${style(e)}/>` + dot(x1, y1, e) + `<circle cx="${x1 + 37}" cy="${y1}" r="3" fill="none" stroke="${PH_COL[e.l.phase] || '#888'}" stroke-width="1.4"/>`;
+    labels += `<text x="${x1 + 45}" y="${y1 + 3.5}" font-size="9.5" class="mut">${x(e.R.g.length ? '→ ? · ' + cabTxt(e) : [t('stFree'), e.l.amps ? e.l.amps + ' A' : ''].filter(Boolean).join(' · '))}</text>`;
+    tag(e.s, 'R', y1, e, e.l.name + ' ' + phS(e.l));
+  }
+  const amps = BL => ['L1', 'L2', 'L3'].map(k => k + ' ' + fmtNum(BL.A[k])).join(' · ') + ' A';
+  for (const n of N) {
+    const bx = X(n), by = Y(n), h = n.h, sel = (n.t === 'board' && n.b.id && state.synBoard === n.b.id) || ((n.t === 'dim' || n.t === 'dev') && state.synDev === n.d.id) || (n.t === 'pos' && state.synPos === n.name) || state.synFrom === n.key;
+    const T = tags.get(n) || [], tl = T.filter(g => g.side === 'L'), tr = T.filter(g => g.side === 'R');
+    let shape, col, l1 = n.name, l2 = '', l3 = '', bad = false, tot = 0;
+    if (n.t === 'board') {
+      const BL = n.virtual ? null : boardLoad(n.b); col = 'var(--ink)';
+      shape = `<rect class="box${n.virtual ? ' loose' : ''}" style="stroke:${col}" stroke-width="1.8" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="2"/><rect x="${bx + 3.5}" y="${by + 3.5}" width="${BW - 7}" height="${h - 7}" rx="1" fill="none" stroke="${col}" stroke-width=".8" opacity=".55"/>`;
+      l2 = n.virtual ? '' : [n.b.supply ? `${t(n.b.supply === 'tri' ? 'sTri' : 'sMono')} ${n.b.supply === 'tri' ? Math.round(V * Math.sqrt(3) / 10) * 10 : V} V` : '', n.b.amps ? n.b.amps + ' A' : '', n.b.location].filter(Boolean).join(' · ');
+      l3 = BL && BL.w ? (n.b.supply === 'mono' ? fmtNum(BL.A.L1 + BL.A.L2 + BL.A.L3) + ' A' : amps(BL)) : ''; tot = BL ? BL.w : 0; bad = BL && BL.over;
+    } else if (n.t === 'dim') {
+      const BL = boardLoad(dimBoard(n.d)), d = n.d; col = '#d08a1e';
+      shape = devShape('dimmer', bx, by, BW, h, 'box', col);
+      l2 = [parseInt(d.dimCh, 10) > 0 ? parseInt(d.dimCh, 10) + ' × ' + (d.dimAmps ? d.dimAmps + ' A' : '?') : '', t('k' + (d.dimOut === 'direct' ? 'direct' : 'grada') + 'S'), d.dimSupply === 'mono' ? t('sMono') : t('sTri'), t('dmCtl_' + (d.dimCtl || 'dmx'))].filter(Boolean).join(' · ');
+      l3 = BL.w ? (d.dimSupply === 'mono' ? fmtNum(BL.A.L1 + BL.A.L2 + BL.A.L3) + ' A' : amps(BL)) : ''; tot = BL.w; bad = BL.over;
+    } else if (n.t === 'dev') {
+      col = '#9a9a9a'; shape = devShape(n.d.kind, bx, by, BW, h, 'box', col);
+      l2 = [t('k' + n.d.kind), devPower(n.d) ? kW(devPower(n.d)) : ''].filter(Boolean).join(' · ');
+    } else {
+      const ls = new Set(n.inn.map(e => e.l.name)), fx = state.d.fixtures.filter(f => f.position === n.name && ls.has(f.circuit)), w = n.inn.reduce((a, e) => a + e.R.w, 0);
+      shape = `<rect class="box pos" x="${bx}" y="${by}" width="${BW}" height="${h}" rx="${Math.min(16, h / 2)}"/>`;
+      l2 = [fx.length ? t('esFx', fx.length) : t('nsFx0'), w ? kW(w) : ''].filter(Boolean).join(' · ');
+    }
+    const ty = by + (n.t === 'dim' ? 5 : 0), tx = bx + (n.t === 'pos' ? 16 : 13), tw = BW - (n.t === 'pos' ? 28 : 24);
+    boxes += `<g class="${bad ? 'bad' : ''}${sel ? ' synfrom' : ''}"${n.virtual ? '' : ` data-enode="${x(n.key)}" data-skey="${x(n.key)}"`}>${shape}
+<text x="${tx}" y="${ty + 19}" font-size="13" font-weight="700">${x(fit(l1, tw - (tot ? 52 : 0), 13 * .8))}</text>${tot ? `<text x="${bx + BW - 11}" y="${ty + 19}" font-size="11" font-weight="600" text-anchor="end">${x(kW(tot))}</text>` : ''}
+<text x="${tx}" y="${ty + 33}" font-size="10.5" class="mut">${x(fit(l2, tw, 10.5 * .95))}</text>${l3 ? `<text x="${tx}" y="${ty + 46}" font-size="10" class="${bad ? 'over' : 'mut'}">${x(fit(l3, tw, 10))}</text>` : ''}</g>`;
+    // noms des lignes dans la boîte, au point de connexion
+    const pc = g => ` style="fill:${PH_COL[g.e.l.phase] || '#888'}"`;
+    ports += tl.map(g => `<text class="ptag" x="${bx + 10}" y="${g.y + 3.5}" font-size="9.5" font-weight="700"${pc(g)}>${x(fit(g.s, BW / 2 - 14, 9.5))}</text>`).join('')
+      + tr.map(g => `<text class="ptag" x="${bx + BW - 9}" y="${g.y + 3.5}" font-size="9.5" font-weight="700" text-anchor="end"${pc(g)}>${x(fit(g.s, BW / 2 - 14, 9.5))}</text>`).join('');
+  }
+  // légende : phases, arrivée supposée, formes
+  const W2 = Math.max(W, 780);
+  const LGI = [...['L1', 'L2', 'L3'].map(p => [`stroke="${PH_COL[p]}" stroke-width="1.7"`, p]), [`stroke="${PH_COL.tri}" stroke-width="2.6"`, t('sTri')], ['stroke="#888" stroke-width="1.7" stroke-dasharray="5 3"', t('esGuess')]];
+  let lgx = W2 - PAD, lgs = '';
+  for (const [a, txt] of [...LGI].reverse()) { const w = 32 + txt.length * 5.9; lgx -= w + 14; lgs = `<line x1="${lgx}" y1="22" x2="${lgx + 26}" y2="22" ${a}/><text x="${lgx + 32}" y="26">${x(txt)}</text>` + lgs; }
+  const KS = [['board', t('kboard')], ['dimmer', t('kdimmer')], ['pos', t('kpos')]];
+  let kx = W2 - PAD, ks = '';
+  for (const [k, txt] of [...KS].reverse()) {
+    const w = 34 + txt.length * 5.9; kx -= w + 14;
+    const sh = k === 'board' ? `<rect class="box lg" x="${kx}" y="37" width="26" height="15" rx="1" stroke-width="1.6"/><rect x="${kx + 2.5}" y="39.5" width="21" height="10" fill="none" stroke="var(--ink)" stroke-width=".7"/>` : k === 'dimmer' ? devShape('dimmer', kx, 37, 26, 15, 'box lg', '#d08a1e') : `<rect class="box pos" x="${kx}" y="37" width="26" height="15" rx="7.5"/>`;
+    ks = sh + `<text x="${kx + 32}" y="49">${x(txt)}</text>` + ks;
+  }
+  const tot = L.boards.filter(b => !L.boards.some(p => p !== b && b.line && L.lines.some(l => l.name === b.line && l.board === p.name))).reduce((a, b) => a + boardLoad(b).w, 0);
+  const subT = [V + ' V', tot ? t('synTotal') + ' ' + kW(tot) : ''].filter(Boolean).join(' · ');
+  const head = `<text x="${PAD}" y="26" font-size="17" font-weight="700">${x(t('synTitle'))}</text><g font-size="10.5" class="mut">${ks}</g>
+<text x="${PAD}" y="${PAD + subT.length * 6.4 + 12 > kx ? 66 : 46}" font-size="12" class="mut">${x(subT)}</text><g font-size="10.5" class="mut">${lgs}</g>`;
+  return title + `<div class="syn esyn"><svg viewBox="0 0 ${W2} ${H}" preserveAspectRatio="xMidYMin meet" role="img" aria-label="${x(t('synTitle'))}">${head}${edges}${[...edges.matchAll(/<path d="([^"]+)"[^>]*data-lk="([^"]+)"/g)].map(m => `<path d="${m[1]}" class="lkhit noprint" data-lk="${m[2]}"/>`).join('')}${boxes}${ports}${labels}</svg></div>`;
+}
+// liste des lignes (select) rangées par tableau ou gradateur ; « sauf » : les lignes d'un tableau (pas d'auto-alimentation)
+function lineSelHtml(cur, attrs, sauf) {
+  const L = state.d.lieu, by = new Map();
+  [...L.lines].filter(l => !sauf || l.board !== sauf).sort((a, b) => natCmp(a.name, b.name)).forEach(l => { const k = l.board || '—'; if (!by.has(k)) by.set(k, []); by.get(k).push(l); });
+  const o = [...by].map(([b, ls]) => `<optgroup label="${esc(b)}">${ls.map(l => `<option value="${esc(l.name)}"${l.name === cur ? ' selected' : ''}>${esc(l.name + (l.phase ? ' · ' + (l.phase === 'tri' ? '3P' : l.phase) : '') + (l.amps ? ' · ' + l.amps + ' A' : ''))}</option>`).join('')}</optgroup>`).join('');
+  const stale = cur && !L.lines.some(l => l.name === cur) ? `<option value="${esc(cur)}" selected>${esc(cur)} ?</option>` : '';
+  return `<select class="c" ${attrs}><option value=""></option>${stale}${o}</select>`;
+}
+// édition du schéma électrique : ligne, tableau, gradateur ou appareil cliqué ; tirer une nouvelle ligne
+function elecSynEditor() {
+  const L = state.d.lieu, x = esc, M = state.synMode === 'line';
+  const fld = (lab, html) => `<label class="sef"><span>${x(t(lab))}</span>${html}</label>`;
+  const opt = (vals, cur, lab) => vals.map(v => `<option value="${x(v)}"${String(v) === String(cur ?? '') ? ' selected' : ''}>${x(lab ? lab(v) : v)}</option>`).join('');
+  const posNames = L.points.map(p => p.name).sort(natCmp);
+  const from = state.synFrom && esNode(state.synFrom);
+  const step = M ? `<span class="sestep">${x(from ? t('esStep2', from.name) : t('esStep1'))}</span>${from && posNames.length ? `<label class="sef" style="flex-direction:row;align-items:center;gap:6px">${x(t('seToPos'))} <select id="esToPos"><option value=""></option>${opt(posNames)}</select></label>` : ''}` : '';
+  let edit = `<p class="hint2">${x(t('esHint'))}</p>`, sum = t('esSum', L.lines.length);
+  const S = synLinkOf(state.synSel);
+  const desel = `<button type="button" class="linkbtn" id="synDesel">${x(t('seDesel'))}</button>`;
+  if (S && S.coll === 'lines') {
+    const l = S.l, il = (f, v, w, num) => `<input class="c box" data-l="${x(l.id)}" data-lf="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${x(v ?? '')}">`;
+    const sl = (f, inner) => `<select class="c" data-l="${x(l.id)}" data-lf="${f}">${inner}</select>`;
+    const grp = [...L.boards.map(b => b.name), ...dimDevs().map(d => d.name)];
+    const fed = [...L.boards.filter(b => b.line === l.name).map(b => b.name), ...L.devices.filter(d => d.line === l.name).map(d => d.name)];
+    edit = `<div class="seedit">${fld('lnName', il('name', l.name, 6))}${fld('lnBoard', sl('board', '<option value=""></option>' + opt([...new Set([...grp, l.board].filter(Boolean))], l.board)))}
+${fld('lnKind', sl('kind', opt(['grada', 'direct'], l.kind, v => t('k' + v))))}${fld('lnPhase', sl('phase', opt(l.kind === 'grada' ? ['L1', 'L2', 'L3'] : PHASES, l.phase, v => v === 'tri' ? t('sTri') : v)))}${fld('lnAmps', il('amps', l.amps, 3.5, 1))}
+${fld('lnDest', sl('dest', '<option value=""></option>' + opt([...new Set([...posNames, l.dest].filter(Boolean))], l.dest)))}${fld('lnDimmer', il('dimmer', l.dimmer, 6))}${fld('lnDmx', il('dmx', l.dmx, 4.5))}${fld('lnNotes', il('notes', l.notes, 9))}
+${fed.length ? `<span class="sef"><span>${x(t('esFeeds'))}</span><b style="font-size:13px;color:var(--ink)">${x(fed.join(', '))}</b></span>` : ''}
+<button type="button" class="minibtn x" id="synDel">${x(t('seDel'))}</button>${desel}</div>`;
+    sum = [l.name, l.board, l.dest].filter(Boolean).join(' · ');
+  }
+  const b = state.synBoard && L.boards.find(y => y.id === state.synBoard);
+  if (b) {
+    const ib = (f, v, w, num) => `<input class="c box" data-b="${x(b.id)}" data-bf="${f}"${num ? ' inputmode="decimal"' : ''} style="width:${w}em" value="${x(v ?? '')}">`;
+    edit = `<div class="seedit">${fld('bdName', ib('name', b.name, 8))}${fld('bdSupply', `<select class="c" data-b="${x(b.id)}" data-bf="supply">${opt(['tri', 'mono'], b.supply, v => t(v === 'tri' ? 'sTri' : 'sMono'))}</select>`)}${fld('bdAmps', ib('amps', b.amps, 3.6, 1))}
+${fld('bdLoc', ib('location', b.location, 10))}${fld('bdFed', lineSelHtml(b.line, `data-b="${x(b.id)}" data-bf="line"`, b.name))}${fld('bdNotes', ib('notes', b.notes, 12))}${desel}</div>`;
+    sum = b.name;
+  }
+  const dv = state.synDev && L.devices.find(d => d.id === state.synDev);
+  if (dv) {
+    const din = (f, v, w) => `<input class="c box" data-o="devices" data-id="${x(dv.id)}" data-f="${f}" style="width:${w}em" value="${x(v ?? '')}">`;
+    edit = `<div class="seedit">${fld('dvName', din('name', dv.name, 9))}${fld(dv.kind === 'dimmer' ? 'dmFeed' : 'dvLine', devLineSel(dv))}${dv.kind === 'dimmer' ? dimFields(dv) : fld('dvPower', `<input class="c box" data-o="devices" data-id="${x(dv.id)}" data-f="power" inputmode="decimal" style="width:5em" value="${x(dv.power ?? '')}" placeholder="W">`)}${fld('dvLoc', din('location', dv.location, 9))}${desel}</div>`;
+    sum = dv.name;
+  }
+  const moved = Object.keys(L.settings.synOffE || {}).length + Object.keys(L.settings.synRouteE || {}).length;
+  return { sum, html: `<div class="cfgrow"><b class="selab">${x(t('esConnect'))}</b><span class="seg"><button type="button" data-synmode="line"${M ? ' class="on"' : ''}>${x(t('esTie'))}</button></span>${step}${moved ? `<span class="spacer"></span><button type="button" class="minibtn" id="synAuto">${x(t('seAuto'))}</button>` : ''}</div>${edit}` };
+}
+// tirer une ligne : depuis un tableau ou un gradateur, vers une position (arrivée), un gradateur, un tableau ou un appareil (qu'elle alimente)
+function esConnect(a, b) {
+  const L = state.d.lieu, A = esNode(a), B = esNode(b);
+  if (!A || !B || a === b || (A.t !== 'board' && A.t !== 'dim')) return;
+  const isDim = A.t === 'dim', d = A.d; let name, i = 1;
+  if (isDim) do name = A.name + '-' + i++; while (L.lines.some(l => l.name === name));
+  else { i = L.lines.length + 1; do name = t('newLine') + i++; while (L.lines.some(l => l.name === name)); }
+  const tri = !isDim && (B.t === 'board' ? B.b.supply !== 'mono' : B.t === 'dim' ? B.d.dimSupply !== 'mono' : false);
+  const l = { id: uid(), name, board: A.name, kind: isDim ? (d.dimOut === 'direct' ? 'direct' : 'grada') : 'direct', phase: tri ? 'tri' : 'L1', amps: isDim ? (+d.dimAmps || null) : tri ? 32 : 16, dest: B.t === 'pos' ? B.name : '', dimmer: '', dmx: '', notes: '' };
+  L.lines.push(l);
+  if (B.t === 'board') B.b.line = name; else if (B.t === 'dim' || B.t === 'dev') B.d.line = name;
+  state.synSel = 'lines:' + l.id; state.synFrom = null; state.synMode = null; state.synBoard = null; state.synDev = null; touch(); render();
+}
 const SYN_VIEWS = ['elec', 'net'];
 // orientation de la page de chaque synoptique (impression et dossier complet), gardée dans le dossier
 const synOrient = k => ((state.d.lieu.settings.synOrient || {})[k] === 'portrait' ? 'portrait' : 'landscape');
@@ -2973,12 +3236,12 @@ function renderSynoView() {
   ensureLieu(state.d);
   const sv = SYN_VIEWS.includes(state.synView) ? state.synView : 'elec', or = synOrient(sv), fm = synFmt(sv);
   const head = `<div class="subtabs">${SYN_VIEWS.map(k => `<button type="button" data-sv="${k}"${k === sv ? ' class="on"' : ''}>${esc(t('sv_' + k))}</button>`).join('')}</div>
-${cfgBar(cfgBox('syno:' + sv + ':page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('doFormat'))} <select data-synfmt="${sv}">${['A3', 'A4'].map(f => `<option value="${f}"${f === fm ? ' selected' : ''}>${f}</option>`).join('')}</select></label><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label></div>`, fm + ' · ' + t('or_' + or)))}
+${cfgBar(cfgBox('syno:' + sv + ':page', t('sbPage'), `<div class="cfgrow"><label>${esc(t('doFormat'))} <select data-synfmt="${sv}">${['A3', 'A4'].map(f => `<option value="${f}"${f === fm ? ' selected' : ''}>${f}</option>`).join('')}</select></label><label>${esc(t('plOrient'))} <select data-synor="${sv}">${['landscape', 'portrait'].map(o => `<option value="${o}"${o === or ? ' selected' : ''}>${esc(t('or_' + o))}</option>`).join('')}</select></label>${sv === 'elec' ? `<label>${esc(t('esLayout'))} <select id="esMode">${['graph', 'list'].map(o => `<option value="${o}"${o === esMode() ? ' selected' : ''}>${esc(t('esMode_' + o))}</option>`).join('')}</select></label>` : ''}</div>`, fm + ' · ' + t('or_' + or) + (sv === 'elec' ? ' · ' + t('esMode_' + esMode()) : '')))}
 <div class="plopts noprint"><span class="spacer"></span><button type="button" class="minibtn primary" id="dPrint">${esc(t('print'))}</button></div>`;
   $('#count').textContent = t('count', state.d.fixtures.length, state.d.fixtures.length);
-  const ed = sv === 'net' ? synEditor() : null;
-  $('#view').innerHTML = head.replace('<div class="cfgbar noprint">', '<div class="cfgbar noprint">' + (ed ? cfgBox('syno:net:edit', t('seTitle'), ed.html, ed.sum, true) : ''))
-    + `<div class="synwrap${or === 'portrait' ? ' port' : ''}${ed && state.synMode ? ' synlink' : ''}">${sv === 'elec' ? renderSyno() : renderNetSyno()}</div>`;
+  const ed = sv === 'net' ? synEditor() : esMode() === 'graph' ? elecSynEditor() : null;
+  $('#view').innerHTML = head.replace('<div class="cfgbar noprint">', '<div class="cfgbar noprint">' + (ed ? cfgBox('syno:' + sv + ':edit', t(sv === 'net' ? 'seTitle' : 'esTitle'), ed.html, ed.sum, true) : ''))
+    + `<div class="synwrap${or === 'portrait' ? ' port' : ''}${ed && state.synMode ? ' synlink' : ''}">${sv === 'elec' ? elecSynHtml() : renderNetSyno()}</div>`;
   // page : format et orientation ; hauteur du schéma limitée à la page (moins les marges et le titre de la vue)
   const ph = (fm === 'A3' ? (or === 'portrait' ? 420 : 297) : (or === 'portrait' ? 297 : 210)) - 32;
   $('#pagesize').textContent = `@page { size: ${fm} ${or}; margin: 12mm; } @media print { .syn svg { max-height: ${ph}mm !important; } }`;
@@ -3038,7 +3301,7 @@ const SYN_DRAG = { moved: false };
 const synPt = (svg, e) => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
 document.getElementById('view').addEventListener('pointerdown', e => {
   if (!state.d || state.tab !== 'syno' || state.synMode || e.button !== 0) return;
-  const svg = e.target.closest('.nsyn svg'); if (!svg) return;
+  const svg = e.target.closest('.nsyn svg, .esyn svg'); if (!svg) return;
   const g = e.target.closest('[data-skey]'), lk = !g && e.target.closest('.lkhit');
   if (!g && !lk) return;
   const p0 = synPt(svg, e), D = { svg, g, lk, p0, moved: false };
@@ -3060,9 +3323,9 @@ document.getElementById('view').addEventListener('pointerdown', e => {
     window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
     if (!D.moved) return;
     SYN_DRAG.moved = true; setTimeout(() => { SYN_DRAG.moved = false; }, 0);
-    const st = state.d.lieu.settings;
-    if (g) { const o = (st.synOff || {})[g.dataset.skey] || { dx: 0, dy: 0 }; st.synOff = { ...(st.synOff || {}), [g.dataset.skey]: { dx: Math.round(o.dx + D.dx), dy: Math.round(o.dy + D.dy) } }; }
-    else st.synRoute = { ...(st.synRoute || {}), [lk.dataset.lk]: Math.round(D.xm - D.seg.x1) };
+    const st = state.d.lieu.settings, E = svg.closest('.esyn') ? 'E' : '', ko = 'synOff' + E, kr = 'synRoute' + E;
+    if (g) { const o = (st[ko] || {})[g.dataset.skey] || { dx: 0, dy: 0 }; st[ko] = { ...(st[ko] || {}), [g.dataset.skey]: { dx: Math.round(o.dx + D.dx), dy: Math.round(o.dy + D.dy) } }; }
+    else st[kr] = { ...(st[kr] || {}), [lk.dataset.lk]: Math.round(D.xm - D.seg.x1) };
     touch(); render();
   };
   window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
@@ -3088,15 +3351,34 @@ document.getElementById('view').addEventListener('click', e => {
   if (!state.d || state.tab !== 'syno') return;
   const m = e.target.closest('[data-synmode]');
   if (m) { state.synMode = state.synMode === m.dataset.synmode ? null : m.dataset.synmode; state.synFrom = null; state.synSel = null; state.synDev = null; render(); return; }
-  if (e.target.id === 'synDesel') { state.synSel = null; state.synDev = null; render(); return; }
-  if (e.target.id === 'synAuto') { if (confirm(t('seAutoAsk'))) { delete state.d.lieu.settings.synOff; delete state.d.lieu.settings.synRoute; touch(); render(); } return; }
+  if (e.target.id === 'synDesel') { state.synSel = null; state.synDev = null; state.synBoard = null; state.synPos = null; render(); return; }
+  const isE = state.synView === 'elec';
+  if (e.target.id === 'synAuto') { if (confirm(t('seAutoAsk'))) { const S = state.d.lieu.settings; delete S[isE ? 'synOffE' : 'synOff']; delete S[isE ? 'synRouteE' : 'synRoute']; touch(); render(); } return; }
   if (e.target.id === 'synDel') {
     const S = synLinkOf(state.synSel); if (!S) return;
     if (S.coll === 'dmxLines' && !confirm(t('delDmxAsk', S.l.name))) return;
+    if (S.coll === 'lines') { if (!confirm(t('delLineAsk', S.l.name))) return; const L = state.d.lieu; L.devices.forEach(d => { if (d.line === S.l.name) d.line = ''; }); L.boards.forEach(b => { if (b.line === S.l.name) b.line = ''; }); }
     state.d.lieu[S.coll] = state.d.lieu[S.coll].filter(y => y !== S.l); if (S.coll === 'dmxLines') { syncUniverses(state.d.lieu); syncDmxFixtures(); }
     state.synSel = null; touch(); render(); return;
   }
   if (SYN_DRAG.moved) { SYN_DRAG.moved = false; return; }   // fin d'un glisser : pas un clic
+  if (isE) {   // schéma électrique : tirer une ligne, ou ouvrir ce qu'on a cliqué
+    const g = e.target.closest('[data-enode]');
+    if (g && state.synMode === 'line') {
+      const k = g.dataset.enode, n = esNode(k);
+      if (!state.synFrom) { if (n && (n.t === 'board' || n.t === 'dim')) { state.synFrom = k; render(); } return; }
+      return esConnect(state.synFrom, k);
+    }
+    if (g) {
+      const n = esNode(g.dataset.enode); state.synSel = null;
+      if (n && n.t === 'board') { state.synBoard = state.synBoard === n.b.id ? null : n.b.id; state.synDev = null; }
+      else if (n && n.d) { state.synDev = state.synDev === n.d.id ? null : n.d.id; state.synBoard = null; }
+      render(); return;
+    }
+    const lk2 = e.target.closest('[data-lk]');
+    if (lk2) { state.synSel = state.synSel === lk2.dataset.lk ? null : lk2.dataset.lk; state.synDev = null; state.synBoard = null; state.synMode = null; state.synFrom = null; render(); }
+    return;
+  }
   const g = e.target.closest('[data-sdev], [data-spos]');
   if (g && state.synMode) {
     const name = g.dataset.sdev || g.dataset.spos, isPos = !g.dataset.sdev;
@@ -3109,11 +3391,13 @@ document.getElementById('view').addEventListener('click', e => {
 });
 document.getElementById('view').addEventListener('change', e => { if (e.target.id === 'synToPos' && e.target.value && state.synFrom) synConnect(state.synFrom, e.target.value, true); });
 document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape' || !state.d || state.tab !== 'syno' || !(state.synMode || state.synSel || state.synDev)) return;
+  if (e.key !== 'Escape' || !state.d || state.tab !== 'syno' || !(state.synMode || state.synSel || state.synDev || state.synBoard)) return;
   if (e.target.closest && e.target.closest('input, select, textarea')) return;
-  state.synMode = null; state.synFrom = null; state.synSel = null; state.synDev = null; render();
+  state.synMode = null; state.synFrom = null; state.synSel = null; state.synDev = null; state.synBoard = null; render();
 });
 document.getElementById('view').addEventListener('change', e => {
+  if (e.target.id === 'esMode' && state.d) { state.d.lieu.settings.elecSyn = e.target.value === 'list' ? 'list' : 'graph'; touch(); renderSynoView(); return; }
+  if (e.target.id === 'esToPos' && e.target.value && state.synFrom) return esConnect(state.synFrom, 'p:' + e.target.value);
   const kf = e.target.dataset && e.target.dataset.synfmt;
   if (kf && state.d) { const S = state.d.lieu.settings; S.synFmt = { ...(S.synFmt || {}), [kf]: e.target.value === 'A3' ? 'A3' : 'A4' }; touch(); renderSynoView(); return; }
   const k = e.target.dataset && e.target.dataset.synor; if (!k || !state.d) return;
@@ -4495,7 +4779,7 @@ function dossierPages() {
     sec('elec', `<div class="dpage"><h2>${esc(t('dElecTitle'))}</h2><h3>${esc(t('dBoards'))}</h3>${dtab([t('bdName'), t('bdSupply'), t('bdAmps'), t('bdLoc'), t('bdLines'), t('bdPower'), t('bdPhases'), t('bdImb'), t('bdNotes')], bRows)}
 <h3>${esc(t('dLines'))}</h3>${dtab([t('lnName'), t('lnBoard'), t('lnKind'), t('lnPhase'), t('lnAmps'), t('lnDest'), t('lnDimmer'), t('lnDmx'), t('lnFix'), t('lnPower'), t('lnLoad')], lRows)}</div>`);
   }
-  if (S.syno && L.lines.length) sec('syno', `<div class="dpage${synOrient('elec') === 'portrait' ? ' port' : ''}"><h2>${esc(t('synTitle'))}</h2>${renderSyno().replace(/<h1 class="ptitle">.*?<\/h1>/, '')}</div>`);
+  if (S.syno && (L.lines.length || dimDevs().length)) sec('syno', `<div class="dpage${synOrient('elec') === 'portrait' ? ' port' : ''}"><h2>${esc(t('synTitle'))}</h2>${elecSynHtml().replace(/<h1 class="ptitle">.*?<\/h1>/, '')}</div>`);
   // DMX, console, réseau
   if (S.dmx) {
     const cRows = L.consoles.map(c => { const C = consoleCheck(c), m = conModel(c); return `<tr>${td(c.name, 'b')}${td(t('r' + (c.role || 'other')[0].toUpperCase() + (c.role || 'other').slice(1)))}${td(m ? (m[1] || t('mOther')) : '')}${td(C.max ? `≈ ${C.U.ch} / ${C.max}` : '', 'n' + (C.overP ? ' bad' : ''))}${td(`${C.U.univ}${c.universes ? ' / ' + c.universes : ''}`, 'n' + (C.overU ? ' bad' : ''))}${td((c.protocols || []).map(k => (CON_PROTOS.find(q => q[0] === k) || [k, k])[1]).join(', '), C.protoOk ? '' : 'bad')}${td(c.version)}${td(c.device)}${td(c.showfile, 'w')}</tr>`; });
@@ -5662,7 +5946,7 @@ view.addEventListener('change', e => {
   if (lf) {
     const l = state.d.lieu.lines.find(x => x.id === lf.dataset.l); if (!l) return;
     const k = lf.dataset.lf, v = lf.value.trim();
-    if (k === 'name') { if (v && v !== l.name && !state.d.lieu.lines.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.circuit === l.name) f.circuit = v; }); state.d.lieu.devices.forEach(d => { if (d.line === l.name) d.line = v; }); l.name = v; } }
+    if (k === 'name') { if (v && v !== l.name && !state.d.lieu.lines.some(x => x.name === v)) { state.d.fixtures.forEach(f => { if (f.circuit === l.name) f.circuit = v; }); state.d.lieu.devices.forEach(d => { if (d.line === l.name) d.line = v; }); state.d.lieu.boards.forEach(b => { if (b.line === l.name) b.line = v; }); l.name = v; } }
     else if (k === 'amps') { const n = parseFloat(v.replace(',', '.')); l.amps = v === '' ? null : isNaN(n) ? l.amps : n; }
     else l[k] = v;
     if (l.kind === 'grada' && l.phase === 'tri') l.phase = 'L1';   // une ligne graduée est monophasée
@@ -5744,7 +6028,7 @@ view.addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.ev) { state.elecView = b.dataset.ev; store.set('elecView', state.elecView); render(); return; }
   if (b.dataset.golab) { state.labView = b.dataset.golab; store.set('labView', state.labView); const nb = document.querySelector('#tabs button[data-v=labels]'); if (nb) nb.click(); return; }
-  if (b.dataset.sv) { state.synView = b.dataset.sv; store.set('synView', state.synView); render(); return; }
+  if (b.dataset.sv) { state.synView = b.dataset.sv; store.set('synView', state.synView); state.synMode = state.synFrom = state.synSel = state.synDev = state.synBoard = state.synPos = null; render(); return; }
   if (b.dataset.gosyn) { state.synView = b.dataset.gosyn; store.set('synView', state.synView); const nb = document.querySelector('#tabs button[data-v=syno]'); if (nb) nb.click(); return; }
   if (b.dataset.pv) { state.patchView = b.dataset.pv; store.set('patchView', state.patchView); render(); return; }
   if (b.dataset.lv) { state.labView = b.dataset.lv; store.set('labView', state.labView); render(); return; }
@@ -5834,7 +6118,7 @@ view.addEventListener('click', async e => {
   }
   if (b.dataset.dell) {
     const x = state.d.lieu.lines.find(y => y.id === b.dataset.dell);
-    if (x && confirm(t('delLineAsk', x.name))) { state.d.lieu.lines = state.d.lieu.lines.filter(y => y !== x); state.d.lieu.devices.forEach(d => { if (d.line === x.name) d.line = ''; }); touch(); render(); }
+    if (x && confirm(t('delLineAsk', x.name))) { state.d.lieu.lines = state.d.lieu.lines.filter(y => y !== x); state.d.lieu.devices.forEach(d => { if (d.line === x.name) d.line = ''; }); state.d.lieu.boards.forEach(b => { if (b.line === x.name) b.line = ''; }); touch(); render(); }
     return;
   }
   if (b.id === 'srCreate') {

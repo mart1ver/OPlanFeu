@@ -902,7 +902,7 @@ test('gradateurs : voies, branchement, ligne d’alimentation, charge et schéma
   // la voie se range sous le gradateur dans le tableau des lignes
   await expect(page.locator('#view tr:has(input[value="GRADA1-1"]) select[data-lf=board]')).toHaveValue('GRADA1');
   // schéma électrique : un bloc pour le gradateur, avec sa ligne d'alimentation
-  await page.evaluate(() => { state.synView = 'elec'; });
+  await page.evaluate(() => { state.synView = 'elec'; state.d.lieu.settings.elecSyn = 'list'; });
   await page.click('#tabs button[data-v=syno]');
   const g = page.locator('#view .syn svg[aria-label="GRADA1"]');
   await expect(g).toContainText('alimenté par D3 (TD1)');
@@ -911,4 +911,50 @@ test('gradateurs : voies, branchement, ligne d’alimentation, charge et schéma
   await page.click('#tabs button[data-v=elec]');
   const nm = page.locator('#view .dimtab input[data-f=name]'); await nm.fill('G2'); await nm.press('Tab');
   expect(await page.evaluate(() => state.d.lieu.lines.filter(l => l.board === 'G2').length)).toBe(6);
+});
+
+test('schéma électrique : colonnes, lignes comme câbles, édition, tirer une ligne et glisser', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    const pos = [...new Set(d.fixtures.map(f => f.position))];
+    d.lieu = { points: pos.map((p, i) => ({ id: 'p' + i, name: p })), consoles: [], dmxLines: [], netLinks: [], models: [],
+      devices: [{ id: 'g', name: 'GRADA1', kind: 'dimmer', dimCh: 3, dimSupply: 'tri', dimCtl: 'dmx', dimAmps: 10, dimOut: 'grada', line: 'TD-3' }],
+      boards: [{ id: 'b0', name: 'TGBT', supply: 'tri', amps: 125 }, { id: 'b1', name: 'TD', supply: 'tri', amps: 63, line: 'T1' }],
+      lines: [{ id: 't1', name: 'T1', board: 'TGBT', kind: 'direct', phase: 'tri', amps: 63 },
+        { id: 'a', name: 'TD-1', board: 'TD', kind: 'direct', phase: 'L1', amps: 16, dest: pos[0] }, { id: 'c', name: 'TD-3', board: 'TD', kind: 'direct', phase: 'tri', amps: 32 }] };
+  });
+  await openCfg(page);
+  await page.evaluate(() => { dimMakeLines(state.d.lieu.devices[0]); const f = state.d.fixtures[0]; f.circuit = 'TD-1'; state.d.types[f.type].power = 1000; state.synView = 'elec'; });
+  await page.click('#tabs button[data-v=syno]');
+  // colonnes : TGBT, TD (alimenté par T1), gradateur, arrivées
+  const xs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.esyn [data-enode]')].map(g => [g.dataset.enode, Math.round(g.getBBox().x)])));
+  expect(xs['b:b0']).toBeLessThan(xs['b:b1']); expect(xs['b:b1']).toBeLessThan(xs['d:g']);
+  // la charge du tableau divisionnaire remonte par sa ligne d'alimentation
+  expect(await page.evaluate(() => [lineLoad(state.d.lieu.lines[0]).w, lineWho(lineLoad(state.d.lieu.lines[0]))])).toEqual([1000, ['TD']]);
+  // nom des lignes dans les boîtes, au départ et à l'arrivée
+  await expect(page.locator('.esyn .ptag', { hasText: 'TD-1 L1' })).toHaveCount(1);
+  // clic sur un câble : sa ligne s'édite
+  await page.locator('.esyn .lkhit[data-lk="lines:a"]').dispatchEvent('click');
+  await expect(page.locator('[data-cfg="syno:elec:edit"] input[data-lf=name]')).toHaveValue('TD-1');
+  await page.locator('[data-cfg="syno:elec:edit"] input[data-lf=amps]').fill('20');
+  await page.locator('[data-cfg="syno:elec:edit"] input[data-lf=amps]').press('Tab');
+  expect(await page.evaluate(() => state.d.lieu.lines.find(l => l.id === 'a').amps)).toBe(20);
+  // clic sur un tableau : ses réglages
+  await page.locator('#synDesel').click();
+  await page.locator('.esyn [data-enode="b:b1"] text').first().click();
+  await expect(page.locator('[data-cfg="syno:elec:edit"] input[data-bf=name]')).toHaveValue('TD');
+  // tirer une ligne du tableau TD vers une position (liste)
+  await page.locator('[data-synmode=line]').click();
+  await page.locator('.esyn [data-enode="b:b1"] text').first().click();
+  const p1 = await page.evaluate(() => state.d.lieu.points[1].name);
+  await page.locator('#esToPos').selectOption(p1);
+  const nl = await page.evaluate(() => state.d.lieu.lines[state.d.lieu.lines.length - 1]);
+  expect([nl.board, nl.dest, nl.phase]).toEqual(['TD', p1, 'L1']);
+  // glisser le gradateur : décalage gardé
+  await page.locator('#synDesel').click();
+  const box = await page.locator('.esyn [data-enode="d:g"]').boundingBox();
+  await page.mouse.move(box.x + 20, box.y + 20); await page.mouse.down(); await page.mouse.move(box.x + 20, box.y + 80, { steps: 5 }); await page.mouse.up();
+  expect(await page.evaluate(() => state.d.lieu.settings.synOffE['d:g'].dy)).toBeGreaterThan(10);
+  // présentation en liste unifilaire, toujours disponible
+  await page.locator('#esMode').selectOption('list');
+  await expect(page.locator('#view .syn svg[aria-label="TD"]')).toHaveCount(1);
 });
