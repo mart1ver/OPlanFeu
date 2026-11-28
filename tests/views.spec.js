@@ -873,3 +873,42 @@ test('appareils réseau : ligne électrique et puissance, comptées dans la char
   const ln = page.locator('#view input[value="D1"]').first(); await ln.fill('D9'); await ln.press('Tab');
   expect(await page.evaluate(() => state.d.lieu.devices.map(d => d.line))).toEqual(['D9', 'D9']);
 });
+
+test('gradateurs : voies, branchement, ligne d’alimentation, charge et schéma électrique', async ({ page }) => {
+  await loadSynthetic(page, d => {
+    d.lieu = { points: [], consoles: [], dmxLines: [], netLinks: [], models: [], devices: [],
+      boards: [{ id: 'b1', name: 'TD1', supply: 'tri', amps: 63 }], lines: [{ id: 'l1', name: 'D3', board: 'TD1', kind: 'direct', phase: 'tri', amps: 32, dest: '' }] };
+  });
+  await openCfg(page);
+  await page.click('#tabs button[data-v=elec]');
+  await page.click('#addDimmer');
+  expect(await page.evaluate(() => state.d.lieu.devices.map(d => [d.name, d.kind, d.dimCh]))).toEqual([['GRADA1', 'dimmer', 12]]);
+  const row = page.locator('#view .dimtab tbody tr').first();
+  await row.locator('select[data-f=line]').selectOption('D3');
+  const ch = row.locator('input[data-f=dimCh]'); await ch.fill('6'); await ch.press('Tab');
+  await page.locator('#view .dimtab select[data-f=dimCtl]').selectOption('both');
+  await page.locator('#view .dimtab button[data-dimmake]').click();
+  const L = await page.evaluate(() => state.d.lieu.lines.filter(l => l.board === 'GRADA1').map(l => [l.name, l.phase, l.kind, l.amps]));
+  expect(L).toEqual([1, 2, 3, 4, 5, 6].map(i => ['GRADA1-' + i, ['L1', 'L2', 'L3'][(i - 1) % 3], 'grada', 10]));
+  // commande Ethernet + DMX : un port de chaque
+  expect(await page.evaluate(() => { const c = devCounts(state.d.lieu.devices[0]); return [c.eth, c.in]; })).toEqual([1, 1]);
+  // un projecteur sur une voie : sa puissance remonte au gradateur, puis à sa ligne d'alimentation
+  const R = await page.evaluate(() => {
+    const f = state.d.fixtures[0]; f.circuit = 'GRADA1-2'; state.d.types[f.type].power = 1000;
+    const r = lineLoad(state.d.lieu.lines.find(l => l.name === 'D3')), b = boardLoad(dimBoard(state.d.lieu.devices[0]));
+    render(); return [r.w, lineWho(r), b.w, Math.round(b.A.L2 * 100) / 100];
+  });
+  expect(R).toEqual([1000, ['GRADA1'], 1000, 4.35]);
+  // la voie se range sous le gradateur dans le tableau des lignes
+  await expect(page.locator('#view tr:has(input[value="GRADA1-1"]) select[data-lf=board]')).toHaveValue('GRADA1');
+  // schéma électrique : un bloc pour le gradateur, avec sa ligne d'alimentation
+  await page.evaluate(() => { state.synView = 'elec'; });
+  await page.click('#tabs button[data-v=syno]');
+  const g = page.locator('#view .syn svg[aria-label="GRADA1"]');
+  await expect(g).toContainText('alimenté par D3 (TD1)');
+  await expect(g).toContainText('GRADA1-6');
+  // renommer le gradateur : ses voies suivent
+  await page.click('#tabs button[data-v=elec]');
+  const nm = page.locator('#view .dimtab input[data-f=name]'); await nm.fill('G2'); await nm.press('Tab');
+  expect(await page.evaluate(() => state.d.lieu.lines.filter(l => l.board === 'G2').length)).toBe(6);
+});
